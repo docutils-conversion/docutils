@@ -1,12 +1,12 @@
 #! /usr/bin/env python
 
 """
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Version: 1.2
-Revision: $Revision: 1.2 $
-Date: $Date: 2001/08/11 01:58:15 $
-Copyright: This module has been placed in the public domain.
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Version: 1.3
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/08/17 01:57:28 $
+:Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
 this module defines the following classes:
@@ -218,7 +218,8 @@ class StateMachine:
                 results.extend(result)
             if self.debug:
                 print >>sys.stderr, ('\nStateMachine.run: eof transition')
-            results.extend(state.eof(context))
+            result = state.eof(context)
+            results.extend(result)
         except:
             self.error()
             raise
@@ -961,9 +962,6 @@ def extractindented(lines):
     - whether or not the block finished with a blank line or at the end of
       `lines`.
     """
-    #import mypdb
-    #if mypdb.tracenow:
-    #    mypdb.set_trace()
     source = []
     indent = None
     for line in lines:
@@ -981,7 +979,7 @@ def extractindented(lines):
         else:
             indent = min(indent, lineindent)
     else:
-        blankfinish = 1                # block ends at end of lines
+        blankfinish = 1                 # block ends at end of lines
     if indent:
         return [s[indent:] for s in source], indent, blankfinish
     else:
