@@ -2,9 +2,9 @@
 
 """
 :Author: David Goodger
-:Contact: dgoodger@bigfoot.com
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/08/22 04:10:11 $
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/08/23 03:55:19 $
 :Copyright: This module has been placed in the public domain.
 
 """

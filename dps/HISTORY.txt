@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/22 04:12:27 $
+:Date: $Date: 2001/08/23 03:59:30 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -52,8 +52,6 @@ Changed contact email addresses.
   - Fixed bug in StateMachineWS.getknownindented().
   - Cleaned up & updated.
   - Fixed bug in StateMachine.getunindented().
-  - Added startoffset parameter to StateMachineWS.getindented() (but
-    I may be backing this off soon -- not the right solution).
 
 * dps/parsers/model.py:
 

@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 """
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/22 22:36:04 $
-Copyright: This module has been placed in the public domain.
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/08/23 03:55:34 $
+:Copyright: This module has been placed in the public domain.
 
 Test module for nodes.py.
 """
