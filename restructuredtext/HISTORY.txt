@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/15 23:00:24 $
+:Date: $Date: 2002/02/22 02:14:54 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -18,11 +18,12 @@ contributions, and ideas borrowed from related projects:
 
     David Ascher, Remi Bertholet, Fred Drake, Jim Fulton, Peter Funk,
     Doug Hellmann, Juergen Hermann, Tony (Tibs) Ibbs, Alan Jaffray,
-    Garth Kidd, Daniel Larsson, Marc-Andre Lemburg, Wolfgang Lipp,
-    Edward Loper, Ken Manheimer, Alex Martelli, Paul Moore, Michel
-    Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim, Tavis Rudd, Ueli
-    Schlaepfer, Bob Tolbert, Laurence Tratt, Guido van Rossum, Barry
-    Warsaw, Edward Welbourne, Paul Wright, Ka-Ping Yee, Moshe Zadka
+    Richard Jones, Garth Kidd, Daniel Larsson, Marc-Andre Lemburg,
+    Wolfgang Lipp, Edward Loper, Ken Manheimer, Alex Martelli, Paul
+    Moore, Michel Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim,
+    Tavis Rudd, Ueli Schlaepfer, Bob Tolbert, Laurence Tratt, Guido
+    van Rossum, Barry Warsaw, Edward Welbourne, Paul Wright, Ka-Ping
+    Yee, Moshe Zadka
 
 (I'm still waiting for contributions of yummy treats, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten
