@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/13 02:21:05 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/11/06 00:53:35 $
 :Copyright: This module has been placed in the public domain.
 
 Admonition directives.
@@ -13,7 +13,7 @@ Admonition directives.
 __docformat__ = 'reStructuredText'
 
 __all__ = ['attention', 'caution', 'danger', 'error', 'important', 'note',
-           'tip', 'warning']
+           'tip', 'hint', 'warning']
 
 
 from restructuredtext import states
@@ -49,6 +49,9 @@ def note(*args, **kwargs):
 
 def tip(*args, **kwargs):
     return admonition(nodes.tip, *args, **kwargs)
+
+def hint(*args, **kwargs):
+    return admonition(nodes.hint, *args, **kwargs)
 
 def warning(*args, **kwargs):
     return admonition(nodes.warning, *args, **kwargs)

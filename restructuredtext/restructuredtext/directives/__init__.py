@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/13 02:20:34 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/11/06 00:53:24 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains directive implementation modules.
@@ -26,6 +26,7 @@ _directive_registry = {
       'important': ('admonitions', 'important'),
       'note': ('admonitions', 'note'),
       'tip': ('admonitions', 'tip'),
+      'hint': ('admonitions', 'hint'),
       'warning': ('admonitions', 'warning'),}
 """Mapping of directive name to (module name, function name). The directive
 'name' is canonical & must be lowercase; language-dependent names are defined

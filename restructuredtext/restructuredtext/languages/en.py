@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/26 03:35:47 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/11/06 00:53:49 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of
@@ -48,6 +48,7 @@ directives = {
       'important': 'important',
       'note': 'note',
       'tip': 'tip',
+      'hint': 'hint',
       'warning': 'warning',}
 """English name to registered (in directives/__init__.py) directive name
 mapping."""
