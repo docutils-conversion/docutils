@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2001/09/01 15:53:13 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2001/09/02 13:49:29 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -1663,9 +1663,9 @@ class TableParser:
         while colindex < width:
             if line[colindex] == '+':
                 if nextline[colindex] == '|':
-                    self.colseps.setdefault(colindex, 0) += 1
+                    self.colseps.setdefault(colindex, 0)# += 1
                     colseps.append(1)
-                 elif not previousline or previousline[colindex] != '|':
+                elif not previousline or previousline[colindex] != '|':
                     raise MarkupError, ('Problem with table markup at '
                                         'line %s, column %s.' % (lineindex,
                                                                  colindex))
@@ -1680,7 +1680,7 @@ class TableParser:
             lineindex = startline + 1
             while lineindex < height:
                 if self.block[lineindex][colsep] == '+':
-                    self.rowseps.setdefault(lineindex, 0) += 1
+                    self.rowseps.setdefault(lineindex, 0)# += 1
                 elif self.block[lineindex][colsep] != '|':
                     break
                 lineindex += 1
