@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/10 04:40:06 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/09/12 04:02:18 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains directive implementation modules.
@@ -16,12 +16,13 @@ __all__ = ['directive']
 
 _directive_registry = {
       'restructuredtext-test-directive': ('directivetest',
-                                          'test_directive_function'),
+                                          'directive_test_function'),
       'image': ('images', 'image'),
       'figure': ('images', 'figure'),
       'note': ('admonitions', 'note'),
       'tip': ('admonitions', 'tip'),
       'warning': ('admonitions', 'warning'),
+      'error': ('admonitions', 'error'),
       'caution': ('admonitions', 'caution'),
       'danger': ('admonitions', 'danger'),
       'important': ('admonitions', 'important'),}
@@ -47,6 +48,12 @@ def directive(directivename, languagemodule):
     if _modules.has_key(modulename):
         module = _modules[modulename]
     else:
-        module = __import__(modulename, globals(), locals())
-    function = getattr(module, functionname)
+        try:
+            module = __import__(modulename, globals(), locals())
+        except ImportError:
+            return None
+    try:
+        function = getattr(module, functionname)
+    except AttributeError:
+        return None
     return function
