@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2002/02/22 02:02:57 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2002/03/11 03:37:55 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
@@ -54,52 +54,59 @@ class Reporter:
     levels = 'DEBUG INFO WARNING ERROR SEVERE'.split()
     """List of names for system message levels, indexed by level."""
 
-    def __init__(self, warninglevel, errorlevel, warningstream=None, debug=0):
+    def __init__(self, warninglevel, errorlevel, stream=None, debug=0):
         """
-        Initialize the `Reporter`'s default logging category.
+        Initialize the `ConditionSet` forthe `Reporter`'s default category.
 
-        Parameters:
+        :Parameters:
 
-        - `warninglevel`: The level at or above which warning output will be
-          sent to `warningstream`.
-        - `errorlevel`: The level at or above which `SystemMessage` exceptions
-          will be raised.
-        - `debug`: Show debug (level=0) system messages?
-        - `warningstream`: Where warning output is sent (`None` implies
-          `sys.stderr`).
+            - `warninglevel`: The level at or above which warning output will
+              be sent to `stream`.
+            - `errorlevel`: The level at or above which `SystemMessage`
+              exceptions will be raised.
+            - `debug`: Show debug (level=0) system messages?
+            - `stream`: Where warning output is sent (`None` implies
+              `sys.stderr`).
         """
 
-        if warningstream is None:
-            warningstream = sys.stderr
+        if stream is None:
+            stream = sys.stderr
 
-        self.categories = {'': (debug, warninglevel, errorlevel, warningstream)}
-        """Mapping of category names to levels. Default category is ''."""
+        self.categories = {'': ConditionSet(debug, warninglevel, errorlevel,
+                                            stream)}
+        """Mapping of category names to conditions. Default category is ''."""
 
-    def setcategory(self, category, warninglevel, errorlevel,
-                    warningstream=None, debug=0):
-        if warningstream is None:
-            warningstream = sys.stderr
-        self.categories[category] = (debug, warninglevel, errorlevel,
-                                     warningstream)
+    def setconditions(self, category, warninglevel, errorlevel,
+                      stream=None, debug=0):
+        if stream is None:
+            stream = sys.stderr
+        self.categories[category] = ConditionSet(debug, warninglevel,
+                                                 errorlevel, stream)
 
-    def unsetcategory(self, category):
+    def unsetconditions(self, category):
         if category and self.categories.has_key(category):
             del self.categories[category]
 
-    def getcategory(self, category):
+    __delitem__ = unsetconditions
+
+    def getconditions(self, category):
         while not self.categories.has_key(category):
             category = category[:category.rfind('.') + 1][:-1]
         return self.categories[category]
 
-    def system_message(self, level, comment=None, children=[], category=''):
+    __getitem__ = getconditions
+
+    def system_message(self, level, comment=None, category='',
+                       *children, **attributes):
         """
         Return a system_message object.
 
         Raise an exception or generate a warning if appropriate.
         """
         msg = nodes.system_message(comment, level=level,
-                                   type=self.levels[level], *children)
-        debug, warninglevel, errorlevel, stream = self.getcategory(category)
+                                   type=self.levels[level],
+                                   *children, **attributes)
+        debug, warninglevel, errorlevel, stream = self[category].astuple()
         if level >= warninglevel or debug and level == 0:
             if category:
                 print >>stream, 'Reporter "%s":' % category, msg.astext()
@@ -109,42 +116,65 @@ class Reporter:
             raise SystemMessage(msg)
         return msg
 
-    def debug(self, comment=None, children=[], category=''):
+    def debug(self, comment=None, category='', *children, **attributes):
         """
         Level-0, "DEBUG": an internal reporting issue. Typically, there is no
         effect on the processing. Level-0 system messages are handled
         separately from the others.
         """
-        return self.system_message(0, comment, children, category)
+        return self.system_message(
+              0, comment, category, *children, **attributes)
 
-    def info(self, comment=None, children=[], category=''):
+    def info(self, comment=None, category='', *children, **attributes):
         """
         Level-1, "INFO": a minor issue that can be ignored. Typically there is
         no effect on processing, and level-1 system messages are not reported.
         """
-        return self.system_message(1, comment, children, category)
+        return self.system_message(
+              1, comment, category, *children, **attributes)
 
-    def warning(self, comment=None, children=[], category=''):
+    def warning(self, comment=None, category='', *children, **attributes):
         """
         Level-2, "WARNING": an issue that should be addressed. If ignored,
         there may be unpredictable problems with the output.
         """
-        return self.system_message(2, comment, children, category)
+        return self.system_message(
+              2, comment, category, *children, **attributes)
 
-    def error(self, comment=None, children=[], category=''):
+    def error(self, comment=None, category='', *children, **attributes):
         """
         Level-3, "ERROR": an error that should be addressed. If ignored, the
         output will contain errors.
         """
-        return self.system_message(3, comment, children, category)
+        return self.system_message(
+              3, comment, category, *children, **attributes)
 
-    def severe(self, comment=None, children=[], category=''):
+    def severe(self, comment=None, category='', *children, **attributes):
         """
         Level-4, "SEVERE": a severe error that must be addressed. If ignored,
         the output will contain severe errors. Typically level-4 system
         messages are turned into exceptions which halt processing.
         """
-        return self.system_message(4, comment, children, category)
+        return self.system_message(
+              4, comment, category, *children, **attributes)
+
+
+class ConditionSet:
+
+    """
+    A set of thresholds, switches, and streams corresponding to one `Reporter`
+    category.
+    """
+
+    def __init__(self, debug, warninglevel, errorlevel, stream):
+        self.debug = debug
+        self.warninglevel = warninglevel
+        self.errorlevel = errorlevel
+        self.stream = stream
+
+    def astuple(self):
+        return (self.debug, self.warninglevel, self.errorlevel,
+                self.stream)
 
 
 class AttributeParsingError(Exception): pass
@@ -165,7 +195,7 @@ def parseattributes(lines, attributespec):
         - `attributespec`: Dictionary mapping known attribute names to a
           conversion function such as `int` or `float`.
 
-    :Raises:
+    :Exceptions:
         - `KeyError` for unknown attribute names.
         - `ValueError` for invalid attribute values (raised by conversion
            function).
@@ -187,7 +217,7 @@ def extractattributes(lines):
 
             ['[name1=value1 name2=value2]', '[name3="value 3"]']
 
-    :Raises:
+    :Exceptions:
         - `BadAttributeLineError` for input lines not enclosed in brackets.
         - `BadAttributeDataError` for invalid attribute data (missing name,
           missing data, bad quotes, etc.).
@@ -206,8 +236,9 @@ def extract_name_value(line):
     """
     Return a list of (name, value) from a line of the form "name=value ...".
 
-    :Raises: `BadAttributeDataError` for invalid attribute data (missing name,
-             missing data, bad quotes, etc.).
+    :Exception:
+        `BadAttributeDataError` for invalid attribute data (missing name,
+        missing data, bad quotes, etc.).
     """
     attlist = []
     while line:
@@ -255,7 +286,7 @@ def assembleattributes(attlist, attributespec):
         - `attributespec`: Dictionary mapping known attribute names to a
           conversion function such as `int` or `float`.
 
-    :Raises:
+    :Exceptions:
         - `KeyError` for unknown attribute names.
         - `DuplicateAttributeError` for duplicate attributes.
         - `ValueError` for invalid attribute values (raised by conversion
@@ -274,7 +305,7 @@ def normname(name):
     return ' '.join(name.lower().split())
 
 def newdocument(languagecode='en', warninglevel=2, errorlevel=4,
-                warningstream=None, debug=0):
-    reporter = Reporter(warninglevel, errorlevel, warningstream, debug)
+                stream=None, debug=0):
+    reporter = Reporter(warninglevel, errorlevel, stream, debug)
     document = nodes.document(languagecode=languagecode, reporter=reporter)
     return document
