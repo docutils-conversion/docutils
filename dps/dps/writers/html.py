@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/03/11 03:35:07 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/03/11 23:49:35 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -609,9 +609,9 @@ class HTMLTranslator(nodes.NodeVisitor):
             raise nodes.SkipNode
         self.body.append(self.starttag(node, 'div', CLASS='system-message'))
         if node.hasattr('refid'):
-            self.body.append('<H3><A HREF="#%s">%s (level %s system message)'
-                             '</A></H3>\n' % (node['refid'], node['type'],
-                                              node['level']))
+            self.body.append('<H3><A HREF="#%s">%s</A> '
+                             '(level %s system message)</H3>\n'
+                             % (node['refid'], node['type'], node['level']))
         else:
             self.body.append('<H3>%s (level %s system message)</H3>\n'
                              % (node['type'], node['level']))
