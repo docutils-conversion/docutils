@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/03/07 05:00:58 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/03/08 04:32:05 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -120,8 +120,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</BLOCKQUOTE>\n')
 
     def visit_bullet_list(self, node):
-        self.body.append(self.starttag(node, 'ul',
-                                       CLASS='bullet'+node['bullet']))
+        self.body.append(self.starttag(node, 'ul'))
 
     def depart_bullet_list(self, node):
         self.body.append('</UL>\n')
@@ -609,7 +608,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</DIV>\n')
 
     def visit_table(self, node):
-        self.body.append(self.starttag(node, 'table', rules='all'))
+        self.body.append(self.starttag(node, 'table', frame='box', rules='all'))
 
     def depart_table(self, node):
         self.body.append('</TABLE>\n')
@@ -623,6 +622,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</A>')
 
     def visit_tbody(self, node):
+        self.body.append(self.context.pop()) # '</COLGROUP>\n' or ''
         self.body.append(self.starttag(node, 'tbody', valign='top'))
 
     def depart_tbody(self, node):
@@ -639,12 +639,15 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_tgroup(self, node):
-        pass
+        self.body.append(self.starttag(node, 'colgroup'))
+        self.context.append('</COLGROUP>\n')
 
     def depart_tgroup(self, node):
         pass
 
     def visit_thead(self, node):
+        self.body.append(self.context.pop()) # '</COLGROUP>\n'
+        self.context.append('')
         self.body.append(self.starttag(node, 'thead', valign='bottom'))
 
     def depart_thead(self, node):

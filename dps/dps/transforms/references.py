@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/07 04:01:40 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/08 04:31:44 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -168,11 +168,13 @@ class Hyperlinks(Transform):
         refname = target['refname']
         try:
             reftarget = self.doctree.explicit_targets[refname]
-        except KeyError:
+        except KeyError:                # @@@ something wrong here
+            # @@@ give id for anonymous targets
             msg = self.doctree.reporter.warning(
                   'Indirect hyperlink target "%s" refers to target "%s", '
                   'which does not exist.' % (name, refname))
             self.doctree.messages += msg
+            return
         if reftarget.hasattr('name'):
             if not reftarget.resolved and reftarget.hasattr('refname'):
                 self.one_indirect_target(reftarget)

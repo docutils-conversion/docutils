@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/03/01 03:13:37 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/03/08 04:31:54 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms needed by most or all documents:
@@ -29,7 +29,7 @@ class Messages(Transform):
     def transform(self, doctree):
         self.setup_transform(doctree)
         if len(doctree.messages) > 0:
-            section = nodes.section(CLASS='system_messages')
+            section = nodes.section(CLASS='system-messages')
             # @@@ get this from the language module?
             section += nodes.title('', 'Docutils System Messages')
             section += doctree.messages.getchildren()
