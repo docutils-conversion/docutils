@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.29 $
-:Date: $Date: 2001/10/30 05:01:53 $
+:Revision: $Revision: 1.30 $
+:Date: $Date: 2001/10/31 05:52:39 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -385,7 +385,8 @@ class RSTState(StateWS):
                                %s             # no whitespace after
                              |              # *OR*
                                (              # whole constructs (group 5):
-                                   (%s)(__?)    # link name, end-string (6,7)
+                                   (%s)         # reference name (6)
+                                   (__?)        # end-string (7)
                                  |
                                    \[           # footnote_reference start,
                                    (            # footnote label (group 8):
@@ -461,7 +462,7 @@ class RSTState(StateWS):
                        inline.end_string_suffix,),
                 re.VERBOSE))
     inline.groups = Stuff(initial=Stuff(start=2, role=3, backquote=4, whole=5,
-                                        linkname=6, linkend=7, footnotelabel=8,
+                                        refname=6, refend=7, footnotelabel=8,
                                         fnend=9),
                           interpreted_or_phrase_link=Stuff(suffix=2),
                           uri=Stuff(whole=1, absolute=2, scheme=3, email=4))
@@ -469,8 +470,8 @@ class RSTState(StateWS):
     def quotedstart(self, match):
         """Return 1 if inline markup start-string is 'quoted', 0 if not."""
         string = match.string
-        start = match.start()           # self.inline.groups.initial.start
-        end = match.end()               # self.inline.groups.initial.start)
+        start = match.start()
+        end = match.end()
         if start == 0:                  # start-string at beginning of text
             return 0
         prestart = string[start - 1]
@@ -558,7 +559,7 @@ class RSTState(StateWS):
         attributes = {'refname': refname}
         if rawsource[-2:] == '__':
             attributes['anonymous'] = 1
-        inlineobj = nodes.link(rawsource, text, **attributes)
+        inlineobj = nodes.reference(rawsource, text, **attributes)
         self.statemachine.memo.document.addrefname(refname, inlineobj)
         return (before, [inlineobj], after, [])
 
@@ -614,23 +615,23 @@ class RSTState(StateWS):
         matchend = match.end(self.inline.groups.initial.whole)
         return (string[:matchstart], [fnrefnode], string[matchend:], [])
 
-    def link(self, match, lineno, anonymous=None):
-        linkname = match.group(self.inline.groups.initial.linkname)
-        refname = normname(linkname)
+    def reference(self, match, lineno, anonymous=None):
+        referencename = match.group(self.inline.groups.initial.refname)
+        refname = normname(referencename)
         attributes = {'refname': refname}
-        linknode = nodes.link(
-              linkname + match.group(self.inline.groups.initial.linkend),
-              linkname, refname=refname)
-        self.statemachine.memo.document.addrefname(refname, linknode)
+        referencenode = nodes.reference(
+              referencename + match.group(self.inline.groups.initial.refend),
+              referencename, refname=refname)
+        self.statemachine.memo.document.addrefname(refname, referencenode)
         if anonymous:
-            self.statemachine.memo.document.addanonymousref(linknode)
+            self.statemachine.memo.document.addanonymousref(referencenode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
-        return (string[:matchstart], [linknode], string[matchend:], [])
+        return (string[:matchstart], [referencenode], string[matchend:], [])
 
-    def anonymous_link(self, match, lineno):
-        return self.link(match, lineno, anonymous=1)
+    def anonymous_reference(self, match, lineno):
+        return self.reference(match, lineno, anonymous=1)
 
     def standalone_uri(self, text, lineno,
                        pattern=inline.patterns.uri,
@@ -654,9 +655,9 @@ class RSTState(StateWS):
                         addscheme = ''
                     text = match.group(whole)
                     unescaped = unescape(text, 0)
-                    textnodes.append(nodes.link(unescape(text, 1),
-                                                unescaped,
-                                                refuri=addscheme + unescaped))
+                    textnodes.append(
+                          nodes.reference(unescape(text, 1), unescaped,
+                                          refuri=addscheme + unescaped))
                     remainder = remainder[match.end(whole):]
                     start = 0
                 else:                   # not a valid scheme
@@ -673,15 +674,15 @@ class RSTState(StateWS):
                        '``': literal,
                        '_`': inline_target,
                        ']_': footnote_reference,
-                       '_': link,
-                       '__': anonymous_link}
+                       '_': reference,
+                       '__': anonymous_reference}
 
     def inline_text(self, text, lineno):
         """
         Return 2 lists: nodes (text and inline elements), and system_warnings.
 
         A pattern matching start-strings (for emphasis, strong, interpreted,
-        phrase link, and literal) or complete constructs (simple link,
+        phrase link, and literal) or complete constructs (simple reference,
         footnote reference) is stored in `self.inline.patterns.initial`. First
         we search for a candidate. When one is found, we check for validity
         (e.g., not a quoted '*' character). If valid, search for the
@@ -694,7 +695,7 @@ class RSTState(StateWS):
         dispatch = self.inline.dispatch
         start = self.inline.groups.initial.start - 1
         backquote = self.inline.groups.initial.backquote - 1
-        linkend = self.inline.groups.initial.linkend - 1
+        refend = self.inline.groups.initial.refend - 1
         fnend = self.inline.groups.initial.fnend - 1
         remaining = escape2null(text)
         processed = []
@@ -706,7 +707,7 @@ class RSTState(StateWS):
                 groups = match.groups()
                 before, inlines, remaining, syswarnings = \
                       dispatch[groups[start] or groups[backquote]
-                               or groups[linkend]
+                               or groups[refend]
                                or groups[fnend]](self, match, lineno)
                 unprocessed.append(before)
                 warnings += syswarnings
@@ -1174,14 +1175,14 @@ class Body(RSTState):
                             |           # *OR*
                               (`?)        # optional open quote
                               (?![ `])    # first char. not space or backquote
-                              (           # hyperlink name
+                              (           # reference name
                                 .+?
                               )
                               %s          # not whitespace or escape
                               \1          # close quote if open quote used
                             )
                             %s          # not whitespace or escape
-                            :           # end of hyperlink name
+                            :           # end of reference name
                             (?:[ ]+|$)    # followed by whitespace
                             """
                             % (RSTState.inline.non_whitespace_escape_before,
@@ -1189,7 +1190,7 @@ class Body(RSTState):
                             re.VERBOSE),
           reference=re.compile(r"""
                                (?:
-                                 (%s)_       # simple hyperlink name
+                                 (%s)_       # simple reference name
                                |           # *OR*
                                  `           # open backquote
                                  (?![ ])     # not space
@@ -1758,6 +1759,7 @@ class Line(SpecializedText):
                   'Document or section may not end with a transition '
                   '(line %s).' % (self.statemachine.abslineno() - 1))
             self.statemachine.node += sw
+        self.eofcheck = 1
         return []
 
     def blank(self, match, context, nextstate):
@@ -1781,7 +1783,6 @@ class Line(SpecializedText):
     def text(self, match, context, nextstate):
         """Potential over- & underlined title."""
         lineno = self.statemachine.abslineno() - 1
-        makesection = 1
         overline = context[0]
         title = match.string
         underline = ''
@@ -1789,11 +1790,11 @@ class Line(SpecializedText):
             underline = self.statemachine.nextline()
         except IndexError:
             sw = self.statemachine.memo.reporter.severe(
-                  'Incomplete section title or empty division at line %s.'
+                  'Incomplete section title at line %s.'
                   % lineno)
             # @@@ add a literal_block of the overline & title here?
             self.statemachine.node += sw
-            makesection = 0
+            return [], 'Body', []
         source = '%s\n%s\n%s' % (overline, title, underline)
         overline = overline.rstrip()
         underline = underline.rstrip()
@@ -1801,23 +1802,22 @@ class Line(SpecializedText):
             sw = self.statemachine.memo.reporter.severe(
                   'Missing underline for overline at line %s.' % lineno)
             self.statemachine.node += sw
-            makesection = 0
+            return [], 'Body', []
         elif overline != underline:
             sw = self.statemachine.memo.reporter.severe(
                   'Title overline & underline mismatch at ' 'line %s.'
                   % lineno)
             self.statemachine.node += sw
-            makesection = 0
+            return [], 'Body', []
         title = title.rstrip()
         if len(title) > len(overline):
             self.statemachine.node += \
                   self.statemachine.memo.reporter.information(
                   'Title overline too short at line %s.'% lineno)
-        if makesection:
-            style = (overline[0], underline[0])
-            self.eofcheck = 0           # @@@ not sure this is correct
-            self.section(title.lstrip(), source, style, lineno + 1)
-            self.eofcheck = 1
+        style = (overline[0], underline[0])
+        self.eofcheck = 0               # @@@ not sure this is correct
+        self.section(title.lstrip(), source, style, lineno + 1)
+        self.eofcheck = 1
         return [], 'Body', []
 
     indent = text                       # indented title
