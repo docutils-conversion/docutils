@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/11/19 04:33:50 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/11/22 04:21:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -366,7 +366,7 @@ no blank line
     <target name="target1" refname="reference">
     <system_warning level="1">
         <paragraph>
-            Unindent without blank line at line 4.
+            Unindent without blank line at line 7.
     <paragraph>
         no blank line
     <target name="target2" refname="reference">
@@ -375,7 +375,7 @@ no blank line
     <target anonymous="1" refname="reference">
     <system_warning level="1">
         <paragraph>
-            Unindent without blank line at line 10.
+            Unindent without blank line at line 13.
     <paragraph>
         no blank line
 """],

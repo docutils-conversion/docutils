@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/11/19 04:33:36 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/11/22 04:21:08 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -74,6 +74,27 @@ Here's a series of substitution definitions:
         <image alt="very long substitution text, split across lines" uri="symbol.png">
 """],
 ["""\
+.. |symbol 1| image:: symbol.png
+
+Followed by a paragraph.
+
+.. |symbol 2| image:: symbol.png
+
+    Followed by a block quote.
+""",
+"""\
+<document>
+    <substitution_definition name="symbol 1">
+        <image alt="symbol 1" uri="symbol.png">
+    <paragraph>
+        Followed by a paragraph.
+    <substitution_definition name="symbol 2">
+        <image alt="symbol 2" uri="symbol.png">
+    <block_quote>
+        <paragraph>
+            Followed by a block quote.
+"""],
+["""\
 Here are some duplicate substitution definitions:
 
 .. |symbol| image:: symbol.png
@@ -101,7 +122,12 @@ No blank line after.
 
 .. |unknown| directive:: symbol.png
 
-.. |invalid| there's no directive here
+.. |invalid 1| there's no directive here
+.. |invalid 2| there's no directive here
+   With some block quote text, line 1.
+   And some more, line 2.
+
+.. |invalid 3| there's no directive here
 """,
 """\
 <document>
@@ -128,7 +154,20 @@ No blank line after.
             Substitution definition "unknown" empty or invalid at line 8.
     <system_warning level="1">
         <paragraph>
-            Substitution definition "invalid" empty or invalid at line 10.
+            Substitution definition "invalid 1" empty or invalid at line 10.
+    <system_warning level="1">
+        <paragraph>
+            Substitution definition "invalid 2" empty or invalid at line 11.
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 12.
+    <block_quote>
+        <paragraph>
+            With some block quote text, line 1.
+            And some more, line 2.
+    <system_warning level="1">
+        <paragraph>
+            Substitution definition "invalid 3" empty or invalid at line 15.
 """],
 ]
 
