@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/09/10 04:17:38 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/09/12 03:47:12 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -473,6 +473,7 @@ class block_quote(_Element): pass
 class note(_Element): pass
 class tip(_Element): pass
 class warning(_Element): pass
+class error(_Element): pass
 class caution(_Element): pass
 class danger(_Element): pass
 class important(_Element): pass
