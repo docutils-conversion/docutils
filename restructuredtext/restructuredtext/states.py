@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.40 $
-:Date: $Date: 2002/02/06 02:24:58 $
+:Revision: $Revision: 1.41 $
+:Date: $Date: 2002/02/12 02:26:53 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -163,7 +163,7 @@ class NestedStateMachine(StateMachineWS):
 
     def run(self, inputlines, inputoffset, memo, node, matchtitles=1):
         """
-        Parse `inputlines` and return a `dps.nodes.document` instance.
+        Parse `inputlines` and populate a `dps.nodes.document` instance.
 
         Extend `StateMachineWS.run()`: set up document-wide data.
         """
@@ -232,7 +232,7 @@ class RSTState(StateWS):
             statemachinekwargs = self.nestedSMkwargs.copy()
         statemachinekwargs['initialstate'] = initialstate
         statemachine = statemachineclass(debug=self.debug, **statemachinekwargs)
-        if not blankfinishstate:
+        if blankfinishstate is None:
             blankfinishstate = initialstate
         statemachine.states[blankfinishstate].blankfinish = blankfinish
         for key, value in extrasettings.items():
@@ -1104,7 +1104,7 @@ class Body(RSTState):
         return [], nextstate, []
 
     def table(self):
-        """Temporarily parse a table as a literal_block."""
+        """Parse a table."""
         block, warnings, blankfinish = self.isolatetable()
         if block:
             try:
@@ -1699,11 +1699,11 @@ class SubstitutionDef(Body):
     """
 
     patterns = {
-          'inline_directive': r'(%s)::( +|$)' % RSTState.inline.simplename,
+          'embedded_directive': r'(%s)::( +|$)' % RSTState.inline.simplename,
           'text': r''}
-    initialtransitions = ['inline_directive', 'text']
+    initialtransitions = ['embedded_directive', 'text']
 
-    def inline_directive(self, match, context, nextstate):
+    def embedded_directive(self, match, context, nextstate):
         if self.statemachine.node.has_key('alt'):
             attributes = {'alt': self.statemachine.node['alt']}
         else:
