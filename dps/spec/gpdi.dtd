@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.27 $
-:Date: $Date: 2001/11/19 04:04:46 $
+:Revision: $Revision: 1.28 $
+:Date: $Date: 2002/01/26 00:03:16 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -54,15 +54,19 @@ Attributes shared by all elements in this DTD:
     source    CDATA     #IMPLIED
     %additional.basic.atts; ">
 
-<!-- Reference to an external URI/URL. -->
+<!-- External reference to a URI/URL. -->
 <!ENTITY % refuri.att
   " refuri    CDATA     #IMPLIED ">
 
-<!-- Reference to the `id` attribute of another element. -->
+<!-- Internal reference to the `id` attribute of an element. -->
 <!ENTITY % refid.att
   " refid     IDREF     #IMPLIED ">
 
-<!-- Reference to the `name` attribute of another element. -->
+<!--
+Internal reference to the `name` attribute of an element. On a
+'target' element, 'refname' indicates an indirect target which may
+resolve to either an internal or external reference.
+-->
 <!ENTITY % refname.att
   " refname   CDATA     #IMPLIED ">
 
