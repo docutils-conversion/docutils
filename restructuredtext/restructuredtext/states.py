@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.44 $
-:Date: $Date: 2002/02/23 16:47:34 $
+:Revision: $Revision: 1.45 $
+:Date: $Date: 2002/03/01 03:10:23 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -809,17 +809,14 @@ class Body(RSTState):
     """Fragments of patterns used by transitions."""
 
     pats['nonalphanum7bit'] = '[!-/:-@[-`{-~]'
+    pats['alpha'] = '[a-zA-Z]'
     pats['alphanum'] = '[a-zA-Z0-9]'
     pats['alphanumplus'] = '[a-zA-Z0-9_-]'
     pats['enum'] = ('(%(arabic)s|%(loweralpha)s|%(upperalpha)s|%(lowerroman)s'
                     '|%(upperroman)s)' % enum.sequencepats)
-    pats['longname'] = '%(alphanum)s%(alphanumplus)s*' % pats
-    # option arguments and long option names look alike:
-    pats['optarg'] = pats['longname']
-    pats['shortopt'] = '-%(alphanum)s( %(optarg)s)?' % pats
-    pats['longopt'] = '--%(longname)s([ =]%(optarg)s)?' % pats
-    pats['vmsopt'] = '/%(longname)s([ =]%(optarg)s)?' % pats
-    pats['option'] = '(%(shortopt)s|%(longopt)s|%(vmsopt)s)' % pats
+    pats['optname'] = '%(alphanum)s%(alphanumplus)s*' % pats
+    pats['optarg'] = '%(alpha)s%(alphanumplus)s*' % pats
+    pats['option'] = r'(--?|\+|/)%(optname)s([ =]%(optarg)s)?' % pats
 
     for format in enum.formats:
         pats[format] = '(?P<%s>%s%s%s)' % (
@@ -829,22 +826,22 @@ class Body(RSTState):
     patterns = {'bullet': r'[-+*]( +|$)',
                 'enumerator': r'(%(parens)s|%(rparen)s|%(period)s)( +|$)'
                 % pats,
-                'fieldmarker': r':[^: ]([^:]*[^: ])?:( +|$)',
-                'optionmarker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
+                'field_marker': r':[^: ]([^:]*[^: ])?:( +|$)',
+                'option_marker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
                 'doctest': r'>>>( +|$)',
                 'tabletop': tabletoppat,
-                'explicitmarkup': r'\.\.( +|$)',
+                'explicit_markup': r'\.\.( +|$)',
                 'anonymous': r'__( +|$)',
                 'line': r'(%(nonalphanum7bit)s)\1\1\1+ *$' % pats,
                 #'rfc822': r'[!-9;-~]+:( +|$)',
                 'text': r''}
     initialtransitions = ['bullet',
                           'enumerator',
-                          'fieldmarker',
-                          'optionmarker',
+                          'field_marker',
+                          'option_marker',
                           'doctest',
                           'tabletop',
-                          'explicitmarkup',
+                          'explicit_markup',
                           'anonymous',
                           'line',
                           'text']
@@ -892,7 +889,7 @@ class Body(RSTState):
 
     def enumerator(self, match, context, nextstate):
         """Enumerated List Item"""
-        format, sequence, text, ordinal = self.parseenumerator(match)
+        format, sequence, text, ordinal = self.parse_enumerator(match)
         if ordinal is None:
             sw = self.statemachine.memo.reporter.error(
                   ('Enumerated list start value invalid at line %s: '
@@ -915,7 +912,8 @@ class Body(RSTState):
         enumlist = nodes.enumerated_list()
         self.statemachine.node += enumlist
         enumlist['enumtype'] = sequence
-        enumlist['start'] = text
+        if ordinal != 1:
+            enumlist['start'] = ordinal
         enumlist['prefix'] = self.enum.formatinfo[format].prefix
         enumlist['suffix'] = self.enum.formatinfo[format].suffix
         listitem, blankfinish = self.list_item(match.end())
@@ -932,7 +930,7 @@ class Body(RSTState):
         self.gotoline(newlineoffset)
         return [], nextstate, []
 
-    def parseenumerator(self, match, expectedsequence=None):
+    def parse_enumerator(self, match, expectedsequence=None):
         """
         Analyze an enumerator and return the results.
 
@@ -982,7 +980,7 @@ class Body(RSTState):
             ordinal = None
         return format, sequence, text, ordinal
 
-    def fieldmarker(self, match, context, nextstate):
+    def field_marker(self, match, context, nextstate):
         """Field list item."""
         fieldlist = nodes.field_list()
         self.statemachine.node += fieldlist
@@ -1000,7 +998,7 @@ class Body(RSTState):
         return [], nextstate, []
 
     def field(self, match):
-        name, args = self.parsefieldmarker(match)
+        name, args = self.parse_field_marker(match)
         indented, indent, lineoffset, blankfinish = \
               self.statemachine.getfirstknownindented(match.end())
         fieldnode = nodes.field()
@@ -1013,19 +1011,19 @@ class Body(RSTState):
             self.nestedparse(indented, inputoffset=lineoffset, node=fieldbody)
         return fieldnode, blankfinish
 
-    def parsefieldmarker(self, match):
+    def parse_field_marker(self, match):
         """Extract & return name & argument list from a field marker match."""
         field = match.string[1:]        # strip off leading ':'
         field = field[:field.find(':')] # strip off trailing ':' etc.
         tokens = field.split()
         return tokens[0], tokens[1:]    # first == name, others == args
 
-    def optionmarker(self, match, context, nextstate):
+    def option_marker(self, match, context, nextstate):
         """Option list item."""
         optionlist = nodes.option_list()
         self.statemachine.node += optionlist
         try:
-            listitem, blankfinish, delimiter = self.option_list_item(match)
+            listitem, blankfinish = self.option_list_item(match)
         except MarkupError, detail:     # shouldn't happen; won't match pattern
             sw = self.statemachine.memo.reporter.error(
                   ('Invalid option list marker at line %s: %s'
@@ -1038,8 +1036,6 @@ class Body(RSTState):
             if not blankfinish:
                 self.statemachine.node += self.unindentwarning()
             return [], nextstate, []
-        if delimiter:
-            optionlist['optarg_delimiter'] = delimiter
         optionlist += listitem
         offset = self.statemachine.lineoffset + 1   # next line
         newlineoffset, blankfinish = self.nestedlistparse(
@@ -1053,27 +1049,26 @@ class Body(RSTState):
         return [], nextstate, []
 
     def option_list_item(self, match):
-        options, delimiter = self.parseoptionmarker(match)
+        options = self.parse_option_marker(match)
         indented, indent, lineoffset, blankfinish = \
               self.statemachine.getfirstknownindented(match.end())
-        optionlistitem = nodes.option_list_item('', *options)
+        option_group = nodes.option_group('', *options)
         description = nodes.description('\n'.join(indented))
-        optionlistitem += description
+        option_list_item = nodes.option_list_item('', option_group, description)
         if indented:
             self.nestedparse(indented, inputoffset=lineoffset, node=description)
-        return optionlistitem, blankfinish, delimiter
+        return option_list_item, blankfinish
 
-    def parseoptionmarker(self, match):
+    def parse_option_marker(self, match):
         """
-        Return a list of `node.option` objects from an option marker match.
+        Return a list of `node.option` and `node.option_argument` objects,
+        parsed from an option marker match.
 
         :Exception: `MarkupError` for invalid option markers.
         """
         optlist = []
-        options = match.group().rstrip().split(', ')
-        optarg_delimiter = None
-        for optionstring in options:
-            option = nodes.option(optionstring)
+        optionstrings = match.group().rstrip().split(', ')
+        for optionstring in optionstrings:
             tokens = optionstring.split()
             delimiter = ' '
             firstopt = tokens[0].split('=')
@@ -1081,27 +1076,17 @@ class Body(RSTState):
                 tokens[:1] = firstopt
                 delimiter = '='
             if 0 < len(tokens) <= 2:
-                if tokens[0][:2] == '--':
-                    option += nodes.long_option(tokens[0], tokens[0][2:])
-                elif tokens[0][:1] == '-':
-                    option += nodes.short_option(tokens[0], tokens[0][1:])
-                    delimiter = ''      # ignore delimiter for short options
-                elif tokens[0][:1] == '/':
-                    option += nodes.vms_option(tokens[0], tokens[0][1:])
+                option = nodes.option(optionstring)
+                option += nodes.option_string(tokens[0], tokens[0])
                 if len(tokens) > 1:
-                    option += nodes.option_argument(tokens[1], tokens[1])
-                    if delimiter:
-                        if optarg_delimiter:
-                            if delimiter != optarg_delimiter:
-                                optarg_delimiter = "mixed"
-                        else:
-                            optarg_delimiter = delimiter
+                    option += nodes.option_argument(tokens[1], tokens[1],
+                                                    delimiter=delimiter)
                 optlist.append(option)
             else:
                 raise MarkupError('wrong numer of option tokens (=%s), '
                                   'should be 1 or 2: %r' % (len(tokens),
                                                             optionstring))
-        return optlist, optarg_delimiter
+        return optlist
 
     def doctest(self, match, context, nextstate):
         data = '\n'.join(self.statemachine.gettextblock())
@@ -1491,7 +1476,7 @@ class Body(RSTState):
                       (?:[ ]+|$)        # whitespace or end of line
                       """ % RSTState.inline.simplename, re.VERBOSE))]
 
-    def explicitmarkup(self, match, context, nextstate):
+    def explicit_markup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
         nodelist, blankfinish = self.explicit_construct(match)
         self.statemachine.node += nodelist
@@ -1601,11 +1586,11 @@ class SpecializedBody(Body):
     indent = invalid_input
     bullet = invalid_input
     enumerator = invalid_input
-    fieldmarker = invalid_input
-    optionmarker = invalid_input
+    field_marker = invalid_input
+    option_marker = invalid_input
     doctest = invalid_input
     tabletop = invalid_input
-    explicitmarkup = invalid_input
+    explicit_markup = invalid_input
     anonymous = invalid_input
     line = invalid_input
     text = invalid_input
@@ -1641,7 +1626,7 @@ class EnumeratedList(SpecializedBody):
 
     def enumerator(self, match, context, nextstate):
         """Enumerated list item."""
-        format, sequence, text, ordinal = self.parseenumerator(
+        format, sequence, text, ordinal = self.parse_enumerator(
               match, self.statemachine.node['enumtype'])
         if (sequence != self.statemachine.node['enumtype'] or
             format != self.format or
@@ -1659,7 +1644,7 @@ class FieldList(SpecializedBody):
 
     """Second and subsequent field_list fields."""
 
-    def fieldmarker(self, match, context, nextstate):
+    def field_marker(self, match, context, nextstate):
         """Field list field."""
         field, blankfinish = self.field(match)
         self.statemachine.node += field
@@ -1671,21 +1656,13 @@ class OptionList(SpecializedBody):
 
     """Second and subsequent option_list option_list_items."""
 
-    def optionmarker(self, match, context, nextstate):
+    def option_marker(self, match, context, nextstate):
         """Option list item."""
         try:
-            optionlistitem, blankfinish, delimiter = \
-                  self.option_list_item(match)
+            option_list_item, blankfinish = self.option_list_item(match)
         except MarkupError, detail:
             self.invalid_input()
-        listnode = self.statemachine.node
-        if delimiter:
-            if listnode.has_key('optarg_delimiter'):
-                if listnode['optarg_delimiter'] != delimiter:
-                    listnode['optarg_delimiter'] = "mixed"
-            else:
-                listnode['optarg_delimiter'] = delimiter
-        listnode += optionlistitem
+        self.statemachine.node += option_list_item
         self.blankfinish = blankfinish
         return [], 'OptionList', []
 
@@ -1701,7 +1678,7 @@ class Explicit(SpecializedBody):
 
     """Second and subsequent explicit markup construct."""
 
-    def explicitmarkup(self, match, context, nextstate):
+    def explicit_markup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
         nodelist, blankfinish = self.explicit_construct(match)
         self.statemachine.node += nodelist
