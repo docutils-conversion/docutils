@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2001/10/23 02:23:25 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2001/10/27 05:41:17 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -414,12 +414,18 @@ class document(_Element):
         self.autofootnoterefs.append((refname, refnode))
 
 
+# ================
+#  Title Elements
+# ================
+
+class title(_TextElement): pass
+class subtitle(_TextElement): pass
+
+
 # ========================
 #  Bibliographic Elements
 # ========================
 
-class title(_TextElement): pass
-class subtitle(_TextElement): pass
 class docinfo(_Element): pass
 class author(_TextElement): pass
 class authors(_Element): pass
@@ -438,6 +444,7 @@ class abstract(_Element): pass
 # =====================
 
 class section(_Element): pass
+class transition(_Element): pass
 
 class package_section(_Element): pass
 class module_section(_Element): pass
