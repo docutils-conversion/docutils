@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/05 02:53:04 $
+:Date: $Date: 2001/09/07 01:58:32 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -16,12 +16,13 @@ on the reStructuredText project, knowingly or not, in terms of
 encouragement, suggestions, criticism, bug reports, code
 contributions, and ideas borrowed from related projects:
 
-    David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
-    Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel Larsson, Marc-Andre
-    Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Alex
-    Martelli, Michel Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim,
-    Tavis Rudd, Bob Tolbert, Laurence Tratt, Guido van Rossum, Barry
-    Warsaw, Edward Welbourne, Ka-Ping Yee, Moshe Zadka
+    David Ascher, Remi Bertholet, Fred Drake, Jim Fulton, Peter Funk,
+    Doug Hellmann, Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel
+    Larsson, Marc-Andre Lemburg, Wolfgang Lipp, Edward Loper, Ken
+    Manheimer, Alex Martelli, Michel Pelletier, Sam Penrose, Tim
+    Peters, Mark Pilgrim, Tavis Rudd, Bob Tolbert, Laurence Tratt,
+    Guido van Rossum, Barry Warsaw, Edward Welbourne, Ka-Ping Yee,
+    Moshe Zadka
 
 (I'm still waiting for contributions of yummy treats, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten
@@ -47,13 +48,14 @@ Changed contact email addresses.
   - Modified Parser.parse() for updated RSTStateMachine and
     dps.parsers.model.
   - Added form feed & vertical tab conversion to spaces.
-  - Added a shared ``Parser.statemachine`` class attribute.
+  - Added a ``Parser.statemachine`` instance attribute.
+  - Language module support.
 
 * restructuredtext/states.py:
 
   - Added support for enumerated lists (Body.enumerated(),
     EnumeratedList).
-  - Added new exception: ParserError.
+  - Added new exceptions: ParserError, TransformationError.
   - Loosened inline markup start-string & end-string patterns.
   - Added docstrings.
   - Changed RSTStateMachine.run() to return the document instance.
@@ -81,6 +83,12 @@ Changed contact email addresses.
   - Fixed a bug with literal blocks.
   - Changed ``element.extend(nodelist)`` to ``element += nodelist``.
   - Added full table support (class TableParser & Body.table() etc.).
+  - Split off NestedStateMachine (recursive) from RSTStateMachine
+    (entry point).
+  - Added language module support.
+  - Added 1-section -> document promotion transformation.
+  - Added bibliographic field list transformations.
+  - Changed numbered errorist.system_warning calls to named methods.
 
 * restructuredtext/test_states.py: Refactored to test directory. This
   file removed.
