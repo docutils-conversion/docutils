@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/15 02:59:13 $
+:Date: $Date: 2001/11/19 04:07:29 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -70,7 +70,7 @@ Changed contact email addresses.
   - Removed leading underscores from functional node base classes.
   - Added "hint", "substitution", "substitution_reference" classes.
   - Added element hierarchy base classes.
-  - Changed 'directive' to a TextElement.
+  - Removed generic 'directive'.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -169,10 +169,10 @@ Changed contact email addresses.
   - Added 'alt' attribute to 'image'.
   - Expanded 'authors' content.
   - Clarified 'figure' content.
-  - Added 'substitution' and 'substitution_reference'.
-  - Changed content model 'directive' to PCDATA.
+  - Added 'substitution_definition' and 'substitution_reference'.
   - Changed content models of most inline elements to %text.model,
     allowing nested inline elements.
+  - Removed generic 'directive'.
 
 * spec/pdpi.dtd:
 
