@@ -4,17 +4,20 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/04/18 02:54:47 $
+:Date: $Date: 2002/04/19 01:45:36 $
 :Web-site: http://docstring.sourceforge.net/
 
 Thank you for downloading the Python Docstring Processing System
-project arhive.  As this is a work in progress, please check the
-project web site for updated working files.  The latest release
-archive is available at
-http://sourceforge.net/project/showfiles.php?group_id=26626.
+project arhive.  Development has been transferred to the Docutils_
+project.  As this is a work in progress, please check the
+project web site for updated working files.
 
 To run the code, Python 2.0 or later must already be installed.  You
-can get Python from http://www.python.org/.
+can get Python from http://www.python.org/.  You will also need the
+latest reStructuredText package, available from
+http://structuredtext.sourceforge.net/.
+
+.. _Docutils: http://docutils.sourceforge.net/
 
 
 Project Files & Directories

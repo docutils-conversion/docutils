@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/04/18 02:57:42 $
+:Date: $Date: 2002/04/19 01:45:12 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -12,9 +12,9 @@ Acknowledgements
 ================
 
 I would like to acknowledge the people who have made a direct impact
-on the Python Docstring Processing System project, knowingly or not,
-in terms of encouragement, suggestions, criticism, bug reports, code
-contributions, and related projects:
+on the Python Docstring Processing System (DPS) project, knowingly or
+not, in terms of encouragement, suggestions, criticism, bug reports,
+code contributions, and related projects:
 
     David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
     Juergen Hermann, Tony Ibbs, Richard Jones, Garth Kidd, Daniel
@@ -29,15 +29,22 @@ hard cash :-).)  Hopefully I haven't forgotten anyone or misspelled
 any names; apologies (and please let me know!) if I have.
 
 
-Release 0.4? (pending)
+Release 0.4 (2002-04-18)
 ========================
 
-Updated docstrings for new field list syntax (bibliographic info).
-Changed contact email addresses.
+This is the final release of DPS as an independent package.
+Development is being transferred to the Docutils_ project immediately.
+
+.. _Docutils: http://docutils.sourceforge.net/
+
+General: updated docstrings for new field list syntax (bibliographic
+info); changed contact email addresses.
 
 * install.py: Added to project.
 
 * setup.py: Modified for import by install.py.
+
+* COPYING.txt: Added to project.
 
 * dps/__init__.py: Added docstring.
 
