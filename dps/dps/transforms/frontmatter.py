@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/01/16 02:55:11 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/01/26 00:00:50 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms related to the front matter of a document (information
@@ -105,35 +105,43 @@ class DocTitle(Transform):
 
     def transform(self, doctree):
         self.setup_transform(doctree)
+        if self.promote_document_title():
+            self.promote_document_subtitle()
+
+    def promote_document_title(self):
+        doctree = self.doctree
         index = doctree.findnonclass((nodes.comment, nodes.system_warning))
-        if self.checkpromotioncandidate(index):
+        if self.check_promotion_candidate(index):
             candidate = doctree[index]
         else:
-            return
+            return None
         doctree.attributes.update(candidate.attributes)
         doctree[:] = candidate[:1] + doctree[:index] + candidate[1:]
+        return 1
+
+    def promote_document_subtitle(self):
+        doctree = self.doctree
         # Check for a lone second-level section.
         index = doctree.findnonclass((nodes.comment, nodes.system_warning,
-                                      nodes.title)) # new title
-        if self.checkpromotioncandidate(index):
+                                      nodes.title)) # skip the new title
+        if self.check_promotion_candidate(index):
             candidate = doctree[index]
         else:
-            return
+            return None
         # Create a subtitle element based on the title element:
         subtitle = nodes.subtitle()
         subtitle.attributes.update(candidate[0].attributes)
         subtitle[:] = candidate[0][:]
         # Put the subtitle element into the doctree
         doctree[:] = doctree[:1] + [subtitle] + doctree[1:index] + candidate[1:]
-        return
+        return 1
 
-    def checkpromotioncandidate(self, index):
+    def check_promotion_candidate(self, index):
         """
 		Return 1 iff the index'th child of node should be promoted.
         """
-        if index is None or len(self.doctree) > (index + 1):
-            return None
-        if not isinstance(self.doctree[index], nodes.section): 
+        if index is None or len(self.doctree) > (index + 1) or \
+              not isinstance(self.doctree[index], nodes.section): 
             return None
         return 1
 
@@ -210,6 +218,10 @@ class DocInfo(Transform):
 
     def transform(self, doctree):
         self.setup_transform(doctree)
+        self.process_docinfo()
+
+    def process_docinfo(self):
+        doctree = self.doctree
         index = doctree.findnonclass((nodes.title, nodes.subtitle,
                                       nodes.comment, nodes.system_warning))
         if index is None:
@@ -217,7 +229,7 @@ class DocInfo(Transform):
         candidate = doctree[index]
         if isinstance(candidate, nodes.field_list):
             biblioindex = doctree.findnonclass((nodes.title, nodes.subtitle))
-            nodelist, remainder = self.extractbibliographic(candidate)
+            nodelist, remainder = self.extract_bibliographic(candidate)
             if remainder:
                 doctree[index] = remainder
             else:
@@ -225,7 +237,7 @@ class DocInfo(Transform):
             doctree[biblioindex:biblioindex] = nodelist
         return
 
-    def extractbibliographic(self, field_list):
+    def extract_bibliographic(self, field_list):
         docinfo = nodes.docinfo()
         remainder = []
         bibliofields = self.language.bibliographic_fields
@@ -235,17 +247,17 @@ class DocInfo(Transform):
                 name = field[0][0].astext()
                 normedname = utils.normname(name)
                 if not (len(field) == 2 and bibliofields.has_key(normedname)
-                        and self.checkemptybibliofield(field, name)):
+                        and self.check_empty_biblio_field(field, name)):
                     raise TransformError
                 biblioclass = bibliofields[normedname]
                 if issubclass(biblioclass, nodes.TextElement):
-                    if not self.checkcompoundbibliofield(field, name):
+                    if not self.check_compound_biblio_field(field, name):
                         raise TransformError
-                    self.filterrcskeywords(field[1][0])
+                    self.filter_rcs_keywords(field[1][0])
                     docinfo.append(biblioclass('', '', *field[1][0]))
                 else:                   # multiple body elements possible
                     if issubclass(biblioclass, nodes.authors):
-                        self.extractauthors(field, name, docinfo)
+                        self.extract_authors(field, name, docinfo)
                     elif issubclass(biblioclass, nodes.abstract):
                         if abstract:
                             field[-1] += self.doctree.reporter.error(
@@ -267,14 +279,14 @@ class DocInfo(Transform):
             field_list = None
         return [docinfo], field_list
 
-    def checkemptybibliofield(self, field, name):
+    def check_empty_biblio_field(self, field, name):
         if len(field[1]) < 1:
             field[-1] += self.doctree.reporter.error(
                   'Cannot extract empty bibliographic field "%s".' % name)
             return None
         return 1
 
-    def checkcompoundbibliofield(self, field, name):
+    def check_compound_biblio_field(self, field, name):
         if len(field[1]) > 1:
             field[-1] += self.doctree.reporter.error(
                   'Cannot extract compound bibliographic field "%s".' % name)
@@ -287,33 +299,33 @@ class DocInfo(Transform):
             return None
         return 1
 
-    rcskeywordsubstitutions = [
+    rcs_keyword_substitutions = [
           (re.compile(r'\$' r'Date: (\d\d\d\d)/(\d\d)/(\d\d) [\d:]+ \$$',
                       re.IGNORECASE), r'\1-\2-\3'),
           (re.compile(r'\$' r'RCSfile: (.+),v \$$',
                       re.IGNORECASE), r'\1'),
           (re.compile(r'\$[a-zA-Z]+: (.+) \$$'), r'\1'),]
 
-    def filterrcskeywords(self, paragraph):
+    def filter_rcs_keywords(self, paragraph):
         if len(paragraph) == 1 and isinstance(paragraph[0], nodes.Text):
             textnode = paragraph[0]
-            for pattern, substitution in self.rcskeywordsubstitutions:
+            for pattern, substitution in self.rcs_keyword_substitutions:
                 match = pattern.match(textnode.data)
                 if match:
                     textnode.data = pattern.sub(substitution, textnode.data)
                     return
 
-    def extractauthors(self, field, name, docinfo):
+    def extract_authors(self, field, name, docinfo):
         try:
             if len(field[1]) == 1:
                 if isinstance(field[1][0], nodes.paragraph):
-                    authors = self.authorsfrom1paragraph(field)
+                    authors = self.authors_from_one_paragraph(field)
                 elif isinstance(field[1][0], nodes.bullet_list):
-                    authors = self.authorsfrombulletlist(field)
+                    authors = self.authors_from_bullet_list(field)
                 else:
                     raise TransformError
             else:
-                authors = self.authorsfromparagraphs(field)
+                authors = self.authors_from_paragraphs(field)
             authornodes = [nodes.author('', '', *author)
                            for author in authors if author]
             docinfo.append(nodes.authors('', *authornodes))
@@ -327,7 +339,7 @@ class DocInfo(Transform):
                   % (name, ''.join(self.language.author_separators)))
             raise
 
-    def authorsfrom1paragraph(self, field):
+    def authors_from_one_paragraph(self, field):
         text = field[1][0].astext().strip()
         if not text:
             raise TransformError
@@ -339,7 +351,7 @@ class DocInfo(Transform):
         authors = [[nodes.Text(author)] for author in authornames]
         return authors
 
-    def authorsfrombulletlist(self, field):
+    def authors_from_bullet_list(self, field):
         authors = []
         for item in field[1][0]:
             if len(item) != 1 or not isinstance(item[0], nodes.paragraph):
@@ -349,7 +361,7 @@ class DocInfo(Transform):
             raise TransformError
         return authors
 
-    def authorsfromparagraphs(self, field):
+    def authors_from_paragraphs(self, field):
         for item in field[1]:
             if not isinstance(item, nodes.paragraph):
                 raise TransformError
