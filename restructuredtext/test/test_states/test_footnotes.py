@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/01/28 02:13:19 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/01/29 02:15:13 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -248,7 +248,7 @@ Mixed anonymous and labelled auto-numbered footnotes:
         <paragraph>
             Auto-numbered footnote 5.
     <footnote auto="1" dupname="five">
-        <system_warning level="0">
+        <system_warning level="1">
             <paragraph>
                 Duplicate explicit target name: "five"
         <paragraph>
