@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/08/22 03:33:54 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/08/23 04:17:43 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -686,7 +686,7 @@ class Body(RSTState):
                 'fieldmarker': r':[^: ]([^:]*[^: ])?:( +|$)',
                 'optionmarker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
                 'doctest': r'>>>( +|$)',
-                'table': r'\+-[-+]+-\+ *$',
+                'tabletop': r'\+-[-+]+-\+ *$',
                 'explicit_markup': r'\.\.( +|$)',
                 'overline': r'(%(nonAlphaNum7Bit)s)\1\1\1+ *$' % pats,
                 'rfc822': r'[!-9;-~]+:( +|$)',
@@ -696,7 +696,7 @@ class Body(RSTState):
                           'fieldmarker',
                           'optionmarker',
                           'doctest',
-                          'table',
+                          'tabletop',
                           'explicit_markup',
                           'overline',
                           'text']
@@ -1002,11 +1002,37 @@ class Body(RSTState):
         self.statemachine.node += nodes.doctest_block(data, data)
         return [], nextstate, []
 
-    def table(self, match, context, nextstate):
+    def tabletop(self, match, context, nextstate):
+        """Top border of a table."""
+        nodelist, blankfinish = self.table()
+        self.statemachine.node.extend(nodelist)
+        if not blankfinish:
+            sw = self.statemachine.memo.errorist.system_warning(
+                  1, 'Blank line required after table at line %s.'
+                  % (self.statemachine.abslineno() + 1))
+            self.statemachine.node += sw
+        return [], nextstate, []
+
+    def table(self):
         """Temporarily parse a table as a literal_block."""
-        data = '\n'.join(self.statemachine.gettextblock())
-        self.statemachine.node += nodes.literal_block(data, data)
-        return context, nextstate, []
+        nodelist = []
+        blankfinish = 1
+        try:
+            block = self.statemachine.getunindented()
+        except statemachine.UnexpectedIndentationError, instance:
+            block, lineno = instance.args
+            nodelist.append(self.statemachine.memo.errorist.system_warning(
+                  2, 'Unexpected indentation at line %s.' % lineno))
+            blankfinish = 0
+        for i in range(len(block)):
+            if block[i][0] not in '|+':
+                blankfinish = 0
+                self.statemachine.previousline(len(block) - i)
+                del block[i:]
+                break
+        data = '\n'.join(block)
+        nodelist.insert(0, nodes.literal_block(data, data))
+        return nodelist, blankfinish
 
     explicit = Stuff()
     """Patterns and constants used for explicit markup recognition."""
@@ -1224,7 +1250,7 @@ class SpecializedBody(Body):
     fieldmarker = invalid_input
     optionmarker = invalid_input
     doctest = invalid_input
-    table = invalid_input
+    tabletop = invalid_input
     explicit_markup = invalid_input
     overline = invalid_input
     text = invalid_input
@@ -1421,13 +1447,17 @@ class Text(RSTState):
         self.statemachine.node.extend(p)
         self.statemachine.node += sw
         if literalnext:
+            try:
+                line = self.statemachine.nextline()
+            except IndexError:
+                pass
             self.statemachine.node.extend(self.literal_block())
         return [], nextstate, []
 
     def literal_block(self):
         """Return a list of nodes."""
         indented, indent, offset, blankfinish = \
-              self.statemachine.getindented(1)
+              self.statemachine.getindented()
         nodelist = []
         if indented:
             data = '\n'.join(indented)
@@ -1468,22 +1498,33 @@ class Text(RSTState):
         return t, warnings
 
 
-class Definition(Text):
+class SpecializedText(Text):
 
-    """Second line of potential definition_list_item."""
-
-    initialtransitions = ['underline', 'text']
-
-    def not_definition(self, match, context, nextstate):
-        """Not a definition."""
-        raise EOFError
-
-    blank = underline = text = not_definition
+    """
+    Superclass for second and subsequent lines of Text-variants.
+    
+    All transition methods are disabled. Override individual methods in
+    subclasses to re-enable.
+    """
 
     def eof(self, context):
         """Not a definition."""
-        self.statemachine.previousline(2)
+        self.statemachine.previousline(2) # back up so parent SM can reassess
         return []
+
+    def invalid_input(self, match=None, context=None, nextstate=None):
+        """Not a compound element member. Abort this state machine."""
+        raise EOFError
+
+    blank = invalid_input
+    indent = invalid_input
+    underline = invalid_input
+    text = invalid_input
+
+
+class Definition(SpecializedText):
+
+    """Second line of potential definition_list_item."""
 
     def indent(self, match, context, nextstate):
         """Definition list item."""
