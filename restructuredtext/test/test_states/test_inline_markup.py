@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2002/02/15 22:58:17 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/02/20 04:25:08 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -412,19 +412,19 @@ _`Here is  a    TaRgeT` with case and spacial difficulties.
 """\
 <document>
     <paragraph>
-        <target name="target">
+        <target id="id1" name="target">
             target
     <paragraph>
         Here is \n\
-        <target name="another target">
+        <target id="id2" name="another target">
             another target
          in some text. And \n\
-        <target name="yet another target">
+        <target id="id3" name="yet another target">
             yet
             another target
         , spanning lines.
     <paragraph>
-        <target name="here is a target">
+        <target id="id4" name="here is a target">
             Here is  a    TaRgeT
          with case and spacial difficulties.
 """],

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2002/02/15 22:58:17 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2002/02/20 04:25:16 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -28,7 +28,7 @@ Paragraph.
 """,
 """\
 <document>
-    <section name="title">
+    <section id="id1" name="title">
         <title>
             Title
         <paragraph>
@@ -41,7 +41,7 @@ Paragraph (no blank line).
 """,
 """\
 <document>
-    <section name="title">
+    <section id="id1" name="title">
         <title>
             Title
         <paragraph>
@@ -59,7 +59,7 @@ Paragraph.
 <document>
     <paragraph>
         Paragraph.
-    <section name="title">
+    <section id="id1" name="title">
         <title>
             Title
         <paragraph>
@@ -94,7 +94,7 @@ Test short underline.
     <system_message level="1" type="INFO">
         <paragraph>
             Title underline too short at line 2.
-    <section name="title">
+    <section id="id1" name="title">
         <title>
             Title
         <paragraph>
@@ -109,7 +109,7 @@ Test overline title.
 """,
 """\
 <document>
-    <section name="title">
+    <section id="id1" name="title">
         <title>
             Title
         <paragraph>
@@ -124,7 +124,7 @@ Test overline title with inset.
 """,
 """\
 <document>
-    <section name="title">
+    <section id="id1" name="title">
         <title>
             Title
         <paragraph>
@@ -177,7 +177,7 @@ Test long title and space normalization.
     <system_message level="1" type="INFO">
         <paragraph>
             Title overline too short at line 1.
-    <section name="long title">
+    <section id="id1" name="long title">
         <title>
             Long    Title
         <paragraph>
@@ -265,22 +265,22 @@ Paragraph 4.
 <document>
     <comment>
         Test return to existing, highest-level section (Title 3).
-    <section name="title 1">
+    <section id="id1" name="title 1">
         <title>
             Title 1
         <paragraph>
             Paragraph 1.
-        <section name="title 2">
+        <section id="id2" name="title 2">
             <title>
                 Title 2
             <paragraph>
                 Paragraph 2.
-    <section name="title 3">
+    <section id="id3" name="title 3">
         <title>
             Title 3
         <paragraph>
             Paragraph 3.
-        <section name="title 4">
+        <section id="id4" name="title 4">
             <title>
                 Title 4
             <paragraph>
@@ -313,22 +313,22 @@ Paragraph 4.
 <document>
     <paragraph>
         Test return to existing, highest-level section (Title 3, with overlines).
-    <section name="title 1">
+    <section id="id1" name="title 1">
         <title>
             Title 1
         <paragraph>
             Paragraph 1.
-        <section name="title 2">
+        <section id="id2" name="title 2">
             <title>
                 Title 2
             <paragraph>
                 Paragraph 2.
-    <section name="title 3">
+    <section id="id3" name="title 3">
         <title>
             Title 3
         <paragraph>
             Paragraph 3.
-        <section name="title 4">
+        <section id="id4" name="title 4">
             <title>
                 Title 4
             <paragraph>
@@ -357,22 +357,22 @@ Paragraph 4.
 <document>
     <paragraph>
         Test return to existing, higher-level section (Title 4).
-    <section name="title 1">
+    <section id="id1" name="title 1">
         <title>
             Title 1
         <paragraph>
             Paragraph 1.
-        <section name="title 2">
+        <section id="id2" name="title 2">
             <title>
                 Title 2
             <paragraph>
                 Paragraph 2.
-            <section name="title 3">
+            <section id="id3" name="title 3">
                 <title>
                     Title 3
                 <paragraph>
                     Paragraph 3.
-        <section name="title 4">
+        <section id="id4" name="title 4">
             <title>
                 Title 4
             <paragraph>
@@ -401,17 +401,17 @@ Paragraph 4.
 <document>
     <paragraph>
         Test bad subsection order (Title 4).
-    <section name="title 1">
+    <section id="id1" name="title 1">
         <title>
             Title 1
         <paragraph>
             Paragraph 1.
-        <section name="title 2">
+        <section id="id2" name="title 2">
             <title>
                 Title 2
             <paragraph>
                 Paragraph 2.
-    <section name="title 3">
+    <section id="id3" name="title 3">
         <title>
             Title 3
         <paragraph>
@@ -452,17 +452,17 @@ Paragraph 4.
 <document>
     <paragraph>
         Test bad subsection order (Title 4, with overlines).
-    <section name="title 1">
+    <section id="id1" name="title 1">
         <title>
             Title 1
         <paragraph>
             Paragraph 1.
-        <section name="title 2">
+        <section id="id2" name="title 2">
             <title>
                 Title 2
             <paragraph>
                 Paragraph 2.
-    <section name="title 3">
+    <section id="id3" name="title 3">
         <title>
             Title 3
         <paragraph>
@@ -485,7 +485,7 @@ Paragraph.
 """,
 """\
 <document>
-    <section name="title containing inline markup">
+    <section id="id1" name="title containing inline markup">
         <title>
             Title containing \n\
             <emphasis>

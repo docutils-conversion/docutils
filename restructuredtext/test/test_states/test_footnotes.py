@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/02/15 22:58:17 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/02/20 04:25:02 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -25,7 +25,7 @@ totest['footnotes'] = [
 """,
 """\
 <document>
-    <footnote name="footnote">
+    <footnote id="id1" name="footnote">
         <label>
             footnote
         <paragraph>
@@ -37,7 +37,7 @@ totest['footnotes'] = [
 """,
 """\
 <document>
-    <footnote name="footnote">
+    <footnote id="id1" name="footnote">
         <label>
             footnote
         <paragraph>
@@ -53,13 +53,13 @@ totest['footnotes'] = [
 """,
 """\
 <document>
-    <footnote name="footnote1">
+    <footnote id="id1" name="footnote1">
         <label>
             footnote1
         <paragraph>
             This is a footnote
             on multiple lines with more space.
-    <footnote name="footnote2">
+    <footnote id="id2" name="footnote2">
         <label>
             footnote2
         <paragraph>
@@ -73,7 +73,7 @@ totest['footnotes'] = [
 """,
 """\
 <document>
-    <footnote name="footnote">
+    <footnote id="id1" name="footnote">
         <label>
             footnote
         <paragraph>
@@ -87,7 +87,7 @@ That was an empty footnote.
 """,
 """\
 <document>
-    <footnote name="footnote">
+    <footnote id="id1" name="footnote">
         <label>
             footnote
     <paragraph>
@@ -99,7 +99,7 @@ No blank line.
 """,
 """\
 <document>
-    <footnote name="footnote">
+    <footnote id="id1" name="footnote">
         <label>
             footnote
     <system_message level="2" type="WARNING">
@@ -172,13 +172,13 @@ the footnotes: first_, second_, third_.
     <paragraph>
         <footnote_reference auto="1" refname="third">
          is a reference to the third auto-numbered footnote.
-    <footnote auto="1" name="first">
+    <footnote auto="1" id="id1" name="first">
         <paragraph>
             First auto-numbered footnote.
-    <footnote auto="1" name="second">
+    <footnote auto="1" id="id2" name="second">
         <paragraph>
             Second auto-numbered footnote.
-    <footnote auto="1" name="third">
+    <footnote auto="1" id="id3" name="third">
         <paragraph>
             Third auto-numbered footnote.
     <paragraph>
@@ -235,19 +235,19 @@ Mixed anonymous and labelled auto-numbered footnotes:
     <footnote auto="1">
         <paragraph>
             Auto-numbered footnote 1.
-    <footnote auto="1" name="two">
+    <footnote auto="1" id="id1" name="two">
         <paragraph>
             Auto-numbered footnote 2.
     <footnote auto="1">
         <paragraph>
             Auto-numbered footnote 3.
-    <footnote auto="1" name="four">
+    <footnote auto="1" id="id2" name="four">
         <paragraph>
             Auto-numbered footnote 4.
-    <footnote auto="1" dupname="five">
+    <footnote auto="1" dupname="five" id="id3">
         <paragraph>
             Auto-numbered footnote 5.
-    <footnote auto="1" dupname="five">
+    <footnote auto="1" dupname="five" id="id4">
         <system_message level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "five"
