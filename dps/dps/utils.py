@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2002/01/16 02:45:22 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/01/30 04:47:02 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -67,6 +67,12 @@ class BadAttributeLineError(AttributeParsingError): pass
 class BadAttributeDataError(AttributeParsingError): pass
 class DuplicateAttributeError(AttributeParsingError): pass
 
+
+def newdocument(languagecode='en', warninglevel=1, errorlevel=3,
+                warningstream=None):
+    reporter = Reporter(warninglevel, errorlevel)
+    document = nodes.document(languagecode='en', reporter=reporter)
+    return document
 
 def parseattributes(lines, attributespec):
     """
