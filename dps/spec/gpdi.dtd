@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/08/25 01:45:27 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/08/28 03:21:05 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -317,8 +317,12 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT important (%body.elements;)+>
 <!ATTLIST important %basic.atts;>
 
-<!ELEMENT footnote (label, (%body.elements;)+)>
+<!-- A footnote with no label is auto-numbered. -->
+<!ELEMENT footnote (label?, (%body.elements;)+)>
 <!ATTLIST footnote %basic.atts;>
+
+<!ELEMENT label (#PCDATA)>
+<!ATTLIST label %basic.atts;>
 
 <!ELEMENT target (#PCDATA)>
 <!ATTLIST target %basic.atts;>
@@ -333,9 +337,6 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ATTLIST comment
     %basic.atts;
     %fixedspace.att;>
-
-<!ELEMENT label (#PCDATA)>
-<!ATTLIST label %basic.atts;>
 
 <!ELEMENT figure (caption?, graphic, legend?)>
 <!ATTLIST figure %basic.atts;>
@@ -389,7 +390,8 @@ Inline elements occur within the PCDATA of body elements.
 <!ELEMENT footnote_reference (#PCDATA)>
 <!ATTLIST footnote_reference
     %basic.atts;
-    %link.atts;>
+    %link.atts;
+    auto      %yesorno; #IMPLIED>
 
 <!-- Also used in `figure`. -->
 <!ELEMENT graphic EMPTY>
