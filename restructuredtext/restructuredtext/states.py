@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.42 $
-:Date: $Date: 2002/02/15 22:57:38 $
+:Revision: $Revision: 1.43 $
+:Date: $Date: 2002/02/21 03:38:03 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -813,10 +813,12 @@ class Body(RSTState):
     pats['alphanumplus'] = '[a-zA-Z0-9_-]'
     pats['enum'] = ('(%(arabic)s|%(loweralpha)s|%(upperalpha)s|%(lowerroman)s'
                     '|%(upperroman)s)' % enum.sequencepats)
-    pats['optarg'] = '%(alphanum)s%(alphanumplus)s*' % pats
-    pats['shortopt'] = '-%(alphanum)s( %(optarg)s|%(alphanumplus)s+)?' % pats
-    pats['longopt'] = '--%(alphanum)s%(alphanumplus)s*([ =]%(optarg)s)?' % pats
-    pats['vmsopt'] = '/%(alphanum)s%(alphanumplus)s*([ =]%(optarg)s)?' % pats
+    pats['longname'] = '%(alphanum)s%(alphanumplus)s*' % pats
+    # option arguments and long option names look alike:
+    pats['optarg'] = pats['longname']
+    pats['shortopt'] = '-%(alphanum)s( %(optarg)s)?' % pats
+    pats['longopt'] = '--%(longname)s([ =]%(optarg)s)?' % pats
+    pats['vmsopt'] = '/%(longname)s([ =]%(optarg)s)?' % pats
     pats['option'] = '(%(shortopt)s|%(longopt)s|%(vmsopt)s)' % pats
 
     for format in enum.formats:
@@ -1070,16 +1072,22 @@ class Body(RSTState):
         for optionstring in options:
             option = nodes.option(optionstring)
             tokens = optionstring.split()
-            tokens[:1] = tokens[0].split('=')
+            #atts = {'delimiter': ' '}
+            firstopt = tokens[0].split('=')
+            if len(firstopt) > 1:
+                tokens[:1] = firstopt
+                #atts['delimiter'] = '='
             if 0 < len(tokens) <= 2:
                 if tokens[0][:2] == '--':
                     option += nodes.long_option(tokens[0], tokens[0][2:])
                 elif tokens[0][:1] == '-':
                     option += nodes.short_option(tokens[0], tokens[0][1:])
+                    #del atts['delimiter']
                 elif tokens[0][:1] == '/':
                     option += nodes.vms_option(tokens[0], tokens[0][1:])
                 if len(tokens) > 1:
                     option += nodes.option_argument(tokens[1], tokens[1])
+                                                    #**atts)
                 optlist.append(option)
             else:
                 raise MarkupError('wrong numer of option tokens (=%s), '
