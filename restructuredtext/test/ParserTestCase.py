@@ -3,8 +3,8 @@
 """
 Author: Garth Kidd 
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.3 $
-Date: $Date: 2001/07/31 14:46:24 $
+Revision: $Revision: 1.1.2.4 $
+Date: $Date: 2001/08/02 04:44:20 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -129,12 +129,15 @@ class ParserTestCaseFactory(unittest.TestSuite):
     def stockFactory(self, oldStyleTestDictionary):
         """Stock the factory using an old-style test dictionary."""
         for name, cases in oldStyleTestDictionary.items():
+            casenum = 0
             for case in cases:
                 runInDebugger = 0
                 if len(case)==3 and case[2]:
                     runInDebugger = 1
-                self.addParserTestCase(case[0], case[1], 
+                self.addParserTestCase(case[0], case[1],
+                                       id='%s.%d' % (name, casenum), 
                                        runInDebugger=runInDebugger)
+                casenum = casenum + 1
 
     def getStateMachine(self):
         """Return a shared RSTStateMachine."""

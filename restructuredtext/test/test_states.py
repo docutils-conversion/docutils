@@ -3,8 +3,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1.2.2 $
-Date: $Date: 2001/07/31 14:46:24 $
+Revision: $Revision: 1.1.2.3 $
+Date: $Date: 2001/08/02 04:44:20 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -15,7 +15,6 @@ import ParserTestCase
 
 def suite(): 
     provenFactory = ParserTestCase.ParserTestCaseFactory(id='proven')
-    totestFactory = ParserTestCase.ParserTestCaseFactory(id='totest')
     
     """Tests to be run. Each key (test type name) maps to a list of tests.
     Each test is a list: input, expected output, optional modifier. The
@@ -25,9 +24,6 @@ def suite():
     proven = {}
     """tests that have proven successful"""
 
-    totest = {}
-    """tests that haven't"""
-    
     proven['paragraph'] = [
 ["""\
 A paragraph.
@@ -35,7 +31,7 @@ A paragraph.
 """\
 <document>
     <paragraph>
-        A paragraph.
+        A NAUGHTY paragraph.
     </paragraph>
 </document>
 """],
@@ -2256,85 +2252,9 @@ ftp://ends.with.a.period.
 """],
 ]
 
-    totest['comments_in_bullets'] = [
-["""\
-+ bullet paragraph 1
-
-  bullet paragraph 2
-
-  .. comment between bullet paragraphs 2 and 3
-
-  bullet paragraph 3
-""",
-"""\
-<document>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet paragraph 1
-            </paragraph>
-            <paragraph>
-                bullet paragraph 2
-            </paragraph>
-            <comment>
-                comment between bullet paragraphs 2 and 3
-            </comment>
-            <paragraph>
-                bullet paragraph 3
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
-"""],
-["""\
-+ bullet paragraph 1
-
-  .. comment between bullet paragraphs 1 (leader) and 2
-
-  bullet paragraph 2
-""",
-"""\
-<document>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet paragraph 1
-            </paragraph>
-            <comment>
-                comment between bullet paragraphs 1 (leader) and 2
-            </comment>
-            <paragraph>
-                bullet paragraph 2
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
-"""],
-["""\
-+ bullet
-
-  .. trailing comment
-""",
-"""\
-<document>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet
-            </paragraph>
-            <comment>
-                trailing comment
-            </comment>
-        </list_item>
-    </bullet_list>
-</document>
-"""],
-]
-    
     provenFactory.stockFactory(proven)
-    totestFactory.stockFactory(totest)
 
-    return provenFactory # ignore totest until I can concatenate suites                 
+    return provenFactory 
 
 if __name__ == '__main__':
     main(suite=suite())

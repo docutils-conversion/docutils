@@ -3,8 +3,8 @@
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.5 $
-Date: $Date: 2001/07/31 15:21:54 $
+Revision: $Revision: 1.1.2.6 $
+Date: $Date: 2001/08/02 04:44:20 $
 Copyright: This module has been placed in the public domain.
 """
 
@@ -94,12 +94,22 @@ def main(suite=None):
     
     # ### Need to consider the output filename. ###
     sys.stderr = sys.stdout = Tee('test_all.out')
+    
     parseArgs()
+    
     if suite is None:
         # Load any globally defined tests.
         # WARNING: picks up DataTests above. Oops. 
         suite = unittest.defaultTestLoader.loadTestsFromModule(__import__('__main__'))
+        
     if debug:
         print "Debug: Suite=%s" % suite
+        
     testRunner = unittest.TextTestRunner(verbosity=verbosity)
-    testRunner.run(suite)
+
+    # run suites (if we were called from test_all) or suite...
+    if type(suite) == type([]):
+        for s in suite:
+            testRunner.run(s)
+    else:
+        testRunner.run(suite)

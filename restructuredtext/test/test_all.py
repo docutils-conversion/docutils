@@ -3,8 +3,8 @@
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.4 $
-Date: $Date: 2001/07/31 15:23:35 $
+Revision: $Revision: 1.1.2.5 $
+Date: $Date: 2001/08/02 04:44:20 $
 Copyright: This module has been placed in the public domain.
 """
 
@@ -23,7 +23,7 @@ def allSuite(scriptPath):
     """Return a test suite composed of all the tests we can find."""
     testLoader = unittest.defaultTestLoader
     testSuite = unittest.TestSuite()
-
+    
     path, scriptName= os.path.split(os.path.abspath(scriptPath))
     if path is not None: 
         os.chdir(path)
@@ -47,11 +47,10 @@ def allSuite(scriptPath):
         if 'suite' in dir(module):
             suite = getattr(module, 'suite')
             if type(suite) == types.FunctionType:
-                s = suite()
-                testSuite.addTests(s._tests)
+                testSuite.addTest(suite())
             elif type(suite) == types.InstanceType \
                  and isinstance(suite, unittest.TestSuite):
-                testSuite.addTests(suite._tests)
+                testSuite.addTest(suite)
             else: 
                 raise AssertionError, "don't understand suite"
         else:
@@ -61,7 +60,7 @@ def allSuite(scriptPath):
             # unittest.TestSuite.addTests() doesn't work as advertised, 
             # as it can't load tests from another TestSuite, so we have
             # to cheat: 
-            testSuite.addTests(moduleTests._tests)
+            testSuite.addTest(moduleTests)
         
     return testSuite
 
