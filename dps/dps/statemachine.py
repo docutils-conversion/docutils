@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2001/11/13 03:07:09 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2001/11/22 04:17:50 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -260,6 +260,14 @@ class StateMachine:
             return not self.inputlines[self.lineoffset + 1].strip()
         except IndexError:
             return 1
+
+    def ateof(self):
+        """Return 1 if the input is at or past end-of-file."""
+        return self.lineoffset >= len(self.inputlines) - 1
+
+    def atbof(self):
+        """Return 1 if the input is at or before beginning-of-file."""
+        return self.lineoffset <= 0
 
     def previousline(self, n=1):
         """Load `self.line` with the `n`'th previous line and return it."""
@@ -742,8 +750,6 @@ class StateMachineWS(StateMachine):
               self.inputlines[self.lineoffset:], uptoblank, stripindent)
         if indented:
             self.nextline(len(indented) - 1) # advance to last indented line
-        while indented and not indented[-1].strip():
-            indented.pop()
         while indented and not indented[0].strip():
             indented.pop(0)
             offset += 1
@@ -786,8 +792,6 @@ class StateMachineWS(StateMachine):
             blankfinish = 1
         if indented:
             self.nextline(len(indented) - 1) # advance to last indented line
-        while indented and not indented[-1].strip():
-            indented.pop()
         while indented and not indented[0].strip():
             indented.pop(0)
             offset += 1
@@ -817,8 +821,6 @@ class StateMachineWS(StateMachine):
         indented[1:], indent, blankfinish = extractindented(
               self.inputlines[self.lineoffset + 1:], uptoblank, stripindent)
         self.nextline(len(indented) - 1)  # advance to last indented line
-        while indented and not indented[-1].strip():
-            indented.pop()
         while indented and not indented[0].strip():
             indented.pop(0)
             offset += 1
