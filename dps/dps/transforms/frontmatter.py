@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/06 02:51:57 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/12 02:17:56 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms related to the front matter of a document (information
@@ -109,41 +109,48 @@ class DocTitle(Transform):
             self.promote_document_subtitle()
 
     def promote_document_title(self):
-        doctree = self.doctree
-        index = doctree.findnonclass((nodes.comment, nodes.system_warning))
-        if self.check_promotion_candidate(index):
-            candidate = doctree[index]
-        else:
+        section, index = self.candidate_index()
+        if index is None:
             return None
-        doctree.attributes.update(candidate.attributes)
-        doctree[:] = candidate[:1] + doctree[:index] + candidate[1:]
+        doctree = self.doctree
+        # Transfer the section's attributes to the document element (at root):
+        doctree.attributes.update(section.attributes)
+        doctree[:] = (section[:1]       # section title
+                      + doctree[:index] # everything that was in the document
+                                        # before the section
+                      + section[1:])    # everything that was in the section
         return 1
 
     def promote_document_subtitle(self):
-        doctree = self.doctree
-        # Check for a lone second-level section.
-        index = doctree.findnonclass((nodes.comment, nodes.system_warning,
-                                      nodes.title)) # skip the new title
-        if self.check_promotion_candidate(index):
-            candidate = doctree[index]
-        else:
+        subsection, index = self.candidate_index()
+        if index is None:
             return None
-        # Create a subtitle element based on the title element:
         subtitle = nodes.subtitle()
-        subtitle.attributes.update(candidate[0].attributes)
-        subtitle[:] = candidate[0][:]
-        # Put the subtitle element into the doctree
-        doctree[:] = doctree[:1] + [subtitle] + doctree[1:index] + candidate[1:]
+        # Transfer the subsection's attributes to the new subtitle:
+        subtitle.attributes.update(subsection.attributes)
+        # Transfer the contents of the subsection's title to the subtitle:
+        subtitle[:] = subsection[0][:]
+        doctree = self.doctree
+        doctree[:] = (doctree[:1]       # document title
+                      + [subtitle]
+                      + doctree[1:index] # everything that was in the document
+                                         # before the section
+                      + subsection[1:]) # everything that was in the subsection
         return 1
 
-    def check_promotion_candidate(self, index):
+    def candidate_index(self):
         """
-		Return 1 iff the index'th child of node should be promoted.
+        Find and return the promotion candidate and its index.
+
+        Return (None, None) if no valid candidate was found.
         """
-        if index is None or len(self.doctree) > (index + 1) or \
-              not isinstance(self.doctree[index], nodes.section): 
-            return None
-        return 1
+        doctree = self.doctree
+        index = doctree.findnonclass(nodes.PreBibliographic)
+        if index is None or len(doctree) > (index + 1) or \
+              not isinstance(doctree[index], nodes.section): 
+            return None, None
+        else:
+            return doctree[index], index
 
 
 class DocInfo(Transform):
@@ -222,13 +229,12 @@ class DocInfo(Transform):
 
     def process_docinfo(self):
         doctree = self.doctree
-        index = doctree.findnonclass((nodes.title, nodes.subtitle,
-                                      nodes.comment, nodes.system_warning))
+        index = doctree.findnonclass(nodes.PreBibliographic)
         if index is None:
             return
         candidate = doctree[index]
         if isinstance(candidate, nodes.field_list):
-            biblioindex = doctree.findnonclass((nodes.title, nodes.subtitle))
+            biblioindex = doctree.findnonclass(nodes.Titular)
             nodelist, remainder = self.extract_bibliographic(candidate)
             if remainder:
                 doctree[index] = remainder
