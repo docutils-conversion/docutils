@@ -3,8 +3,8 @@
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.1 $
-Date: $Date: 2001/07/29 09:05:39 $
+Revision: $Revision: 1.1.2.2 $
+Date: $Date: 2001/07/29 12:21:09 $
 Copyright: This module has been placed in the public domain.
 """
 
@@ -15,9 +15,11 @@ Copyright: This module has been placed in the public domain.
 debug = 0
 verbosity = 1
 
+__all__ = ( 'debug', 'verbosity', 'states' )
+
 # Imports
 
-import sys, os
+import sys, os, getopt
 
 # Import `states`, prepending to `sys.path` if necessary. 
 
@@ -158,6 +160,18 @@ def parseArgs(argv=sys.argv):
     except getopt.error, msg:
         self.usageExit(msg)
 
+def loadTestsFromModule(self, module, exceptThese=[]):
+    """Return a suite of all tests cases contained in the given module"""
+    tests = []
+    module = __import__('__main__')
+    for name in dir(module):
+        if name in exceptThese:
+            continue
+        obj = getattr(module, name)
+        if type(obj) == types.ClassType and issubclass(obj, TestCase):
+            tests.append(self.loadTestsFromTestCase(obj))
+    return self.suiteClass(tests)
+
 def main(suite=None):
     """Shared `main` for any individual test_* file.
     
@@ -170,8 +184,7 @@ def main(suite=None):
     if suite is None:
         # Load any globally defined tests.
         # WARNING: picks up DataTests above. Oops. 
-        module = __import__('__main__')
-        suite = unittest.defaultTestLoader.loadTestsFromModule(module)
+        suite = loadTestsFromModule(module)
     if debug:
         print "Debug: Suite=%s" % suite
     testRunner = unittest.TextTestRunner(verbosity=verbosity)
