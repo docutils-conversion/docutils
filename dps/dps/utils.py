@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/11/15 02:57:22 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/11/22 04:10:50 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -21,7 +21,7 @@ class SystemWarning(Exception):
 
 class Reporter:
 
-    def __init__(self, warninglevel, errorlevel, warningstream=sys.stderr):
+    def __init__(self, warninglevel, errorlevel, warningstream=None):
         self.warninglevel = warninglevel
         """The level at or above which warning output will be sent to
         `self.stream`."""
@@ -29,6 +29,9 @@ class Reporter:
         self.errorlevel = errorlevel
         """The level at or above which `SystemWarning` exceptions will be
         raised."""
+
+        if warningstream is None:
+            warningstream = sys.stderr
  
         self.stream = warningstream
         """Where warning output is sent."""
