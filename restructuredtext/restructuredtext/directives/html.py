@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/03/13 02:37:35 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/16 05:39:36 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for typically HTML-specific constructs.
@@ -35,7 +35,7 @@ def meta(match, typename, data, state, statemachine, attributes):
             blocktext = '\n'.join(statemachine.inputlines[
                   lineoffset : statemachine.lineoffset+1])
             msg = statemachine.memo.reporter.error(
-                  'Invalid meta directive at line %s.' 
+                  'Invalid meta directive at line %s.'
                   % statemachine.abslineno(), '',
                   nodes.literal_block(blocktext, blocktext))
             node += msg

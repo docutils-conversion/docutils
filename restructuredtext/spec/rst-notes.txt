@@ -1,9 +1,10 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/12 03:34:22 $
-:Revision: $Revision: 1.38 $
+:Date: $Date: 2002/03/16 05:35:44 $
+:Revision: $Revision: 1.39 $
 
+.. contents::
 
 To Do
 =====
@@ -52,7 +53,7 @@ To Do
 
   How to represent character entities in the text though? Probably as
   Unicode.
-  
+
   Which component is responsible for this, the parser, the reader, or
   the writer?
 
@@ -110,6 +111,8 @@ To Do
 - Implement the HTML "imagemap" directive.
 
 - Allow directives to be added at run-time.
+
+- Use the language module for directive attribute names?
 
 - Allow syntax constructs to be added or disabled at run-time.
 
