@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/10/27 05:22:09 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/10/30 05:29:19 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -189,6 +189,50 @@ Paragraph.
             Title overline & underline mismatch at line 1.
     <paragraph>
         Paragraph.
+"""],
+["""\
+========================
+
+========================
+
+Test missing titles; blank line in-between.
+
+========================
+
+========================
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Document or section may not begin with a transition (line 1).
+    <transition>
+    <paragraph>
+        Test missing titles; blank line in-between.
+    <transition>
+    <system_warning level="2">
+        <paragraph>
+            Document or section may not end with a transition (line 9).
+"""],
+["""\
+========================
+========================
+
+Test missing titles; nothing in-between.
+
+========================
+========================
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid section title or transition marker at line 1.
+    <paragraph>
+        Test missing titles; nothing in-between.
+    <system_warning level="2">
+        <paragraph>
+            Invalid section title or transition marker at line 6.
 """],
 ["""\
 .. Test return to existing, highest-level section (Title 3).
