@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2001/09/10 04:19:05 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2001/09/12 03:39:23 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -93,7 +93,7 @@ Hyperlink attributes.
     | bullet_list | enumerated_list | definition_list | field_list
     | option_list
     | literal_block | block_quote | doctest_block | table | figure
-    | note | tip | warning | caution | danger | important
+    | note | tip | warning | error | caution | danger | important
     | footnote | target | directive | comment
     | system_warning
     %additional.body.elements; ">
@@ -310,6 +310,9 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT warning (%body.elements;)+>
 <!ATTLIST warning %basic.atts;>
 
+<!ELEMENT error (%body.elements;)+>
+<!ATTLIST error %basic.atts;>
+
 <!ELEMENT caution (%body.elements;)+>
 <!ATTLIST caution %basic.atts;>
 
@@ -341,7 +344,7 @@ http://www.oasis-open.org/html/tm9901.htm).
     %basic.atts;
     %fixedspace.att;>
 
-<!ELEMENT figure (caption?, image, legend?)>
+<!ELEMENT figure (image, caption?, legend?)>
 <!ATTLIST figure %basic.atts;>
 
 <!ELEMENT caption %text.model;>
