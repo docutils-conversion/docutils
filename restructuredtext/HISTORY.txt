@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/13 02:38:23 $
+:Date: $Date: 2002/03/16 05:42:39 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -123,6 +123,7 @@ Changed contact email addresses.
     source text was omitted.
   - Wrapped problematic inline markup in "problematic" elements, added
     links to & from system messages.
+  - Added ``Body.parse_extension_attributes()``.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
@@ -208,6 +209,8 @@ Changed contact email addresses.
   - Added mention of GvR's backslash escape endorsement.
   - Removed mention of compound enumerators.
   - Updated footnotes.
+  - Removed "Parser Implementation Plan". (It's implemented!)
+  - Revised.
 
 * spec/reStructuredText.txt:
 
