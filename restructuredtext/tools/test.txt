@@ -17,9 +17,9 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :organization: humankind
-:date: $Date: 2002/03/28 04:18:05 $
+:date: $Date: 2002/04/13 16:26:25 $
 :status: This is a "work in progress"
-:revision: $Revision: 1.9 $
+:revision: $Revision: 1.10 $
 :version: 1
 :copyright: This document has been placed in the public domain. You
             may do with it as you wish. You may copy, modify,
@@ -241,11 +241,17 @@ Footnotes
 
 .. [*] This footnote shows the next symbol in the sequence.
 
+.. [4] Here's an unreferenced footnote, with a reference to a
+   nonexistent footnote: [5]_.
+
 Citations
 ---------
 
 .. [CIT2002] Citations are text-labeled footnotes. They may be
    rendered separately and differently from footnotes.
+
+Here's a reference to the above, [CIT2002]_, and a [nonexistent]_
+citation.
 
 Targets
 -------
