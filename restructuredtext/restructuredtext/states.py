@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2001/09/02 13:49:29 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2001/09/04 04:13:27 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -20,7 +20,8 @@ reStructuredText parser. It defines the following:
     - `Explicit`: Second and subsequent explicit markup constructs.
     - `Text`: Classifier of second line of a text block.
     - `Definition`: Second line of potential definition_list_item.
-    - `Stuff`: an auxilliary collection class.
+    - `Stuff`: An auxilliary collection class.
+    - `TableParser`: Parses tables.
 
 :Exception classes:
     - `MarkupError`
@@ -1636,54 +1637,140 @@ stateclasses = [Body, BulletList, DefinitionList, EnumeratedList, FieldList,
 
 class TableParser:
 
+    headBodySeparatorPat = re.compile(r'\+=[=+]+=\+$')
+
     def init(self, block):
-        self.block = block
-        self.rowseps = {}
-        self.colseps = {}
+        self.block = block[:]           # make a copy; it may be modified
+        self.bottom = len(block) - 1
+        self.right = len(block[0]) - 1
+        self.headbodysep = None
+        self.done = [-1] * len(block[0])
+        self.cells = []
+        self.rowseps = {0: [0]}
+        self.colseps = {0: [0]}
 
     def parse(self, block):
         self.init(block)
+        self.findheadbodysep()
         self.parsegrid()
-        headrows, bodyrows = self.parserows(rowseps, colseps)
+
+    def findheadbodysep(self):
+        for i in range(len(self.block)):
+            line = self.block[i]
+            if self.headBodySeparatorPat.match(line):
+                if self.headbodysep:
+                    raise MarkupError, ('Multiple head/body row separators '
+                          'in table (at line offset %s and %s); only one '
+                          'allowed.' % (self.headbodysep, i))
+                else:
+                    self.headbodysep = i
+                    self.block[i] = line.replace('=', '-')
 
     def parsegrid(self):
-        colseps = self.scanrowsep(0, 0)
-        self.scancolseps(colseps, 0)
+        corners = [(0, 0)]
+        while corners:
+            top, left = corners.pop(0)
+            if top == self.bottom or left == self.right \
+                  or top <= self.done[left]:
+                continue
+            result = self.scancell(top, left)
+            if not result:
+                continue
+            bottom, right, rowseps, colseps = result
+            updateDictOfLists(self.rowseps, rowseps)
+            updateDictOfLists(self.colseps, colseps)
+            self.markdone(top, left, bottom, right)
+            cellblock = self.getcellblock(top, left, bottom, right)
+            self.cells.append((top, left, bottom, right, cellblock))
+            corners.extend([(top, right), (bottom, left)])
+            corners.sort()
+        if not self.checkparsecomplete():
+            raise MarkupError, 'Malformed table; parse incomplete.'
 
-    def scanrowsep(self, lineindex, startcol):
-        line = self.block[lineindex]
-        nextline = self.block[lineindex + 1]
-        if lineindex > 0:
-            previousline = self.block[lineindex - 1]
-        else:
-            previousline = ''
-        width = len(line)
-        colindex = startcol
-        colseps = []
-        while colindex < width:
-            if line[colindex] == '+':
-                if nextline[colindex] == '|':
-                    self.colseps.setdefault(colindex, 0)# += 1
-                    colseps.append(1)
-                elif not previousline or previousline[colindex] != '|':
-                    raise MarkupError, ('Problem with table markup at '
-                                        'line %s, column %s.' % (lineindex,
-                                                                 colindex))
-            elif line[colindex] not in '=-':
-                break
-            colindex += 1
-        return colseps
+    def markdone(self, top, left, bottom, right):
+        before = top - 1
+        after = bottom - 1
+        for col in range(left, right):
+            assert self.done[col] == before
+            self.done[col] = after
 
-    def scancolseps(self, colseps, startline):
-        height = len(self.block)
-        for colsep in colseps:
-            lineindex = startline + 1
-            while lineindex < height:
-                if self.block[lineindex][colsep] == '+':
-                    self.rowseps.setdefault(lineindex, 0)# += 1
-                elif self.block[lineindex][colsep] != '|':
-                    break
-                lineindex += 1
+    def checkparsecomplete(self):
+        last = self.bottom - 1
+        for col in range(self.right):
+            if self.done[col] != last:
+                return None
+        return 1
+
+    def getcellblock(self, top, left, bottom, right):
+        cellblock = []
+        margin = right
+        for lineno in range(top + 1, bottom):
+            line = self.block[lineno][left + 1 : right].rstrip()
+            cellblock.append(line)
+            if line:
+                margin = margin and min(margin, len(line) - len(line.lstrip()))
+        if 0 < margin < right:
+            cellblock = [line[margin:] for line in cellblock]
+        return cellblock
+
+    def scancell(self, top, left):
+        assert self.block[top][left] == '+'
+        result = self.scanright(top, left)
+        return result
+
+    def scanright(self, top, left):
+        colseps = {}
+        line = self.block[top]
+        for i in range(left + 1, self.right + 1):
+            if line[i] == '+':
+                colseps[i] = [top]
+                result = self.scandown(top, left, i)
+                if result:
+                    bottom, rowseps, newcolseps = result
+                    updateDictOfLists(colseps, newcolseps)
+                    return bottom, i, rowseps, colseps
+            elif line[i] != '-':
+                return None
+        return None
+
+    def scandown(self, top, left, right):
+        rowseps = {}
+        for i in range(top + 1, self.bottom + 1):
+            if self.block[i][right] == '+':
+                rowseps[i] = [right]
+                result = self.scanleft(top, left, i, right)
+                if result:
+                    newrowseps, colseps = result
+                    updateDictOfLists(rowseps, newrowseps)
+                    return i, rowseps, colseps
+            elif self.block[i][right] != '|':
+                return None
+        return None
+
+    def scanleft(self, top, left, bottom, right):
+        colseps = {}
+        line = self.block[bottom]
+        for i in range(right - 1, left, -1):
+            if line[i] == '+':
+                colseps[i] = [bottom]
+            elif line[i] != '-':
+                return None
+        if line[left] != '+':
+            return None
+        result = self.scanup(top, left, bottom, right)
+        if result is not None:
+            rowseps = result
+            return rowseps, colseps
+        return None
+
+    def scanup(self, top, left, bottom, right):
+        rowseps = {}
+        for i in range(bottom - 1, top, -1):
+            if self.block[i][left] == '+':
+                rowseps[i] = [left]
+            elif self.block[i][left] != '|':
+                return None
+        return rowseps
 
 
 def escape2null(text):
@@ -1709,3 +1796,7 @@ def unescape(text, restorebackslashes=0):
 def normname(name):
     """Return a case- and whitespace-normalized name."""
     return ' '.join(name.lower().split())
+
+def updateDictOfLists(master, newdata):
+    for key, values in newdata.items():
+        master.setdefault(key, []).extend(values)
