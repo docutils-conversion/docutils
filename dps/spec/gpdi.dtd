@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/08/28 03:21:05 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2001/09/01 15:02:06 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -134,7 +134,9 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ENTITY % tbl.colspec.att      " %basic.atts; ">
 <!ENTITY % tbl.row.att          " %basic.atts; ">
 <!ENTITY % tbl.entry.mdl        " (%body.elements;)* ">
-<!ENTITY % tbl.entry.att        " %basic.atts; ">
+<!ENTITY % tbl.entry.att
+  " %basic.atts;
+    morecols  NMTOKEN   #IMPLIED ">
 
 
 <!--
