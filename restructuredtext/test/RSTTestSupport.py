@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/04 04:14:11 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/09/05 02:44:58 $
 :Copyright: This module has been placed in the public domain.
 
 All of my previous ramblings about metaclasses_ are fatigue-deranged.
@@ -28,7 +28,7 @@ that issue later, too.
 .. _metaclasses: http://www.python.org/doc/essays/metaclasses/
 """
 
-__all__ = [ 'ParserTestCaseSuite' ]
+__all__ = [ 'ParserTestSuite', 'TableParserTestSuite' ]
 
 import UnitTestFolder
 import sys, os, unittest, re, difflib, types, inspect
@@ -82,6 +82,8 @@ class CustomTestSuite(unittest.TestSuite):
             mypath = outerframes[0][1]
             callerpath = outerframes[1][1]
             mydir, myname = os.path.split(mypath)
+            if not mydir:
+                mydir = os.curdir
             if callerpath.startswith(mydir):
                 self.id = callerpath[len(mydir) + 1:] # caller's module
             else:
@@ -155,11 +157,8 @@ class CustomTestCase(unittest.TestCase):
         """
         Return string conversion. Overridden to give test id, not method name.
         """
-        return "%s (%s)" % (self.id, self.__class__)
-
-    def id(self):
-        """Return identifier. Overridden to give test id, not method name."""
-        return "%s.%s" % (self.__class__, self.id)
+        return '%s (%s.%s)' % (self.id, self.__class__,
+                               self._TestCase__testMethodName)
 
     def compareOutput(self, input, output, expected):
         """`input`, `output`, and `expected` should all be strings."""
@@ -271,10 +270,10 @@ class TableParserTestSuite(CustomTestSuite):
                                  input=case[0], expected=case[1],
                                  id='%s[%r][%s]' % (dictname, name, casenum),
                                  runInDebugger=runInDebugger)
-                """self.addTestCase(TableParserTestCase, 'test_parse',
+                self.addTestCase(TableParserTestCase, 'test_parse',
                                  input=case[0], expected=case[2],
                                  id='%s[%r][%s]' % (dictname, name, casenum),
-                                 runInDebugger=runInDebugger)"""
+                                 runInDebugger=runInDebugger)
 
 
 class TableParserTestCase(CustomTestCase):
@@ -287,6 +286,14 @@ class TableParserTestCase(CustomTestCase):
             self.parser.findheadbodysep()
             self.parser.parsegrid()
             output = self.parser.cells
+        except Exception, details:
+            output = '%s: %s' % (details.__class__.__name__, details)
+        self.compareOutput(self.input, pformat(output) + '\n',
+                           pformat(self.expected) + '\n')
+
+    def test_parse(self):
+        try:
+            output = self.parser.parse(string2lines(self.input))
         except Exception, details:
             output = '%s: %s' % (details.__class__.__name__, details)
         self.compareOutput(self.input, pformat(output) + '\n',
