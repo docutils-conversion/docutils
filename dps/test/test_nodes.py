@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/17 04:04:59 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/11/13 03:08:07 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for nodes.py.
@@ -42,38 +42,38 @@ class TextTests(unittest.TestCase):
 class ElementTests(unittest.TestCase):
 
     def test_empty(self):
-        element = nodes._Element()
-        self.assertEquals(repr(element), '<_Element: >')
-        self.assertEquals(str(element), '<_Element/>')
+        element = nodes.Element()
+        self.assertEquals(repr(element), '<Element: >')
+        self.assertEquals(str(element), '<Element/>')
         dom = element.asdom()
-        self.assertEquals(dom.toxml(), '<_Element/>')
+        self.assertEquals(dom.toxml(), '<Element/>')
         dom.unlink()
         element['attr'] = '1'
-        self.assertEquals(repr(element), '<_Element: >')
-        self.assertEquals(str(element), '<_Element attr="1"/>')
+        self.assertEquals(repr(element), '<Element: >')
+        self.assertEquals(str(element), '<Element attr="1"/>')
         dom = element.asdom()
-        self.assertEquals(dom.toxml(), '<_Element attr="1"/>')
+        self.assertEquals(dom.toxml(), '<Element attr="1"/>')
         dom.unlink()
-        self.assertEquals(element.pformat(), '<_Element attr="1">\n')
+        self.assertEquals(element.pformat(), '<Element attr="1">\n')
 
     def test_withtext(self):
-        element = nodes._Element('text\nmore', nodes.Text('text\nmore'))
-        self.assertEquals(repr(element), r"<_Element: <#text...>>")
-        self.assertEquals(str(element), '<_Element>text\nmore</_Element>')
+        element = nodes.Element('text\nmore', nodes.Text('text\nmore'))
+        self.assertEquals(repr(element), r"<Element: <#text...>>")
+        self.assertEquals(str(element), '<Element>text\nmore</Element>')
         dom = element.asdom()
-        self.assertEquals(dom.toxml(), '<_Element>text\nmore</_Element>')
+        self.assertEquals(dom.toxml(), '<Element>text\nmore</Element>')
         dom.unlink()
         element['attr'] = '1'
-        self.assertEquals(repr(element), r"<_Element: <#text...>>")
+        self.assertEquals(repr(element), r"<Element: <#text...>>")
         self.assertEquals(str(element),
-                          '<_Element attr="1">text\nmore</_Element>')
+                          '<Element attr="1">text\nmore</Element>')
         dom = element.asdom()
         self.assertEquals(dom.toxml(),
-                          '<_Element attr="1">text\nmore</_Element>')
+                          '<Element attr="1">text\nmore</Element>')
         dom.unlink()
         self.assertEquals(element.pformat(),
 """\
-<_Element attr="1">
+<Element attr="1">
     text
     more
 """)
