@@ -3,11 +3,13 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/02/20 04:26:41 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/04 04:38:41 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
+
+.. contents:: :depth: 2
 
 
 -------------
@@ -17,9 +19,10 @@ reStructuredText parser.
 DTD elements: attention, caution, danger, error, hint, important,
 note, tip, warning.
 
-Directive block: directive data and all following indented text.
+Directive block: directive data and all following indented text
+are interpreted as body elements.
 
-Admonitions are specially marked 'topics' that can appear anywhere an
+Admonitions are specially marked "topics" that can appear anywhere an
 ordinary body element can.  They contain arbitrary body elements.
 Typically, an admonition is rendered as an offset block in a document,
 sometimes outlined or shaded, with a title matching the admonition
@@ -51,7 +54,7 @@ The following admonition directives have been implemented:
 Any text immediately following the directive indicator (on the same
 line and/or indented on following lines) is interpreted as a directive
 block and is parsed for normal body elements.  For example, the
-following 'note' admonition directive contains one paragraph and a
+following "note" admonition directive contains one paragraph and a
 bullet list consisting of two list items::
 
     .. note:: This is a note admonition.
@@ -62,11 +65,11 @@ bullet list consisting of two list items::
        - It includes this bullet list.
 
 
-------------------
- Image Directives
-------------------
+--------
+ Images
+--------
 
-There are two image directives: 'image' and 'figure'.
+There are two image directives: "image" and "figure".
 
 
 Image
@@ -75,9 +78,10 @@ Image
 DTD element: image.
 
 Directive block: directive data and following indented lines (up to
-the first blank line).
+the first blank line) are interpreted as image URI and optional
+attributes.
 
-An 'image' is a simple picture::
+An "image" is a simple picture::
 
     .. image:: picture.png
 
@@ -88,25 +92,21 @@ indented text block immediately following, with no intervening blank
 lines.  If there are multiple lines in the link block, they are
 stripped of leading and trailing whitespace and joined together.
 
-Optionally, the image link block may end with one or more lines in
-square brackets, the _`image attribute specifications`.  These two
-image directives are equivalent::
+Optionally, the image link block may end with a flat field list, the
+_`image attribute specifications`.  For example::
 
     .. image:: picture.png
-       [height=100 width=200 scale=50 alt="alternate text"]
+       :height: 100
+       :width: 200
+       :scale: 50
+       :alt: alternate text
 
-    .. image:: picture.png
-       [height=100]
-       [width=200 scale=50]
-       [alt="alternate text"]
-
-The attribute specifications must begin on new lines and those lines
-may not contain any other text except whitespace.  None, some, or all
-of the 'alt', 'height', 'width', and 'scale' attributes may be
-present.  The 'alt' attribute contains text and must be enclosed with
-quotation marks (either " or ').  The other attributes are all simple
-integers (no quotes); 'height' and 'width' values are in pixels, and
-'scale' is a percentage.
+None, some, or all of the "alt", "height", "width", and "scale"
+attributes may be present.  The "alt" attribute contains arbitrary
+text; its field body may be a single paragraph.  The other attributes
+are all simple integers; "height" and "width" values are in pixels,
+and "scale" is a percentage (but no "%" symbol is required or
+allowed).
 
 
 Figure
@@ -114,14 +114,17 @@ Figure
 
 DTD elements: figure, image, caption, legend.
 
-Directive block: directive data and all following indented text.
+Directive block: directive data and all following indented text are
+interpreted as an image URI, optional attributes, a caption, and an
+optional legend.
 
-A 'figure' consists of image_ data (optionally including `image attribute
-specifications`_), an optional caption (a single paragraph), and an
-optional legend (arbitrary body elements)::
+A "figure" consists of image_ data (optionally including `image
+attribute specifications`_), an optional caption (a single paragraph),
+and an optional legend (arbitrary body elements)::
 
     .. figure:: picture.png
-       [scale=50 alt="map to buried treasure"]
+       :scale: 50
+       :alt: map to buried treasure
 
        This is the caption of the figure (a simple paragraph).
 
@@ -141,12 +144,65 @@ optional legend (arbitrary body elements)::
 
 There must be a blank line before the caption paragraph and before the
 legend.  To specify a legend without a caption, use an empty comment
-('..') in place of the caption.
+("..") in place of the caption.
 
 
---------------------------
- HTML-Specific Directives
---------------------------
+---------------------
+ Document Components
+---------------------
+
+Table of Contents
+=================
+
+DTD element: pending, topic.
+
+Directive block: directive data and following indented lines (up to
+the first blank line) are interpreted as the topic title and optional
+attributes.
+
+The "contents" directive inserts a table of contents (TOC) in two
+passes: initial parse and transform.  During the initial parse, a
+"pending" element is generated which acts as a placeholder, storing
+the TOC title and any attributes in a field list.  At a later stage in
+the processing, the "pending" element is replaced by a "topic"
+element, a title and the table of contents proper.
+
+The directive in its simplest form::
+
+    .. contents::
+
+Language-dependent boilerplate text will be used for the title.  The
+English default title text is "Contents".
+
+An explicit title, may be specified::
+
+    .. contents:: Table of Contents
+    
+The title may span lines, although it is not recommended::
+
+    .. contents:: Here's a very long Table of
+       Contents title
+
+Attributes may be specified for the directive, using a field list::
+
+    .. contents:: Table of Contents
+       :depth: 2
+
+If the default title is to be used, the attribute field list may begin
+on the same line as the directive marker::
+
+    .. contents:: :depth: 2
+
+The following attributes are recognized:
+
+``depth`` : integer
+    The number of section levels that are collected in the table of
+    contents.
+
+
+---------------
+ HTML-Specific
+---------------
 
 Meta
 ====
@@ -154,9 +210,9 @@ Meta
 Non-standard element: meta.
 
 Directive block: directive data and following indented lines (up to
-the first blank line).
+the first blank line) are parsed for a flat field list.
 
-The 'meta' directive is used to specify HTML metadata stored in HTML
+The "meta" directive is used to specify HTML metadata stored in HTML
 META tags.  "Metadata" is data about data, in this case data about web
 pages.  Metadata is used to describe and classify web pages in the
 World Wide Web, in a form that is easy for search engines to extract
@@ -209,17 +265,23 @@ Imagemap
 Non-standard element: imagemap.
 
 
---------------------------
- Miscellaneous Directives
---------------------------
+---------------
+ Miscellaneous
+---------------
 
-Test Directive
-==============
+Restructuredtext-Test-Directive
+===============================
 
 DTD element: system_warning.
 
-'Restructuredtext-test-directive' is provided for test purposes
-(nobody is expected to type in a name *that* long!).
+Directive block: directive data is stored, and all following indented
+text is interpreted as a literal block.
+
+This directive is provided for test purposes only.  (Nobody is
+expected to type in a name *that* long!)  It is converted into a
+level-1 (info) system message showing the directive data, possibly
+followed by a literal block containing the rest of the directive
+block.
 
 
 ..
