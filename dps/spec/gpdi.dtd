@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.22 $
-:Date: $Date: 2001/11/06 01:05:33 $
+:Revision: $Revision: 1.23 $
+:Date: $Date: 2001/11/09 23:10:37 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -361,8 +361,8 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT label (#PCDATA)>
 <!ATTLIST label %basic.atts;>
 
-<!-- Also an inline element; empty otherwise. -->
-<!ELEMENT target (#PCDATA)>
+<!-- Empty except when used as an inline element. -->
+<!ELEMENT target (%text.model;)>
 <!ATTLIST target
     %basic.atts;
     %reference.atts;
@@ -371,9 +371,10 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT substitution (%text.model;)>
 <!ATTLIST substitution %basic.atts;>
 
-<!ELEMENT directive (%body.elements;)*>
+<!ELEMENT directive (#PCDATA)*>
 <!ATTLIST directive
     %basic.atts;
+    %fixedspace.att;
     type      CDATA     #IMPLIED
     data      CDATA     #IMPLIED>
 
@@ -418,16 +419,25 @@ Table elements: table, tgroup, colspec, thead, tbody, row, entry.
     Inline Elements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Inline elements occur within the PCDATA of body elements.
+Inline elements occur within the text contents of body elements. Some
+nesting of inline elements is allowed by these definitions, with the
+following caveats:
+
+- An inline element may not contain a nested element of the same type
+  (e.g. <strong> may not contain another <strong>).
+- Nested inline elements may or may not be supported by individual
+  applications using this DTD.
+- The inline elements <footnote_reference>, <literal>, and <image> do
+  not support nesting.
 -->
 
-<!ELEMENT emphasis (#PCDATA)>
+<!ELEMENT emphasis (%text.model;)>
 <!ATTLIST emphasis %basic.atts;>
 
-<!ELEMENT strong (#PCDATA)>
+<!ELEMENT strong (%text.model;)>
 <!ATTLIST strong %basic.atts;>
 
-<!ELEMENT interpreted (#PCDATA)>
+<!ELEMENT interpreted (%text.model;)>
 <!ATTLIST interpreted
     %basic.atts;
     type      CDATA     #IMPLIED>
@@ -447,7 +457,7 @@ Inline elements occur within the PCDATA of body elements.
     %reference.atts;
     %auto.att;>
 
-<!ELEMENT substitution_reference (#PCDATA)>
+<!ELEMENT substitution_reference (%text.model;)>
 <!ATTLIST substitution_reference
     %basic.atts;
     %refname.att;>
