@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2001/09/07 01:51:58 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2001/09/10 04:19:05 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -101,7 +101,7 @@ Hyperlink attributes.
 <!ENTITY % additional.inline.elements "">
 <!ENTITY % inline.elements
   " emphasis | strong | interpreted | literal
-    | link | footnote_reference | graphic
+    | link | footnote_reference | image
     %additional.inline.elements; ">
 
 <!-- Element Content Models
@@ -341,7 +341,7 @@ http://www.oasis-open.org/html/tm9901.htm).
     %basic.atts;
     %fixedspace.att;>
 
-<!ELEMENT figure (caption?, graphic, legend?)>
+<!ELEMENT figure (caption?, image, legend?)>
 <!ATTLIST figure %basic.atts;>
 
 <!ELEMENT caption %text.model;>
@@ -397,8 +397,8 @@ Inline elements occur within the PCDATA of body elements.
     auto      %yesorno; #IMPLIED>
 
 <!-- Also used in `figure`. -->
-<!ELEMENT graphic EMPTY>
-<!ATTLIST graphic
+<!ELEMENT image EMPTY>
+<!ATTLIST image
     %basic.atts;
     uri       CDATA     #REQUIRED
     height    NMTOKEN   #IMPLIED
