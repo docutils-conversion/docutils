@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.46 $
-:Date: $Date: 2002/03/07 03:24:43 $
+:Revision: $Revision: 1.47 $
+:Date: $Date: 2002/03/11 03:20:41 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -290,8 +290,7 @@ class RSTState(StateWS):
     def titleinconsistent(self, sourcetext, lineno):
         literalblock = nodes.literal_block('', sourcetext)
         error = self.statemachine.memo.reporter.severe(
-              'Title level inconsistent at line %s:' % lineno,
-              children=[literalblock])
+              'Title level inconsistent at line %s:' % lineno, '', literalblock)
         return error
 
     def newsubsection(self, title, lineno):
@@ -1560,8 +1559,8 @@ class Body(RSTState):
                     return method(self, expmatch)
                 except MarkupError, detail:
                     errors.append(
-                          self.statemachine.memo.reporter.warning(
-                          detail.__class__.__name__ + ': ' + str(detail)))
+                          self.statemachine.memo.reporter.warning('%s: %s'
+                          % (detail.__class__.__name__, detail)))
                     break
         nodelist, blankfinish = self.comment(match)
         return nodelist + errors, blankfinish
@@ -1991,13 +1990,13 @@ class Line(SpecializedText):
             sw = self.statemachine.memo.reporter.error(
               'Document or section may not begin with a transition (line %s).'
               % (self.statemachine.abslineno() - 1))
-            self.statemachine.node += sw
+            self.statemachine.node += sw    # @@@ insert @0, to make tree valid?
         elif isinstance(self.statemachine.node[-1], nodes.transition):
             sw = self.statemachine.memo.reporter.error(
               'At least one body element must separate transitions; adjacent '
               'transitions at line %s.'
               % (self.statemachine.abslineno() - 1))
-            self.statemachine.node[-1:-1] = [sw] # leave transition as last
+            self.statemachine.node[-1:-1] = [sw] # leave transition as last @@@?
         else:
             self.statemachine.node += transition
         return [], 'Body', []
