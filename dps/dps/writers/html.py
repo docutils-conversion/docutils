@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2002/03/13 02:40:42 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2002/03/16 05:53:22 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -19,6 +19,7 @@ __docformat__ = 'reStructuredText'
 __all__ = ['Writer']
 
 
+import time
 from dps import writers, nodes, languages
 
 
@@ -250,7 +251,7 @@ class HTMLTranslator(nodes.NodeVisitor):
                          '<P>' % self.language.labels[name])
 
     def depart_docinfo_item(self):
-        self.body.append('</P></TD>\n</TR>\n')
+        self.body.append('</P>\n</TD></TR>')
 
     def visit_doctest_block(self, node):
         self.body.append(self.starttag(node, 'pre', CLASS='doctest-block'))
@@ -263,6 +264,10 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def depart_document(self, node):
         self.body.append('</DIV>\n')
+        self.body.append(
+              '<P CLASS="credits">HTML generated from <CODE>%s</CODE> on %s '
+              'by <A HREF="http://docutils.sourceforge.net/">Docutils</A>.'
+              '</P>\n' % (node['source'], time.strftime('%Y-%m-%d')))
 
     def visit_emphasis(self, node):
         self.body.append('<EM>')
@@ -675,8 +680,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         """Only 6 section levels are supported by HTML."""
         if isinstance(node.parent, nodes.topic):
             self.body.append(
-                  self.starttag(node, 'H6', '', CLASS='topic-title'))
-            self.context.append('</H6>\n')
+                  self.starttag(node, 'P', '', CLASS='topic-title'))
+            self.context.append('</P>\n')
         elif self.sectionlevel == 0:
             self.head.append('<TITLE>%s</TITLE>\n'
                              % self.encode(node.astext()))
@@ -685,7 +690,11 @@ class HTMLTranslator(nodes.NodeVisitor):
         else:
             self.body.append(
                   self.starttag(node, 'H%s' % self.sectionlevel, ''))
-            self.context.append('</H%s>\n' % self.sectionlevel)
+            context = ''
+            if node.hasattr('refid'):
+                self.body.append('<A HREF="#%s">' % node['refid'])
+                context = '</A>'
+            self.context.append('%s</H%s>\n' % (context, self.sectionlevel))
 
     def depart_title(self, node):
         self.body.append(self.context.pop())
