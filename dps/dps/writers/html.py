@@ -1,13 +1,17 @@
 #! /usr/bin/env python
 
 """
-:Authors: David Goodger
+:Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/02/20 04:49:32 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/02/21 03:41:31 $
 :Copyright: This module has been placed in the public domain.
 
-Hypertext Markup Language document tree Writer.
+Simple HyperText Markup Language document tree Writer.
+
+The output uses the HTML 4.01 strict.dtd and contains a minimum of formatting
+information. A cascading style sheet "default.css" is required for proper
+viewing with a browser.
 """
 
 __docformat__ = 'reStructuredText'
@@ -57,15 +61,16 @@ class HTMLTranslator(nodes.NodeVisitor):
         text = text.replace(">", "&gt;")
         return text
 
-    def starttag(self, node, tagname, **attrs):
+    def starttag(self, node, tagname, suffix='\n', **attrs):
         attlist = attrs.items()
         for att in ('id', 'class'):
             if node.has_key(att):
                 attlist.append((att, node[att]))
         attlist.sort()
-        return '<%s>' % ' '.join([tagname.upper()] +
-                                 ['%s="%s"' % (n.upper(), self.encode(v))
-                                  for n, v in attlist])
+        return '<%s>%s' % (' '.join([tagname.upper()] +
+                                    ['%s="%s"' % (n.upper(), self.encode(v))
+                                     for n, v in attlist]),
+                           suffix)
 
     def visit_Text(self, node):
         self.body.append(self.encode(node.astext()))
@@ -74,13 +79,13 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_abstract(self, node):
-        self.body.append(self.starttag(node, 'div', CLASS='abstract')
-                         + '\n<BLOCKQUOTE>\n')
-        self.body.append('<H3>' + self.language.bibliographic_labels['abstract']
+        self.body.append(self.starttag(node, 'div', CLASS='abstract'))
+        self.body.append('<H3>'
+                         + self.language.bibliographic_labels['abstract']
                          + '</H3>\n')
 
     def depart_abstract(self, node):
-        self.body.append('</BLOCKQUOTE>\n</DIV>\n')
+        self.body.append('</DIV>\n')
 
     def visit_attention(self, node):
         pass
@@ -90,7 +95,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_author(self, node):
         self.head.append(self.starttag(node, 'meta', name='author',
-                                       content=node.astext()) + '\n')
+                                       content=node.astext()))
 
     def depart_author(self, node):
         pass
@@ -109,7 +114,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_bullet_list(self, node):
         self.body.append(self.starttag(node, 'ul',
-                                       CLASS='bullet'+node['bullet']) + '\n')
+                                       CLASS='bullet'+node['bullet']))
 
     def depart_bullet_list(self, node):
         self.body.append('</UL>\n')
@@ -127,10 +132,11 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_classifier(self, node):
-        pass
+        self.body.append(' <SPAN CLASS="classifier_delimiter">:</SPAN> ')
+        self.body.append(self.starttag(node, 'span', '', CLASS='classifier'))
 
     def depart_classifier(self, node):
-        pass
+        self.body.append('</SPAN>')
 
     def visit_colspec(self, node):
         pass
@@ -152,7 +158,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_copyright(self, node):
         self.head.append(self.starttag(node, 'meta', name='copyright',
-                                       content=node.astext()) + '\n')
+                                       content=node.astext()))
 
     def depart_copyright(self, node):
         pass
@@ -165,22 +171,23 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_date(self, node):
         self.head.append(self.starttag(node, 'meta', name='date',
-                                       content=node.astext()) + '\n')
+                                       content=node.astext()))
 
     def depart_date(self, node):
         pass
 
     def visit_definition(self, node):
-        pass
+        self.body.append('</TERM>\n')
+        self.body.append(self.starttag(node, 'dd'))
 
     def depart_definition(self, node):
-        pass
+        self.body.append('</DD>\n')
 
     def visit_definition_list(self, node):
-        pass
+        self.body.append(self.starttag(node, 'dl'))
 
     def depart_definition_list(self, node):
-        pass
+        self.body.append('</DL>\n')
 
     def visit_definition_list_item(self, node):
         pass
@@ -208,7 +215,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_document(self, node):
-        self.body.append(self.starttag(node, 'div', CLASS='document') + '\n')
+        self.body.append(self.starttag(node, 'div', CLASS='document'))
 
     def depart_document(self, node):
         self.body.append('</DIV>\n')
@@ -292,7 +299,12 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_image(self, node):
-        pass
+        attrs = node.attributes.copy()
+        attrs['src'] = attrs['uri']
+        del attrs['uri']
+        if not attrs.has_key('alt'):
+            attrs['alt'] = attrs['src']
+        self.body.append(self.starttag(node, 'img', '', **attrs))
 
     def depart_image(self, node):
         pass
@@ -322,7 +334,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_list_item(self, node):
-        self.body.append(self.starttag(node, 'li') + '\n')
+        self.body.append(self.starttag(node, 'li'))
 
     def depart_list_item(self, node):
         self.body.append('</LI>\n')
@@ -346,7 +358,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_meta(self, node):
-        self.head.append(self.starttag(node, 'meta', **node.attributes) + '\n')
+        self.head.append(self.starttag(node, 'meta', **node.attributes))
 
     def depart_meta(self, node):
         pass
@@ -388,13 +400,13 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_paragraph(self, node):
-        self.body.append(self.starttag(node, 'p'))
+        self.body.append(self.starttag(node, 'p', ''))
 
     def depart_paragraph(self, node):
         self.body.append('</P>\n')
 
     def visit_problematic(self, node):
-        self.body.append('<SPAN class="problematic">')
+        self.body.append(self.starttag(node, 'span', '', CLASS='problematic'))
 
     def depart_problematic(self, node):
         self.body.append('</SPAN>')
@@ -419,7 +431,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_section(self, node):
         self.sectionlevel += 1
-        self.body.append(self.starttag(node, 'div', CLASS='section') + '\n')
+        self.body.append(self.starttag(node, 'div', CLASS='section'))
 
     def depart_section(self, node):
         self.sectionlevel -= 1
@@ -444,7 +456,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</STRONG>')
 
     def visit_substitution_definition(self, node):
-        pass
+        raise nodes.SkipChildren
 
     def depart_substitution_definition(self, node):
         pass
@@ -456,7 +468,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_subtitle(self, node):
-        self.body.append(self.starttag(node, 'H2', CLASS='subtitle'))
+        self.body.append(self.starttag(node, 'H2', '', CLASS='subtitle'))
 
     def depart_subtitle(self, node):
         self.body.append('</H1>\n')
@@ -486,9 +498,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_term(self, node):
-        pass
+        self.body.append(self.starttag(node, 'dt', ''))
 
     def depart_term(self, node):
+        # leave the end tag to visit_definition, in case there's a classifier
         pass
 
     def visit_tgroup(self, node):
@@ -512,9 +525,9 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_title(self, node):
         if self.sectionlevel == 0:
             self.head.append('<TITLE>%s</TITLE>\n' % self.encode(node.astext()))
-            self.body.append(self.starttag(node, 'H1', CLASS='title'))
+            self.body.append(self.starttag(node, 'H1', '', CLASS='title'))
         else:
-            self.body.append(self.starttag(node, 'H%s' % self.sectionlevel))
+            self.body.append(self.starttag(node, 'H%s' % self.sectionlevel, ''))
             # @@@ >H6?
 
     def depart_title(self, node):
