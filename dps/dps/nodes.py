@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/09/13 02:12:55 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2001/09/26 03:32:11 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -407,6 +407,7 @@ class document(_Element):
 
 class title(_TextElement): pass
 class subtitle(_TextElement): pass
+class docinfo(_Element): pass
 class author(_TextElement): pass
 class authors(_Element): pass
 class organization(_TextElement): pass
