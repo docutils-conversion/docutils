@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.25 $
-:Date: $Date: 2002/01/30 04:52:09 $
+:Revision: $Revision: 1.26 $
+:Date: $Date: 2002/02/06 02:44:42 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -40,23 +40,22 @@ class Node:
     def asdom(self, dom=xml.dom.minidom):
         return self._dom_node(dom)
 
-    def walk(self, visitor, ancestry=()):
+    def walk(self, visitor):
         """
         Traverse a tree of `Node` objects, calling ``visit_*`` methods of
         `visitor`.
 
-        Parameters:
+        Doesn't handle arbitrary modification in-place during the traversal.
+        Replacing one element with one element is OK.
 
-        - `visitor`: A `Visitor` object, containing a ``visit_...`` method for
-          each `Node` subclass encountered.
-        - `ancestry`: A list of (parent, index) pairs. `self`'s parent is the
-          last entry.
+        Parameter `visitor`: A `NodeVisitor` object, containing a
+        ``visit_...`` method for each `Node` subclass encountered.
         """
         method = getattr(visitor, 'visit_' + self.__class__.__name__)
-        method(self, ancestry)
+        method(self)
         children = self.getchildren()
         for i in range(len(children)):
-            children[i].walk(visitor, ancestry + ((self, i),))
+            children[i].walk(visitor)
 
 
 class Text(Node, MutableString):
@@ -493,7 +492,7 @@ class document(Root, Element):
         if self.explicit_targets.has_key(name) \
               or self.external_targets.has_key(name) \
               or self.implicit_targets.has_key(name):
-            sw = self.reporter.information(
+            sw = self.reporter.info(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.clear_target_names(name, self.implicit_targets)
@@ -506,23 +505,23 @@ class document(Root, Element):
             innode = self
         name = targetnode['name']
         if self.explicit_targets.has_key(name):
-            level = 1
+            level = 2
             if targetnode.has_key('refuri'): # external target, dups OK
                 refuri = targetnode['refuri']
                 t = self.explicit_targets[name]
                 if t.has_key('name') and t.has_key('refuri') \
                       and t['refuri'] == refuri:
-                    level = 0           # just inform if refuri's identical
+                    level = 1           # just inform if refuri's identical
             sw = self.reporter.system_warning(
                   level, 'Duplicate explicit target name: "%s"' % name)
             innode += sw
             self.clear_target_names(name, self.explicit_targets,
                                     self.implicit_targets)
-            if level > 0:
+            if level > 1:
                 del targetnode['name']
                 targetnode['dupname'] = name
         elif self.implicit_targets.has_key(name):
-            sw = self.reporter.information(
+            sw = self.reporter.info(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.clear_target_names(name, self.implicit_targets)
@@ -681,7 +680,8 @@ class system_warning(Special, Element):
         Element.__init__(self, '', *children, **attributes)
 
     def astext(self):
-        return '[level %s] ' % self['level'] + Element.astext(self)
+        return '%s [level %s] %s' % (self['type'], self['level'],
+                                     Element.astext(self))
 
 
 # =================
@@ -728,7 +728,7 @@ node_class_names = """
 """A list of names of all concrete Node subclasses."""
 
 
-class Visitor:
+class NodeVisitor:
 
     """
     "Visitor" pattern [GoF95]_ abstract superclass implementation for document
@@ -749,11 +749,11 @@ class Visitor:
 
     # Save typing with dynamic definitions.
     for name in node_class_names:
-        exec """def visit_%s(self, node, ancestry): pass\n""" % name
+        exec """def visit_%s(self, node): pass\n""" % name
     del name
 
 
-class GenericVisitor(Visitor):
+class GenericNodeVisitor(NodeVisitor):
 
     """
     Generic "Visitor" abstract superclass, for simple traversals.
@@ -766,12 +766,12 @@ class GenericVisitor(Visitor):
     methods also.
     """
 
-    def default_visit(self, node, ancestry):
+    def default_visit(self, node):
         """Override for generic, uniform traversals."""
         raise NotImplementedError
 
     # Save typing with dynamic definitions.
     for name in node_class_names:
-        exec """def visit_%s(self, node, ancestry):
-                    self.default_visit(node, ancestry)\n""" % name
+        exec """def visit_%s(self, node):
+                    self.default_visit(node)\n""" % name
     del name
