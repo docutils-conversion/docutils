@@ -3,23 +3,23 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/08/28 03:27:31 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/08/30 04:28:58 $
 :Copyright: This module has been placed in the public domain.
 
 """
 
 import sys
-import xml.dom.minidom as dom
+import xml.dom.minidom
 from types import StringType
 from UserString import MutableString
 
 class _Node:
 
-    def asdom(self):
-        return self._dom_node()
+    def asdom(self, dom=xml.dom.minidom):
+        return self._dom_node(dom)
 
-    def _dom_node(self):
+    def _dom_node(self, dom):
         pass
     
     def _rooted_dom_node(self, domroot):
@@ -42,7 +42,7 @@ class Text(_Node, MutableString):
             data = repr(self.data[:64] + ' ...')
         return '<%s: %s>' % (self.tagName, data)
 
-    def _dom_node(self):
+    def _dom_node(self, dom):
         return dom.Text(self.data)
     
     def _rooted_dom_node(self, domroot):
@@ -102,12 +102,12 @@ class _Element(_Node):
         self.tagName = self.__class__.__name__
         """The element generic identifier, usually the class name."""
 
-    def _dom_node(self):
+    def _dom_node(self, dom):
         element = dom.Element(self.tagName)
         for attribute, value in self.attributes.items():
             element.setAttribute(attribute, value)
         for child in self.children:
-            element.appendChild(child._dom_node())
+            element.appendChild(child._dom_node(dom))
         return element
 
     def _rooted_dom_node(self, domroot):
@@ -261,7 +261,7 @@ class document(_Element):
         self.refnames = {}
         self.errorhandler = errorhandler
 
-    def asdom(self):
+    def asdom(self, dom=xml.dom.minidom):
         domroot = dom.Document()
         domroot.appendChild(_Element._rooted_dom_node(self, domroot))
         return domroot
