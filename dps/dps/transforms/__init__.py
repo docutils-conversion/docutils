@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/01/16 02:54:52 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/01/25 23:59:12 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains modules for standard tree transforms available
@@ -20,11 +20,10 @@ to DPS components. Tree transforms serve a variety of purposes:
   transforms may be used to construct (for example) indexes and tables
   of contents.
 
-Each transform is an optional step that a DPS Reader may choose to
-perform on the parsed document, depending on the input context.
-
-(@@@ delete: A DPS Reader may also perform Reader-specific transforms
-before performing these standard transforms.)
+Each transform is an optional step that a DPS Reader may choose to perform on
+the parsed document, depending on the input context. A DPS Reader may also
+perform Reader-specific transforms before or after performing these standard
+transforms.
 """
 
 __docformat__ = 'reStructuredText'
