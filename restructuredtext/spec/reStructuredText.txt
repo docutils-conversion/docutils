@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.22 $
-:Date: $Date: 2001/10/27 05:27:26 $
+:Revision: $Revision: 1.23 $
+:Date: $Date: 2001/10/31 05:50:41 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -321,6 +321,44 @@ characters, but not others. The simplest solution when backslashes
 appear in Python docstrings is to use raw docstrings::
 
     r"""This is a raw docstring. Backslashes (\) are not touched."""
+
+
+Reference Names
+===============
+
+Simple reference names are single words consisting of alphanumerics
+plus internal hypens, underscores, and periods; no whitespace or other
+characters are allowed. Footnote labels (Footnotes_ & `Footnote
+References`_), `interpreted text`_ roles, and some `hyperlink
+references`_ use the simple reference name syntax.
+
+Reference names using punctuation or whose names are phrases (two or
+more space-separated words) are called "phrase-links". Phrase-links
+are expressed by enclosing the phrase in backquotes and treating
+the backquoted text as a reference name::
+
+    Want to learn about `my favorite programming language`_?
+
+    .. _my favorite programming language: http://www.python.org
+
+Simple reference names may also optionally use backquotes.
+
+Reference names are whitespace-neutral and case-insensitive. When
+resolving reference names internally:
+
+- whitespace is normalized (one or more spaces, horizontal or vertical
+  tabs, newlines, carriage returns, or form feeds, are interpreted as
+  a single space), and
+
+- case is normalized (all alphabetic characters are converted to
+  lowercase).
+
+For example, the following `hyperlink references`_ are equivalent::
+
+    - `A HYPERLINK`_
+    - `a    hyperlink`_
+    - `A
+      Hyperlink`_
 
 
 Document Structure
@@ -1040,13 +1078,13 @@ Footnotes consist of an explicit markup start (".. "), a left square
 bracket, the footnote label, a right square bracket, and whitespace,
 followed by body elements. Footnote labels can be:
 
-- simple `hyperlink names`_ (case-insensitive single words consisting
+- simple `reference names`_ (case-insensitive single words consisting
   of alphanumerics plus internal hyphens, underscores, and periods; no
   whitespace),
 
 - a single "#" (denoting `auto-numbered footnotes`_), or
 
-- a "#" followed by a simple hyperlink name, an "autonumber label".
+- a "#" followed by a simple reference name, an "autonumber label".
 
 If the first body element within a footnote is a simple paragraph, it
 may begin on the same line as the footnote label. Other elements must
@@ -1065,7 +1103,7 @@ Here is a footnote, referred to in `Footnote References`_::
 Each footnote automatically generates a hyperlink target pointing to
 itself. The text of the hyperlink target name is the same as that of
 the footnote label. `Auto-numbered footnotes`_ generate a number as
-their footnote label and hyperlink name. See `Implicit Hyperlink
+their footnote label and reference name. See `Implicit Hyperlink
 Targets`_ for a complete description of the mechanism.
 
 Syntax diagram::
@@ -1101,11 +1139,13 @@ requesting automatic numbering: ``[#label]``. These labels are called
   is the autonumber label (doesn't include the "#").
 
 - They allow an automatically numbered footnote to be referred to more
-  than once, as a footnote reference or hyperlink. For example::
+  than once, as a footnote reference or hyperlink reference. For
+  example::
 
     If [#note]_ is the first footnote reference, it will show up as
     "[1]". We can refer to it again as [#note]_ and again see "[1]".
-    We can also refer to it as note_ (an ordinary internal hyperlink).
+    We can also refer to it as note_ (an ordinary internal hyperlink
+    reference).
 
     .. [#note] This is the footnote "note".
 
@@ -1138,17 +1178,17 @@ which may be linked to by `hyperlink references`_.
 
 Hyperlink targets may be named or anonymous. Named hyperlink targets
 consist of an explicit markup start (".. "), an underscore, the
-hyperlink name (no trailing underscore), a colon, whitespace, and a
+reference name (no trailing underscore), a colon, whitespace, and a
 link block::
 
     .. _hyperlink-name: link-block
 
-Hyperlink names are whitespace-neutral and case-insensitive. See
-`Hyperlink Names`_ for details and examples.
+Reference names are whitespace-neutral and case-insensitive. See
+`Reference Names`_ for details and examples.
 
 Anonymous hyperlink targets consist of an explicit markup start
 (".. "), two underscores, a colon, whitespace, and a link block; there
-is no hyperlink name::
+is no reference name::
 
     .. __: anonymous-hyperlink-target-link-block
 
@@ -1260,7 +1300,7 @@ indirect.
        .. _split: `A
           Hyperlink`_
 
-If a hyperlink name contains a colon followed by whitespace, either:
+If a reference name contains a colon followed by whitespace, either:
 
 - the phrase must be enclosed in backquotes::
 
@@ -1274,7 +1314,7 @@ If a hyperlink name contains a colon followed by whitespace, either:
       It's not easy being green...
 
 See `Implicit Hyperlink Targets`_ below for the resolution of
-duplicate hyperlink names.
+duplicate reference names.
 
 Syntax diagram::
 
@@ -1302,7 +1342,7 @@ instead of one::
 
     See `the web site of my favorite programming language`__.
 
-Anonymous targets begin with ".. __:"; no hyperlink name is required
+Anonymous targets begin with ".. __:"; no reference name is required
 or allowed::
 
     .. __: http://www.python.org
@@ -1312,7 +1352,7 @@ only::
 
     __ http://www.python.org
 
-The hyperlink name of the reference is not used to match the reference
+The reference name of the reference is not used to match the reference
 to its target. Instead, the order of anonymous hyperlink references
 and targets within the document is significant: the first anonymous
 reference will link to the first anonymous target. The number of
@@ -1434,16 +1474,16 @@ footnotes, and may also be generated by extension constructs. Implicit
 hyperlink targets behave identically to explicit `hyperlink targets`_.
 
 Problems of ambiguity due to conflicting duplicate implicit and
-explicit hyperlink names are avoided because the reStructuredText
+explicit reference names are avoided because the reStructuredText
 parser follows these rules:
 
 1. Explicit hyperlink targets override any implicit targets having the
-   same hyperlink name. The implicit hyperlink targets are removed,
+   same reference name. The implicit hyperlink targets are removed,
    and level-0 system warnings are inserted.
 
 2. If two or more sections have the same title (such as "Introduction"
    subsections of a rigidly-structured document), there will be
-   duplicate implicit target hyperlink names. Solution: all duplicate
+   duplicate implicit target reference names. Solution: all duplicate
    hyperlink targets are removed, and level-0 system warnings
    inserted.
 
@@ -1606,55 +1646,43 @@ Inline literals are useful for short code snippets. For example::
     floating-point numbers (without exponents).
 
 
-Hyperlinks
-----------
+Hyperlink References
+--------------------
 
-Hyperlinks are indicated by a trailing underscore, "_", except for
-`standalone hyperlinks`_ which are recognized independently. The
-underscore can be thought of as a right-pointing arrow. The trailing
-underscores point away from hyperlink references, and the leading
-underscores point toward `hyperlink targets`_.
+DTD element: reference.
 
+- Named hyperlink references:
 
-Hyperlink Names
-```````````````
+  - Start-string = "" (empty string), end-string = "_".
+  - Start-string = "`", end-string = "\`_". (Phrase links.)
 
-Simple hyperlink names are single words consisting of alphanumerics
-plus internal hypens, underscores, and periods; no whitespace or other
-characters are allowed. Footnote labels and `interpreted text`_ roles
-have the same syntax as simple hyperlink names.
+- Anonymous hyperlink references:
 
-Hyperlink names using punctuation or whose names are phrases (two or
-more space-separated words) are called "phrase-links". Phrase-links
-are expressed by enclosing the phrase in backquotes and treating
-the backquoted text as a link name::
+  - Start-string = "" (empty string), end-string = "__".
+  - Start-string = "`", end-string = "\`__". (Phrase links.)
 
-    Want to learn about `my favorite programming language`_?
+Hyperlink references are indicated by a trailing underscore, "_",
+except for `standalone hyperlinks`_ which are recognized
+independently. The underscore can be thought of as a right-pointing
+arrow. The trailing underscores point away from hyperlink references,
+and the leading underscores point toward `hyperlink targets`_.
 
-    .. _my favorite programming language: http://www.python.org
+Hyperlinks consist of two parts. In the text body, there is a source
+link, a reference name with a trailing underscore (or two underscores
+for `anonymous hyperlinks`_)::
 
-Simple hyperlink names may also optionally use backquotes.
+    See the Python_ home page for info.
 
-Hyperlink names are whitespace-neutral and case-insensitive. When
-resolving hyperlink names internally:
+A target link with a matching reference name must exist somewhere else
+in the document. See `Hyperlink Targets`_ for a full description).
 
-- whitespace is normalized (one or more spaces, horizontal or vertical
-  tabs, newlines, carriage returns, or form feeds, are interpreted as
-  a single space), and
-
-- case is normalized (all alphabetic characters are converted to
-  lowercase).
-
-For example, the following hyperlinks are equivalent::
-
-    - `A HYPERLINK`_
-    - `a    hyperlink`_
-    - `A
-      Hyperlink`_
+`Anonymous hyperlinks`_ (which see) do not use reference names to
+match references to targets, but otherwise behave similarly to named
+hyperlinks.
 
 
 Inline Hyperlink Targets
-````````````````````````
+------------------------
 
 DTD element: target.
 
@@ -1672,40 +1700,11 @@ For example, the following paragraph contains a hyperlink target named
     Oh yes, the _`Norwegian Blue`. What's, um, what's wrong with it?
 
 See `Implicit Hyperlink Targets`_ for the resolution of duplicate
-hyperlink names.
-
-
-Hyperlink References
-````````````````````
-
-DTD element: link.
-
-- Named hyperlink references:
-
-  - Start-string = "" (empty string), end-string = "_".
-  - Start-string = "`", end-string = "\`_". (Phrase links.)
-
-- Anonymous hyperlink references:
-
-  - Start-string = "" (empty string), end-string = "__".
-  - Start-string = "`", end-string = "\`__". (Phrase links.)
-
-Hyperlinks consist of two parts. In the text body, there is a source
-link, a hyperlink name with a trailing underscore (or two underscores
-for `anonymous hyperlinks`_)::
-
-    See the Python_ home page for info.
-
-A target link with a matching hyperlink name must exist somewhere else
-in the document. See `Hyperlink Targets`_ for a full description).
-
-`Anonymous hyperlinks`_ (which see) do not use hyperlink names to
-match references to targets, but otherwise behave similarly to named
-hyperlinks.
+reference names.
 
 
 Footnote References
-```````````````````
+-------------------
 
 DTD element: footnote_reference.
 
@@ -1714,13 +1713,13 @@ Start-string = "[", end-string = "]_".
 Footnote references consist of a square-bracketed label followed by a
 trailing underscore. Footnote labels are one of:
 
-- simple `hyperlink names`_ (case-insensitive single words, consisting
+- simple `reference names`_ (case-insensitive single words, consisting
   of alphanumerics plus internal hyphens, underscores, and periods; no
   whitespace),
 
 - a single "#" (denoting `auto-numbered footnotes`_), or
 
-- a "#" followed by a simple hyperlink name, an "autonumber label".
+- a "#" followed by a simple reference name, an "autonumber label".
 
 For example::
 
@@ -1730,7 +1729,7 @@ See Footnotes_ for the footnote itself.
 
 
 Standalone Hyperlinks
-`````````````````````
+---------------------
 
 DTD element: link.
 
