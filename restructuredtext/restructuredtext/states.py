@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.32 $
-:Date: $Date: 2001/11/06 00:51:33 $
+:Revision: $Revision: 1.33 $
+:Date: $Date: 2001/11/13 03:15:42 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -1321,39 +1321,38 @@ class Body(RSTState):
 
     def substitution(self, match):
         indented, indent, offset, blankfinish = \
-              self.statemachine.getfirstknownindented(match.end(), uptoblank=1)
+              self.statemachine.getfirstknownindented(match.end(), uptoblank=1,
+                                                      stripindent=0)
         subname = match.group(1)
         name = normname(subname)
         substitutionnode = nodes.substitution('\n'.join(indented))
-        self.statemachine.memo.document.addsubstitution(name, substitutionnode,
-                                                        self.statemachine.node)
         if indented:
             self.nestedparse(indented, inputoffset=offset, node=substitutionnode,
                              statemachinekwargs={'stateclasses': stateclasses,
                                                  'initialstate': 'Substitution'})
+            i = 0
+            for node in substitutionnode[:]:
+                if not (isinstance(node, nodes.Inline) or
+                        isinstance(node, nodes.Text)):
+                    self.statemachine.node += substitutionnode[i]
+                    del substitutionnode[i]
+                else:
+                    i += 1
             if len(substitutionnode) == 0:
                 sw = self.statemachine.memo.reporter.warning(
-                      'Substitution contents empty at line %s'
-                      % self.statemachine.abslineno())
+                      'Substitution "%s" empty or invalid at line %s.'
+                      % (subname, self.statemachine.abslineno()))
                 self.statemachine.node += sw
-            elif len(substitutionnode) == 1 \
-                  and isinstance(substitutionnode[0], nodes.paragraph):
-                substitutionnode[:] = substitutionnode[0][:]
             else:
-                i = 0
-                for node in substitutionnode[:]:
-                    if not (isinstance(node, nodes.Inline) or
-                            isinstance(node, nodes.Text)):
-                        self.statemachine.node += substitutionnode[i]
-                        del substitutionnode[i]
-                    else:
-                        i += 1
+                self.statemachine.memo.document.addsubstitution(
+                      name, substitutionnode, self.statemachine.node)
+                return [substitutionnode], blankfinish
         else:
             sw = self.statemachine.memo.reporter.warning(
-                  'Substitution missing contents at line %s'
-                  % self.statemachine.abslineno())
+                  'Substitution "%s" missing contents at line %s.'
+                  % (subname, self.statemachine.abslineno()))
             self.statemachine.node += sw
-        return [substitutionnode], blankfinish
+        return [], blankfinish
 
     def directive(self, match):
         typename = match.group(1)
@@ -1396,7 +1395,7 @@ class Body(RSTState):
            re.compile(r"""
                       \.\.[ ]+          # explicit markup start
                       \[
-                      (                 # footnote reference identifier:
+                      (                 # footnote identifier:
                           \#              # anonymous auto-numbered reference
                         |               # *OR*
                           \#?%s           # (auto-numbered?) footnote label
@@ -1638,6 +1637,24 @@ class Explicit(SpecializedBody):
     def anonymous(self, match, context, nextstate):
         """Anonymous hyperlink targets."""
         nodelist, blankfinish = self.anonymous_target(match)
+        self.statemachine.node += nodelist
+        self.blankfinish = blankfinish
+        return [], nextstate, []
+
+
+class Substitution(SpecializedBody):
+
+    """
+    Parser for the contents of a substitution element.
+    """
+
+    patterns = {
+          'inline_directive': r'(%s)::( +|$)' % RSTState.inline.simplename,
+          'text': r''}
+    initialtransitions = ['inline_directive', 'text']
+
+    def inline_directive(self, match, context, nextstate):
+        nodelist, blankfinish = self.directive(match)
         self.statemachine.node += nodelist
         self.blankfinish = blankfinish
         return [], nextstate, []
@@ -1904,23 +1921,6 @@ class Line(SpecializedText):
               % (self.statemachine.abslineno() - 1))
         self.statemachine.node += sw
         return [], 'Body', []
-
-
-class Substitution(Body):
-
-    """
-    Parser for the contents of a substitution element.
-    """
-
-    patterns = {
-          'inline_directive': r'(%s)::( +|$)' % RSTState.inline.simplename,
-          'text': r''}
-    initialtransitions = ['inline_directive', 'text']
-
-    def inline_directive(self, match, context, nextstate):
-        nodelist, blankfinish = self.directive(match)
-        self.statemachine.node += nodelist
-        return [], nextstate, []
 
 
 stateclasses = [Body, BulletList, DefinitionList, EnumeratedList, FieldList,
