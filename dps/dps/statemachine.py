@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/08/25 03:55:14 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/09/12 03:45:42 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -250,6 +250,13 @@ class StateMachine:
         self.lineoffset += n
         self.line = self.inputlines[self.lineoffset]
         return self.line
+
+    def nextlineblank(self):
+        """Return 1 if the next line is blank or non-existant."""
+        try:
+            return not self.inputlines[self.lineoffset + 1].strip()
+        except IndexError:
+            return 1
 
     def previousline(self, n=1):
         """Load `self.line` with the `n`'th previous line and return it."""
