@@ -3,16 +3,14 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/16 05:53:52 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/28 04:47:47 $
 :Copyright: This module has been placed in the public domain.
 
-This package contains DPS Writer modules.
+This package contains Docutils Writer modules.
 """
 
 __docformat__ = 'reStructuredText'
-
-__all__ = ['Writer', 'get_writer_class']
 
 
 import sys
@@ -24,6 +22,8 @@ class Writer:
 
     """
     Abstract base class for docutils Writers.
+
+    Each writer module or package must export a subclass also called 'Writer'.
 
     Call `write()` to process a document.
     """

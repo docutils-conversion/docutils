@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger; Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/03/16 06:04:30 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/28 04:47:22 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Reader modules.
@@ -24,6 +24,8 @@ class Reader:
 
     """
     Abstract base class for docutils Readers.
+
+    Each reader module or package must export a subclass also called 'Reader'.
 
     The three steps of a Reader's responsibility are defined: `scan()`,
     `parse()`, and `transform()`. Call `read()` to process a document.

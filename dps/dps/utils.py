@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.19 $
-:Date: $Date: 2002/03/16 05:57:30 $
+:Revision: $Revision: 1.20 $
+:Date: $Date: 2002/03/28 04:47:33 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
@@ -52,7 +52,7 @@ class Reporter:
     retrieve reporting conditions from the 'writer' category (which, unless
     explicitly set, defaults to the conditions of the default category).
 
-    .. [#]_ The concept of "categories" was inspired by the log4j project:
+    .. [#] The concept of "categories" was inspired by the log4j project:
        http://jakarta.apache.org/log4j/.
     """
 

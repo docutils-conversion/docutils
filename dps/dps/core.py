@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/02/07 02:02:24 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/03/28 04:47:16 $
 :Copyright: This module has been placed in the public domain.
 
 
@@ -20,12 +20,21 @@ import readers, parsers, writers, utils
 
 class Publisher:
 
+    """
+    Publisher encapsulates the high-level logic of a Docutils system.
+    """
+
     reporter = None
     """A `utils.Reporter` instance used for all document processing."""
 
     def __init__(self, reader=None, parser=None, writer=None, reporter=None,
                  languagecode='en', warninglevel=2, errorlevel=4,
                  warningstream=None, debug=0):
+        """
+        Initial setup.  If any of `reader`, `parser`, or `writer` are
+        not specified, the corresponding 'set*' method should be
+        called.
+        """
         self.reader = reader
         self.parser = parser
         self.writer = writer
@@ -52,6 +61,10 @@ class Publisher:
         self.writer = writerclass()
 
     def publish(self, source, destination):
+        """
+        Run `source` through `self.reader`, then through `self.writer` to
+        `destination`.
+        """
         document = self.reader.read(source, self.parser)
         self.writer.write(document, destination)
 
@@ -62,6 +75,7 @@ def publish(source=None, destination=None,
             writer=None, writername='pprint',
             reporter=None, languagecode='en',
             warninglevel=2, errorlevel=4, warningstream=None, debug=0):
+    """Set up & run a `Publisher`."""
     pub = Publisher(reader, parser, writer, reporter, languagecode,
                     warninglevel, errorlevel, warningstream, debug)
     if reader is None:
