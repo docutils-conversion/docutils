@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.24 $
-:Date: $Date: 2002/01/29 02:17:18 $
+:Revision: $Revision: 1.25 $
+:Date: $Date: 2002/01/30 04:52:09 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -438,14 +438,14 @@ class document(Root, Element):
         """ISO 639 2-letter language identifier."""
 
         self.explicit_targets = {}
-        """Mapping of target names to lists of explicit target nodes."""
+        """Mapping of target names to explicit target nodes."""
 
         self.implicit_targets = {}
-        """Mapping of target names to lists of implicit (internal) target
+        """Mapping of target names to implicit (internal) target
         nodes."""
 
         self.external_targets = {}
-        """Mapping of target names to lists of external target nodes."""
+        """Mapping of target names to external target nodes."""
 
         self.indirect_targets = {}
         """Mapping of target names to indirect target nodes."""
@@ -454,13 +454,14 @@ class document(Root, Element):
         """Mapping of substitution names to substitution_definition nodes."""
 
         self.refnames = {}
-        """Mapping of reference names to reference nodes."""
+        """Mapping of reference names to lists of reference nodes."""
 
         self.substitution_refs = {}
-        """Mapping of substitution names to substitution_reference nodes."""
+        """Mapping of substitution names to lists of substitution_reference
+        nodes."""
 
         self.footnote_refs = {}
-        """Mapping of footnote labels to footnote_reference nodes."""
+        """Mapping of footnote labels to lists of footnote_reference nodes."""
 
         self.anonymous_targets = []
         """List of anonymous target nodes."""
@@ -498,7 +499,7 @@ class document(Root, Element):
             self.clear_target_names(name, self.implicit_targets)
             del targetnode['name']
             targetnode['dupname'] = name
-        self.implicit_targets.setdefault(name, []).append(targetnode)
+        self.implicit_targets[name] = targetnode
 
     def note_explicit_target(self, targetnode, innode=None):
         if innode == None:
@@ -508,10 +509,9 @@ class document(Root, Element):
             level = 1
             if targetnode.has_key('refuri'): # external target, dups OK
                 refuri = targetnode['refuri']
-                for t in self.explicit_targets.get(name, []):
-                    if not t.has_key('refuri') or t['refuri'] != refuri:
-                        break
-                else:
+                t = self.explicit_targets[name]
+                if t.has_key('name') and t.has_key('refuri') \
+                      and t['refuri'] == refuri:
                     level = 0           # just inform if refuri's identical
             sw = self.reporter.system_warning(
                   level, 'Duplicate explicit target name: "%s"' % name)
@@ -526,25 +526,25 @@ class document(Root, Element):
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.clear_target_names(name, self.implicit_targets)
-        self.explicit_targets.setdefault(name, []).append(targetnode)
+        self.explicit_targets[name] = targetnode
 
     def clear_target_names(self, name, *targetdicts):
         for targetdict in targetdicts:
-            for node in targetdict.get(name, []):
-                if node.has_key('name'):
-                    node['dupname'] = node['name']
-                    del node['name']
+            if not targetdict.has_key(name):
+                continue
+            node = targetdict[name]
+            if node.has_key('name'):
+                node['dupname'] = node['name']
+                del node['name']
 
     def note_refname(self, node):
         self.refnames.setdefault(node['refname'], []).append(node)
 
     def note_external_target(self, targetnode):
-        self.external_targets.setdefault(
-              targetnode['name'], []).append(targetnode)
+        self.external_targets[targetnode['name']] = targetnode
 
     def note_indirect_target(self, targetnode):
-        self.indirect_targets.setdefault(
-              targetnode['name'], []).append(targetnode)
+        self.indirect_targets[targetnode['name']] = targetnode
         self.note_refname(targetnode)
 
     def note_anonymous_target(self, targetnode):
@@ -746,9 +746,6 @@ class Visitor:
 
     def __init__(self, doctree):
         self.doctree = doctree
-
-    def walk(self):
-        self.doctree.walk(self)
 
     # Save typing with dynamic definitions.
     for name in node_class_names:

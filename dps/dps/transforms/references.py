@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/01/29 02:17:32 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/01/30 04:52:17 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -148,26 +148,23 @@ class Hyperlinks(Transform):
         self.doctree.walk(visitor)
 
     def resolve_indirect(self):
-        for name, targets in self.doctree.indirect_targets.items():
-            if len(targets) == 1:
-                target = targets[-1]
-                if not target.resolved:
-                    self.one_indirect_target(target)
-                if target.hasattr('refname'):
-                    self.one_indirect_reference(target['name'],
-                                                target['refname'])
+        for name, target in self.doctree.indirect_targets.items():
+            if not target.resolved:
+                self.one_indirect_target(target)
+            if target.hasattr('refname'):
+                self.one_indirect_reference(target['name'],
+                                            target['refname'])
 
     def one_indirect_target(self, target):
         name = target['name']
         refname = target['refname']
         try:
-            reftargetlist = self.doctree.explicit_targets[refname]
+            reftarget = self.doctree.explicit_targets[refname]
         except KeyError:
             sw = self.doctree.reporter.warning(
                   'Indirect hyperlink target "%s" refers to target "%s", '
                   'which does not exist.' % (name, refname))
             self.doctree += sw
-        reftarget = reftargetlist[-1]
         if reftarget.hasattr('name'):
             if not reftarget.resolved and reftarget.hasattr('refname'):
                 self.one_indirect_target(reftarget)
@@ -204,10 +201,9 @@ class Hyperlinks(Transform):
                 self.one_indirect_reference(ref['name'], refname)
 
     def resolve_external_references(self):
-        for name, targets in self.doctree.external_targets.items():
-            target = targets[-1]
+        for name, target in self.doctree.external_targets.items():
             if target.hasattr('refuri') and target.hasattr('name'):
-                self.one_external_reference(name, targets[-1]['refuri'])
+                self.one_external_reference(name, target['refuri'])
 
     def one_external_reference(self, name, refuri):
         try:
