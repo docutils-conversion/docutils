@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/11/01 04:08:36 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/11/06 00:46:01 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -306,7 +306,7 @@ link__
 """\
 <document>
     <paragraph>
-        <reference anonymous="1" refname="link">
+        <reference anonymous="1">
             link
 """],
 ["""\
@@ -324,7 +324,7 @@ link_, l_, l_i-n_k_, and anonymouslink__, but not _link_ or -link_
         <reference refname="l_i-n_k">
             l_i-n_k
         , and 
-        <reference anonymous="1" refname="anonymouslink">
+        <reference anonymous="1">
             anonymouslink
         , but not _link_ or -link_
 """],
@@ -346,7 +346,7 @@ totest['phrase_links'] = [
 """\
 <document>
     <paragraph>
-        <reference anonymous="1" refname="anonymous link">
+        <reference anonymous="1">
             anonymous link
 """],
 ["""\

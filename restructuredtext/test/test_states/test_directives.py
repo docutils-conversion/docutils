@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/09/17 04:29:24 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/11/06 00:45:47 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -132,6 +132,8 @@ totest['admonitions'] = [
 .. Tip:: 15% if the
    service is good.
 
+.. Hint:: It's bigger than a bread box.
+
 - .. WARNING:: Strong prose may provoke extreme mental exertion.
      Reader discretion is strongly advised.
 - .. Error:: Does not compute.
@@ -160,6 +162,9 @@ totest['admonitions'] = [
         <paragraph>
             15% if the
             service is good.
+    <hint>
+        <paragraph>
+            It's bigger than a bread box.
     <bullet_list bullet="-">
         <list_item>
             <warning>
