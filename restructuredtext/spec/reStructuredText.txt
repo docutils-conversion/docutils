@@ -3,8 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.6 $
-Date: $Date: 2001/08/06 04:49:18 $
+Revision: $Revision: 1.7 $
+Date: $Date: 2001/08/11 02:10:07 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -190,9 +190,8 @@ Any text whose indentation is less than that of the current level
 (i.e., unindented text or "dedents") ends the current level of
 indentation.
 
-Although spaces are recommended for indentation, tabs may also be
-used. Tabs will be converted to spaces. Tab stops are at every 8th
-column.
+Spaces are recommended for indentation, but tabs may also be used.
+Tabs will be converted to spaces. Tab stops are at every 8th column.
 
 
 Escaping Mechanism
@@ -227,12 +226,25 @@ DTD elements: section, title.
 
 Sections are identified through their titles, which are marked up with
 adornment: 'underlines' below the title text, and, in some cases,
-matching 'overlines' above the title. An underline/overline is a line
-of non-alphanumeric characters that begins in column 1 and extends at
-least as far as the right edge of the title text. An
-underline/overline must be at least 3 characters long. When an
-overline is used, the length and character used must match the
-underline. There may be any number of levels of section titles.
+matching 'overlines' above the title. An underline/overline is a
+single repeated punctuation character that begins in column 1 and
+forms a line extending at least as far as the right edge of the title
+text. Specifically, an underline/overline character may be any
+non-alphanumeric printable 7-bit ASCII character [1]_. An
+underline/overline must be at least 4 characters long (to avoid
+mistaking ellipses ['...'] for overlines). When an overline is used,
+the length and character used must match the underline. There may be
+any number of levels of section titles.
+
+.. _[1] The following are all valid section header underline/overline
+   characters::
+
+       ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
+
+   Some characters are more suitable than others. The following are
+   recommended::
+
+       = - ` : ' " ~ ^ _ * + # < >
 
 Rather than imposing a fixed number and order of section title
 adornment styles, the order enforced will be the order as encountered.
@@ -514,8 +526,8 @@ alternatives:
        field list item. Or do we?
        """
 
-   Conclusion: was accepted (although not yet implemented; see below);
-   currently reconsidering.
+   Conclusion: rejected for the general case, still possible for
+   particular contexts (PEPs, email).
 
 3. Use a directive::
 
@@ -541,14 +553,24 @@ alternatives:
        :Author: Me
        :Version: 1
 
-   Advantages: unambiguous, obvious? (*almost* RFC822-compliant),
+   Advantages: unambiguous, obvious (*almost* RFC822-compliant),
    flexible, perhaps even elegant. Disadvantage: no precedent, not
    quite RFC822-compliant.
 
-One special context is defined for field lists [1]_. A field list as
+6. Use double colons::
+
+       Author:: Me
+       Version:: 1
+
+   Advantages: unambiguous, obvious? (*almost* RFC822-compliant),
+   flexible, syntax already used for directives. Disadvantage: no
+   precedent, not quite RFC822-compliant, syntax already used for
+   directives.
+
+One special context is defined for field lists [2]_. A field list as
 the very first non-comment block, or the second non-comment block
 immediately after a title, is interpreted as document bibliographic
-data. No special syntax is required, just unadorned RFC822_ [2]_. The
+data. No special syntax is required, just unadorned RFC822_ [3]_. The
 first block ends with a blank line, therefore field bodies must be
 single paragraphs only and there may be no blank lines between fields.
 The following field names are recognized and transformed to the
@@ -569,12 +591,12 @@ element. No ordering is imposed on these fields:
 This field-name-to-element mapping can be extended, or replaced for
 other languages. See the implementation documentation for details.
 
-.. _[1] Should "bibliographic field lists" be defined at the parser
+.. _[2] Should "bibliographic field lists" be defined at the parser
    level, or at the DPS transformation level? In other words, are they
    reStructuredText-specific, or would they also be applicable to
    another (many/every other?) syntax?
 
-.. _[2] Note that this "no special syntax required" provision is being
+.. _[3] Note that this "no special syntax required" provision is being
    reconsidered. An unambiguous syntax would also remove the
    requirement for a bibliographic field list to end with a blank
    line.
@@ -717,7 +739,8 @@ Explicit Markup Blocks
 
 An explicit markup block is a text block:
 
-- whose first line begins with '.. ' (the 'explicit markup start'),
+- whose first line begins with '..' followed by whitespace (the
+  'explicit markup start'),
 - whose second and subsequent lines (if any) are indented relative to
   the first, and
 - which ends with an unindented line.
@@ -736,13 +759,14 @@ Footnotes
 
 DTD elements: footnote, label.
 
-Footnotes consist of an explicit markup start ('.. '), an underscore,
-a left square bracket, the footnote label, a right square bracket,
-and whitespace, followed by body elements. Footnote labels are simple `hyperlink names`_ (case-insensitive single words consisting of alphanumerics plus hyphens,
-underscores, and periods; no whitespace). If the first body element
-within a footnote is a simple paragraph, it may begin on the same line
-as the footnote label. Other elements must begin on a new line,
-consistently indented and left-aligned.
+Footnotes consist of an explicit markup start ('.. '), an underscore, a
+left square bracket, the footnote label, a right square bracket, and
+whitespace, followed by body elements. Footnote labels are simple
+`hyperlink names`_ (case-insensitive single words consisting of
+alphanumerics plus hyphens, underscores, and periods; no whitespace).
+If the first body element within a footnote is a simple paragraph, it
+may begin on the same line as the footnote label. Other elements must
+begin on a new line, consistently indented and left-aligned.
 
 Footnotes may occur anywhere in the document, not only at the end.
 Where or how they appear in the processed output depends on the output
@@ -1182,9 +1206,9 @@ DTD element: link.
 
 Start-string = end-string = '' (empty string).
 
-An absolute URI [URI]_ within a text block is treated as a general
-external hyperlink with the URI itself as the link's text. For
-example::
+A URI (absolute URI [URI]_ or standalone email address) within a text
+block is treated as a general external hyperlink with the URI itself
+as the link's text. For example::
 
     See http://www.python.org for info.
 
@@ -1195,13 +1219,41 @@ would be marked up in HTML as::
 
 Two forms of URI are recognized:
 
-- absolute URIs beginning with a scheme ('http:', 'ftp:', 'mailto:',
-  'telnet:', etc.), and
+1. Absolute URIs. These consist of a scheme, a colon (':'), and a
+   scheme-specific part whose interpretation depends on the scheme.
 
-- standalone email addresses ('user@host').
+   - The scheme is the name of the protocol, such as 'http', 'ftp',
+     'mailto', or 'telnet'. The scheme consists of an initial letter,
+     followed by letters, numbers, and/or '+', '-', '.'.
 
-Standalone email addresses are treated as if they had a 'mailto:'
-prefix.
+   - The scheme-specific part of the resource identifier may be either
+     hierarchical or opaque.
+
+     - Hierarchical identifiers begin with one or two slashes and may
+       use slashes to separate hierarchical components of the path.
+       Examples are web pages and FTP sites:
+
+           http://www.python.org
+
+           ftp://ftp.python.org/pub/python
+
+     - Opaque identifiers do not begin with slashes. Examples are
+       email addresses and newsgroups::
+
+           mailto:someone@somewhere.com
+
+           news:comp.lang.python
+
+   With queries, fragments, and %-escape sequences, URIs can become
+   quite complicated. A reStructuredText parser must be able to
+   recognize any absolute URI, as defined in RFC239_.
+
+2. Standalone email addresses, which are treated as if they were
+   ablsolute URIs with a 'mailto:' scheme. Example::
+
+       someone@somewhere.com
+
+Punctuation at the end of a URI is not considered part of the URI.
 
 .. _[URI] Uniform Resource Identifier. URIs are a general form of URLs
     (Uniform Resource Locators). For the syntax of URIs see RFC2396_.
