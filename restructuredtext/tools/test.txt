@@ -17,9 +17,9 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :organization: humankind
-:date: $Date: 2002/02/21 03:31:27 $
+:date: $Date: 2002/02/22 01:42:12 $
 :status: work in progress
-:version: $Revision: 1.1 $
+:version: $Revision: 1.2 $
 :copyright: This document has been placed in the public domain.
 
 :abstract:
@@ -67,8 +67,6 @@ standalone hyperlinks (http://www.python.org), external hyperlinks
 ([1]_), substitution references (|example|), and _`inline hyperlink
 targets`. Problems are indicated by |problematic| text.
 
-.. |EXAMPLE| image:: ../docs/images/biohazard.png
-
 Bullet Lists
 ------------
 
@@ -99,6 +97,93 @@ Term : classifier
 
     Definition paragraph 2.
 
+Field Lists
+-----------
+
+:what: Field lists map field names to field bodies, like database
+       records.
+
+:how arg1 arg2:
+
+    The field marker is a colon, the field name, optional field
+    arguments, and a colon.
+
+    The field body may contain one or more body elements, indented
+    relative to the field marker.
+
+Option Lists
+------------
+
+For listing command-line options:
+
+-a            command-line option "a"
+-b file       options can have arguments
+              and long descriptions
+--long        options can be long also
+--input=file  long options can also have
+              arguments
+--very-long-option
+              The description can also start on the next line.
+
+              The description may contain multiple body elements.
+/V            DOS/VMS-style options too
+
+There must be at least two spaces between the option and the
+description.
+
+Literal Blocks
+--------------
+
+Literal blocks are indented, and indicated with a double-colon
+("::") at the end of the preceding paragraph (right here -->)::
+
+    if literal_block:
+        text = 'is left as-is'
+        spaces_and_linebreaks = 'are preserved'
+        markup_processing = None
+
+Block Quotes
+------------
+
+Block quotes consist of indented body elements:
+
+    This theory, that is mine, is mine.
+
+    Anne Elk (Miss)
+
+Doctest Blocks
+--------------
+
+>>> print 'Python-specific usage examples; begun with ">>>"'
+Python-specific usage examples; begun with ">>>"
+>>> print '(cut and pasted from interactive Python sessions)'
+(cut and pasted from interactive Python sessions)
+
+Tables
+------
+
++------------------------+------------+----------+----------+
+| Header row, column 1   | Header 2   | Header 3 | Header 4 |
+| (header rows optional) |            |          |          |
++========================+============+==========+==========+
+| body row 1, column 1   | column 2   | column 3 | column 4 |
++------------------------+------------+----------+----------+
+| body row 2             | Cells may span columns.          |
++------------------------+------------+---------------------+
+| body row 3             | Cells may  | - Table cells       |
++------------------------+ span rows. | - contain           |
+| body row 4             |            | - body elements.    |
++------------------------+------------+---------------------+
+
+Footnotes
+---------
+
+.. [label] A footnote contains body elements, consistently
+   indented by at least 3 spaces.
+
+.. [#] Footnotes may be numbered, either manually or automatically
+   using a "#" label. Manual and automatic footnotes may not be mixed.
+
 Targets
 -------
 
@@ -113,3 +198,33 @@ Explicit external targets are interpolated into references such as
 "Python_".
 
 .. _Python: http://www.python.org/
+
+Directives
+----------
+
+An image directive:
+
+.. image:: ../docs/images/title.png
+
+Substitution Definitions
+------------------------
+
+An inline image (|example|) example:
+
+.. |EXAMPLE| image:: ../docs/images/biohazard.png
+
+Comments
+--------
+
+Here's one (check the source):
+
+.. Comments begin with two dots and a space. Anything may
+   follow, except for the syntax of footnotes, hyperlink
+   targets, directives, or substitution definitions.
+
+Error Handling
+==============
+
+Any errors caught during processing will generate system messages.
+There should be one in the following, system-generated section,
+"Docutils System Messages":
