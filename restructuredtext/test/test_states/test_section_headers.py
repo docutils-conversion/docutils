@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/13 02:41:22 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/09/18 04:43:19 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -360,9 +360,7 @@ Paragraph 4.
             Paragraph 3.
         <system_warning level="3">
             <paragraph>
-                <strong>
-                    ABORT
-                : Title level inconsistent at line 15:
+                Title level inconsistent at line 15:
             <literal_block>
                 Title 4
                 ```````
@@ -413,9 +411,7 @@ Paragraph 4.
             Paragraph 3.
         <system_warning level="3">
             <paragraph>
-                <strong>
-                    ABORT
-                : Title level inconsistent at line 19:
+                Title level inconsistent at line 19:
             <literal_block>
                 ```````
                 Title 4
