@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# $Id: model.py,v 1.3 2001/09/07 02:10:30 goodger Exp $
+# $Id: model.py,v 1.4 2001/09/10 04:12:15 goodger Exp $
 # by David Goodger (dgoodger@bigfoot.com)
 
 
@@ -14,7 +14,6 @@ class Parser:
         self.warninglevel = warninglevel
         self.errorlevel = errorlevel
         self.languagecode = languagecode
-        self.language = utils.language(languagecode)
         self.debug = debug
 
     def parse(self, inputstring):
