@@ -1,7 +1,7 @@
 PEP: 258
 Title: Docutils Design Specification
-Version: $Revision: 1.9 $
-Last-Modified: $Date: 2002/04/13 17:00:21 $
+Version: $Revision: 1.10 $
+Last-Modified: $Date: 2002/04/18 02:53:42 $
 Author: goodger@users.sourceforge.net (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
@@ -182,8 +182,8 @@ Specification
     2.1 for multiple module docstrings.  The Python Reference Manual
     specifies:
 
-        A future statement must appear near the top of the module. The
-        only lines that can appear before a future statement are:
+        A future statement must appear near the top of the module.
+        The only lines that can appear before a future statement are:
 
         * the module docstring (if any),
         * comments,
@@ -314,8 +314,8 @@ Specification
 
     Examples:
 
-    - Standalone/Raw/Plain: Just read a text file and process it. The
-      reader needs to be told which parser to use. Parser-specific
+    - Standalone/Raw/Plain: Just read a text file and process it.  The
+      reader needs to be told which parser to use.  Parser-specific
       readers?
 
     - Python Source: See `Python Source Reader`_ above.
@@ -323,18 +323,20 @@ Specification
     - Email: RFC-822 headers, quoted excerpts, signatures, MIME parts.
 
     - PEP: RFC-822 headers, "PEP xxxx" and "RFC xxxx" conversion to
-      URIs. Either interpret PEPs' indented sections or convert existing
-      PEPs to reStructuredText (or both?).
+      URIs.  Either interpret PEPs' indented sections or convert
+      existing PEPs to reStructuredText (or both?).
 
     - Wiki: Global reference lookups of "wiki links" incorporated into
-      transforms. (CamelCase only or unrestricted?) Lazy indentation?
+      transforms.  (CamelCase only or unrestricted?)  Lazy
+      indentation?
 
     - Web Page: As standalone, but recognize meta fields as meta tags.
-      Support for templates of some sort? (After <body>, before </body>?)
+      Support for templates of some sort?  (After <body>, before
+      </body>?)
 
     - FAQ: Structured "question & answer(s)" constructs.
 
-    - Compound document: Merge chapters into a book. Master TOC file?
+    - Compound document: Merge chapters into a book.  Master TOC file?
 
 
     Parsers
@@ -406,7 +408,7 @@ Specification
 
     Examples:
 
-    - XML: Various forms, such as DocBook. Also, raw doctree XML.
+    - XML: Various forms, such as DocBook.  Also, raw doctree XML.
 
     - HTML
 

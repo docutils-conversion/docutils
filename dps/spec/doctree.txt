@@ -3,22 +3,22 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/16 06:11:11 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/04/18 02:53:21 $
 
 This document describes the internal data structure representing
-document trees in the Python Docstring Processing System. The data
+document trees in the Python Docstring Processing System.  The data
 structure is defined by the hierarchy of classes in the ``dps.nodes``
-module. It is also formally described by the `Generic Plaintext
+module.  It is also formally described by the `Generic Plaintext
 Document Interface DTD`_ XML document type definition, gpdi.dtd_,
 which is the definitive source for element hierarchy details.
 
 Below is a simplified diagram of the hierarchy of element types in the
-DPS document tree structure. An element may contain any other elements
-immediately below it in the diagram. Note text is in square brackets.
-Element types in parentheses indicate recursive or one-to-many
-relationships; sections may contain (sub)sections, tables contain
-further body elements, etc. ::
+DPS document tree structure.  An element may contain any other
+elements immediately below it in the diagram.  Note text is in square
+brackets.  Element types in parentheses indicate recursive or
+one-to-many relationships; sections may contain (sub)sections, tables
+contain further body elements, etc. ::
 
   +--------------------------------------------------------------------+
   | document  [may begin with a title, subtitle, docinfo]              |
@@ -42,9 +42,10 @@ further body elements, etc. ::
 -------------------
 
 A class hierarchy has been implemented in nodes.py where the position
-of the element (the level at which it can occur) is significant. E.G.,
-Root, Structural, Body, Inline classes etc. Certain transformations
-will be easier because we can use isinstance() on them.
+of the element (the level at which it can occur) is significant.
+E.G., Root, Structural, Body, Inline classes etc.  Certain
+transformations will be easier because we can use isinstance() on
+them.
 
 The elements making up DPS document trees can be categorized into the
 following groups:
@@ -200,7 +201,7 @@ rawsource_, children_, attributes_, tagname_.
 ``%basic.atts;``
 ================
 The ``%basic.atts;`` parameter entity lists attributes common to all
-elements. See `Common Attributes`_.
+elements.  See `Common Attributes`_.
 
 
 ``%body.elements;``
@@ -237,7 +238,7 @@ Representation of Horizontal Rules
 
 Having added the "horizontal rule" construct to the reStructuredText_
 spec, a decision had to be made as to how to reflect the construct in
-the implementation of the document tree. Given this source::
+the implementation of the document tree.  Given this source::
 
     Document
     ========
@@ -249,7 +250,7 @@ the implementation of the document tree. Given this source::
     Paragraph
 
 The horizontal rule indicates a "transition" (in prose terms) or the
-start of a new "division". Before implementation, the parsed document
+start of a new "division".  Before implementation, the parsed document
 tree would be::
 
     <document>
@@ -262,12 +263,12 @@ tree would be::
             <paragraph>
                 Paragraph
 
-There are several possibilities for the implementation. Solution 3
+There are several possibilities for the implementation.  Solution 3
 was chosen.
 
-1. Implement horizontal rules as "divisions" or segments. A "division"
-   is a title-less, non-hierarchical section. The first try at an
-   implementation looked like this::
+1. Implement horizontal rules as "divisions" or segments.  A
+   "division" is a title-less, non-hierarchical section.  The first
+   try at an implementation looked like this::
 
        <document>
            <section name="document">
@@ -280,9 +281,9 @@ was chosen.
                        Paragraph
 
    But the two paragraphs are really at the same level; they shouldn't
-   appear to be at different levels. There's really an invisible
-   "first division". The horizontal rule splits the document body into
-   two segments, which should be treated uniformly.
+   appear to be at different levels.  There's really an invisible
+   "first division".  The horizontal rule splits the document body
+   into two segments, which should be treated uniformly.
 
 2. Treating "divisions" uniformly brings us to the second
    possibility::
@@ -299,11 +300,11 @@ was chosen.
                        Paragraph
 
    With this change, documents and sections will directly contain
-   divisions and sections, but not body elements. Only divisions will
-   directly contain body elements. Even without a horizontal rule
+   divisions and sections, but not body elements.  Only divisions will
+   directly contain body elements.  Even without a horizontal rule
    anywhere, the body elements of a document or section would be
-   contained within a division element. This makes the document tree
-   deeper. This is similar to the way HTML treats document contents:
+   contained within a division element.  This makes the document tree
+   deeper.  This is similar to the way HTML treats document contents:
    grouped within a <BODY> element.
 
 3. Implement them as "transitions", empty elements::
@@ -319,9 +320,9 @@ was chosen.
                    Paragraph
 
    A transition would be a "point element", not containing anything,
-   only identifying a point within the document structure. This keeps
+   only identifying a point within the document structure.  This keeps
    the document tree flatter, but the idea of a "point element" like
-   "transition" smells bad. A transition isn't a thing itself, it's
+   "transition" smells bad.  A transition isn't a thing itself, it's
    the space between two divisions.
 
    This solution has been chosen for incorporation into the document

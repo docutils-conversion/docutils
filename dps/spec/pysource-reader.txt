@@ -3,8 +3,8 @@
 ======================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/03/28 04:33:05 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/04/18 02:53:52 $
 
 This document details Python-specific interpretations of the
 `reStructuredText Markup Specification`_, part of the
@@ -13,7 +13,7 @@ Processing System`_.
 
 For definitive element hierarchy details, see the "Python Plaintext
 Document Interface DTD" XML document type definition, ppdi.dtd_ (which
-modifies the generic gpdi.dtd_). Descriptions below list 'DTD
+modifies the generic gpdi.dtd_).  Descriptions below list 'DTD
 elements' (XML 'generic identifiers' or tag names) corresponding to
 syntax constructs.
 
@@ -27,7 +27,7 @@ parameter, type, exception_class, warning_class.
 
 In Python docstrings, interpreted text is used to classify and mark up
 program identifiers, such as the names of variables, functions,
-classes, and modules. If the identifier alone is given, its role is
+classes, and modules.  If the identifier alone is given, its role is
 inferred implicitly according to the Python namespace lookup rules.
 For functions and methods (even when dynamically assigned),
 parentheses ('()') may be included::
@@ -40,7 +40,7 @@ when necessary::
     class Keeper(Storer):
 
         """
-        Extend `Storer`. Class attribute `instances` keeps track of
+        Extend `Storer`.  Class attribute `instances` keeps track of
         the number of `Keeper` objects instantiated.
         """
 
@@ -75,7 +75,7 @@ identifier in either prefix or suffix form::
 The role may be one of 'package', 'module', 'class', 'method',
 'function', 'module_attribute', 'class_attribute',
 'instance_attribute', 'variable', 'parameter', 'type',
-'exception_class', 'exception', 'warning_class', or 'warning'. Other
+'exception_class', 'exception', 'warning_class', or 'warning'.  Other
 roles may be defined.
 
 .. _reStructuredText Markup Specification:
