@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/18 04:34:35 $
+:Date: $Date: 2001/09/25 03:09:01 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -126,6 +126,7 @@ Changed contact email addresses.
 * spec/gdpi.dtd:
 
   - Fixed typos & omissions; now validates.
+  - Added 'source' to basic.atts; removed 'rawtext'.
   - Changed field_argument's model to PCDATA.
   - Added option_list and doctest_block from ppdi.dtd.
   - Added vms_option element to option.
