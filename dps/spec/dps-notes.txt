@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/01 02:46:47 $
-Revision: $Revision: 1.2 $
+Date: $Date: 2001/08/04 15:25:52 $
+Revision: $Revision: 1.3 $
 
 
 To Do
@@ -12,8 +12,11 @@ To Do
 
   - Fill in the blanks in API details.
 
-- Rework PEP 257, separating style from spec wrt DPS. See Doc-SIG
-  from 2001-06-19/20.
+- Rework PEP 257, separating style from spec from tools, wrt DPS. See
+  Doc-SIG from 2001-06-19/20.
+
+- PEP 256: Draw the framework diagram properly as a graphic (once PEPs
+  support inline graphics !-).
 
 - Document!
 
@@ -24,8 +27,35 @@ To Do
 
 - Add layout component to framework? Or part of the formatter?
 
-- Add validation? See http://pytrex.sf.net, RELAX NG.
+- Add validation? See http://pytrex.sourceforge.net, RELAX NG.
 
+
+Error Handling
+==============
+
+Tibs pointed out that the four levels correspond to `VMS severity levels`_:
+
++-------+-------+--------------+------------------------------------+
+| DPS   | VMS   |              |                                    |
+| Level | Value | Severity     | Response                           |
++=======+=======+==============+====================================+
+| n/a   | 1     | Success      | Execution continues, expected      |
+|       |       |              | results                            |
++-------+-------+--------------+------------------------------------+
+| 0     | 3     | Information  | Execution continues, informational |
+|       |       |              | message displayed                  |
++-------+-------+--------------+------------------------------------+
+| 1     | 0     | Warning      | Execution continues, unpredictable |
+|       |       |              | results                            |
++-------+-------+--------------+------------------------------------+
+| 2     | 2     | Error        | Execution continues, erroneous     |
+|       |       |              | results                            |
++-------+-------+--------------+------------------------------------+
+| 3     | 4     | Severe error | Execution terminates, no output    |
++-------+-------+--------------+------------------------------------+
+
+.. _VMS severity levels:
+   http://www.openvms.compaq.com:8000/73final/5841/5841pro_027.html#error_cond_severity
 
 I/O APIs
 ========
