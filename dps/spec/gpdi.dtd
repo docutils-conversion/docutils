@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.24 $
-:Date: $Date: 2001/11/13 03:08:01 $
+:Revision: $Revision: 1.25 $
+:Date: $Date: 2001/11/15 02:54:04 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -391,6 +391,7 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ATTLIST image
     %basic.atts;
     uri       CDATA     #REQUIRED
+    alt       CDATA     #IMPLIED
     height    NMTOKEN   #IMPLIED
     width     NMTOKEN   #IMPLIED
     scale     NMTOKEN   #IMPLIED>
