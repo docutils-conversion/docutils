@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/14 03:37:58 $
-Revision: $Revision: 1.8 $
+Date: $Date: 2001/08/15 02:59:33 $
+Revision: $Revision: 1.9 $
 
 
 To Do
@@ -21,14 +21,10 @@ To Do
   be interpreted as ``keyword: value``; ``$keyword$`` could be
   interpreted as ``keyword:`` (no value).
 
-- Figure out field lists better: syntax, directive or not, context.
-  Reply to issues raised in "usage docstrings and bibliographic field
-  lists (Garth Kidd)" (Doc-SIG 2001-07-27).
-
 - Allow hyperlink references to targets in other documents? Not in an
   HTML-centric way, though (it's trivial to say
   http://www.whatever.com/doc#name, and useless in non-HTML contexts).
-  XLink/XPointer?
+  XLink/XPointer? ``.. baseref::``? See Doc-SIG 2001-08-10.
 
 - Explicitly define what characters constitute whitespace, and enable
   the parser to recognize them all.
@@ -36,12 +32,51 @@ To Do
 - For duplicate indirect external hyperlink targets (explicit), check
   the target URIs: same -> level-0 warning; different -> level-1.
 
-- Interpret backslash-escaped spaces as non-breaking spaces? Newlines
-  too?
+- Interpret backslash-escaped spaces as non-breaking spaces? Escaped
+  newlines as forced-breaks?
 
 - Implement the header row separator modification to table.el. (Wrote
   to Takaaki Ota & the table.el mailing list on 2001-08-12,
   suggesting support for '=====' header rows.)
+
+- Tony says inline markup rule 7 could do with a *little* more
+  exposition in the spec, to make clear what is going on for people
+  with head colds.
+
+- Move interpreted text roles outside of the quotes::
+
+      role:`interpreted text`
+
+- Add DOS/VMS-style "/A" option support to option lists.
+
+- Enable optional blank lines between definition list items.
+
+- Add empty quote support. "A tiny but practical wart."
+
+- Merge pyextensions.txt into reStructuredText.txt, and ppdi.dtd into
+  gpdi.dtd?
+
+- Add auto-numbered footnotes & references, with optional labels.
+  What to label the ``[#]`` footnotes?
+
+- Perhaps, to make footnotes even more distinct from hyperlink
+  targets, we can drop the leading '_'? Doc-SIG 2001-08-09, "Colons
+  and footnotes".
+
+- Add auto-numbered enumerated lists? Arabic numerals only, or any
+  sequence if first initialized?
+
+- Put in a check for spaces inside text in hyperlink targets. The
+  parser can generate a warning, including the entire "target" as a
+  literal block.
+
+- Document & implement the shared namespace for hyperlink names &
+  footnote labels (without brackets).
+
+- Perhaps it's better to think of "::" as pure markup, which
+  disappears from the processed output as would the asterisks in
+  *emphasis*. As a special case, if the "::" ends a paragraph preceded
+  by non-whitespace, we keep one ":" in place.
 
 
 Or Not To Do?
