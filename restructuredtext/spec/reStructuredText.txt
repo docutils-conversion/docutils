@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2001/08/22 03:50:27 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2001/08/23 04:10:15 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -246,6 +246,16 @@ backslashes in a row.
 There are two contexts in which backslashes have no special meaning:
 literal blocks and inline literals. In these contexts, a single
 backslash represents a literal backslash.
+
+Please note that the reStructuredText specification and parser do not
+address the issue of the representation or extraction of text input.
+Backslashes and other characters may serve a character-escaping
+purpose in certain contexts and must be dealt with appropriately. For
+example, Python  uses backslashes in strings to escape certain
+characters, but not others. The simplest solution when backslashes
+appear in Python docstrings is to use raw docstrings::
+
+    r"""This is a raw docstring. Backslashes (\) are not touched."""
 
 
 Section Structure
