@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/02/12 02:29:42 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/02/13 02:22:53 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for typically HTML-specific constructs.
@@ -76,8 +76,11 @@ class MetaBody(states.SpecializedBody):
         return meta, blankfinish
 
 
-class meta_node(nodes.Special, nodes.Bibliographic, nodes.Element):
+class meta_node(nodes.Special, nodes.PreBibliographic, nodes.Element):
 
     """HTML-specific "meta" element."""
 
     tagname = 'meta'
+
+
+metaSMkwargs = {'stateclasses': (MetaBody,)}
