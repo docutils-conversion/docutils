@@ -4,12 +4,64 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/07/29 15:55:48 $
+Date: $Date: 2001/08/11 01:53:18 $
 Website: http://docstring.sourceforge.net/
+
+
+Acknowledgements
+================
+
+I would like to acknowledge the people who have made a direct impact
+on the Python Docstring Processing System project, knowingly or not,
+in terms of encouragement, suggestions, criticism, bug reports, code
+contributions, and related projects:
+
+    David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
+    Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel Larsson, Marc-Andre
+    Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Michel
+    Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim, Tavis Rudd, Bob
+    Tolbert, Laurence Tratt, Guido van Rossum, Barry Warsaw, Edward
+    Welbourne, Ka-Ping Yee, Moshe Zadka
+
+(I'm still waiting for contributions of tasty snacks, computer
+equipment, and cold hard cash. :-) Hopefully I haven't forgotten
+anyone or misspelled any names; apologies (and please let me know!) if
+I have.
 
 
 Release 0.4? (pending)
 ========================
+
+* install.py: Added to project.
+
+* setup.py: Modified for import by install.py.
+
+* dps/roman.py: Added to project. Written by and courtesy of Mark
+  Pilgrim. From http://diveintopython.org.
+
+* dps/statemachine.py:
+
+  - Fixed bug in StateMachineWS.getknownindented().
+
+* dps/parsers/model.py:
+
+  - Added setup_parse() so unoverridden parse() could raise a
+    NotImplementedError.
+
+* spec/pep-0256.txt:
+
+  - Added ref to Ed Loper's STminus.
+  - Added "methods" to abstract.
+
+* spec/pep-0257.txt:
+
+  - Added "methods" to descriptions.
+  - Mentioned Unicode strings.
+
+* spec/pep-0258.txt:
+
+  - Clarifications due to Tony Ibbs.
+  - Added names to system warnings.
 
 * spec/gdpi.dtd: Fixed typos & omissions; now validates.
 
@@ -98,27 +150,6 @@ Release 0.1 (2001-06-02)
 
 The project web site and the first project release were rolled out.
 Candidate PEPs posted to Doc-SIG 2001-06-03.
-
-
-Acknowledgements
-================
-
-I would like to acknowledge the people who have made a direct impact
-on the Python Docstring Processing System project, knowingly or not,
-in terms of encouragement, suggestions, criticism, bug reports, code
-contributions, and related projects:
-
-    David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
-    Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel Larsson, Marc-Andre
-    Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Michel
-    Pelletier, Sam Penrose, Tim Peters, Tavis Rudd, Bob Tolbert,
-    Laurence Tratt, Guido van Rossum, Barry Warsaw, Edward Welbourne,
-    Ka-Ping Yee, Moshe Zadka
-
-(I'm still waiting for contributions of tasty snacks, computer
-equipment, and cold hard cash. :-) Hopefully I haven't forgotten
-anyone or misspelled any names; apologies (and please let me know!) if
-I have.
 
 
 Local Variables:

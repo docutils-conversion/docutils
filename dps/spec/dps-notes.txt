@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/06 04:32:20 $
-Revision: $Revision: 1.4 $
+Date: $Date: 2001/08/11 01:53:29 $
+Revision: $Revision: 1.5 $
 
 
 To Do
@@ -16,7 +16,7 @@ To Do
   Doc-SIG from 2001-06-19/20.
 
 - PEP 256: Draw the framework diagram properly as a graphic (once PEPs
-  support inline graphics !-).
+  support graphics !-).
 
 - Document!
 
@@ -31,6 +31,12 @@ To Do
 
 - Incorporate "modes", using Tony Ibbs' 2001-08-03 Doc-SIG post
   'Suggestions for reST "modes"' as a base.
+
+- Ask Python-dev for opinions (GvR for a pronouncement) on special
+  variables (__author__, __version__, etc.): convenience vs. namespace
+  pollution. Ask opinions on whether or not the DPS should recognize &
+  use them.
+
 
 Error Handling
 ==============
@@ -58,6 +64,7 @@ Tibs pointed out that the four levels correspond to `VMS severity levels`_:
 
 .. _VMS severity levels:
    http://www.openvms.compaq.com:8000/73final/5841/5841pro_027.html#error_cond_severity
+
 
 I/O APIs
 ========
