@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/01 16:57:25 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/09/02 14:02:12 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -13,7 +13,7 @@ Tests for states.py.
 import RSTTestSupport
 
 def suite():
-    s = RSTTestSupport.ParserTestSuite(id=__file__)
+    s = RSTTestSupport.ParserTestSuite()
     s.generateTests(totest)
     return s
 
