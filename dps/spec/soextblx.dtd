@@ -1,4 +1,9 @@
-<!-- XML EXCHANGE TABLE MODEL DECLARATION MODULE -->
+<!--
+===========================================================================
+    OASIS XML Exchange Table Model Declaration Module
+===========================================================================
+Date: 1999-03-15
+-->
 
 <!-- This set of declarations defines the XML version of the Exchange
      Table Model as of the date shown in the Formal Public Identifier

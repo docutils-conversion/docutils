@@ -4,23 +4,41 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 0.1
-Date: 2001-06-02
-Website: http://docstring.sf.net
+Version: 0.2
+Date: $Date: 2001/06/18 23:39:27 $
+Web-site: http://docstring.sourceforge.net/
 
-Thank you for downloading the Python Docstring Processing System, version 0.1.
+Thank you for downloading the Python Docstring Processing System project
+arhive. As this is a work in progress, please check the project web site for
+updated working files. The latest release archive is available at
+http://sf.net/project/showfiles.php?group_id=26626.
+
 This version mostly consists of the specification: the candidate PEPs (Python
 Enhancement Proposals) and XML DTDs (document type definitions). If you want
 to run the code (there isn't much of it yet, just dps.statemachine), Python
 2.0 or later must already be installed. You can get Python from
-http://www.python.org.
+http://www.python.org/.
+
+
+Archive Contents
+================
+
+* README.txt: You're reading it.
+
+* HISTORY.txt: Release notes for the current and previous project releases.
+
+* setup.py: Installation script. See "Installation" below.
+
+* spec: The project specification directory.
+
+* dps: The project source directory, installed as a Python package.
+
 
 Installation
 ============
 
-Since you're reading this file, you've probably already completed the first
-step, which is to expand the dps-0.1.tar.gz archive. It contains a distutils
-setup file "setup.py". OS-specific installation instructions follow.
+The first step is to expand the dps-0.2.tar.gz archive. It contains a
+distutils setup file "setup.py". OS-specific installation instructions follow.
 
 Linux, Unix, MacOS X
 --------------------
@@ -69,6 +87,7 @@ MacOS
 3. The distutils options window will appear. From the "Command" popup list
    choose "install", click "Add", then click "OK".
 
+
 Usage
 =====
 
@@ -78,3 +97,10 @@ http://structuredtext.sf.net).
 
 The specs, the package structure, and the skeleton modules may also be of
 interest to you. Contributions are welcome!
+
+
+Local Variables:
+mode: indented-text
+indent-tabs-mode: nil
+fill-column: 70
+End:

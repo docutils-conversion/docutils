@@ -1,11 +1,11 @@
 #! /usr/bin/env python
-# $Id: statemachine.py,v 1.11 2001/06/01 20:45:51 David_Goodger Exp $
 
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 1.0
-Date: 2001-06-01
+Version: 1.1
+Revision: $Revision: 1.12 $
+Date: $Date: 2001/06/12 23:19:28 $
 Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -59,6 +59,8 @@ How To Use This Module
               result = [...]  # a list
               return context, nextstate, result
               # context, nextstate may be altered
+
+      Transition methods may raise an `EOFError` to cut processing short.
 
    d) You may wish to override the `State.bof()` and/or `State.eof()` implicit
       transition methods, which handle the beginning- and end-of-file.
@@ -187,7 +189,10 @@ class StateMachine:
                                              % self.line)
                 except IndexError:
                     break
-                context, nextstate, result = self.checkline(context, state)
+                try:
+                    context, nextstate, result = self.checkline(context, state)
+                except EOFError:
+                    break
                 state = self.getstate(nextstate)
                 results.extend(result)
             results.extend(state.eof(context))
@@ -348,6 +353,8 @@ class State:
     - The processing result, a list, which is accumulated by the state
       machine.
 
+    Transition methods may raise an `EOFError` to cut processing short.
+
     There are two implicit transitions, and corresponding transition methods
     are defined: `bof()` handles the beginning-of-file, and `eof()` handles
     the end-of-file. These methods have non-standard signatures and return
@@ -368,8 +375,8 @@ class State:
 
     initialtransitions = None
     """A list of transitions to initialize when a `State` is instantiated.
-    Each entry is a list or tuple of transition name and optionally a next
-    state name. (See `maketransitions()`.)"""
+    Each entry is either a transition name string, or a (transition name,
+    next state name) pair. (See `maketransitions()`.)"""
 
     def __init__(self, statemachine, debug=0):
         """
@@ -434,13 +441,20 @@ class State:
 
     def maketransitions(self, namelist):
         """
-        Return a list of transitions, given a list of (name, [next state]).
+        Return a list of transitions, given a list of transition names.
 
-        Parameter `namelist`: a list of arguments to `maketransition()`. Each
-        entry is a list or tuple of transition name and optionally a next
-        state name.
+        Parameter `namelist`: a list, where each entry is either a
+        transition name string, or a 1- or 2-tuple (transition name, optional
+        next state name).
         """
-        return [self.maketransition(*namestate) for namestate in namelist]
+        stringtype = type('')
+        transitions = []
+        for namestate in namelist:
+            if type(namestate) is stringtype:
+                transitions.append(self.maketransition(namestate))
+            else:
+                transitions.append(self.maketransition(*namestate))
+        return transitions
 
     def bof(self, context):
         """
@@ -765,7 +779,7 @@ def string2lines(astring, tabwidth=8):
     - `astring`: a multi-line string.
     - `tabwidth`: the number of columns between tab stops.
     """
-    return [s.expandtabs(tabwidth) for s in astring.split('\n')]
+    return [s.expandtabs(tabwidth) for s in astring.splitlines()]
 
 def extractindented(lines):
     """

@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# $Id: test_statemachine.py,v 1.9 2001/06/01 20:53:53 David_Goodger Exp $
+# $Id: test_statemachine.py,v 1.10 2001/06/12 23:19:58 David_Goodger Exp David_Goodger $
 # by David Goodger (dgoodger@bigfoot.com)
 
 import unittest, sys, re
@@ -42,7 +42,7 @@ class MockState(StateWS):
 
     patterns = {'bullet': re.compile(r'- '),
                 'text': re.compile('.')}
-    initialtransitions = [['bullet'], ['text']]
+    initialtransitions = ['bullet', ['text']]
     levelholder = [0]
 
     def bof(self, context):
@@ -180,9 +180,11 @@ class EmptyStateTestCase(unittest.TestCase):
                            self.state.__class__.__name__))
 
     def test_maketransitions(self):
-        self.assertEquals(self.state.maketransitions((['nop'],
+        self.assertEquals(self.state.maketransitions(('nop', ['nop'],
                                                       ('nop', 'bogus'))),
                           [('nop', 'dummy', self.state.nop,
+                            self.state.__class__.__name__),
+                           ('nop', 'dummy', self.state.nop,
                             self.state.__class__.__name__),
                            ('nop', 'dummy', self.state.nop, 'bogus')])
 
@@ -191,7 +193,7 @@ class MiscTestCase(unittest.TestCase):
 
     s2l_string = "hello\tthere\thow are\tyou?\n\tI'm fine\tthanks.\n"
     s2l_expected = ['hello   there   how are you?',
-                    "        I'm fine        thanks.", '']
+                    "        I'm fine        thanks."]
     indented_string = """\
         a
       literal
