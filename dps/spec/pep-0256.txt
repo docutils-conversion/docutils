@@ -1,7 +1,7 @@
 PEP: 256
 Title: Docstring Processing System Framework
-Version: $Revision: 1.1 $
-Last-Modified: $Date: 2001/07/22 22:36:18 $
+Version: $Revision: 1.2 $
+Last-Modified: $Date: 2001/08/04 15:44:49 $
 Author: dgoodger@bigfoot.com (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
@@ -12,12 +12,12 @@ Post-History: 13-Jun-2001
 
 Abstract
 
-    Python modules, classes and functions have a string attribute
-    called __doc__.  If the first expression inside the definition is
-    a literal string, that string is assigned to the __doc__
-    attribute, called a documentation string or docstring.  It is
-    often used to summarize the interface of the module, class or
-    function.
+    Python modules, functions, classes and methods have a string
+    attribute called __doc__.  If the first expression inside their
+    definition is a literal string, that string is assigned to the
+    __doc__ attribute, called a documentation string or docstring.  It
+    is often used to summarize the interface of the module, function,
+    class or method.
 
     There is no standard format (markup) for docstrings, nor are there
     standard tools for extracting docstrings and transforming them
@@ -70,6 +70,8 @@ Rationale
 
     - Tony Ibbs' docutils [7]
 
+    - Edward Loper's STminus formalization and related efforts [8]
+
     These systems, each with different goals, have had varying degrees
     of success.  A problem with many of the above systems was
     over-ambition.  They provided a self-contained set of components:
@@ -79,7 +81,7 @@ Rationale
     system from being adopted as a standard tool.
 
     Throughout the existence of the Python Documentation Special
-    Interest Group (Doc-SIG) [8], consensus on a single standard
+    Interest Group (Doc-SIG) [9], consensus on a single standard
     docstring format has never been reached.  A lightweight, implicit
     markup has been sought, for the following reasons (among others):
 
@@ -98,8 +100,8 @@ Rationale
     4. Implicit markup is aesthetically compatible with the clean and
        minimalist Python syntax.
 
-    Early on, variants of Setext (Structure Enhanced Text) [9],
-    including Digital Creation's StructuredText [10], were proposed
+    Early on, variants of Setext (Structure Enhanced Text) [10],
+    including Digital Creation's StructuredText [11], were proposed
     for Python docstring formatting.  Hereafter we will collectively
     call these variants 'STexts'.  Although used by some (including in
     most of the above-listed autodocumentation tools), these markup
@@ -180,7 +182,7 @@ Specification
 
        - First line is a one-line synopsis.
 
-       PEP 257, Docstring Conventions [11], documents these issues.
+       PEP 257, Docstring Conventions [12], documents these issues.
 
     2. Docstring processing system generic implementation details.
        Documents issues such as:
@@ -204,7 +206,7 @@ Specification
 
        These issues are applicable to any docstring processing system
        implementation.  PEP 258, DPS Generic Implementation Details
-       [12], documents these issues.
+       [13], documents these issues.
 
     3. Docstring processing system implementation.
 
@@ -275,19 +277,21 @@ References and Footnotes
 
     [7] http://homepage.ntlworld.com/tibsnjoan/docutils/
 
-    [8] http://www.python.org/sigs/doc-sig/
+    [8] http://www.cis.upenn.edu/~edloper/pydoc/
 
-    [9] http://www.bsdi.com/setext/
+    [9] http://www.python.org/sigs/doc-sig/
 
-    [10] http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage/
+    [10] http://www.bsdi.com/setext/
 
-    [11] PEP 257, Docstring Conventions, Goodger, Van Rossum
+    [11] http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage/
+
+    [12] PEP 257, Docstring Conventions, Goodger, Van Rossum
          http://www.python.org/peps/pep-0257.html
 
-    [12] PEP 258, DPS Generic Implementation Details, Goodger
+    [13] PEP 258, DPS Generic Implementation Details, Goodger
          http://www.python.org/peps/pep-0258.html
 
-    [13] PEP 216, Docstring Format, Zadka
+    [14] PEP 216, Docstring Format, Zadka
          http://www.python.org/peps/pep-0216.html
 
 
@@ -300,7 +304,7 @@ Copyright
 Acknowledgements
 
     This document borrows text from PEP 216, Docstring Format, by
-    Moshe Zadka [13].  It is intended as a reorganization of PEP 216
+    Moshe Zadka [14].  It is intended as a reorganization of PEP 216
     and its approach.
 
     This document also borrows ideas from the archives of the Python
