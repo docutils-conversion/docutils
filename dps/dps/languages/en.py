@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/02/06 02:41:54 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/02/23 16:53:30 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of the Python
@@ -13,13 +13,13 @@ Docstring Processing System.
 
 __docformat__ = 'reStructuredText'
 
-__all__ = ['bibliographic_labels', 'bibliographic_fields', 'author_separators']
+__all__ = ['labels', 'bibliographic_fields', 'author_separators']
 
 
 from dps import nodes
 
 
-bibliographic_labels = {
+labels = {
       'author': 'Author',
       'authors': 'Authors',
       'organization': 'Organization',
@@ -29,8 +29,18 @@ bibliographic_labels = {
       'status': 'Status',
       'date': 'Date',
       'copyright': 'Copyright',
-      'abstract': 'Abstract'}
-"""Mapping of bibliographic node class name to label text."""
+      'abstract': 'Abstract',
+      'attention': 'Attention!',
+      'caution': 'Caution!',
+      'danger': '!DANGER!',
+      'error': 'Error',
+      'hint': 'Hint',
+      'important': 'Important',
+      'note': 'Note',
+      'tip': 'Tip',
+      'warning': 'Warning',
+      }
+"""Mapping of node class name to label text."""
 
 bibliographic_fields = {
       'author': nodes.author,
