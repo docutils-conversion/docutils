@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.19 $
-:Date: $Date: 2001/10/27 05:36:17 $
+:Revision: $Revision: 1.20 $
+:Date: $Date: 2001/10/30 05:16:37 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -66,13 +66,13 @@ Attributes shared by all elements in this DTD:
 <!ENTITY % refname.att
   " refname   CDATA     #IMPLIED ">
 
-<!ENTITY % additional.link.atts "">
-<!-- Collected hyperlink attributes. -->
-<!ENTITY % link.atts
+<!ENTITY % additional.reference.atts "">
+<!-- Collected hyperlink reference attributes. -->
+<!ENTITY % reference.atts
   " %refuri.att;
     %refid.att;
     %refname.att;
-    %additional.link.atts; ">
+    %additional.reference.atts; ">
 
 <!-- Unnamed hyperlink. -->
 <!ENTITY % anonymous.att
@@ -358,11 +358,11 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT label (#PCDATA)>
 <!ATTLIST label %basic.atts;>
 
-<!-- Also an inline element. -->
+<!-- Also an inline element; empty otherwise. -->
 <!ELEMENT target (#PCDATA)>
 <!ATTLIST target
     %basic.atts;
-    %refname.att;
+    %reference.atts;
     %anonymous.att;>
 
 <!ELEMENT directive (%body.elements;)*>
@@ -432,13 +432,13 @@ Inline elements occur within the PCDATA of body elements.
 <!ELEMENT link (#PCDATA)>
 <!ATTLIST link
     %basic.atts;
-    %link.atts;
+    %reference.atts;
     %anonymous.att;>
 
 <!ELEMENT footnote_reference (#PCDATA)>
 <!ATTLIST footnote_reference
     %basic.atts;
-    %link.atts;
+    %reference.atts;
     %auto.att;>
 
 <!--
