@@ -1,0 +1,136 @@
+================================================
+ Record of reStructuredText Syntax Alternatives
+================================================
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Revision: $Revision: 1.1 $
+:Date: $Date: 2001/08/16 02:43:09 $
+
+The following are syntax ideas that were considered for
+reStructuredText, which did not originate with Setext_ or
+StructuredText_.
+
+.. _Setext: http://www.bsdi.com/setext
+.. _StructuredText:
+    http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
+
+
+Field Lists
+===========
+
+Prior to the syntax for field lists being finalized, several
+alternatives were proposed.
+
+1. Unadorned RFC822_ everywhere::
+
+       Author: Me
+       Version: 1
+
+   Advantages: clean, precedent (RFC822-compliant). Disadvantage:
+   ambiguous (these paragraphs are a prime example).
+
+   Conclusion: rejected.
+
+2. Special case: use unadorned RFC822_ for the very first or very last
+   text block of a document::
+
+       """
+       Author: Me
+       Version: 1
+
+       The rest of the document...
+       """
+
+   Advantages: clean, precedent (RFC822-compliant). Disadvantages:
+   special case, flat (unnested) field lists only, still ambiguous::
+
+       """
+       Usage: cmdname [options] arg1 arg2 ...
+
+       We obviously *don't* want the like above to be interpreted as a
+       field list item. Or do we?
+       """
+
+   Conclusion: rejected for the general case, accepted for specific
+   contexts (PEPs, email).
+
+3. Use a directive::
+
+       .. fields::
+
+          Author: Me
+          Version: 1
+
+   Advantages: explicit and unambiguous, RFC822-compliant.
+   Disadvantage: cumbersome.
+
+   Conclusion: rejected.
+
+4. Use Javadoc-style::
+
+       @Author: Me
+       @Version: 1
+       @param a: integer
+
+   Advantages: unambiguous, precedent, flexible. Disadvantages:
+   non-intuitive, ugly, not RFC822-compliant.
+
+   Conclusion: rejected.
+
+5. Use leading colons::
+
+       :Author: Me
+       :Version: 1
+
+   Advantages: unambiguous, obvious (*almost* RFC822-compliant),
+   flexible, perhaps even elegant. Disadvantage: no precedent, not
+   quite RFC822-compliant.
+
+   Conclusion: accepted!
+
+6. Use double colons::
+
+       Author:: Me
+       Version:: 1
+
+   Advantages: unambiguous, obvious? (*almost* RFC822-compliant),
+   flexible, similar to syntax already used for literal blocks and
+   directives. Disadvantages: no precedent, not quite
+   RFC822-compliant, similar to syntax already used for literal blocks
+   and directives.
+
+   Conclusion: rejected because of the syntax similarity & conflicts.
+
+Why is RFC822 compliance important? It's a universal Internet
+standard, and super obvious. Also, I'd like to support the PEP format
+(ulterior motive: get PEPs to use reStructuredText as their standard).
+But it *would* be easy to get used to an alternative (easy even to
+convert PEPs; probably harder to convert python-deviants ;-).
+
+Unfortunately, without well-defined context (such as in email headers:
+RFC822 only applies before any blank lines), the RFC822 format is
+ambiguous. It is very common in ordinary text. To implement field
+lists unambiguously, we need explicit syntax.
+
+The following question was posed in a footnote:
+
+   Should "bibliographic field lists" be defined at the parser level,
+   or at the DPS transformation level? In other words, are they
+   reStructuredText-specific, or would they also be applicable to
+   another (many/every other?) syntax?
+
+The answer is that bibliographic fields are a
+reStructuredText-specific markup convention. Other syntaxes may
+implement the bibliographic elements explicitly. For example, there
+would be no need for such a transformation for an XML-based markup
+syntax.
+
+.. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
+
+
+Local Variables:
+mode: indented-text
+indent-tabs-mode: nil
+fill-column: 70
+End:
+
