@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/13 02:41:53 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/10/20 02:49:04 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -23,15 +23,17 @@ totest['targets'] = [
 ["""\
 .. _target:
 
-(internal hyperlink)
+(Internal hyperlink target.)
 """,
 """\
 <document>
     <target name="target">
     <paragraph>
-        (internal hyperlink)
+        (Internal hyperlink target.)
 """],
 ["""\
+External hyperlink targets:
+
 .. _one-liner: http://structuredtext.sourceforge.net
 
 .. _starts-on-this-line: http://
@@ -44,12 +46,28 @@ totest['targets'] = [
 """,
 """\
 <document>
+    <paragraph>
+        External hyperlink targets:
     <target name="one-liner">
         http://structuredtext.sourceforge.net
     <target name="starts-on-this-line">
         http://structuredtext.sourceforge.net
     <target name="entirely-below">
         http://structuredtext.sourceforge.net
+"""],
+["""\
+Indirect hyperlink targets:
+
+.. _target1: reference_
+
+.. _target2: `phrase-link reference`_
+""",
+"""\
+<document>
+    <paragraph>
+        Indirect hyperlink target:
+    <target name="target1" refuri="reference">
+    <target name="target2" refuri="phrase-link reference">
 """],
 ["""\
 .. _target: Not a proper hyperlink target
@@ -78,17 +96,17 @@ totest['targets'] = [
 ["""\
 .. _target: http://www.python.org/
 
-(indirect external hyperlink)
+(external hyperlink)
 """,
 """\
 <document>
     <target name="target">
         http://www.python.org/
     <paragraph>
-        (indirect external hyperlink)
+        (external hyperlink)
 """],
 ["""\
-Duplicate indirect links (different URIs):
+Duplicate external links (different URIs):
 
 .. _target: first
 
@@ -97,17 +115,17 @@ Duplicate indirect links (different URIs):
 """\
 <document>
     <paragraph>
-        Duplicate indirect links (different URIs):
+        Duplicate external links (different URIs):
     <target dupname="target">
         first
     <system_warning level="1">
         <paragraph>
-            Duplicate indirect link name: "target"
+            Duplicate external link name: "target"
     <target name="target">
         second
 """],
 ["""\
-Duplicate indirect links (same URIs):
+Duplicate external links (same URIs):
 
 .. _target: first
 
@@ -116,12 +134,12 @@ Duplicate indirect links (same URIs):
 """\
 <document>
     <paragraph>
-        Duplicate indirect links (same URIs):
+        Duplicate external links (same URIs):
     <target dupname="target">
         first
     <system_warning level="0">
         <paragraph>
-            Duplicate indirect link name: "target"
+            Duplicate external link name: "target"
     <target name="target">
         first
 """],
@@ -229,7 +247,7 @@ Implicit section header target.
 
 Explicit internal target.
 
-.. _target: Explicit_indirect_target.
+.. _target: Explicit_external_target.
 """,
 """\
 <document>
@@ -256,9 +274,9 @@ Explicit internal target.
             Explicit internal target.
         <system_warning level="1">
             <paragraph>
-                Duplicate indirect link name: "target"
+                Duplicate external link name: "target"
         <target name="target">
-            Explicit_indirect_target.
+            Explicit_external_target.
 """],
 ]
 
