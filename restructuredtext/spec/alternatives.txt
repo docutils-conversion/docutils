@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/08/22 03:44:10 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/08/28 03:10:15 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -192,7 +192,7 @@ Interpreted text is enclosed in single backquotes (`).
    This syntax is similar to that of field lists, which is fine since
    both are doing similar things: describing.
 
-   Syntax #3 is the current reference implementation.
+   This is the syntax chosen for reStructuredText.
 
 4. Another alternative is two colons instead of one::
 
@@ -225,6 +225,8 @@ Interpreted text is enclosed in single backquotes (`).
      (The overlap of \*ML tags with angle brackets would be too
      confusing and precludes their use.)
 
+Syntax #3 was chosen for reStructuredText.
+
 
 Comments
 ========
@@ -251,8 +253,8 @@ empty comment does **not** swallow up indented blocks following it,
 so block quotes are safe. "A tiny but practical wart." Accepted.
 
 
-Justification for Backquotes in Phrase-Links
-============================================
+Backquotes in Phrase-Links
+==========================
 
 [From a 2001-06-05 Doc-SIG post in reply to questions from Doug
 Hellmann.]
@@ -285,7 +287,7 @@ used square brackets for phrase-links. I changed my mind because:
    within double-backquote inline literal text; backslashes do *no*
    escaping within literal text.
 
-7. Single backquo;tes are then freed up for interpreted text.
+7. Single backquotes are then freed up for interpreted text.
 
 8. I already had square brackets required for footnote references.
 
@@ -303,8 +305,9 @@ The underscores can be viewed as if they were right-pointing arrows:
 
 
 
-Local Variables:
-mode: indented-text
-indent-tabs-mode: nil
-fill-column: 70
-End:
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   fill-column: 70
+   End:
