@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/03/04 04:47:52 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/03/16 06:09:23 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of the Python
@@ -39,7 +39,7 @@ labels = {
       'note': 'Note',
       'tip': 'Tip',
       'warning': 'Warning',
-      }
+      'contents': 'Contents'}
 """Mapping of node class name to label text."""
 
 bibliographic_fields = {
