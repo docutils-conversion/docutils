@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/02/21 03:33:54 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/02/23 16:46:33 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -73,7 +73,7 @@ Long options:
 <document>
     <paragraph>
         Long options:
-    <option_list>
+    <option_list optarg_delimiter="mixed">
         <option_list_item>
             <option>
                 <long_option>
@@ -121,12 +121,13 @@ VMS/DOS-style options:
 /B file   option B
 /CCC      option CCC
 /DDD string  option DDD
+/EEE=int  option EEE
 """,
 """\
 <document>
     <paragraph>
         VMS/DOS-style options:
-    <option_list>
+    <option_list optarg_delimiter="mixed">
         <option_list_item>
             <option>
                 <vms_option>
@@ -159,6 +160,15 @@ VMS/DOS-style options:
             <description>
                 <paragraph>
                     option DDD
+        <option_list_item>
+            <option>
+                <vms_option>
+                    EEE
+                <option_argument>
+                    int
+            <description>
+                <paragraph>
+                    option EEE
 """],
 ["""\
 Mixed short, long, and VMS/DOS options:
@@ -174,7 +184,7 @@ Mixed short, long, and VMS/DOS options:
 <document>
     <paragraph>
         Mixed short, long, and VMS/DOS options:
-    <option_list>
+    <option_list optarg_delimiter="mixed">
         <option_list_item>
             <option>
                 <short_option>
@@ -236,7 +246,7 @@ Aliased options:
 <document>
     <paragraph>
         Aliased options:
-    <option_list>
+    <option_list optarg_delimiter="mixed">
         <option_list_item>
             <option>
                 <short_option>
@@ -422,6 +432,109 @@ empty item above, no blank line
             Unindent without blank line at line 2.
     <paragraph>
         empty item above, no blank line
+"""],
+["""\
+An option list using equals:
+
+--long1=arg1  Description 1
+--long2=arg2  Description 2
+
+An option list using spaces:
+
+--long1 arg1  Description 1
+--long2 arg2  Description 2
+
+An option list using mixed delimiters:
+
+--long1=arg1  Description 1
+--long2 arg2  Description 2
+
+An option list using mixed delimiters in one line:
+
+--long1=arg1, --long2 arg2  Description
+""",
+"""\
+<document>
+    <paragraph>
+        An option list using equals:
+    <option_list optarg_delimiter="=">
+        <option_list_item>
+            <option>
+                <long_option>
+                    long1
+                <option_argument>
+                    arg1
+            <description>
+                <paragraph>
+                    Description 1
+        <option_list_item>
+            <option>
+                <long_option>
+                    long2
+                <option_argument>
+                    arg2
+            <description>
+                <paragraph>
+                    Description 2
+    <paragraph>
+        An option list using spaces:
+    <option_list optarg_delimiter=" ">
+        <option_list_item>
+            <option>
+                <long_option>
+                    long1
+                <option_argument>
+                    arg1
+            <description>
+                <paragraph>
+                    Description 1
+        <option_list_item>
+            <option>
+                <long_option>
+                    long2
+                <option_argument>
+                    arg2
+            <description>
+                <paragraph>
+                    Description 2
+    <paragraph>
+        An option list using mixed delimiters:
+    <option_list optarg_delimiter="mixed">
+        <option_list_item>
+            <option>
+                <long_option>
+                    long1
+                <option_argument>
+                    arg1
+            <description>
+                <paragraph>
+                    Description 1
+        <option_list_item>
+            <option>
+                <long_option>
+                    long2
+                <option_argument>
+                    arg2
+            <description>
+                <paragraph>
+                    Description 2
+    <paragraph>
+        An option list using mixed delimiters in one line:
+    <option_list optarg_delimiter="mixed">
+        <option_list_item>
+            <option>
+                <long_option>
+                    long1
+                <option_argument>
+                    arg1
+            <option>
+                <long_option>
+                    long2
+                <option_argument>
+                    arg2
+            <description>
+                <paragraph>
+                    Description
 """],
 ["""\
 Some edge cases:
