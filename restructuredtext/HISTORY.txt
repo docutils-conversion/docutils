@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/10/31 05:53:32 $
+:Date: $Date: 2001/11/01 04:12:28 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -67,7 +67,7 @@ Changed contact email addresses.
   - Added RSTState.nestedparse().
   - Fixed bugs with overline-section-header level parsing.
   - Fixed URI pattern to match absolute paths & news (opaque); only
-    known URI schemes.
+    known URI schemes; IPv6 support.
   - Removed dependency on trailing spaces.
   - Extracted Body.block_quote() from Body.indent().
   - Changed underlines/overlines to require at least 4 characters
