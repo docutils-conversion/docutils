@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.35 $
-:Date: $Date: 2001/11/22 04:20:49 $
+:Revision: $Revision: 1.36 $
+:Date: $Date: 2002/01/16 06:16:00 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -103,7 +103,8 @@ __docformat__ = 'reStructuredText'
 import sys, re, string
 from dps import nodes, statemachine, utils, roman, urischemes
 from dps.statemachine import StateMachineWS, StateWS
-import directives
+from dps.utils import normname
+import directives, languages
 from tableparser import TableParser, TableMarkupError
 
 
@@ -132,9 +133,10 @@ class RSTStateMachine(StateMachineWS):
     The entry point to reStructuredText parsing is the `run()` method.
     """
 
-    def __init__(self, stateclasses, initialstate, language, debug=0):
+    def __init__(self, stateclasses, initialstate, languagecode, debug=0):
         StateMachineWS.__init__(self, stateclasses, initialstate, debug=debug)
-        self.language = language
+        self.languagecode = languagecode
+        self.language = languages.language(self.languagecode)
 
     def run(self, inputlines, inputoffset=0, warninglevel=1, errorlevel=3,
 			matchtitles=1):
@@ -147,7 +149,7 @@ class RSTStateMachine(StateMachineWS):
         """
         self.matchtitles = matchtitles
         reporter = utils.Reporter(warninglevel, errorlevel)
-        docroot = nodes.document(reporter)
+        docroot = nodes.document(reporter, self.languagecode)
         self.memo = Stuff(document=docroot,
                           reporter=reporter,
                           language=self.language,
@@ -2006,7 +2008,3 @@ def unescape(text, restorebackslashes=0):
         return text.translate(RSTState.inline.null2backslash)
     else:
         return text.translate(RSTState.inline.identity, '\x00')
-
-def normname(name):
-    """Return a case- and whitespace-normalized name."""
-    return ' '.join(name.lower().split())
