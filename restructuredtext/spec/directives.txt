@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/02/13 02:22:00 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/02/20 04:26:41 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -170,13 +170,13 @@ attribute.  For example::
 
     .. meta::
        :description: The reStructuredText plaintext markup language
-       :keywords: plaintext,markup language
+       :keywords: plaintext, markup language
 
 This would be converted to the following HTML::
 
     <meta name="description"
         content="The reStructuredText plaintext markup language">
-    <meta name="keywords" content="plaintext,markup language">
+    <meta name="keywords" content="plaintext, markup language">
 
 Support for other META attributes ("http-equiv", "scheme", "lang",
 "dir") are provided through field arguments, which must be of the form
