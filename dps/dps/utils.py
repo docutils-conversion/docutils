@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/07 02:03:14 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/09/08 03:20:58 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -32,7 +32,7 @@ class Errorist:
 
         Raise an exception or generate a warning if appropriate.
         """
-        sw = nodes.system_warning(comment, level=level, *children)
+        sw = nodes.system_warning(comment, level=str(level), *children)
         if level >= self.errorlevel:
             raise SystemWarning(sw)
         if level >= self.warninglevel:
