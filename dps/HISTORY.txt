@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/10/23 02:23:56 $
+:Date: $Date: 2001/10/27 05:41:58 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -61,7 +61,7 @@ Changed contact email addresses.
   - Moved 'abstract' into bibliographic elements section.
   - Changed 'graphic' to 'image'.
   - Added 'docinfo', container for bibliographic elements.
-  - Added 'division', repeatable container for body elements.
+  - Added 'transition'.
   - Renamed 'indirect' hyperlink targets -> 'external'.
   - Renamed ``*links?`` -> ``*targets?``.
   - Added support for indirect & anonymous targets.
@@ -82,6 +82,8 @@ Changed contact email addresses.
   - Added 'uptoblank' optional argument to 'getindented',
     'getknownindented', and 'getfirstknownindented' methods of
     StateWS, and to 'extractindented' function.
+
+* dps/urischemes.py: Known URI schemes; added to project.
 
 * dps/utils.py:
 
@@ -148,10 +150,13 @@ Changed contact email addresses.
   - Moved 'caption' to after 'image' in 'figure'.
   - Added 'error' admonishment element.
   - Added 'docinfo' as container for bibliographic elements.
-  - Added 'division', repeatable container of body elements.
+  - Added 'transition'.
   - Separated out %link.atts into constituent parts.
   - Added "refname" and "anonymous" attrbites to "target".
   - Added "anonymous" attribute to "link".
+  - Added 'image' as body element; 'target' as inline element.
+  - Expanded 'authors' content.
+  - Clarified 'figure' content.
 
 * spec/pdpi.dtd:
 
