@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/10/27 05:21:36 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/10/30 05:04:11 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -290,7 +290,7 @@ totest['interpreted'] = [
 """],
 ]
 
-totest['link'] = [
+totest['links'] = [
 ["""\
 link_
 """,
@@ -330,7 +330,7 @@ link_, l_, l_i-n_k_, and anonymouslink__, but not _link_ or -link_
 """],
 ]
 
-totest['phrase_link'] = [
+totest['phrase_links'] = [
 ["""\
 `phrase link`_
 """,
@@ -397,6 +397,51 @@ Invalid phrase link:
         <interpreted>
             phrase link
         :role:_
+"""],
+]
+
+totest['inline_targets'] = [
+["""\
+_`target`
+
+Here's _`another target` in some text. And _`yet
+another target`, spanning lines.
+
+_`Here's  a    TaRgeT` with case and spacial difficulties.
+""",
+"""\
+<document>
+    <paragraph>
+        <target name="target">
+            target
+    <paragraph>
+        Here's 
+        <target name="another target">
+            another target
+         in some text. And 
+        <target name="yet another target">
+            yet
+            another target
+        , spanning lines.
+    <paragraph>
+        <target name="here's a target">
+            Here's  a    TaRgeT
+         with case and spacial difficulties.
+"""],
+["""\
+But this isn't a _target; targets require backquotes.
+
+And _`this`_ is just plain confusing.
+""",
+"""\
+<document>
+    <paragraph>
+        But this isn't a _target; targets require backquotes.
+    <paragraph>
+        And _`this`_ is just plain confusing.
+    <system_warning level="1">
+        <paragraph>
+            Inline target start-string without end-string at line 3.
 """],
 ]
 
