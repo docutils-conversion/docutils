@@ -3,13 +3,13 @@
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.3 $
-Date: $Date: 2001/07/31 14:46:24 $
+Revision: $Revision: 1.1.2.4 $
+Date: $Date: 2001/07/31 15:23:35 $
 Copyright: This module has been placed in the public domain.
 """
 
 from TestFramework import *
-import os, os.path, re, sys
+import os, os.path, re, sys, types
 
 def isTestModule(filename):
     matcher = re.compile(r"^(test_[^\.]+)\.py$")
@@ -25,8 +25,6 @@ def allSuite(scriptPath):
     testSuite = unittest.TestSuite()
 
     path, scriptName= os.path.split(os.path.abspath(scriptPath))
-    print "p", path
-    print "sn", scriptName
     if path is not None: 
         os.chdir(path)
     
@@ -35,17 +33,35 @@ def allSuite(scriptPath):
     testModules = filter(None, map(isTestModule, os.listdir(path)))
 
     # remove test_all.py to avoid trouble
-    if 'test_all.py' in testModules:
-        testModules.remove('test_all.py')
+    if 'test_all' in testModules:
+        testModules.remove('test_all')
         
     # Import modules and add their tests to the suite. 
     for modname in testModules:
+        # import the module
+        if debug:
+            print "importing %s" % modname
         module = __import__(modname)
-        moduleTests = testLoader.loadTestsFromModule(module)
-        # unittest.TestSuite.addTests() doesn't work as advertised, 
-        # as it can't load tests from another TestSuite, so we have
-        # to cheat: 
-        testSuite.addTests(moduleTests._tests)
+        
+        # if there's a suite defined, incorporate its contents
+        if 'suite' in dir(module):
+            suite = getattr(module, 'suite')
+            if type(suite) == types.FunctionType:
+                s = suite()
+                testSuite.addTests(s._tests)
+            elif type(suite) == types.InstanceType \
+                 and isinstance(suite, unittest.TestSuite):
+                testSuite.addTests(suite._tests)
+            else: 
+                raise AssertionError, "don't understand suite"
+        else:
+            # Look for individual tests
+            moduleTests = testLoader.loadTestsFromModule(module) 
+
+            # unittest.TestSuite.addTests() doesn't work as advertised, 
+            # as it can't load tests from another TestSuite, so we have
+            # to cheat: 
+            testSuite.addTests(moduleTests._tests)
         
     return testSuite
 
