@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/02/06 02:17:29 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/02/12 02:30:27 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -629,6 +629,38 @@ Testing for line-leaks:
         <image uri="picture.png">
 """],
 ]
+
+totest['meta'] = [
+["""\
+.. meta::
+   :description: The reStructuredText plaintext markup language
+   :keywords: plaintext,markup language
+""",
+"""\
+<document>
+    <meta content="The reStructuredText plaintext markup language" name="description">
+    <meta content="plaintext,markup language" name="keywords">
+"""],
+["""\
+.. meta::
+   :description lang=en: An amusing story
+   :description lang=fr: Un histoire amusant
+""",
+"""\
+<document>
+    <meta content="An amusing story" lang="en" name="description">
+    <meta content="Un histoire amusant" lang="fr" name="description">
+"""],
+["""\
+.. meta::
+   :http-equiv=Content-Type: text/html; charset=ISO-8859-1
+""",
+"""\
+<document>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+"""],
+]
+
 
 if __name__ == '__main__':
     import unittest
