@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/13 22:34:54 $
+:Date: $Date: 2001/09/17 04:35:35 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -93,13 +93,14 @@ Changed contact email addresses.
   - Added language module support.
   - Added 1-section -> document promotion transformation.
   - Added bibliographic field list transformations.
-  - Changed numbered errorist.system_warning calls to named methods.
+  - Changed numbered reporter.system_warning calls to named methods.
   - Name changes (lowercased, updated, improved).
   - Integer attributes on elements as appropriate.
   - Added directive functionality.
   - Mild refactoring: meaningful variable names, extracted common
     code to methods.
   - Removed debug code.
+  - Updated: 'errorist' -> 'reporter'.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
