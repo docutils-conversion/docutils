@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/18 04:44:19 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/18 21:24:27 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -466,21 +466,22 @@ totest['bibliographic_field_lists'] = [
 
 Title
 =====
-:Title: Second Title
-:Subtitle: The Title field should generate a warning
+:Title: Second Title (this should generate a warning)
+:Subtitle: First Subtitle
 :Abstract: Abstract 1.
 :Author: Me
 :Version: 1
-:Abstract: Abstract 2.
+:Abstract: Abstract 2 (should generate a warning).
 :Date: 2001-08-11
 :Parameter i: integer
+:Subtitle: Second Subtitle (should generate a warning)
 """,
 """\
 <document name="title">
     <title>
         Title
     <subtitle>
-        The Title field should generate a warning
+        First Subtitle
     <author>
         Me
     <version>
@@ -498,7 +499,7 @@ Title
                 Title
             <field_body>
                 <paragraph>
-                    Second Title
+                    Second Title (this should generate a warning)
                 <system_warning level="2">
                     <paragraph>
                         Multiple document titles (bibliographic field "Title").
@@ -507,7 +508,7 @@ Title
                 Abstract
             <field_body>
                 <paragraph>
-                    Abstract 2.
+                    Abstract 2 (should generate a warning).
                 <system_warning level="2">
                     <paragraph>
                         There can only be one abstract.
@@ -519,9 +520,19 @@ Title
             <field_body>
                 <paragraph>
                     integer
+        <field>
+            <field_name>
+                Subtitle
+            <field_body>
+                <paragraph>
+                    Second Subtitle (should generate a warning)
+                <system_warning level="2">
+                    <paragraph>
+                        Multiple document subtitles (bibliographic field "Subtitle").
 """],
 ["""\
 :Author: - must be a paragraph
+:Status: a *simple* paragraph
 :Date: But only one
 
        paragraph.
@@ -542,7 +553,19 @@ Title
                             must be a paragraph
                 <system_warning level="2">
                     <paragraph>
-                        Cannot extract bibliographic field "Author" containing anything other than a simple paragraph.
+                        Cannot extract bibliographic field "Author" containing anything other than a simple, unformatted paragraph.
+        <field>
+            <field_name>
+                Status
+            <field_body>
+                <paragraph>
+                    a 
+                    <emphasis>
+                        simple
+                     paragraph
+                <system_warning level="2">
+                    <paragraph>
+                        Cannot extract bibliographic field "Status" containing anything other than a simple, unformatted paragraph.
         <field>
             <field_name>
                 Date
@@ -553,7 +576,7 @@ Title
                     paragraph.
                 <system_warning level="2">
                     <paragraph>
-                        Cannot extract compound title bibliographic field "Date".
+                        Cannot extract compound bibliographic field "Date".
         <field>
             <field_name>
                 Version
@@ -693,18 +716,28 @@ Title
 ["""\
 .. RCS keyword extraction.
 
-:Title: Document Title
-:Status: $RCSfile: test_field_lists.py,v $
+:Title: $RCSfile: test_field_lists.py,v $
+:Date: $Date: 2001/09/18 21:24:27 $
+
+RCS keyword 'RCSfile' doesn't change unless the file name changes,
+so it's safe. The 'Date' keyword changes every time the file is
+checked in to CVS, so the test's expected output text has to be
+derived (hacked) in parallel in order to stay in sync.
 """,
 """\
 <document>
     <title>
-        Document Title
-    <status>
-        test_field_lists.py,v
+        test_field_lists.py
+    <date>
+        %s
     <comment>
         RCS keyword extraction.
-"""],
+    <paragraph>
+        RCS keyword 'RCSfile' doesn't change unless the file name changes,
+        so it's safe. The 'Date' keyword changes every time the file is
+        checked in to CVS, so the test's expected output text has to be
+        derived (hacked) in parallel in order to stay in sync.
+""" % ('$Date: 2001/09/18 21:24:27 $'[7:17].replace('/', '-'),)],
 ]
 
 if __name__ == '__main__':
