@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/01/25 23:50:55 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/02/06 02:41:54 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of the Python
@@ -13,8 +13,7 @@ Docstring Processing System.
 
 __docformat__ = 'reStructuredText'
 
-__all__ = ['interpreted', 'bibliographic_labels', 'bibliographic_fields',
-           'author_separators']
+__all__ = ['bibliographic_labels', 'bibliographic_fields', 'author_separators']
 
 
 from dps import nodes

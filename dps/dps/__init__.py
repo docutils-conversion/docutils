@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/16 02:51:47 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/06 02:41:37 $
 :Copyright: This module has been placed in the public domain.
 
 This is the Docstring Processing System (DPS) Python package. 
@@ -14,7 +14,9 @@ Package Structure
 
 Modules:
 
-- __init__.py: Contains package docstring only (this text).
+- __init__.py: Contains the package docstring only (this text).
+
+- core.py: Contains the ``Publisher`` class and ``convert()`` function.
 
 - nodes.py: DPS document tree (doctree) node class library.
 
@@ -43,3 +45,5 @@ Subpackages:
 
 - writers: Format-specific output translators.
 """
+
+__docformat__ = 'reStructuredText'
