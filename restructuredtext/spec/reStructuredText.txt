@@ -3,8 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.2 $
-Date: $Date: 2001/07/29 16:00:31 $
+Revision: $Revision: 1.3 $
+Date: $Date: 2001/07/29 16:09:11 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -884,7 +884,7 @@ The inline markup start-string and end-string recognition rules are as
 follows:
 
 1. Inline markup start-strings must be immediately preceeded by
-   whitespace o single or double quotes, '(', '[', or '{'.
+   whitespace, single or double quotes, '(', '[', '{', or '<'.
 
 2. Inline markup start-strings must be immediately followed by
    non-whitespace.
@@ -894,7 +894,7 @@ follows:
 
 4. Inline markup end-strings must be immediately followed by
    whitespace, single or double quotes, '.', ',', ':', ';', '!', '?',
-   '-', ')', ']', or '}'.
+   '-', ')', ']', '}', or '>'.
 
 5. If an inline markup start-string is immediately preceeded by a
    single or double quote, '(', '[', '{', or '<', it must not be
