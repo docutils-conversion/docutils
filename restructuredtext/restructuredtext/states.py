@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2001/09/10 04:32:48 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2001/09/12 03:54:33 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -377,6 +377,18 @@ class RSTState(StateWS):
 
     def bof(self, context):
         return [], []
+
+    def nestedparse(self, block, lineoffset, node, matchtitles=0,
+                      statemachineclass=None, statemachinekwargs=None):
+        if statemachineclass is None:
+            statemachineclass = self.indentSM
+        if statemachinekwargs is None:
+            statemachinekwargs = self.indentSMkwargs
+        statemachine = statemachineclass(debug=self.debug, **statemachinekwargs)
+        statemachine.run(
+              block, inputoffset=lineoffset, memo=self.statemachine.memo,
+              node=node, matchtitles=matchtitles)
+        statemachine.unlink()
 
     def section(self, title, source, style, lineno):
         """
@@ -1595,29 +1607,31 @@ class Body(RSTState):
         return [t], blankfinish
 
     def directive(self, match):
-        # XXX need to actually *do* something with the directive
-        type = match.group(1)
-        try:
-            directivefunction = directives.directive(
-                  type, self.statemachine.memo.language)
-        except Exception, detail:
-            print >>sys.stderr, '%s: %s' % (detail.__class__.__name__, detail)
-        atts = {'type': type}
-        data = match.string[match.end():].strip()
-        if data:
-            atts['data'] = data
-        try:
-            self.statemachine.nextline()
-            indented, indent, offset, blankfinish = \
-                  self.statemachine.getindented()
-            text = '\n'.join(indented)
-        except IndexError:
-            text = ''
-            blankfinish = 1
-        children = []
-        if text:
-            children.append(nodes.literal_block(text, text))
-        return [nodes.directive(text, *children, **atts)], blankfinish
+        typename = match.group(1)
+        directivefunction = directives.directive(
+              typename, self.statemachine.memo.language)
+        data = match.string[match.end():].strip() or None
+        if directivefunction:
+            return directivefunction(match, typename, data, self,
+                                     self.statemachine)
+        else:
+            return self.unknowndirective(typename, data)
+
+    def unknowndirective(self, typename, data):
+        lineno = self.statemachine.abslineno()
+        indented, indent, offset, blankfinish = \
+              self.statemachine.getfirstknownindented(0)
+        margin = ' ' * indent
+        for i in range(1, len(indented)):
+            indented[i] = margin + indented[i]
+        text = '\n'.join(indented)
+        error = self.statemachine.memo.errorist.error(
+              'Unknown directive type "%s" at line %s.\n'
+              'Rendering the directive as a literal block.' % (typename,
+                                                               lineno))
+        literalblock = nodes.literal_block(text, text)
+        nodelist = [error, literalblock]
+        return nodelist, blankfinish
 
     def comment(self, match):
         if not match.string[match.end():].strip(): # text on first line?
