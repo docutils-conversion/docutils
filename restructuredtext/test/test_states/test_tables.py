@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/05 02:52:02 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/09/07 01:46:04 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -698,6 +698,71 @@ No blank line after table.
             Unexpected indent and no blank line after table.
         </paragraph>
     </block_quote>
+</document>
+"""],
+["""\
++--------------+-------------+
+| A bad table. |             |
++--------------+             |
+| Cells must be rectangles.  |
++----------------------------+
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Malformed table at line 1; formatting as a literal block.
+            Malformed table; parse incomplete.
+        </paragraph>
+    </system_warning>
+    <literal_block>
+        +--------------+-------------+
+        | A bad table. |             |
+        +--------------+             |
+        | Cells must be rectangles.  |
+        +----------------------------+
+    </literal_block>
+</document>
+"""],
+["""\
++------------------------------+
+| This table contains another. |
+|                              |
+| +-------------------------+  |
+| | A table within a table. |  |
+| +-------------------------+  |
++------------------------------+
+""",
+"""\
+<document>
+    <table>
+        <tgroup cols="1">
+            <colspec colwidth="30"/>
+            <tbody>
+                <row>
+                    <entry>
+                        <paragraph>
+                            This table contains another.
+                        </paragraph>
+                        <table>
+                            <tgroup cols="1">
+                                <colspec colwidth="25"/>
+                                <tbody>
+                                    <row>
+                                        <entry>
+                                            <paragraph>
+                                                A table within a table.
+                                            </paragraph>
+                                        </entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
 </document>
 """],
 ]
