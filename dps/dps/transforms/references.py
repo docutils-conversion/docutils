@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/02/22 02:11:24 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/07 04:01:40 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -365,12 +365,30 @@ class Footnotes(Transform):
     autofootnote_labels = None
     """Keep track of unlabeled autonumbered footnotes."""
 
+    symbols = [
+          # The first six entries below are from section 12.51 of
+          # The Chicago Manual of Style, 14th edition.
+          '*',                          # asterisk/star
+          u'\u2020',                    # dagger &dagger;
+          u'\u2021',                    # double dagger &Dagger;
+          u'\u00A7',                    # section mark &sect;
+          # (Should be parallels; perhaps u'\u2016' &Verbar;? Not in HTML.)
+          u'\u00B6',                    # paragraph mark (pilcrow) &para;
+          '#',                          # number sign
+          # The entries below were chosen arbitrarily.
+          u'\u2660',                    # spade suit &spades;
+          u'\u2663',                    # club suit &clubs;
+          u'\u2665',                    # heart suit &hearts;
+          u'\u2666',                    # diamond suit &diams;
+          ]
+
     def transform(self, doctree):
         self.setup_transform(doctree)
         self.autofootnote_labels = []
         startnum = doctree.autofootnote_start
         self.number_footnotes()
         self.number_footnote_references(startnum)
+        self.symbolize_footnotes()
 
     def number_footnotes(self):
         """
@@ -380,8 +398,11 @@ class Footnotes(Transform):
         references.
         """
         for footnote in self.doctree.autofootnotes:
-            label = str(self.doctree.autofootnote_start)
-            self.doctree.autofootnote_start += 1
+            while 1:
+                label = str(self.doctree.autofootnote_start)
+                self.doctree.autofootnote_start += 1
+                if not self.doctree.explicit_targets.has_key(label):
+                    break
             footnote.insert(0, nodes.label('', label))
             if footnote.hasattr('dupname'):
                 continue
@@ -410,10 +431,44 @@ class Footnotes(Transform):
                       'corresponding footnotes available.'
                       % len(self.autofootnote_labels))
                 self.doctree.messages += msg
+                for ref in self.doctree.autofootnote_refs[i:]:
+                    if not (ref.resolved or ref.hasattr('refname')):
+                        ref.parent.replace(
+                              ref, nodes.problematic(ref.rawsource,
+                                                     ref.rawsource))
                 break
             ref.resolved = 1
             i += 1
 
+    def symbolize_footnotes(self):
+        """Add symbols indexes to "[*]"-style footnotes and references."""
+        labels = []
+        for footnote in self.doctree.symbol_footnotes:
+            reps, index = divmod(self.doctree.symbol_footnote_start,
+                                 len(self.symbols))
+            labeltext = self.symbols[index] * (reps + 1)
+            labels.append(labeltext)
+            footnote.insert(0, nodes.label('', labeltext))
+            self.doctree.symbol_footnote_start += 1
+            self.doctree.set_id(footnote)
+        i = 0
+        for ref in self.doctree.symbol_footnote_refs:
+            try:
+                ref += nodes.Text(labels[i])
+                ref['refid'] = self.doctree.symbol_footnotes[i]['id']
+            except IndexError:
+                msg = self.doctree.reporter.error(
+                      'Too many symbol footnote references: only %s '
+                      'corresponding footnotes available.' % len(labels))
+                self.doctree.messages += msg
+                for ref in self.doctree.symbol_footnote_refs[i:]:
+                    if not (ref.resolved or ref.hasattr('refid')):
+                        ref.parent.replace(
+                              ref, nodes.problematic(ref.rawsource,
+                                                     ref.rawsource))
+                break
+            ref.resolved = 1
+            i += 1
 
 class Substitutions(Transform):
 
