@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/08/25 01:47:48 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/08/25 03:55:14 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -725,13 +725,10 @@ class StateMachineWS(StateMachine):
         Parameter `indent`: the number of indent columns/characters.
         """
         offset = self.abslineoffset()
-        if self.line[indent:]:
-            indented = [self.line[indent:]]
-        else:
-            indented = []
+        indented = [self.line[indent:]]
         for line in self.inputlines[self.lineoffset + 1:]:
             if line[:indent].strip():
-                blankfinish = len(indented) and not indented[-1].strip()
+                blankfinish = not indented[-1].strip() and len(indented) > 1
                 break
             indented.append(line[indent:])
         else:
@@ -740,6 +737,9 @@ class StateMachineWS(StateMachine):
             self.nextline(len(indented) - 1) # advance to last indented line
         while indented and not indented[-1].strip():
             indented.pop()
+        while indented and not indented[0].strip():
+            indented.pop(0)
+            offset += 1
         return indented, offset, blankfinish
 
     def getfirstknownindented(self, indent):
@@ -763,6 +763,9 @@ class StateMachineWS(StateMachine):
         self.nextline(len(indented) - 1)  # advance to last indented line
         while indented and not indented[-1].strip():
             indented.pop()
+        while indented and not indented[0].strip():
+            indented.pop(0)
+            offset += 1
         return indented, indent, offset, blankfinish
 
 
