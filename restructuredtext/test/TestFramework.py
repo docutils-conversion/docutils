@@ -3,8 +3,8 @@
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.4 $
-Date: $Date: 2001/07/31 14:46:24 $
+Revision: $Revision: 1.1.2.5 $
+Date: $Date: 2001/07/31 15:21:54 $
 Copyright: This module has been placed in the public domain.
 """
 
@@ -85,18 +85,6 @@ def parseArgs(argv=sys.argv):
         
     except getopt.error, msg:
         self.usageExit(msg)
-
-def loadTestsFromModule(module, exceptThese=[]):
-    """Return a suite of all tests cases contained in the given module"""
-    tests = []
-    module = __import__('__main__')
-    for name in dir(module):
-        if name in exceptThese:
-            continue
-        obj = getattr(module, name)
-        if type(obj) == types.ClassType and issubclass(obj, unittest.TestCase):
-            tests.append(unittest.defaultTestLoader.loadTestsFromTestCase(obj))
-    return self.suiteClass(tests)
 
 def main(suite=None):
     """Shared `main` for any individual test_* file.
