@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/11/19 04:31:47 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/06 02:27:10 $
 :Copyright: This module has been placed in the public domain.
 
 Test directive implementation.
@@ -29,11 +29,11 @@ def directive_test_function(match, typename, data, state, statemachine,
         text = ''
         blankfinish = 1
     if text:
-        info = statemachine.memo.reporter.information(
+        info = statemachine.memo.reporter.info(
               'Directive processed. Type="%s", data="%s", directive block:'
               % (typename, data), [nodes.literal_block(text, text)])
     else:
-        info = statemachine.memo.reporter.information(
+        info = statemachine.memo.reporter.info(
               'Directive processed. Type="%s", data="%s", directive block: None'
               % (typename, data))
     return [info], blankfinish
