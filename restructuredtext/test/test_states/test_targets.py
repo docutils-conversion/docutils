@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/10/30 05:04:33 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/10/31 05:48:24 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -70,7 +70,9 @@ Indirect hyperlink targets:
     <target name="target2" refname="phrase-link reference">
 """],
 ["""\
-.. _target: Not a proper hyperlink target
+.. _target1: Not a proper hyperlink target
+
+.. _target2: Although it ends with an underscore, this is not a phrase-link_
 """,
 """\
 <document>
@@ -78,7 +80,12 @@ Indirect hyperlink targets:
         <paragraph>
             Hyperlink target at line 1 contains whitespace. Perhaps a footnote was intended?
         <literal_block>
-            .. _target: Not a proper hyperlink target
+            .. _target1: Not a proper hyperlink target
+    <system_warning level="1">
+        <paragraph>
+            Hyperlink target at line 3 contains whitespace. Perhaps a footnote was intended?
+        <literal_block>
+            .. _target2: Although it ends with an underscore, this is not a phrase-link_
 """],
 ["""\
 .. _a long target name:

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/10/30 05:04:11 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/10/31 05:48:00 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -297,7 +297,7 @@ link_
 """\
 <document>
     <paragraph>
-        <link refname="link">
+        <reference refname="link">
             link
 """],
 ["""\
@@ -306,7 +306,7 @@ link__
 """\
 <document>
     <paragraph>
-        <link anonymous="1" refname="link">
+        <reference anonymous="1" refname="link">
             link
 """],
 ["""\
@@ -315,16 +315,16 @@ link_, l_, l_i-n_k_, and anonymouslink__, but not _link_ or -link_
 """\
 <document>
     <paragraph>
-        <link refname="link">
+        <reference refname="link">
             link
         , 
-        <link refname="l">
+        <reference refname="l">
             l
         , 
-        <link refname="l_i-n_k">
+        <reference refname="l_i-n_k">
             l_i-n_k
         , and 
-        <link anonymous="1" refname="anonymouslink">
+        <reference anonymous="1" refname="anonymouslink">
             anonymouslink
         , but not _link_ or -link_
 """],
@@ -337,7 +337,7 @@ totest['phrase_links'] = [
 """\
 <document>
     <paragraph>
-        <link refname="phrase link">
+        <reference refname="phrase link">
             phrase link
 """],
 ["""\
@@ -346,7 +346,7 @@ totest['phrase_links'] = [
 """\
 <document>
     <paragraph>
-        <link anonymous="1" refname="anonymous link">
+        <reference anonymous="1" refname="anonymous link">
             anonymous link
 """],
 ["""\
@@ -356,7 +356,7 @@ across lines`_
 """\
 <document>
     <paragraph>
-        <link refname="phrase link across lines">
+        <reference refname="phrase link across lines">
             phrase link
             across lines
 """],
@@ -366,7 +366,7 @@ across lines`_
 """\
 <document>
     <paragraph>
-        <link refname="phrase`_ link">
+        <reference refname="phrase`_ link">
             phrase`_ link
 """],
 ["""\
@@ -404,10 +404,10 @@ totest['inline_targets'] = [
 ["""\
 _`target`
 
-Here's _`another target` in some text. And _`yet
+Here is _`another target` in some text. And _`yet
 another target`, spanning lines.
 
-_`Here's  a    TaRgeT` with case and spacial difficulties.
+_`Here is  a    TaRgeT` with case and spacial difficulties.
 """,
 """\
 <document>
@@ -415,7 +415,7 @@ _`Here's  a    TaRgeT` with case and spacial difficulties.
         <target name="target">
             target
     <paragraph>
-        Here's 
+        Here is 
         <target name="another target">
             another target
          in some text. And 
@@ -424,8 +424,8 @@ _`Here's  a    TaRgeT` with case and spacial difficulties.
             another target
         , spanning lines.
     <paragraph>
-        <target name="here's a target">
-            Here's  a    TaRgeT
+        <target name="here is a target">
+            Here is  a    TaRgeT
          with case and spacial difficulties.
 """],
 ["""\
@@ -495,29 +495,29 @@ ftp://ends.with.a.period.
 """\
 <document>
     <paragraph>
-        <link refuri="http://www.standalone.hyperlink.com">
+        <reference refuri="http://www.standalone.hyperlink.com">
             http://www.standalone.hyperlink.com
     <paragraph>
-        <link refuri="http:/one-slash-only.absolute.path">
+        <reference refuri="http:/one-slash-only.absolute.path">
             http:/one-slash-only.absolute.path
     <paragraph>
-        <link refuri="mailto:someone@somewhere.com">
+        <reference refuri="mailto:someone@somewhere.com">
             mailto:someone@somewhere.com
     <paragraph>
-        <link refuri="news:comp.lang.python">
+        <reference refuri="news:comp.lang.python">
             news:comp.lang.python
     <paragraph>
         An email address in a sentence: 
-        <link refuri="mailto:someone@somewhere.com">
+        <reference refuri="mailto:someone@somewhere.com">
             someone@somewhere.com
         .
     <paragraph>
-        <link refuri="ftp://ends.with.a.period">
+        <reference refuri="ftp://ends.with.a.period">
             ftp://ends.with.a.period
         .
     <paragraph>
         (
-        <link refuri="mailto:a.question.mark@end">
+        <reference refuri="mailto:a.question.mark@end">
             a.question.mark@end
         ?)
 """],

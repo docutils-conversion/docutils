@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/10/30 05:29:19 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/10/31 05:48:12 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -138,7 +138,15 @@ Test overline title with inset.
 <document>
     <system_warning level="3">
         <paragraph>
-            Incomplete section title or empty division at line 1.
+            Incomplete section title at line 1.
+"""],
+["""\
+========================
+ Test Missing Underline
+
+""",
+"""\
+<document>
     <system_warning level="3">
         <paragraph>
             Missing underline for overline at line 1.
