@@ -1,7 +1,7 @@
 PEP: 258
 Title: DPS Generic Implementation Details
-Version: $Revision: 1.4 $
-Last-Modified: $Date: 2002/02/06 03:08:42 $
+Version: $Revision: 1.5 $
+Last-Modified: $Date: 2002/02/07 01:56:41 $
 Author: dgoodger@bigfoot.com (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
@@ -348,24 +348,24 @@ Specification
     ==============
 
     When the parser encounters an error in markup, it inserts a system
-    warning (DTD element 'system_warning').  There are four levels of
+    warning (DTD element 'system_warning').  There are five levels of
     system warnings:
 
-    - Level-0, "DEBUG": An internal reporting issue.  There is no
+    - Level-0, "DEBUG": an internal reporting issue.  There is no
       effect on the processing.  Level-0 system warnings are
       handled separately from the others.
 
-    - Level-1, "INFO": A minor issue that can be ignored.  There is no
+    - Level-1, "INFO": a minor issue that can be ignored.  There is no
       effect on the processing.  Typically level-1 system warnings are
       not reported.
 
-    - Level-2, "WARNING": An issue that should be addressed.  If
+    - Level-2, "WARNING": an issue that should be addressed.  If
       ignored, there may be unpredictable problems with the output.
 
-    - Level-3, "ERROR": An error that should be addressed.  If
+    - Level-3, "ERROR": an error that should be addressed.  If
       ignored, the output will contain errors.
 
-    - Level-4, "SEVERE": A severe error that must be addressed.
+    - Level-4, "SEVERE": a severe error that must be addressed.
       Typically level-4 system warnings are turned into exceptions
       which halt processing.  If ignored, the output will contain
       severe errors.
