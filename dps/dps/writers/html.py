@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2002/03/28 05:09:04 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2002/04/13 17:04:46 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -46,7 +46,7 @@ class HTMLTranslator(nodes.NodeVisitor):
                      ' "http://www.w3.org/TR/html4/loose.dtd">\n',
                      '<HTML LANG="%s">\n<HEAD>\n' % doctree.languagecode,
                      '<LINK REL="StyleSheet" HREF="default.css"'
-                     ' TYPE="text/css">']
+                     ' TYPE="text/css">\n']
         self.body = ['</HEAD>\n<BODY>\n']
         self.foot = ['</BODY>\n</HTML>\n']
         self.sectionlevel = 0
@@ -67,7 +67,7 @@ class HTMLTranslator(nodes.NodeVisitor):
     def starttag(self, node, tagname, suffix='\n', **attributes):
         atts = {}
         for (name, value) in attributes.items():
-            atts[name] = value
+            atts[name.lower()] = value
         for att in ('class',):          # append to node attribute
             if node.has_key(att):
                 if atts.has_key(att):
@@ -534,10 +534,14 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.depart_docinfo_item()
 
     def visit_paragraph(self, node):
-        self.body.append(self.starttag(node, 'p', ''))
+        if not self.topic_class == 'contents':
+            self.body.append(self.starttag(node, 'p', ''))
 
     def depart_paragraph(self, node):
-        self.body.append('</P>\n')
+        if self.topic_class == 'contents':
+            self.body.append('\n')
+        else:
+            self.body.append('</P>\n')
 
     def visit_problematic(self, node):
         if node.hasattr('refid'):
@@ -623,10 +627,21 @@ class HTMLTranslator(nodes.NodeVisitor):
             raise nodes.SkipNode
         self.body.append(self.starttag(node, 'div', CLASS='system-message'))
         self.body.append('<P CLASS="system-message-title">')
-        if node.hasattr('refid'):
-            self.body.append('<A HREF="#%s">%s</A> '
-                             '(level %s system message)</P>\n'
-                             % (node['refid'], node['type'], node['level']))
+        if node.hasattr('backrefs'):
+            backrefs = node['backrefs']
+            if len(backrefs) == 1:
+                self.body.append('<A HREF="#%s">%s</A> '
+                                 '(level %s system message)</P>\n'
+                                 % (backrefs[0], node['type'], node['level']))
+            else:
+                i = 1
+                backlinks = []
+                for backref in backrefs:
+                    backlinks.append('<A HREF="#%s">%s</A>' % (backref, i))
+                    i += 1
+                self.body.append('%s (%s; level %s system message)</P>\n'
+                                 % (node['type'], '|'.join(backlinks),
+                                    node['level']))
         else:
             self.body.append('%s (level %s system message)</P>\n'
                              % (node['type'], node['level']))
