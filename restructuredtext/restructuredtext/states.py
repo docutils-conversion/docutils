@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.28 $
-:Date: $Date: 2001/10/27 05:18:35 $
+:Revision: $Revision: 1.29 $
+:Date: $Date: 2001/10/30 05:01:53 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -21,6 +21,7 @@ reStructuredText parser. It defines the following:
     - `Explicit`: Second and subsequent explicit markup constructs.
     - `Text`: Classifier of second line of a text block.
     - `Definition`: Second line of potential definition_list_item.
+    - `Line`: Second line of overlined section title or transition marker.
     - `Stuff`: An auxilliary collection class.
 
 :Exception classes:
@@ -371,6 +372,8 @@ class RSTState(StateWS):
                                    (?!\*)         # but not strong
                                  |
                                    ``           # literal
+                                 |
+                                   _`           # inline hyperlink target
                                )
                                %s             # no whitespace after
                              |              # *OR*
@@ -412,6 +415,8 @@ class RSTState(StateWS):
                                         inline.end_string_suffix)),
           literal=re.compile(inline.non_whitespace_before + '(``)'
                              + inline.end_string_suffix),
+          target=re.compile(inline.non_whitespace_escape_before
+                            + r'(`)' + inline.end_string_suffix),
           uri=re.compile(
                 r"""
                 %s                          # start-string prefix
@@ -578,6 +583,18 @@ class RSTState(StateWS):
         return self.inlineobj(match, lineno, pattern, nodes.literal,
                               restorebackslashes=1)
 
+    def inline_target(self, match, lineno, pattern=inline.patterns.target):
+        before, inlines, remaining, syswarnings = self.inlineobj(
+              match, lineno, pattern, nodes.target)
+        if inlines:
+            assert len(inlines) == 1
+            target = inlines[0]
+            name = normname(target.astext())
+            assert isinstance(target, nodes.target)
+            self.statemachine.memo.document.addexplicittarget(
+                  name, target, self.statemachine.node)
+        return before, inlines, remaining, syswarnings
+
     def footnote_reference(self, match, lineno):
         fnname = match.group(self.inline.groups.initial.footnotelabel)
         refname = normname(fnname)
@@ -606,7 +623,6 @@ class RSTState(StateWS):
               linkname, refname=refname)
         self.statemachine.memo.document.addrefname(refname, linknode)
         if anonymous:
-            linknode['anonymous'] = 1
             self.statemachine.memo.document.addanonymousref(linknode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
@@ -655,6 +671,7 @@ class RSTState(StateWS):
                        '**': strong,
                        '`': interpreted_or_phrase_link,
                        '``': literal,
+                       '_`': inline_target,
                        ']_': footnote_reference,
                        '_': link,
                        '__': anonymous_link}
@@ -777,9 +794,10 @@ class Body(RSTState):
                 'optionmarker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
                 'doctest': r'>>>( +|$)',
                 'tabletop': tabletoppat,
-                'explicit_markup': r'\.\.( +|$)',
-                'overline': r'(%(nonalphanum7bit)s)\1\1\1+ *$' % pats,
-                'rfc822': r'[!-9;-~]+:( +|$)',
+                'explicitmarkup': r'\.\.( +|$)',
+                'anonymous': r'__( +|$)',
+                'line': r'(%(nonalphanum7bit)s)\1\1\1+ *$' % pats,
+                #'rfc822': r'[!-9;-~]+:( +|$)',
                 'text': r''}
     initialtransitions = ['bullet',
                           'enumerator',
@@ -787,8 +805,9 @@ class Body(RSTState):
                           'optionmarker',
                           'doctest',
                           'tabletop',
-                          'explicit_markup',
-                          'overline',
+                          'explicitmarkup',
+                          'anonymous',
+                          'line',
                           'text']
 
     def indent(self, match, context, nextstate):
@@ -1151,6 +1170,8 @@ class Body(RSTState):
     explicit.patterns = Stuff(
           target=re.compile(r"""
                             (?:
+                              _           # anonymous target
+                            |           # *OR*
                               (`?)        # optional open quote
                               (?![ `])    # first char. not space or backquote
                               (           # hyperlink name
@@ -1158,13 +1179,11 @@ class Body(RSTState):
                               )
                               %s          # not whitespace or escape
                               \1          # close quote if open quote used
-                            |           # *OR*
-                              (_)         # anonymous target
                             )
                             %s          # not whitespace or escape
                             :           # end of hyperlink name
                             (?:[ ]+|$)    # followed by whitespace
-                            """ 
+                            """
                             % (RSTState.inline.non_whitespace_escape_before,
                                RSTState.inline.non_whitespace_escape_before),
                             re.VERBOSE),
@@ -1184,7 +1203,7 @@ class Body(RSTState):
                                 RSTState.inline.non_whitespace_escape_before,),
                                re.VERBOSE))
     explicit.groups = Stuff(
-          target=Stuff(quote=1, name=2, anonymous=3),
+          target=Stuff(quote=1, name=2),
           reference=Stuff(simple=1, phrase=2))
 
     def footnote(self, match):
@@ -1207,8 +1226,7 @@ class Body(RSTState):
 
     def hyperlink_target(self, match,
                          pattern=explicit.patterns.target,
-                         namegroup=explicit.groups.target.name,
-                         anonymousgroup=explicit.groups.target.anonymous):
+                         namegroup=explicit.groups.target.name):
         escaped = escape2null(match.string)
         targetmatch = pattern.match(escaped[match.end():])
         if not targetmatch:
@@ -1223,7 +1241,7 @@ class Body(RSTState):
             reference = escape2null(' '.join([line.strip() for line in block]))
             refname = self.isreference(reference)
             if refname:
-                target = nodes.target(blocktext, '', refname=refname)
+                target = nodes.target(blocktext, '')
                 self.addtarget(targetmatch.group(namegroup), '', target)
                 self.statemachine.memo.document.addindirecttarget(refname,
                                                                   target)
@@ -1239,7 +1257,7 @@ class Body(RSTState):
             nodelist.append(warning)
         else:
             unescaped = unescape(reference)
-            target = nodes.target(blocktext, unescaped)
+            target = nodes.target(blocktext, '')
             self.addtarget(targetmatch.group(namegroup), unescaped, target)
             nodelist.append(target)
         return nodelist, blankfinish
@@ -1264,9 +1282,9 @@ class Body(RSTState):
                 self.statemachine.memo.document.addexplicittarget(
                       name, target, self.statemachine.node)
         else:                       # anonymous target
-            self.statemachine.memo.document.addanonymoustarget(
-                      target, self.statemachine.node)
-
+            self.statemachine.memo.document.addanonymoustarget(target)
+            if reference:
+                target['refuri'] = reference
 
     def directive(self, match):
         typename = match.group(1)
@@ -1330,19 +1348,11 @@ class Body(RSTState):
                       (?:[ ]+|$)        # whitespace or end of line
                       """ % RSTState.inline.simplename, re.VERBOSE))]
 
-    def explicit_markup(self, match, context, nextstate):
+    def explicitmarkup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
         nodelist, blankfinish = self.explicit_construct(match)
         self.statemachine.node += nodelist
-        offset = self.statemachine.lineoffset + 1   # next line
-        newlineoffset, blankfinish = self.nestedlistparse(
-              self.statemachine.inputlines[offset:],
-              inputoffset=self.statemachine.abslineoffset() + 1,
-              node=self.statemachine.node, initialstate='Explicit',
-              blankfinish=blankfinish)
-        if not blankfinish:
-            self.statemachine.node += self.unindentwarning()
-        self.gotoline(newlineoffset)
+        self.explicitlist(blankfinish)
         return [], nextstate, []
 
     def explicit_construct(self, match,
@@ -1362,48 +1372,70 @@ class Body(RSTState):
         nodelist, blankfinish = self.comment(match)
         return nodelist + errors, blankfinish
 
-    def overline(self, match, context, nextstate):
-        """Section title or division marker."""
-        makesection = 1
-        lineno = self.statemachine.abslineno()
-        if not self.statemachine.matchtitles:
+    def explicitlist(self, blankfinish):
+        """
+        Create a nested state machine for a series of explicit markup constructs
+        (including anonymous hyperlink targets).
+        """
+        offset = self.statemachine.lineoffset + 1   # next line
+        newlineoffset, blankfinish = self.nestedlistparse(
+              self.statemachine.inputlines[offset:],
+              inputoffset=self.statemachine.abslineoffset() + 1,
+              node=self.statemachine.node, initialstate='Explicit',
+              blankfinish=blankfinish)
+        if not blankfinish:
+            self.statemachine.node += self.unindentwarning()
+        self.gotoline(newlineoffset)
+
+    def anonymous(self, match, context, nextstate):
+        """Anonymous hyperlink targets."""
+        nodelist, blankfinish = self.anonymous_target(match)
+        self.statemachine.node += nodelist
+        self.explicitlist(blankfinish)
+        return [], nextstate, []
+
+    def anonymous_target(self, match):
+        block, indent, offset, blankfinish \
+              = self.statemachine.getfirstknownindented(match.end(),
+                                                        uptoblank=1)
+        blocktext = match.string[:match.end()] + '\n'.join(block)
+        if block and block[-1].strip()[-1:] == '_': # possible indirect target
+            reference = escape2null(' '.join([line.strip() for line in block]))
+            refname = self.isreference(reference)
+            if refname:
+                target = nodes.target(blocktext, '')
+                self.addtarget('', '', target)
+                self.statemachine.memo.document.addanonymoustarget(target)
+                self.statemachine.memo.document.addindirecttarget(refname,
+                                                                  target)
+                return [target], blankfinish
+        nodelist = []
+        reference = escape2null(''.join([line.strip() for line in block]))
+        if reference.find(' ') != -1:
+            warning = self.statemachine.memo.reporter.warning(
+                  'Anonymous hyperlink target at line %s contains whitespace. '
+                  'Perhaps a footnote was intended?'
+                  % (self.statemachine.abslineno() - len(block) + 1))
+            warning += nodes.literal_block(blocktext, blocktext)
+            nodelist.append(warning)
+        else:
+            unescaped = unescape(reference)
+            target = nodes.target(blocktext, '')
+            target['refuri'] = unescaped
+            self.statemachine.memo.document.addanonymoustarget(target)
+            nodelist.append(target)
+        return nodelist, blankfinish
+
+    def line(self, match, context, nextstate):
+        """Section title overline or transition marker."""
+        if self.statemachine.matchtitles:
+            return [match.string], 'Line', []
+        else:
             sw = self.statemachine.memo.reporter.severe(
-                  'Unexpected section title or division at line %s.' % lineno)
+                  'Unexpected section title or transition at line %s.'
+                  % self.statemachine.abslineno())
             self.statemachine.node += sw
             return [], nextstate, []
-        title = underline = ''
-        try:
-            title = self.statemachine.nextline()
-            underline = self.statemachine.nextline()
-        except IndexError:
-            sw = self.statemachine.memo.reporter.severe(
-                  'Incomplete section title or empty division at line %s.'
-                  % lineno)
-            self.statemachine.node += sw
-            makesection = 0
-        source = '%s\n%s\n%s' % (match.string, title, underline)
-        overline = match.string.rstrip()
-        underline = underline.rstrip()
-        if not self.transitions['overline'][0].match(underline):
-            sw = self.statemachine.memo.reporter.severe(
-                  'Missing underline for overline at line %s.' % lineno)
-            self.statemachine.node += sw
-            makesection = 0
-        elif overline != underline:
-            sw = self.statemachine.memo.reporter.severe(
-                  'Title overline & underline mismatch at ' 'line %s.'
-                  % lineno)
-            self.statemachine.node += sw
-            makesection = 0
-        title = title.rstrip()
-        if len(title) > len(overline):
-            self.statemachine.node += \
-                  self.statemachine.memo.reporter.information(
-                  'Title overline too short at line %s.'% lineno)
-        if makesection:
-            style = (overline[0], underline[0])
-            self.section(title.lstrip(), source, style, lineno + 1)
-        return [], nextstate, []
 
     def text(self, match, context, nextstate):
         """Titles, definition lists, paragraphs."""
@@ -1431,8 +1463,9 @@ class SpecializedBody(Body):
     optionmarker = invalid_input
     doctest = invalid_input
     tabletop = invalid_input
-    explicit_markup = invalid_input
-    overline = invalid_input
+    explicitmarkup = invalid_input
+    anonymoustarget = invalid_input
+    line = invalid_input
     text = invalid_input
 
 
@@ -1518,9 +1551,16 @@ class Explicit(SpecializedBody):
 
     """Second and subsequent explicit markup construct."""
 
-    def explicit_markup(self, match, context, nextstate):
+    def explicitmarkup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
         nodelist, blankfinish = self.explicit_construct(match)
+        self.statemachine.node += nodelist
+        self.blankfinish = blankfinish
+        return [], nextstate, []
+
+    def anonymous(self, match, context, nextstate):
+        """Anonymous hyperlink targets."""
+        nodelist, blankfinish = self.anonymous_target(match)
         self.statemachine.node += nodelist
         self.blankfinish = blankfinish
         return [], nextstate, []
@@ -1534,7 +1574,7 @@ class Text(RSTState):
     Could be a paragraph, a definition list item, or a title.
     """
 
-    patterns = {'underline': r'([!-/:-@[-`{-~])\1\1\1+ *$',
+    patterns = {'underline': Body.patterns['line'],
                 'text': r''}
     initialtransitions = [('underline', 'Body'), ('text', 'Body')]
 
@@ -1674,8 +1714,7 @@ class SpecializedText(Text):
     """
 
     def eof(self, context):
-        """Not a definition."""
-        self.statemachine.previousline(2) # back up so parent SM can reassess
+        """Incomplete construct."""
         return []
 
     def invalid_input(self, match=None, context=None, nextstate=None):
@@ -1692,6 +1731,11 @@ class Definition(SpecializedText):
 
     """Second line of potential definition_list_item."""
 
+    def eof(self, context):
+        """Not a definition."""
+        self.statemachine.previousline(2) # back up so parent SM can reassess
+        return []
+
     def indent(self, match, context, nextstate):
         """Definition list item."""
         definitionlistitem, blankfinish = self.definition_list_item(context)
@@ -1700,8 +1744,94 @@ class Definition(SpecializedText):
         return [], 'DefinitionList', []
 
 
+class Line(SpecializedText):
+
+    """Second line of over- & underlined section title or transition marker."""
+
+    eofcheck = 1                        # @@@ ???
+    """Set to 0 while parsing sections, so that we don't catch the EOF."""
+
+    def eof(self, context):
+        """Transition marker at end of section or document."""
+        if self.eofcheck:               # ignore EOFError with sections
+            sw = self.statemachine.memo.reporter.error(
+                  'Document or section may not end with a transition '
+                  '(line %s).' % (self.statemachine.abslineno() - 1))
+            self.statemachine.node += sw
+        return []
+
+    def blank(self, match, context, nextstate):
+        """Transition marker."""
+        transition = nodes.transition(context[0])
+        if len(self.statemachine.node) == 0:
+            sw = self.statemachine.memo.reporter.error(
+              'Document or section may not begin with a transition (line %s).'
+              % (self.statemachine.abslineno() - 1))
+            self.statemachine.node += sw
+        elif isinstance(self.statemachine.node[-1], nodes.transition):
+            sw = self.statemachine.memo.reporter.error(
+              'At least one body element must separate transitions; adjacent '
+              'transitions at line %s.'
+              % (self.statemachine.abslineno() - 1))
+            self.statemachine.node[-1:-1] = [sw] # leave transition as last
+        else:
+            self.statemachine.node += transition
+        return [], 'Body', []
+
+    def text(self, match, context, nextstate):
+        """Potential over- & underlined title."""
+        lineno = self.statemachine.abslineno() - 1
+        makesection = 1
+        overline = context[0]
+        title = match.string
+        underline = ''
+        try:
+            underline = self.statemachine.nextline()
+        except IndexError:
+            sw = self.statemachine.memo.reporter.severe(
+                  'Incomplete section title or empty division at line %s.'
+                  % lineno)
+            # @@@ add a literal_block of the overline & title here?
+            self.statemachine.node += sw
+            makesection = 0
+        source = '%s\n%s\n%s' % (overline, title, underline)
+        overline = overline.rstrip()
+        underline = underline.rstrip()
+        if not self.transitions['underline'][0].match(underline):
+            sw = self.statemachine.memo.reporter.severe(
+                  'Missing underline for overline at line %s.' % lineno)
+            self.statemachine.node += sw
+            makesection = 0
+        elif overline != underline:
+            sw = self.statemachine.memo.reporter.severe(
+                  'Title overline & underline mismatch at ' 'line %s.'
+                  % lineno)
+            self.statemachine.node += sw
+            makesection = 0
+        title = title.rstrip()
+        if len(title) > len(overline):
+            self.statemachine.node += \
+                  self.statemachine.memo.reporter.information(
+                  'Title overline too short at line %s.'% lineno)
+        if makesection:
+            style = (overline[0], underline[0])
+            self.eofcheck = 0           # @@@ not sure this is correct
+            self.section(title.lstrip(), source, style, lineno + 1)
+            self.eofcheck = 1
+        return [], 'Body', []
+
+    indent = text                       # indented title
+
+    def underline(self, match=None, context=None, nextstate=None):
+        sw = self.statemachine.memo.reporter.error(
+              'Invalid section title or transition marker at line %s.'
+              % (self.statemachine.abslineno() - 1))
+        self.statemachine.node += sw
+        return [], 'Body', []
+
+
 stateclasses = [Body, BulletList, DefinitionList, EnumeratedList, FieldList,
-                OptionList, RFC822List, Explicit, Text, Definition]
+                OptionList, RFC822List, Explicit, Text, Definition, Line]
 """Standard set of State classes used to start `RSTStateMachine`."""
 
 
