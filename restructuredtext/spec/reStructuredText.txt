@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.20 $
-:Date: $Date: 2001/10/18 03:48:34 $
+:Revision: $Revision: 1.21 $
+:Date: $Date: 2001/10/20 02:43:47 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -165,34 +165,10 @@ Here are examples of body elements:
  Syntax Details
 ----------------
 
-Below is a diagram of the hierarchy of element types in
-reStructuredText. Elements may contain other elements below them.
-Element types in parentheses indicate recursive or one-to-many
-relationships: sections may contain (sub)sections, tables contain
-further body elements, etc. ::
-
-    +--------------------------------------------------------------------+
-    | document                                                           |
-    |                             +--------------------------------------+
-    | [root element]              |                           +-------+  |
-    |                             | sections  [begin with one | title |] |
-    |                             |                           +-------+  |
-    |-----------------------------+-------------------------+------------|
-    | [body elements:]                                      | (sections) |
-    |         | - literal | - lists  |       | - hyperlink  +------------+
-    |         |   blocks  | - tables |       |   targets    |
-    | para-   | - doctest | - block  | foot- | - directives |
-    | graphs  |   blocks  |   quotes | notes | - comments   |
-    +---------+-----------+----------+-------+--------------+
-    | [text]+ | [text]    | (body elements)  | [text]       |
-    | (inline +-----------+------------------+--------------+
-    | markup) |
-    +---------+
-
-For definitive element hierarchy details, see the "Generic Plaintext
-Document Interface DTD" XML document type definition, gpdi.dtd_.
 Descriptions below list "DTD elements" (XML "generic identifiers")
-corresponding to syntax constructs.
+corresponding to syntax constructs. For details on the hierarchy of
+elements, please see `DPS Document Tree Structure`_ and the `Generic
+Plaintext Document Interface DTD`_ XML document type definition.
 
 
 Whitespace
@@ -1688,7 +1664,9 @@ Markup errors are handled according to the specification in `PEP
 .. _reStructuredText: http://structuredtext.sourceforge.net
 .. _Python Docstring Processing System:
     http://docstring.sourceforge.net
-.. _Doc-SIG: http://www.python.org/sigs/doc-sig/
+.. _DPS Document Tree Structure:
+    http://docstring.sourceforge.net/spec/doctree.txt
+.. _Generic Plaintext Document Interface DTD:
 .. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
 .. _transformations:
 .. _DPS Tree Transforms:
