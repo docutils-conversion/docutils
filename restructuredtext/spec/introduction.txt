@@ -3,7 +3,7 @@
 =====================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1.1.1 $
+Revision: $Revision: 1.1 $
 Date: $Date: 2001/07/21 22:14:16 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get

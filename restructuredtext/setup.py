@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.1.1.1 2001/07/21 22:14:04 goodger Exp $
+# $Id: setup.py,v 1.1 2001/07/21 22:14:04 goodger Exp $
 
 from distutils.core import setup
 
