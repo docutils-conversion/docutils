@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# $Id: quicktest.py,v 1.4 2001/08/22 03:56:44 goodger Exp $
 #
 # I used to have a much prettier version of this script, but
 # inadvertently deleted it. Oops. Here's a quick, ugly, grotty hack
@@ -8,26 +7,34 @@
 """\
 quicktest.py: quickly test the restructuredtext parser.
 
-Usage: quicktest.py [-x|-p|-t] [-q] [filename]
+Usage::
 
-    filename     : filename to use as input (default is stdin)
-    -x --xml     : output raw xml
-    -p --pretty  : output pretty print (default)
-    -t --test    : output in test format as per test_states.py
-    -q --quiet   : don't print delimeters (except test wrappers)
+    quicktest.py [-p|-q|-r|-t|-x] [-q] [filename]
+
+``filename`` is the name of the file to use as input (default is stdin).
+
+Options:
+
+-p, --pretty  output pretty pseudo-xml: no '&abc;' entities (default)
+-q, --quiet   don't print delimeters (except test wrappers)
+-r, --rawxml  output raw xml
+-t, --test    output in test format as per test_states.py
+-x, --xml     output pretty xml (indented)
 """
 
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/08/22 03:56:44 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/08/25 02:14:30 $
 :Copyright: This module has been placed in the public domain.
 
 """
 
 import sys
 import getopt
+from StringIO import StringIO
+
 try:
     from restructuredtext import Parser
 except ImportError:
@@ -39,24 +46,40 @@ def usage():
 def _pretty(input, document):
     return document.pprint()
 
-def _xml(input, document):
-    return document.asdom().toxml()
+def _xml(document, indent):
+    writer = StringIO()
+    document.asdom().writexml(writer, '', indent, '\n')
+    return writer.getvalue()
+
+def _rawxml(input, document):
+    return _xml(document, '')
+
+def _prettyxml(input, document):
+    return _xml(document, '    ')
 
 def _test(input, document):
     tq = '"""'
-    output = _pretty(document)
+    output = _pretty(input, document)
     return """\
-    proven['change_this_test_name'] = [
+    totest['change_this_test_name'] = [
 [%s\\
 %s
 %s,
 %s\\
 %s
 %s],
-]""" % ( tq, input, tq, tq, output, tq )
+]
+""" % ( tq, escape(input.rstrip()), tq, tq, escape(output.rstrip()), tq )
+
+def escape(text):
+    """
+    Return `text` in a form compatible with triple-double-quoted Python strings.
+    """
+    return text.replace('\\', '\\\\').replace('"""', '""\\"')
 
 _outputFormatters = {
-    'xml': _xml,
+    'rawxml': _rawxml,
+    'xml': _prettyxml,
     'pretty' : _pretty,
     'test': _test
     }
@@ -70,8 +93,8 @@ def main():
     isQuiet = 0
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "xptq",
-            [ "xml", "pretty", "test", "quiet" ])
+        opts, args = getopt.getopt(sys.argv[1:], "rxptq",
+            [ "rawxml", "xml", "pretty", "test", "quiet" ])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -80,6 +103,8 @@ def main():
         if o in ['-h', '--help']: # undocumented!
             usage()
             sys.exit()
+        elif o in ['-r', '--rawxml']:
+            outputFormat = 'rawxml'
         elif o in ['-x', '--xml']:
             outputFormat = 'xml'
         elif o in ['-p', '--pretty']:
@@ -109,7 +134,7 @@ def main():
     if not isQuiet:                     # print a delimiter
         print '=>'
     document = parser.parse(input)      # parse the input
-    print format(outputFormat, input, document) # format & print
+    print format(outputFormat, input, document), # format & print
 
 if __name__ == '__main__':
     main()
