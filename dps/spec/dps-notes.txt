@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/01 03:15:42 $
-:Revision: $Revision: 1.28 $
+:Date: $Date: 2002/03/08 04:32:03 $
+:Revision: $Revision: 1.29 $
 
 
 To Do
@@ -89,6 +89,8 @@ To Do
     arbitrary sequential id?  How to do inter-document references in
     that case?
 
+    - Perhaps combine name mangling with sequential ids?
+
   - ID everything?  Or only named elements?
 
   - How to do inter-document references in *any* case?
@@ -100,8 +102,8 @@ To Do
 - Considerations for an HTML Writer [#]_:
 
   - Boolean attributes. ``<element boolean>`` is good, ``<element
-    boolean="boolean">`` is bad.  Use a special value in attributes
-    mapping, such as ``None``?
+    boolean="boolean">`` is bad.  Use a special value in attribute
+    mappings, such as ``None``?
 
   - Escape double-dashes inside comments.
 
@@ -176,7 +178,7 @@ If the processed document is written to multiple files (possibly in a
 directory tree), it will need to be split up. References will have to
 be adjusted.
 
-(HTML only? See Deployment_ below.)
+(HTML only? See Distributors_ below.)
 
 
 Navigation
@@ -303,7 +305,7 @@ Here's the latest project model::
            //      \                            /      \
     2     //     4  \               7          /     9  \
     +--------+   +------------+     +------------+   +--------------+
-    | PARSER |...| reader     |     | writer     |...| deployment   |
+    | PARSER |...| reader     |     | writer     |...| DISTRIBUTOR  |
     +--------+   | transforms |     | transforms |   |              |
                  |            |     |            |   | - one file   |
                  | - docinfo  |     | - styling  |   | - many files |
@@ -333,21 +335,23 @@ clouds).
 Issues
 ------
 
-- Naming. Use "director"/"builder" instead of "reader"/"writer"? Then
-  "deployment" could be replaced by "writer".
-
-- Transforms. How to specify which transforms (and in what order)
+- Transforms.  How to specify which transforms (and in what order)
   apply to each combination of reader, parser/syntax, writer, and
-  deployment?  Even if we restrict ourselves to one parser, there will
-  eventually be a multitude of readers, writers, and deployment
+  distributor?  Even if we restrict ourselves to one parser, there
+  will eventually be a multitude of readers, writers, and distributor
   options.
 
-  Or are readers & writers independent? Then we have reader/parser and
-  writer/deployment combinations to consider.
+  Or are readers & writers independent?  Then we have reader/parser
+  and writer/distributor combinations to consider.
 
 
 Components
 ----------
+
+Production -> Publication -> Distribution
+
+Producer -> Publisher -> Distributor
+
 
 Parsers
 ```````
@@ -406,8 +410,6 @@ Examples:
 Writers
 ```````
 
-("Writers" may be renamed to "Builders".)
-
 Responsibilities:
 
 - Transform doctree into specific output formats.
@@ -422,52 +424,37 @@ Examples:
 - reStructuredText?
 
 
-Deployment
-``````````
+Distributors
+````````````
 
-("Deployment" may be renamed to "Writers" or "Publishers", and current
-writer/deployment [renamed to builder/writer] components may change
-places. After renaming, the model would look like this::
+(Writer/distributor components may change places. After rearranging,
+the model would look like this::
+
 
            1,3,5                               6,8
-           +--------+                          +---------+ formerly
-           | READER | =======================> | BUILDER | writer
-           +--------+ (purely presentational)  +---------+
+           +--------+                          +-------------+
+           | READER | =======================> | DISTRIBUTOR |
+           +--------+ (purely presentational)  +-------------+
             //    \                              /    \
            //      \                            /      \
     2     //     4  \               7          /     9  \
     +--------+   +------------+     +------------+   +--------+
     | PARSER |...| reader     |     | writer     |...| WRITER |
     +--------+   | transforms |     | transforms |   +--------+
-                 | ...        |     | ...        |    formerly
-                                                      deployment
+                 | ...        |     | ...        |
 
-After renaming *and* rearrangement, the model would look like this::
-
-           1,3,5                               6,8
-           +--------+                          +--------+ formerly
-           | READER | =======================> | WRITER | deployment
-           +--------+ (purely presentational)  +--------+
-            //    \                              /    \
-           //      \                            /      \
-    2     //     4  \               7          /     9  \
-    +--------+   +------------+     +------------+   +---------+
-    | PARSER |...| reader     |     | writer     |...| BUILDER |
-    +--------+   | transforms |     | transforms |   +---------+
-                 | ...        |     | ...        |    formerly writer
-
-We'll wait and see which arrangement works out best. Is it better for
-the writer/builder to control the deployment/writer, or vice versa? Or
-should they be equals?
+We'll wait and see which arrangement works out best.  Is it better for
+the writer to control the distributor, or vice versa?  Or should they
+be equals?
 
 Looking at the list of writers, it seems that only HTML would require
-anything other than monolithic output. Perhaps merge the "deployment"
-into the "writer"?)
+anything other than monolithic output.  Perhaps merge the HTML
+"distributor" into "writer" variants?)
 
 Responsibilities:
 
 - Do raw output to the destination.
-- Transform references per incarnation.
+- Transform references per incarnation (type of distribution).
 
 Examples:
 
