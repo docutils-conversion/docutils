@@ -1,8 +1,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.4 $
-Date: $Date: 2001/08/02 02:11:19 $
+Revision: $Revision: 1.5 $
+Date: $Date: 2001/08/11 02:13:23 $
 Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -12,6 +12,7 @@ reStructuredText parser. It defines the following classes:
 - `RSTState`: reStructuredText State superclass.
 - `Body`: Generic classifier of the first line of a block.
 - `BulletList`: Second and subsequent bullet_list list_items
+- `EnumeratedList`: Second and subsequent enumerated_list list_items.
 - `DefinitionList`: Second and subsequent definition_list_items.
 - `Explicit`: Second and subsequent explicit markup constructs.
 - `Text`: Classifier of second line of a text block.
@@ -21,6 +22,7 @@ reStructuredText parser. It defines the following classes:
 Exception classes:
 
 - `MarkupError`
+- `ParserError`
 
 Functions:
 
@@ -92,13 +94,14 @@ Parsing proceeds as follows:
 """
 
 import sys, re, string
-from dps import nodes, statemachine, utils
+from dps import nodes, statemachine, utils, roman
 from dps.statemachine import StateMachineWS, StateWS
 
-__all__ = ['RSTStateMachine', 'MarkupError']
+__all__ = ['RSTStateMachine', 'MarkupError', 'ParserError']
 
 
 class MarkupError(Exception): pass
+class ParserError(Exception): pass
 
 
 class Stuff:
@@ -358,12 +361,13 @@ class RSTState(StateWS):
                     :
                     (?:
                       (?:                         # either:
-                        //                          # hierarchical URI
+                        //?                         # hierarchical URI
                         %s*                         # URI characters
                         %s                          # final URI char
                       |                           # OR
                         %s+(?:\.%s+)*               # opaque URI
-                        @%s+(?:\.%s+)*%s            # (email only?)
+                        (?:@%s+(?:\.%s+)*)?         # (email only?)
+                        %s                          # final URI char
                       )
                       (?:                         # optional query
                         \?%s*                       # URI characters
@@ -379,7 +383,7 @@ class RSTState(StateWS):
                   (                           # email address (group 3)
                     %s+(?:\.%s+)*               # name
                     @                           # at
-                    %s+(?:\.%s*)*              # host
+                    %s+(?:\.%s*)*               # host
                     %s                          # final URI char
                   )
                 )
@@ -623,29 +627,59 @@ class Body(RSTState):
     Generic classifier of the first line of a block.
     """
 
-    pats = {'arabic': '[0-9]+',
-            'loweralpha': '[a-z]',
-            'upperalpha': '[A-Z]',
-            'lowerroman': '[ivxlcdm]+',
-            'upperroman': '[IVXLCDM]+',
-            'nonAlphaNum7Bit': '[!-/:-@[-`{-~]'}
-    pats['enum'] = ('(%(arabic)s|%(loweralpha)s|%(upperalpha)s|%(lowerroman)s'
-                    '|%(upperroman)s)' % pats)
-    pats['parens'] = r'(?P<parens>\(%(enum)s\))' % pats
-    pats['rightparen'] = r'(?P<rightparen>%(enum)s\))' % pats
-    pats['period'] = r'(?P<period>%(enum)s\.)' % pats
+    enum = Stuff()
+    """Enumerated list information."""
+    
+    enum.formatinfo = {
+          'parens': Stuff(prefix='(', suffix=')', start=1, end=-1),
+          'rparen': Stuff(prefix='', suffix=')', start=0, end=-1),
+          'period': Stuff(prefix='', suffix='.', start=0, end=-1)}
+    enum.formats = enum.formatinfo.keys()
+    enum.sequences = ['arabic', 'loweralpha', 'upperalpha',
+                      'lowerroman', 'upperroman'] # ORDERED!
+    enum.sequencepats = {'arabic': '[0-9]+',
+                         'loweralpha': '[a-z]',
+                         'upperalpha': '[A-Z]',
+                         'lowerroman': '[ivxlcdm]+',
+                         'upperroman': '[IVXLCDM]+',}
+    enum.converters = {'arabic': int,
+                       'loweralpha':
+                       lambda s, zero=(ord('a')-1): ord(s) - zero,
+                       'upperalpha':
+                       lambda s, zero=(ord('A')-1): ord(s) - zero,
+                       'lowerroman':
+                       lambda s: roman.fromRoman(s.upper()),
+                       'upperroman': roman.fromRoman}
+                       
+    enum.sequenceREs = {}
+    for sequence in enum.sequences:
+        enum.sequenceREs[sequence] = re.compile(enum.sequencepats[sequence]
+                                                + '$')
 
-    patterns = {'bullet': r'[-+*] +',
-                'enum': r'(%(parens)s|%(rightparen)s|%(period)s) +' % pats,
+    pats = {}
+    """Fragments of patterns used by transitions."""
+
+    pats['nonAlphaNum7Bit'] = '[!-/:-@[-`{-~]'
+    pats['enum'] = ('(%(arabic)s|%(loweralpha)s|%(upperalpha)s|%(lowerroman)s'
+                    '|%(upperroman)s)' % enum.sequencepats)
+
+    for format in enum.formats:
+        pats[format] = '(?P<%s>%s%s%s)' % (
+              format, re.escape(enum.formatinfo[format].prefix),
+              pats['enum'], re.escape(enum.formatinfo[format].suffix))
+
+    patterns = {'bullet': r'[-+*]( +|$)',
+                'enumerated': r'(%(parens)s|%(rparen)s|%(period)s)( +|$)'
+                % pats,
                 'option': r'(-\w|--\w[\w-]*).*?  ',
-                'doctest': r'>>> ',
+                'doctest': r'>>>( +|$)',
                 'table': r'\+-[-+]+-\+ *$',
                 'explicit_markup': r'\.\.( +|$)',
-                'overline': r'(%(nonAlphaNum7Bit)s)\1\1+ *$' % pats,
+                'overline': r'(%(nonAlphaNum7Bit)s)\1\1\1+ *$' % pats,
                 'firstfield': r'[!-9;-~]+:( +|$)',
                 'text': r''}
     initialtransitions = ['bullet',
-                          'enum',
+                          'enumerated',
                           'option',
                           'doctest',
                           'table',
@@ -661,15 +695,19 @@ class Body(RSTState):
         if self.debug:
             print >>sys.stderr, ('\nstates.Body.indent (block_quote): '
                                  'indented=%r' % indented)
-        bq = nodes.block_quote()
+        bq = self.block_quote(indented, lineoffset)
         self.statemachine.node += bq
+        if not blankfinish:
+            self.statemachine.node += self.unindentwarning()
+        return context, nextstate, []
+
+    def block_quote(self, indented, lineoffset):
+        bq = nodes.block_quote()
         sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
         sm.run(indented, inputoffset=lineoffset,
                memo=self.statemachine.memo, node=bq, matchtitles=0)
         sm.unlink()
-        if not blankfinish:
-            self.statemachine.node += self.unindentwarning()
-        return context, nextstate, []
+        return bq
 
     def bullet(self, match, context, nextstate):
         """Bullet list item."""
@@ -695,9 +733,88 @@ class Body(RSTState):
             pass
         return [], nextstate, []
 
-    def enum(self, match, context, nextstate):
-        """Potential Enumerated List Item"""
-        return context, nextstate, []
+    def enumerated(self, match, context, nextstate):
+        """Enumerated List Item"""
+        format, sequence, text, ordinal = self.parseenumerator(match)
+        #print >>sys.stderr, 'Body.enumerated: format=%r, sequence=%r, text=%r, ordinal=%r' % (format, sequence, text, ordinal)
+        if ordinal is None:
+            sw = self.statemachine.memo.errorist.system_warning(
+                  2, ('Enumerated list start value invalid at line %s: '
+                      '%r (sequence %r)' % (self.statemachine.abslineno(),
+                                            text, sequence)))
+            self.statemachine.node += sw
+            indented, lineoffset, blankfinish = \
+                  self.statemachine.getknownindented(match.end())
+            bq = self.block_quote(indented, lineoffset)
+            self.statemachine.node += bq
+            if not blankfinish:
+                self.statemachine.node += self.unindentwarning()
+            return [], nextstate, []
+        if ordinal != 1:
+            sw = self.statemachine.memo.errorist.system_warning(
+                  0, ('Enumerated list start value not ordinal-1 at line %s: '
+                      '%r (ordinal %s)' % (self.statemachine.abslineno(),
+                                           text, ordinal)))
+            self.statemachine.node += sw
+        l = nodes.enumerated_list()
+        self.statemachine.node += l
+        l['enumtype'] = sequence
+        l['start'] = text
+        l['prefix'] = self.enum.formatinfo[format].prefix
+        l['suffix'] = self.enum.formatinfo[format].suffix
+        i, blankfinish = self.list_item(match.end())
+        l += i
+        offset = self.statemachine.lineoffset + 1   # next line
+        kwargs = self.indentSMkwargs.copy()
+        kwargs['initialstate'] = 'EnumeratedList'
+        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm.states['EnumeratedList'].blankfinish = blankfinish
+        sm.states['EnumeratedList'].lastordinal = ordinal
+        sm.states['EnumeratedList'].format = format
+        sm.run(self.statemachine.inputlines[offset:],
+               inputoffset=self.statemachine.abslineoffset() + 1,
+               memo=self.statemachine.memo, node=l, matchtitles=0)
+        if not sm.states['EnumeratedList'].blankfinish:
+            self.statemachine.node += self.unindentwarning()
+        sm.unlink()
+        try:
+            self.statemachine.gotoline(sm.abslineoffset())
+        except IndexError:
+            pass
+        return [], nextstate, []
+
+    def parseenumerator(self, match, trysequence=None):
+        groupdict = match.groupdict()
+        sequence = ''
+        for format in self.enum.formats:
+            if groupdict[format]:
+                break
+        else:                           # shouldn't happen
+            raise ParserError, 'enumerator format not matched'
+        text = groupdict[format][self.enum.formatinfo[format].start
+                                 :self.enum.formatinfo[format].end]
+        if not trysequence:
+            if text == 'i':
+                sequence = 'lowerroman'
+            elif text == 'I':
+                sequence = 'upperroman'
+        else:
+            try:
+                if self.enum.sequenceREs[trysequence].match(text):
+                    sequence = trysequence
+            except KeyError:            # shouldn't happen
+                raise ParserError, 'unknown sequence: %s' % sequence
+        if not sequence:
+            for sequence in self.enum.sequences:
+                if self.enum.sequenceREs[sequence].match(text):
+                    break
+            else:                       # shouldn't happen
+                raise ParserError, 'enumerator sequence not matched'
+        try:
+            ordinal = self.enum.converters[sequence](text)
+        except roman.InvalidRomanNumeralError:
+            ordinal = None
+        return format, sequence, text, ordinal
 
     def option(self, match, context, nextstate):
         return context, nextstate, []
@@ -926,7 +1043,35 @@ class BulletList(Body):
         self.statemachine.previousline()
         raise EOFError
 
-    indent = enum = option = doctest = table = explicit_markup = overline \
+    indent = enumerated = option = doctest = table = explicit_markup \
+             = overline = text = not_list_item
+
+
+class EnumeratedList(Body):
+
+    """Second and subsequent enumerated_list list_items."""
+
+    def enumerated(self, match, context, nextstate):
+        """Enumerated list item."""
+        format, sequence, text, ordinal = self.parseenumerator(
+              match, self.statemachine.node['enumtype'])
+        if (sequence != self.statemachine.node['enumtype'] or
+            format != self.format or
+            ordinal != self.lastordinal + 1):
+            # different enumeration: new list
+            self.not_list_item()
+        i, blankfinish = self.list_item(match.end())
+        self.statemachine.node += i
+        self.blankfinish = blankfinish
+        self.lastordinal = ordinal
+        return [], 'EnumeratedList', []
+
+    def not_list_item(self, match=None, context=None, nextstate=None):
+        """Not a list item."""
+        self.statemachine.previousline()
+        raise EOFError
+
+    indent = bullet = option = doctest = table = explicit_markup = overline \
              = text = not_list_item
 
 
@@ -943,7 +1088,7 @@ class DefinitionList(Body):
         self.statemachine.previousline()
         raise EOFError
 
-    indent = bullet = enum = option = doctest = table = explicit_markup \
+    indent = bullet = enumerated = option = doctest = table = explicit_markup \
              = overline = not_definition_list_item
 
 
@@ -963,8 +1108,8 @@ class Explicit(Body):
         self.statemachine.previousline()
         raise EOFError
 
-    indent = bullet = enum = option = doctest = table = text = \
-             not_explicit
+    indent = bullet = enumerated = option = doctest = table = overline = text \
+             = not_explicit
 
 
 class Text(RSTState):
@@ -975,7 +1120,7 @@ class Text(RSTState):
     Could be a paragraph, a definition list item, or a title.
     """
 
-    patterns = {'underline': r'([!-/:-@[-`{-~])\1\1+ *$',
+    patterns = {'underline': r'([!-/:-@[-`{-~])\1\1\1+ *$',
                 'text': r''}
     initialtransitions = [('underline', 'Body'), ('text', 'Body')]
 
@@ -1137,8 +1282,8 @@ class Definition(Text):
         return [], 'DefinitionList', []
 
 
-stateclasses = [Body, Text, BulletList, DefinitionList, Definition,
-                Explicit]
+stateclasses = [Body, BulletList, EnumeratedList, DefinitionList, Explicit,
+                Text, Definition]
 """Standard set of State classes used to start `RSTStateMachine`."""
 
 
