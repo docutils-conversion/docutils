@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/12 03:34:14 $
+:Date: $Date: 2002/03/13 02:38:23 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -262,8 +262,10 @@ Changed contact email addresses.
   - Added substitution definitions, substitution references (use cases
     contributed by Alan Jaffray).
   - Added to table description.
-  - Added citations & citation references.
-  - Reworked footnotes, adding a symbolic form.
+  - Added note about hyperlink/footnote/citation reference name
+    shared namespace.
+  - Added "Auto-Symbol Footnotes", "Mixed Manual and Auto-Numbered
+    Footnotes", and "Citations".
 
 * spec/pyextensions.txt:
 

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/03/12 03:09:05 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/13 02:37:35 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for typically HTML-specific constructs.
@@ -76,13 +76,13 @@ class MetaBody(states.SpecializedBody):
         try:
             attname, val = utils.extract_name_value(name)[0]
             node[attname.lower()] = val
-        except utils.AttributeParsingError:
+        except utils.NameValueError:
             node['name'] = name
         for arg in args:
             try:
                 attname, val = utils.extract_name_value(arg)[0]
                 node[attname.lower()] = val
-            except utils.AttributeParsingError, detail:
+            except utils.NameValueError, detail:
                 line = self.statemachine.line
                 msg = self.statemachine.memo.reporter.error(
                       'Error parsing meta tag attribute "%s": %s'
