@@ -1,15 +1,16 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2001/09/05 02:49:04 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2001/09/07 01:35:08 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
 reStructuredText parser. It defines the following:
 
 :Classes:
-    - `RSTStateMachine`: reStructuredText's customized StateMachine.
+    - `RSTStateMachine`: reStructuredText parser's entry point.
+    - `NestedStateMachine`: recursive StateMachine.
     - `RSTState`: reStructuredText State superclass.
     - `Body`: Generic classifier of the first line of a block.
     - `BulletList`: Second and subsequent bullet_list list_items
@@ -26,6 +27,7 @@ reStructuredText parser. It defines the following:
 :Exception classes:
     - `MarkupError`
     - `ParserError`
+    - `TransformationError`
 
 :Functions:
     - `escape2null()`: Return a string, escape-backslashes converted to nulls.
@@ -98,11 +100,14 @@ import sys, re, string
 from dps import nodes, statemachine, utils, roman
 from dps.statemachine import StateMachineWS, StateWS
 
-__all__ = ['RSTStateMachine', 'MarkupError', 'ParserError']
+
+__all__ = ['RSTStateMachine', 'MarkupError', 'ParserError',
+           'TransformationError']
 
 
 class MarkupError(Exception): pass
 class ParserError(Exception): pass
+class TransformationError(Exception): pass
 
 
 class Stuff:
@@ -119,51 +124,247 @@ class RSTStateMachine(StateMachineWS):
     reStructuredText's customized StateMachine.
     """
 
-    def run(self, inputlines, inputoffset=0,
-            warninglevel=1, errorlevel=3,
-            memo=None, node=None, matchtitles=1):
+    def __init__(self, stateclasses, initialstate, language, debug=0):
+        StateMachineWS.__init__(self, stateclasses, initialstate, debug=0)
+        self.language = language
+
+    def run(self, inputlines, inputoffset=0, warninglevel=1, errorlevel=3,
+			matchtitles=1):
         """
         Parse `inputlines` and return a `dps.nodes.document` instance.
 
         Extend `StateMachineWS.run()`: set up document-wide data.
-
-        When called initially (from outside, to parse a document), `memo` and
-        `node` must *not* be supplied. When subsequently called (internally,
-        to parse a portion of the document), `memo` and `node` *must* be
-        supplied.
         """
-        self.warninglevel = warninglevel
-        self.errorlevel = errorlevel
         self.matchtitles = matchtitles
-        if memo is None:
-            errorist = utils.Errorist(warninglevel, errorlevel)
-            docroot = nodes.document(errorist)
-            self.memo = Stuff(document=docroot,
-                              errorist=errorist,
-                              titlestyles=[],
-                              sectionlevel=0,
-                              matchfirstfields=1)
-            self.node = docroot
-        else:
-            if self.debug:
-                print >>sys.stderr, ('\nRSTStateMachine (recursive): node=%r'
-                                     % node)
-            self.memo = memo
-            self.node = node
-        if not self.memo.matchfirstfields:
-            for state in self.states.values:
-                if state.transitions.has_key('firstfield'):
-                    state.removetransition('firstfield')
+        errorist = utils.Errorist(warninglevel, errorlevel)
+        docroot = nodes.document(errorist)
+        self.memo = Stuff(document=docroot,
+                          errorist=errorist,
+                          language=self.language,
+                          titlestyles=[],
+                          sectionlevel=0)
+        self.node = docroot
         results = StateMachineWS.run(self, inputlines, inputoffset)
-        assert results == [], 'RSTStateMachine results should be empty.'
-        if memo is None:                # initial (external) call
-            self.node = self.memo = None
-            return docroot
+        assert results == [], 'RSTStateMachine.run() results should be empty.'
+        self.promotelonesection()
+        self.transformfirstfields()
+        self.node = self.memo = None
+        return docroot
+
+    def promotelonesection(self):
+        """
+        Promote an only-child section to the document level.
+
+        If the only non-comment child of an untitled document element is a
+        section, the section is promoted to the document level. The section's
+        title becomes the document title, and the section's contents become
+        the document's contents.
+        """
+        index = self.node.findnonclass((nodes.comment, nodes.system_warning))
+        if index is None or len(self.node) > (index + 1):
+            return
+        candidate = self.node[index]
+        if not isinstance(candidate, nodes.section): 
+            return
+        self.node.attributes.update(candidate.attributes)
+        #print >>sys.stderr, 'promotelonesection:\n\tcandidate[0]=%r\n\tself.node[:index]=%r\n\tcandidate[1:]=%r' % (candidate[0], self.node[:index], candidate[1:])
+        self.node[:] = candidate[:1] + self.node[:index] + candidate[1:]
+
+    def transformfirstfields(self):
+        """
+        Transform bibliographic field_list fields to elements if found.
+
+        The bibliographic field_list must be the first non-comment child
+        (possibly after a title) of the document element itself.
+        """
+        index = getfirstnoncomment(self.node)
+        if index is None:
+            return
+        candidate = self.node[index]
+        if isinstance(candidate, nodes.title):
+            titleindex = index
+            biblioindex = titleindex + 1
+            index = getfirstnoncomment(
+                  self.node[titleindex + 1:])
+            if index is None:
+                return
+            index += titleindex + 1
+            candidate = self.node[index]
+        else:
+            biblioindex = 0
+            titleindex = None
+        #print >>sys.stderr, 'dofirstfields: candidate=%r' % candidate
+        if isinstance(candidate, nodes.field_list):
+            bibliographic, remainder = self.extractbibliographic(candidate,
+                                                                 titleindex)
+            if remainder:
+                self.node[index] = remainder
+            else:
+                del self.node[index]
+            self.node[biblioindex:biblioindex] = bibliographic
+
+    def extractbibliographic(self, field_list, title):
+        nodelist = []
+        remainder = []
+        #print >>sys.stderr, 'extractbibliographic: self.language=%r' % (self.language,)
+        #print >>sys.stderr, 'extractbibliographic: dir(self.language)=%r' % (dir(self.language),)
+        bibliofields = self.language.parser.bibliofields
+        abstract = None
+        for field in field_list:
+            try:
+                name = field[0][0].astext()
+                normedname = normname(name)
+                if len(field) != 2 or not bibliofields.has_key(normedname) \
+                      or self.checkemptybibliofield(field, name):
+                    raise TransformationError
+                biblioclass = bibliofields[normedname]
+                if issubclass(biblioclass, nodes._TextElement):
+                    if self.checkcompoundbibliofield(field, name):
+                        raise TransformationError
+                    if biblioclass is nodes.title:
+                        self.extracttitle(field, name, title, nodelist)
+                        title = 1
+                    else:
+                        nodelist.append(biblioclass('', '', *field[1][0].children))
+                else:
+                    if biblioclass is nodes.authors:
+                        self.extractauthors(field, name, nodelist)
+                    elif biblioclass is nodes.abstract:
+                        if abstract:
+                            field[-1] += self.memo.errorist.error(
+                                  'There can only be one abstract.')
+                            raise TransformationError
+                        abstract = nodes.abstract('', *field[1].children)
+                    else:
+                        nodelist.append(biblioclass('', *field[1].children))
+            except TransformationError:
+                remainder.append(field)
+                continue
+        if remainder:
+            field_list[:] = remainder
+        else:
+            field_list = None
+        if abstract:
+            nodelist.append(abstract)
+        return nodelist, field_list
+
+    def checkemptybibliofield(self, field, name):
+        if len(field[1]) < 1:
+            field[-1] += self.memo.errorist.error(
+                  'Cannot extract empty bibliographic field "%s".' % name)
+            return 1
+        return None
+
+    def checkcompoundbibliofield(self, field, name):
+        if len(field[1]) > 1:
+            field[-1] += self.memo.errorist.error(
+                  'Cannot extract compound title bibliographic '
+                  'field "%s".' % name)
+            return 1
+        if not isinstance(field[1][0], nodes.paragraph):
+            field[-1] += self.memo.errorist.error(
+                  'Cannot extract bibliographic field "%s" '
+                  'containing anything other than a simple paragraph.'
+                  % name)
+            return 1
+        return None
+
+    def extracttitle(self, field, name, title, nodelist):
+        if title is not None:
+            field[-1] += self.memo.errorist.error(
+                  'Multiple document titles (bibliographic field "%s").'
+                  % name)
+            raise TransformationError
+        nodelist.insert(0, nodes.title('', '', *field[1][0].children))
+
+    def extractauthors(self, field, name, nodelist):
+        try:
+            if len(field[1]) == 1:
+                if isinstance(field[1][0], nodes.paragraph):
+                    authors = self.authorsfrom1paragraph(field)
+                elif isinstance(field[1][0], nodes.bullet_list):
+                    authors = self.authorsfrombulletlist(field)
+                else:
+                    raise TransformationError
+            else:
+                authors = self.authorsfromparagraphs(field)
+            authornodes = [nodes.author('', '', *author)
+                           for author in authors if author]
+            nodelist.append(nodes.authors('', *authornodes))
+        except TransformationError:
+            field[-1] += self.memo.errorist.error(
+                  'Bibliographic field "%s" incompatible with extraction: '
+                  'it must contain either a single paragraph (with authors '
+                  'separated by one of "%s"), multiple paragraphs (one per '
+                  'author), or a bullet list with one paragraph (one author) '
+                  'per item.'
+                  % (name, ''.join(self.language.parser.authorseps)))
+            raise
+
+    def authorsfrom1paragraph(self, field):
+        text = field[1][0].astext().strip()
+        if not text:
+            raise TransformationError
+        for authorsep in self.language.parser.authorseps:
+            authornames = text.split(authorsep)
+            if len(authornames) > 1:
+                break
+        authornames = [author.strip() for author in authornames]
+        authors = [[nodes.Text(author)] for author in authornames]
+        return authors
+
+    def authorsfrombulletlist(self, field):
+        authors = []
+        for item in field[1][0]:
+            if len(item) != 1 or not isinstance(item[0], nodes.paragraph):
+                raise TransformationError
+            authors.append(item[0].children)
+        if not authors:
+            raise TransformationError
+        return authors
+
+    def authorsfromparagraphs(self, field):
+        for item in field[1]:
+            if not isinstance(item, nodes.paragraph):
+                raise TransformationError
+        authors = [item.children for item in field[1]]
+        return authors
+
+
+def getfirstnoncomment(nodelist):
+    for index in range(len(nodelist)):
+        if not isinstance(nodelist[index], nodes.comment):
+            return index
+    return None
+
+
+class NestedStateMachine(StateMachineWS):
+
+    """
+    reStructuredText's customized StateMachine.
+    """
+
+    def run(self, inputlines, inputoffset, memo, node, matchtitles=1):
+        """
+        Parse `inputlines` and return a `dps.nodes.document` instance.
+
+        Extend `StateMachineWS.run()`: set up document-wide data.
+        """
+        self.matchtitles = matchtitles
+        if self.debug:
+            print >>sys.stderr, ('\nNestedStateMachine.run: node=%r' % node)
+        self.memo = memo
+        self.node = node
+        results = StateMachineWS.run(self, inputlines, inputoffset)
+        assert results == [], 'NestedStateMachine.run() results should be empty.'
+        return results
 
 
 class RSTState(StateWS):
 
     """reStructuredText State superclass."""
+
+    indentSM = NestedStateMachine
 
     def __init__(self, statemachine, debug=0):
         self.indentSMkwargs = {'stateclasses': stateclasses,
@@ -185,8 +386,6 @@ class RSTState(StateWS):
         back up the chain until that level is reached. Store in memo? Or
         return in results?
         """
-        # XXX need to catch title as first element (after comments),
-        # so firstfields will work
         if self.checksubsection(source, style, lineno):
             self.newsubsection(title, lineno)
 
@@ -248,8 +447,7 @@ class RSTState(StateWS):
         s += titlenode
         s += warnings
         memo.document.addimplicitlink(normname(titlenode.astext()), s)
-        sm = RSTStateMachine(stateclasses=stateclasses, initialstate='Body',
-                             debug=self.debug)
+        sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
         offset = self.statemachine.lineoffset + 1
         absoffset = self.statemachine.abslineoffset() + 1
         sm.run(self.statemachine.inputlines[offset:], inputoffset=absoffset,
@@ -446,8 +644,8 @@ class RSTState(StateWS):
             inlineobj = nodeclass(rawsource, text)
             return (string[:matchstart], [inlineobj],
                     string[matchend:][endmatch.end(1):], [])
-        sw = self.statemachine.memo.errorist.system_warning(
-              1, 'Inline %s start-string without end-string '
+        sw = self.statemachine.memo.errorist.warning(
+              'Inline %s start-string without end-string '
               'at line %s.' % (nodeclass.__name__, lineno))
         return (string[:matchend], [], string[matchend:], [sw])
 
@@ -482,8 +680,8 @@ class RSTState(StateWS):
                   string[match.start():matchend+endmatch.end()], 1)
             if rawsource[-1] == '_':
                 if role:
-                    sw = self.statemachine.memo.errorist.system_warning(
-                          1, 'Mismatch: inline interpreted text start-string '
+                    sw = self.statemachine.memo.errorist.warning(
+                          'Mismatch: inline interpreted text start-string '
                           'and role with phrase-link end-string at line %s.'
                           % lineno)
                     return (string[:matchend], [], string[matchend:], [sw])
@@ -495,8 +693,8 @@ class RSTState(StateWS):
                       string[:rolestart], string[matchend:][endmatch.end():],
                       endmatch, role, position, lineno,
                       escaped, rawsource, text)
-        sw = self.statemachine.memo.errorist.system_warning(
-              1, 'Inline interpreted text or phrase link start-string '
+        sw = self.statemachine.memo.errorist.warning(
+              'Inline interpreted text or phrase link start-string '
               'without end-string at line %s.' % lineno)
         return (string[:matchend], [], string[matchend:], [sw])
 
@@ -511,8 +709,8 @@ class RSTState(StateWS):
                     suffix=inline.groups.interpreted_or_phrase_link.suffix):
         if endmatch.group(suffix):
             if role:
-                sw = self.statemachine.memo.errorist.system_warning(
-                      1, 'Multiple roles in interpreted text at line %s.'
+                sw = self.statemachine.memo.errorist.warning(
+                      'Multiple roles in interpreted text at line %s.'
                       % lineno)
                 return (before + rawsource, [], after, [sw])
             role = endmatch.group(suffix)[1:-1]
@@ -534,9 +732,8 @@ class RSTState(StateWS):
         if refname[0] == '#':
             refname = refname[1:]
             fnname = fnname[1:]
-            #self.statemachine.memo.document.addautofootnoteref(refname,
-            #                                                   fnrefnode)
-            fnrefnode['auto'] = 1
+            self.statemachine.memo.document.addautofootnoteref(refname,
+                                                               fnrefnode)
         else:
             fnrefnode += nodes.Text(fnname)
         if refname:
@@ -640,8 +837,8 @@ class RSTState(StateWS):
         return processed, warnings
 
     def unindentwarning(self):
-        return self.statemachine.memo.errorist.system_warning(
-              1, ('Unindent without blank line at line %s.'
+        return self.statemachine.memo.errorist.warning(
+              ('Unindent without blank line at line %s.'
                   % (self.statemachine.abslineno() + 1)))
 
 
@@ -864,7 +1061,7 @@ class Body(RSTState):
     """Matches the top (& bottom) of a table)."""
 
     tableparser = TableParser()
-    
+
     pats = {}
     """Fragments of patterns used by transitions."""
 
@@ -971,10 +1168,10 @@ class Body(RSTState):
         format, sequence, text, ordinal = self.parseenumerator(match)
         #print >>sys.stderr, 'Body.enumerated: format=%r, sequence=%r, text=%r, ordinal=%r' % (format, sequence, text, ordinal)
         if ordinal is None:
-            sw = self.statemachine.memo.errorist.system_warning(
-                  2, ('Enumerated list start value invalid at line %s: '
-                      '%r (sequence %r)' % (self.statemachine.abslineno(),
-                                            text, sequence)))
+            sw = self.statemachine.memo.errorist.error(
+                  ('Enumerated list start value invalid at line %s: '
+                   '%r (sequence %r)' % (self.statemachine.abslineno(),
+                                         text, sequence)))
             self.statemachine.node += sw
             indented, lineoffset, blankfinish = \
                   self.statemachine.getknownindented(match.end())
@@ -984,8 +1181,8 @@ class Body(RSTState):
                 self.statemachine.node += self.unindentwarning()
             return [], nextstate, []
         if ordinal != 1:
-            sw = self.statemachine.memo.errorist.system_warning(
-                  0, ('Enumerated list start value not ordinal-1 at line %s: '
+            sw = self.statemachine.memo.errorist.information(
+                  ('Enumerated list start value not ordinal-1 at line %s: '
                       '%r (ordinal %s)' % (self.statemachine.abslineno(),
                                            text, ordinal)))
             self.statemachine.node += sw
@@ -1123,8 +1320,8 @@ class Body(RSTState):
         try:
             i, blankfinish = self.option_list_item(match)
         except MarkupError, detail:     # shouldn't happen; won't match pattern
-            sw = self.statemachine.memo.errorist.system_warning(
-                  2, ('Invalid option list marker at line %s: %s'
+            sw = self.statemachine.memo.errorist.error(
+                  ('Invalid option list marker at line %s: %s'
                       % (self.statemachine.abslineno(), detail)))
             self.statemachine.node += sw
             indented, indent, lineoffset, blankfinish = \
@@ -1213,8 +1410,8 @@ class Body(RSTState):
         nodelist, blankfinish = self.table()
         self.statemachine.node += nodelist
         if not blankfinish:
-            sw = self.statemachine.memo.errorist.system_warning(
-                  1, 'Blank line required after table at line %s.'
+            sw = self.statemachine.memo.errorist.warning(
+                  'Blank line required after table at line %s.'
                   % (self.statemachine.abslineno() + 1))
             self.statemachine.node += sw
         return [], nextstate, []
@@ -1241,8 +1438,8 @@ class Body(RSTState):
             block = self.statemachine.getunindented()
         except statemachine.UnexpectedIndentationError, instance:
             block, lineno = instance.args
-            warnings.append(self.statemachine.memo.errorist.system_warning(
-                  2, 'Unexpected indentation at line %s.' % lineno))
+            warnings.append(self.statemachine.memo.errorist.error(
+                  'Unexpected indentation at line %s.' % lineno))
             blankfinish = 0
         width = len(block[0].strip())
         for i in range(len(block)):
@@ -1276,7 +1473,7 @@ class Body(RSTState):
                                       - len(block) + 1)
         if detail:
             message += '\n' + detail
-        nodelist = [self.statemachine.memo.errorist.system_warning(2, message),
+        nodelist = [self.statemachine.memo.errorist.error(message),
                     nodes.literal_block(data, data)]
         return nodelist
 
@@ -1345,7 +1542,7 @@ class Body(RSTState):
         f = nodes.footnote('\n'.join(indented))
         if name[0] == '#':
             name = name[1:]
-            #self.statemachine.memo.document.addautofootnote(name, f)
+            self.statemachine.memo.document.addautofootnote(name, f)
         else:
             f += nodes.label('', label)
         if name:
@@ -1378,8 +1575,8 @@ class Body(RSTState):
             reference += block[i].strip()
         blocktext = '\n'.join(block)
         if reference.find(' ') != -1:
-            t = self.statemachine.memo.errorist.system_warning(
-                  1, 'Hyperlink target at line %s contains whitespace. '
+            t = self.statemachine.memo.errorist.warning(
+                  'Hyperlink target at line %s contains whitespace. '
                   'Perhaps a footnote was intended?'
                   % (self.statemachine.abslineno() - len(block) + 1))
             t += nodes.literal_block(blocktext, blocktext)
@@ -1486,8 +1683,8 @@ class Body(RSTState):
                     return method(self, expmatch)
                 except MarkupError, detail:
                     errors.append(
-                          self.statemachine.memo.errorist.system_warning(
-                          1, detail.__class__.__name__ + ': ' + str(detail)))
+                          self.statemachine.memo.errorist.warning(
+                          detail.__class__.__name__ + ': ' + str(detail)))
                     break
         nodelist, blankfinish = self.comment(match)
         return nodelist + errors, blankfinish
@@ -1497,8 +1694,8 @@ class Body(RSTState):
         makesection = 1
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
-            sw = self.statemachine.memo.errorist.system_warning(
-                  3, 'Unexpected section title at line %s.' % lineno)
+            sw = self.statemachine.memo.errorist.severe(
+                  'Unexpected section title at line %s.' % lineno)
             self.statemachine.node += sw
             return [], nextstate, []
         title = underline = ''
@@ -1506,29 +1703,29 @@ class Body(RSTState):
             title = self.statemachine.nextline()
             underline = self.statemachine.nextline()
         except IndexError:
-            sw = self.statemachine.memo.errorist.system_warning(
-                  3, 'Incomplete section title at line %s.' % lineno)
+            sw = self.statemachine.memo.errorist.severe(
+                  'Incomplete section title at line %s.' % lineno)
             self.statemachine.node += sw
             makesection = 0
         source = '%s\n%s\n%s' % (match.string, title, underline)
         overline = match.string.rstrip()
         underline = underline.rstrip()
         if not self.transitions['overline'][0].match(underline):
-            sw = self.statemachine.memo.errorist.system_warning(
-                  3, 'Missing underline for overline at line %s.' % lineno)
+            sw = self.statemachine.memo.errorist.severe(
+                  'Missing underline for overline at line %s.' % lineno)
             self.statemachine.node += sw
             makesection = 0
         elif overline != underline:
-            sw = self.statemachine.memo.errorist.system_warning(
-                  3, 'Title overline & underline mismatch at ' 'line %s.'
+            sw = self.statemachine.memo.errorist.severe(
+                  'Title overline & underline mismatch at ' 'line %s.'
                   % lineno)
             self.statemachine.node += sw
             makesection = 0
         title = title.rstrip()
         if len(title) > len(overline):
             self.statemachine.node += \
-                  self.statemachine.memo.errorist.system_warning(
-                  0, 'Title overline too short at line %s.'% lineno)
+                  self.statemachine.memo.errorist.information(
+                  'Title overline too short at line %s.'% lineno)
         if makesection:
             style = (overline[0], underline[0])
             self.section(title.lstrip(), source, style, lineno + 1)
@@ -1716,8 +1913,8 @@ class Text(RSTState):
         """Section title."""
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
-            sw = self.statemachine.memo.errorist.system_warning(
-                  3, 'Unexpected section title at line %s.' % lineno)
+            sw = self.statemachine.memo.errorist.severe(
+                  'Unexpected section title at line %s.' % lineno)
             self.statemachine.node += sw
             return [], nextstate, []
         title = context[0].rstrip()
@@ -1730,8 +1927,8 @@ class Text(RSTState):
                                     self.statemachine.memo.titlestyles))
         if len(title) > len(underline):
             self.statemachine.node += \
-                  self.statemachine.memo.errorist.system_warning(
-                  0, 'Title underline too short at line %s.' % lineno)
+                  self.statemachine.memo.errorist.information(
+                  'Title underline too short at line %s.' % lineno)
         style = underline[0]
         context[:] = []
         self.section(title, source, style, lineno - 1)
@@ -1745,8 +1942,8 @@ class Text(RSTState):
             block = self.statemachine.getunindented()
         except statemachine.UnexpectedIndentationError, instance:
             block, lineno = instance.args
-            sw = self.statemachine.memo.errorist.system_warning(
-                  2, 'Unexpected indentation at line %s.' % lineno)
+            sw = self.statemachine.memo.errorist.error(
+                  'Unexpected indentation at line %s.' % lineno)
         lines = context + block
         if self.debug:
             print >>sys.stderr, 'states.Text.text: lines=%r' % lines
@@ -1774,8 +1971,8 @@ class Text(RSTState):
             if not blankfinish:
                 nodelist.append(self.unindentwarning())
         else:
-            nodelist.append(self.statemachine.memo.errorist.system_warning(
-                  1, 'Literal block expected at line %s; none found.'
+            nodelist.append(self.statemachine.memo.errorist.warning(
+                  'Literal block expected at line %s; none found.'
                   % self.statemachine.abslineno()))
         return nodelist
 
@@ -1790,10 +1987,9 @@ class Text(RSTState):
         i += t
         d = nodes.definition('', *warnings)
         if termline[0][-2:] == '::':
-            d += self.statemachine.memo.errorist.system_warning(
-                  0, 'Blank line missing before literal block? '
-                  'Interpreted as a definition list item. '
-                  'At line %s.' % (lineoffset + 1))
+            d += self.statemachine.memo.errorist.information(
+                  'Blank line missing before literal block? Interpreted as a '
+                  'definition list item. At line %s.' % (lineoffset + 1))
         sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
         sm.run(indented, inputoffset=lineoffset,
                memo=self.statemachine.memo, node=d, matchtitles=0)
