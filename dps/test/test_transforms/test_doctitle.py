@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/15 22:45:58 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/20 04:48:28 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.frontmatter.DocTitle.
@@ -37,7 +37,7 @@ Title
 Paragraph.
 """,
 """\
-<document name="title">
+<document id="id1" name="title">
     <title>
         Title
     <comment>
@@ -51,7 +51,7 @@ Title
 Paragraph (no blank line).
 """,
 """\
-<document name="title">
+<document id="id1" name="title">
     <title>
         Title
     <paragraph>
@@ -69,7 +69,7 @@ Paragraph.
 <document>
     <paragraph>
         Paragraph.
-    <section name="title">
+    <section id="id1" name="title">
         <title>
             Title
         <paragraph>
@@ -85,10 +85,10 @@ Subtitle
 Test title & subtitle.
 """,
 """\
-<document name="title">
+<document id="id1" name="title">
     <title>
         Title
-    <subtitle name="subtitle">
+    <subtitle id="id2" name="subtitle">
         Subtitle
     <paragraph>
         Test title & subtitle.
@@ -100,7 +100,7 @@ Title
 Test short underline.
 """,
 """\
-<document name="title">
+<document id="id1" name="title">
     <title>
         Title
     <system_message level="1" type="INFO">
@@ -119,7 +119,7 @@ The system_message should move after the document title
 (it was before the beginning of the section).
 """,
 """\
-<document name="long title">
+<document id="id1" name="long title">
     <title>
         Long    Title
     <system_message level="1" type="INFO">
@@ -146,19 +146,19 @@ Title 3
 Paragraph 3.
 """,
 """\
-<document name="title 1">
+<document id="id1" name="title 1">
     <title>
         Title 1
     <comment>
         Test multiple second-level titles.
     <paragraph>
         Paragraph 1.
-    <section name="title 2">
+    <section id="id2" name="title 2">
         <title>
             Title 2
         <paragraph>
             Paragraph 2.
-    <section name="title 3">
+    <section id="id3" name="title 3">
         <title>
             Title 3
         <paragraph>
