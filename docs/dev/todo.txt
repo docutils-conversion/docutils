@@ -62,9 +62,6 @@ Bugs
   in docutils.transforms.misc.ClassAttribute could be used to fix
   this.  (Reported by David Priest.)
 
-* System messages shouldn't be filtered by the Writer, but by a
-  transform.  See `Filtering System Messages`_.
-
 
 General
 -------
@@ -857,6 +854,22 @@ __ rst/alternatives.html#or-not-to-do
   .. _MathML: http://www.w3.org/TR/MathML2/
   .. _itex: http://pear.math.pitt.edu/mathzilla/itex2mmlItex.html
 
+* How about a syntax for alternative hyperlink behavior, such as "open
+  in a new window" (as in HTML's ``<a target="_blank">``)?  Double
+  angle brackets might work for inline targets::
+
+      The `reference docs <<url>>`__ may be handy.
+
+  But what about explicit targets?
+
+  The MoinMoin wiki uses a caret ("^") at the beginning of the URL
+  ("^" is not a legal URI character).  That could work for both inline
+  and explicit targets::
+
+      The `reference docs <^url>`__ may be handy.
+
+      .. _name: ^url
+
 
 Directives
 ``````````
@@ -871,6 +884,9 @@ when used in a document.
 
 * Add "substitution_only" and "substitution_ok" function attributes,
   and automate context checking?
+
+* Change directive functions to directive classes?  Superclass'
+  ``__init__()`` could handle all the bookkeeping.
 
 * Implement options on existing directives:
 
@@ -1585,18 +1601,6 @@ insertion of parse-time system messages ought to remain as-is and the
 Messages transform ought to move all parse-time system messages
 (remove from their originally inserted positions, insert in System
 Messages section).
-
-
-Filtering System Messages
-`````````````````````````
-
-@@@ Implement this.
-
-Currently the Writer is responsible for filtering out system messages
-that are below the current threshold.  Should the filtering be in a
-separate transform?  [Yes.]  It would then happen regardless of the
-writer used.  Perhaps some writers don't want system messages
-filtered?  [The user can adjust filtering levels.]
 
 
 Others
