@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.15 $
-:Date: $Date: 2002/02/15 22:42:44 $
+:Revision: $Revision: 1.16 $
+:Date: $Date: 2002/02/22 02:02:57 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
@@ -97,17 +97,17 @@ class Reporter:
 
         Raise an exception or generate a warning if appropriate.
         """
-        sw = nodes.system_message(comment, level=level,
-                                  type=self.levels[level], *children)
+        msg = nodes.system_message(comment, level=level,
+                                   type=self.levels[level], *children)
         debug, warninglevel, errorlevel, stream = self.getcategory(category)
         if level >= warninglevel or debug and level == 0:
             if category:
-                print >>stream, 'Reporter "%s":' % category, sw.astext()
+                print >>stream, 'Reporter "%s":' % category, msg.astext()
             else:
-                print >>stream, 'Reporter:', sw.astext()
+                print >>stream, 'Reporter:', msg.astext()
         if level >= errorlevel:
-            raise SystemMessage(sw)
-        return sw
+            raise SystemMessage(msg)
+        return msg
 
     def debug(self, comment=None, children=[], category=''):
         """
