@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/03/04 04:45:49 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/16 06:00:17 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms related to the front matter of a document (information
@@ -103,8 +103,7 @@ class DocTitle(Transform):
     after the title(s).
     """
 
-    def transform(self, doctree):
-        self.setup_transform(doctree)
+    def transform(self):
         if self.promote_document_title():
             self.promote_document_subtitle()
 
@@ -147,7 +146,7 @@ class DocTitle(Transform):
         doctree = self.doctree
         index = doctree.findnonclass(nodes.PreBibliographic)
         if index is None or len(doctree) > (index + 1) or \
-              not isinstance(doctree[index], nodes.section): 
+              not isinstance(doctree[index], nodes.section):
             return None, None
         else:
             return doctree[index], index
@@ -224,11 +223,7 @@ class DocInfo(Transform):
       expansion text changes only if the file name changes.)
     """
 
-    def transform(self, doctree):
-        self.setup_transform(doctree)
-        self.process_docinfo()
-
-    def process_docinfo(self):
+    def transform(self):
         doctree = self.doctree
         index = doctree.findnonclass(nodes.PreBibliographic)
         if index is None:

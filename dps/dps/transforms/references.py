@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/03/13 02:47:35 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/03/16 05:59:38 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -118,8 +118,7 @@ class Hyperlinks(Transform):
            <target id="id1" name="direct external" refuri="http://direct">
     """
 
-    def transform(self, doctree):
-        self.setup_transform(doctree)
+    def transform(self):
         self.resolve_anonymous()
         self.resolve_chained_targets()
         self.resolve_indirect()
@@ -250,7 +249,7 @@ class Hyperlinks(Transform):
 class ChainedTargetResolver(nodes.NodeVisitor):
 
     """
-    Copy reference attributes up a length of hyperlink target chain.
+    Copy reference attributes up the length of a hyperlink target chain.
 
     "Chained targets" are multiple adjacent internal hyperlink targets which
     "point to" an external or indirect target. After the transform, all
@@ -391,10 +390,9 @@ class Footnotes(Transform):
           u'\u2663',                    # club suit &clubs;
           ]
 
-    def transform(self, doctree):
-        self.setup_transform(doctree)
+    def transform(self):
         self.autofootnote_labels = []
-        startnum = doctree.autofootnote_start
+        startnum = self.doctree.autofootnote_start
         self.number_footnotes()
         self.number_footnote_references(startnum)
         self.symbolize_footnotes()
@@ -511,11 +509,7 @@ class Substitutions(Transform):
                 <image alt="biohazard" uri="biohazard.png">
     """
 
-    def transform(self, doctree):
-        self.setup_transform(doctree)
-        self.do_substitutions()
-
-    def do_substitutions(self):
+    def transform(self):
         defs = self.doctree.substitution_defs
         for refname, refs in self.doctree.substitution_refs.items():
             for ref in refs:
