@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.33 $
-:Date: $Date: 2002/02/06 02:21:05 $
+:Revision: $Revision: 1.34 $
+:Date: $Date: 2002/02/07 01:53:41 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -1837,7 +1837,7 @@ each character.  The inline markup recognition order is as follows:
 - Backquotes: `Inline literals`_ ("``"), `inline hyperlink targets`_
   (leading "_`", trailing "`"), are mutually independent, and are
   recognized before phrase `hyperlink references`_ (leading "`",
-  trailing "`_") and `interpreted text`_ ("`").
+  trailing "\`_") and `interpreted text`_ ("`").
 
 - Trailing underscores: Footnote references ("[" + label + "]_") and
   simple `hyperlink references`_ (name + trailing "_") are mutually
