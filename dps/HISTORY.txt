@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/13 02:48:27 $
+:Date: $Date: 2002/03/16 06:11:01 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -130,7 +130,7 @@ Changed contact email addresses.
   - Added 'extract_name_value()' & 'NameValueError' exception.
   - Moved 'normname()' from restructuredtext.states.
   - Added ``newdocument()``: document Node creation.
-
+  - Added name -> id conversion, ``id()``.
 
 * dps/test_*.py: Moved to new test/ directory.
 
@@ -159,6 +159,7 @@ Changed contact email addresses.
   - Removed Python-specific interpreted text mapping.
   - Changed 'bibliographic_labels' to 'labels'.
   - Added labels for admonitions.
+  - Added label for table of contents title.
 
 * dps/transforms: Subpackage added. Thanks to Ueli Schlaepfer for the
   initial work.
@@ -231,6 +232,7 @@ Changed contact email addresses.
   - Added "pending".
   - Added "citation" and "citation_reference".
   - Added "raw".
+  - Added "refid" attribute to "title" for two-way Tables of Contents.
 
 * spec/pdpi.dtd:
 

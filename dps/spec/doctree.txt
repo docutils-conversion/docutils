@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/01/16 02:43:13 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/16 06:11:11 $
 
 This document describes the internal data structure representing
 document trees in the Python Docstring Processing System. The data
@@ -55,9 +55,9 @@ following groups:
 
 - _`Bibliographic elements`: docinfo_, author_, authors_,
   organization_, contact_, version_, revision_, status_, date_,
-  copyright_, abstract_
+  copyright_
 
-- _`Structural elements`: section_, transition_
+- _`Structural elements`: document_, section_, topic_, transition_
 
 - _`Body elements`:
 
@@ -75,7 +75,7 @@ following groups:
 
 - _`Inline elements`: emphasis_, strong_, interpreted_, literal_,
   reference_, target_, footnote_reference_, substitution_reference_,
-  image_
+  image_, problematic_
 
 
 ``Node``
@@ -214,7 +214,7 @@ The ``%inline.elements;`` parameter entity
 
 
 ``%reference.atts;``
-===============
+====================
 The ``%reference.atts;`` parameter entity
 
 

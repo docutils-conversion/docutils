@@ -1,9 +1,10 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/13 02:48:34 $
-:Revision: $Revision: 1.31 $
+:Date: $Date: 2002/03/16 06:11:18 $
+:Revision: $Revision: 1.32 $
 
+.. contents::
 
 To Do
 =====
@@ -99,7 +100,8 @@ To Do
   - Remove dependency on names as sole distinguishing characteristic.
     Use IDs instead.
 
-    - Perhaps get rid of "name" attributes altoghether?
+    - Perhaps get rid of "name" attributes altoghether?  Certainly get
+      rid of the "_:1:_" abominations.
 
   - Perhaps keep a name->id mapping file?  This could be stored
     permanently, read by subsequent processing runs, and updated with
@@ -107,6 +109,8 @@ To Do
 
   - When resolving reference IDs from names, we must check for
     non-existent mappings.  In the Writer or in a transform?
+
+- Add "refids" attribute to all target types, for backlinks.
 
 - Considerations for an HTML Writer [#]_:
 
@@ -119,8 +123,12 @@ To Do
   - Put the language code into an appropriate element's LANG
     attribute (<HTML>?).
 
-  - "Class" attributes should have no underscores (CSS requirement).
+  - Docutils identifiers (the "class" and "id" attributes) will
+    conform to the regular expression ``[a-z][-a-z0-9]*``.  See
+    ``docutils.utils.id()``.
 
+  .. _HTML 4.01 spec: http://www.w3.org/TR/html401
+  .. _CSS1 spec: http://www.w3.org/TR/REC-CSS1
   .. [#] Source: `HTML 4.0 in Netscape and Explorer`__.
   __ http://www.webreference.com/dev/html4nsie/index.html
 
@@ -197,18 +205,6 @@ Navigation
 
 If a document is split up, each segment will need navigation links:
 parent, children (small TOC), previous (preorder), next (preorder).
-
-
-Table of Contents
------------------
-
-This runs over the entire tree, and locates <section> elements. It
-produces a <contents> subtree, which can be inserted at the
-appropriate place, with links to the <section> elements. It needs to
-make sure that the links it uses are *real*, so ideally it will use
-the "implicit" link for a section when it exists, and it will have to
-invent one when the implicit link isn't there (presumably because the
-section is the twelfth "Introduction" in the document...).
 
 
 Index
