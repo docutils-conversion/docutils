@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/13 02:40:46 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/10/27 05:22:49 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -27,7 +27,7 @@ Short options:
 
 -b file  option b
 
--cname   option c
+-c name  option c
 """,
 """\
 <document>
@@ -37,14 +37,14 @@ Short options:
         <option_list_item>
             <option>
                 <short_option>
-                    -a
+                    a
             <description>
                 <paragraph>
                     option a
         <option_list_item>
             <option>
                 <short_option>
-                    -b
+                    b
                 <option_argument>
                     file
             <description>
@@ -53,7 +53,7 @@ Short options:
         <option_list_item>
             <option>
                 <short_option>
-                    -c
+                    c
                 <option_argument>
                     name
             <description>
@@ -77,14 +77,14 @@ Long options:
         <option_list_item>
             <option>
                 <long_option>
-                    --aaaa
+                    aaaa
             <description>
                 <paragraph>
                     option aaaa
         <option_list_item>
             <option>
                 <long_option>
-                    --bbbb
+                    bbbb
                 <option_argument>
                     file
             <description>
@@ -93,7 +93,7 @@ Long options:
         <option_list_item>
             <option>
                 <long_option>
-                    --cccc
+                    cccc
                 <option_argument>
                     name
             <description>
@@ -102,14 +102,14 @@ Long options:
         <option_list_item>
             <option>
                 <long_option>
-                    --d-e-f-g
+                    d-e-f-g
             <description>
                 <paragraph>
                     option d-e-f-g
         <option_list_item>
             <option>
                 <long_option>
-                    --h_i_j_k
+                    h_i_j_k
             <description>
                 <paragraph>
                     option h_i_j_k
@@ -119,7 +119,8 @@ VMS/DOS-style options:
 
 /A        option A
 /B file   option B
-/Cstring  option C
+/CCC      option CCC
+/DDD string  option DDD
 """,
 """\
 <document>
@@ -129,14 +130,14 @@ VMS/DOS-style options:
         <option_list_item>
             <option>
                 <vms_option>
-                    /A
+                    A
             <description>
                 <paragraph>
                     option A
         <option_list_item>
             <option>
                 <vms_option>
-                    /B
+                    B
                 <option_argument>
                     file
             <description>
@@ -145,12 +146,19 @@ VMS/DOS-style options:
         <option_list_item>
             <option>
                 <vms_option>
-                    /C
+                    CCC
+            <description>
+                <paragraph>
+                    option CCC
+        <option_list_item>
+            <option>
+                <vms_option>
+                    DDD
                 <option_argument>
                     string
             <description>
                 <paragraph>
-                    option C
+                    option DDD
 """],
 ["""\
 Mixed short, long, and VMS/DOS options:
@@ -170,14 +178,14 @@ Mixed short, long, and VMS/DOS options:
         <option_list_item>
             <option>
                 <short_option>
-                    -a
+                    a
             <description>
                 <paragraph>
                     option a
         <option_list_item>
             <option>
                 <long_option>
-                    --bbbb
+                    bbbb
                 <option_argument>
                     file
             <description>
@@ -186,14 +194,14 @@ Mixed short, long, and VMS/DOS options:
         <option_list_item>
             <option>
                 <vms_option>
-                    /C
+                    C
             <description>
                 <paragraph>
                     option C
         <option_list_item>
             <option>
                 <long_option>
-                    --dddd
+                    dddd
                 <option_argument>
                     name
             <description>
@@ -202,7 +210,7 @@ Mixed short, long, and VMS/DOS options:
         <option_list_item>
             <option>
                 <short_option>
-                    -e
+                    e
                 <option_argument>
                     string
             <description>
@@ -211,7 +219,7 @@ Mixed short, long, and VMS/DOS options:
         <option_list_item>
             <option>
                 <vms_option>
-                    /F
+                    F
                 <option_argument>
                     file
             <description>
@@ -232,30 +240,30 @@ Aliased options:
         <option_list_item>
             <option>
                 <short_option>
-                    -a
+                    a
             <option>
                 <long_option>
-                    --aaaa
+                    aaaa
             <option>
                 <vms_option>
-                    /A
+                    A
             <description>
                 <paragraph>
                     option a, aaaa, A
         <option_list_item>
             <option>
                 <short_option>
-                    -b
+                    b
                 <option_argument>
                     file
             <option>
                 <long_option>
-                    --bbbb
+                    bbbb
                 <option_argument>
                     file
             <option>
                 <vms_option>
-                    /B
+                    B
                 <option_argument>
                     file
             <description>
@@ -278,7 +286,7 @@ Multiple lines in descriptions, aligned:
         <option_list_item>
             <option>
                 <short_option>
-                    -a
+                    a
             <description>
                 <paragraph>
                     option a, line 1
@@ -286,7 +294,7 @@ Multiple lines in descriptions, aligned:
         <option_list_item>
             <option>
                 <short_option>
-                    -b
+                    b
                 <option_argument>
                     file
             <description>
@@ -310,7 +318,7 @@ Multiple lines in descriptions, not aligned:
         <option_list_item>
             <option>
                 <short_option>
-                    -a
+                    a
             <description>
                 <paragraph>
                     option a, line 1
@@ -318,7 +326,7 @@ Multiple lines in descriptions, not aligned:
         <option_list_item>
             <option>
                 <short_option>
-                    -b
+                    b
                 <option_argument>
                     file
             <description>
@@ -344,7 +352,7 @@ Descriptions begin on next line:
         <option_list_item>
             <option>
                 <short_option>
-                    -a
+                    a
             <description>
                 <paragraph>
                     option a, line 1
@@ -352,7 +360,7 @@ Descriptions begin on next line:
         <option_list_item>
             <option>
                 <short_option>
-                    -b
+                    b
                 <option_argument>
                     file
             <description>
@@ -379,7 +387,7 @@ Multiple body elements in descriptions:
         <option_list_item>
             <option>
                 <short_option>
-                    -a
+                    a
             <description>
                 <paragraph>
                     option a, para 1
@@ -388,7 +396,7 @@ Multiple body elements in descriptions:
         <option_list_item>
             <option>
                 <short_option>
-                    -b
+                    b
                 <option_argument>
                     file
             <description>
@@ -407,7 +415,7 @@ empty item above, no blank line
         <option_list_item>
             <option>
                 <long_option>
-                    --option
+                    option
             <description>
     <system_warning level="1">
         <paragraph>
@@ -422,13 +430,11 @@ Some edge cases:
 
 --option=arg=arg  too many arguments
 
--aletter arg      too many arguments (-a letter)
+-aletter arg2     too many arguments (-a letter)
 
-/Aletter arg      too many arguments (/A letter)
+/A letter arg2    too many arguments (/A letter)
 
 -a=b              can't use = for short arguments
-
-/A=b              can't use = for DOS/VMS arguments?
 
 --option=         argument missing
 
@@ -447,13 +453,11 @@ Some edge cases:
     <paragraph>
         --option=arg=arg  too many arguments
     <paragraph>
-        -aletter arg      too many arguments (-a letter)
+        -aletter arg2     too many arguments (-a letter)
     <paragraph>
-        /Aletter arg      too many arguments (/A letter)
+        /A letter arg2    too many arguments (/A letter)
     <paragraph>
         -a=b              can't use = for short arguments
-    <paragraph>
-        /A=b              can't use = for DOS/VMS arguments?
     <paragraph>
         --option=         argument missing
     <paragraph>
