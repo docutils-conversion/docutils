@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.27 $
-:Date: $Date: 2001/10/23 03:36:44 $
+:Revision: $Revision: 1.28 $
+:Date: $Date: 2001/10/27 05:18:35 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -99,7 +99,7 @@ __docformat__ = 'reStructuredText'
 
 
 import sys, re, string
-from dps import nodes, statemachine, utils, roman
+from dps import nodes, statemachine, utils, roman, urischemes
 from dps.statemachine import StateMachineWS, StateWS
 import directives
 from tableparser import TableParser, TableMarkupError
@@ -417,7 +417,9 @@ class RSTState(StateWS):
                 %s                          # start-string prefix
                 (
                   (                           # absolute URI (group 2)
-                    [a-zA-Z][a-zA-Z0-9.+-]*     # scheme (http, ftp, mailto)
+                    (                           # scheme (http, ftp, mailto)
+                      [a-zA-Z][a-zA-Z0-9.+-]*     # (group 3)
+                    )
                     :
                     (?:
                       (?:                         # either:
@@ -436,7 +438,7 @@ class RSTState(StateWS):
                     )
                   )
                 |                           # *OR*
-                  (                           # email address (group 3)
+                  (                           # email address (group 4)
                     %s+(?:\.%s+)*               # name
                     @                           # at
                     %s+(?:\.%s*)*               # host
@@ -457,7 +459,7 @@ class RSTState(StateWS):
                                         linkname=6, linkend=7, footnotelabel=8,
                                         fnend=9),
                           interpreted_or_phrase_link=Stuff(suffix=2),
-                          uri=Stuff(whole=1, absolute=2, email=3))
+                          uri=Stuff(whole=1, absolute=2, scheme=3, email=4))
 
     def quotedstart(self, match):
         """Return 1 if inline markup start-string is 'quoted', 0 if not."""
@@ -614,27 +616,35 @@ class RSTState(StateWS):
     def anonymous_link(self, match, lineno):
         return self.link(match, lineno, anonymous=1)
 
-    def standalone_uri(self, text, lineno, pattern=inline.patterns.uri,
+    def standalone_uri(self, text, lineno,
+                       pattern=inline.patterns.uri,
                        whole=inline.groups.uri.whole,
+                       scheme=inline.groups.uri.scheme,
                        email=inline.groups.uri.email):
         remainder = text
         textnodes = []
+        start = 0
         while 1:
-            match = pattern.search(remainder)
+            match = pattern.search(remainder, start)
             if match:
-                if match.start(whole) > 0:
-                    textnodes.append(nodes.Text(unescape(
-                          remainder[:match.start(whole)])))
-                if match.group(email):
-                    scheme = 'mailto:'
-                else:
-                    scheme = ''
-                text = match.group(whole)
-                unescaped = unescape(text, 0)
-                textnodes.append(nodes.link(unescape(text, 1),
-                                            unescaped,
-                                            refuri=scheme + unescaped))
-                remainder = remainder[match.end(whole):]
+                if not match.group(scheme) or \
+                      urischemes.schemes.has_key(match.group(scheme).lower()):
+                    if match.start(whole) > 0:
+                        textnodes.append(nodes.Text(unescape(
+                              remainder[:match.start(whole)])))
+                    if match.group(email):
+                        addscheme = 'mailto:'
+                    else:
+                        addscheme = ''
+                    text = match.group(whole)
+                    unescaped = unescape(text, 0)
+                    textnodes.append(nodes.link(unescape(text, 1),
+                                                unescaped,
+                                                refuri=addscheme + unescaped))
+                    remainder = remainder[match.end(whole):]
+                    start = 0
+                else:                   # not a valid scheme
+                    start = match.end(whole)
             else:
                 if remainder:
                     textnodes.append(nodes.Text(unescape(remainder)))
@@ -752,7 +762,7 @@ class Body(RSTState):
     pats['optarg'] = '%(alphanum)s%(alphanumplus)s*' % pats
     pats['shortopt'] = '-%(alphanum)s( %(optarg)s|%(alphanumplus)s+)?' % pats
     pats['longopt'] = '--%(alphanum)s%(alphanumplus)s*([ =]%(optarg)s)?' % pats
-    pats['vmsopt'] = '/%(alphanum)s( %(optarg)s|%(alphanumplus)s+)?' % pats
+    pats['vmsopt'] = '/%(alphanum)s%(alphanumplus)s*([ =]%(optarg)s)?' % pats
     pats['option'] = '(%(shortopt)s|%(longopt)s|%(vmsopt)s)' % pats
 
     for format in enum.formats:
@@ -1004,20 +1014,14 @@ class Body(RSTState):
         for optionstring in options:
             option = nodes.option(optionstring)
             tokens = optionstring.split()
-            if tokens[0][:2] == '--':
-                tokens[:1] = tokens[0].split('=')
-            elif tokens[0][:1] in '-/':
-                if len(tokens[0]) > 2:
-                    tokens[:1] = [tokens[0][:2], tokens[0][2:]]
-            else:
-                raise MarkupError('not an option marker: %r' % optionstring)
+            tokens[:1] = tokens[0].split('=')
             if 0 < len(tokens) <= 2:
                 if tokens[0][:2] == '--':
-                    option += nodes.long_option(tokens[0], tokens[0])
+                    option += nodes.long_option(tokens[0], tokens[0][2:])
                 elif tokens[0][:1] == '-':
-                    option += nodes.short_option(tokens[0], tokens[0])
+                    option += nodes.short_option(tokens[0], tokens[0][1:])
                 elif tokens[0][:1] == '/':
-                    option += nodes.vms_option(tokens[0], tokens[0])
+                    option += nodes.vms_option(tokens[0], tokens[0][1:])
                 if len(tokens) > 1:
                     option += nodes.option_argument(tokens[1], tokens[1])
                 optlist.append(option)
