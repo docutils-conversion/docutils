@@ -3,8 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/21 22:14:24 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/07/29 16:00:31 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -884,8 +884,7 @@ The inline markup start-string and end-string recognition rules are as
 follows:
 
 1. Inline markup start-strings must be immediately preceeded by
-   whitespace and zero or more of single or double quotes, '(', '[',
-   or '{'.
+   whitespace o single or double quotes, '(', '[', or '{'.
 
 2. Inline markup start-strings must be immediately followed by
    non-whitespace.
@@ -893,9 +892,9 @@ follows:
 3. Inline markup end-strings must be immediately preceeded by
    non-whitespace.
 
-4. Inline markup end-strings must be immediately followed by zero or
-   more of single or double quotes, '.', ',', ':', ';', '!', '?', '-',
-   ')', ']', or '}', followed by whitespace.
+4. Inline markup end-strings must be immediately followed by
+   whitespace, single or double quotes, '.', ',', ':', ';', '!', '?',
+   '-', ')', ']', or '}'.
 
 5. If an inline markup start-string is immediately preceeded by a
    single or double quote, '(', '[', '{', or '<', it must not be
@@ -905,9 +904,9 @@ follows:
 6. An inline markup end-string must be separated by at least one
    character from the start-string.
 
-7. Except for the end-string of `inline literals`_, an unescaped
-   backslash preceeding a start-string or end-string will disable
-   markup recognition. See `escaping mechanism`_ above for details.
+7. An unescaped backslash preceeding a start-string or end-string will
+   disable markup recognition, except for the end-string of `inline
+   literals`_. See `escaping mechanism`_ above for details.
 
 For example, none of the following are recognized as containing inline
 markup start-strings: ' * ', '"*"', "'*'", '(*)', '(* ', '[*]', '{*}',
