@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/08/23 04:19:35 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/08/25 04:01:35 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -1536,6 +1536,21 @@ Paragraph.
 </document>
 """],
 ["""\
+..
+   A comment consisting of multiple lines
+   starting on the line after the
+   explicit markup start.
+""",
+"""\
+<document>
+    <comment>
+         A comment consisting of multiple lines
+         starting on the line after the
+         explicit markup start.
+    </comment>
+</document>
+"""],
+["""\
 .. A comment.
 .. Another.
 
@@ -1594,7 +1609,6 @@ Paragraph.
 </document>
 """],
 ["""\
-
 .. Next is an empty comment, which serves to end this comment and
    prevents the following block quote being swallowed up.
 
@@ -3011,6 +3025,25 @@ No blank lines betwen items:
 </document>
 """],
 ["""\
+1.
+empty item above, no blank line
+""",
+"""\
+<document>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item/>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 2.
+        </paragraph>
+    </system_warning>
+    <paragraph>
+        empty item above, no blank line
+    </paragraph>
+</document>
+"""],
+["""\
 Scrambled:
 
 3. Item three.
@@ -3986,6 +4019,30 @@ One-liners, no blank lines:
             </field_body>
         </field>
     </field_list>
+</document>
+"""],
+["""\
+:field:
+empty item above, no blank line
+""",
+"""\
+<document>
+    <field_list>
+        <field>
+            <field_name>
+                field
+            </field_name>
+            <field_body/>
+        </field>
+    </field_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 2.
+        </paragraph>
+    </system_warning>
+    <paragraph>
+        empty item above, no blank line
+    </paragraph>
 </document>
 """],
 ["""\
@@ -4978,6 +5035,32 @@ Multiple body elements in descriptions:
             </description>
         </option_list_item>
     </option_list>
+</document>
+"""],
+["""\
+--option
+empty item above, no blank line
+""",
+"""\
+<document>
+    <option_list>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --option
+                </long_option>
+            </option>
+            <description/>
+        </option_list_item>
+    </option_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 2.
+        </paragraph>
+    </system_warning>
+    <paragraph>
+        empty item above, no blank line
+    </paragraph>
 </document>
 """],
 ["""\
