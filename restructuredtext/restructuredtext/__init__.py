@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/03/11 03:22:15 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/03/28 04:28:10 $
 :Copyright: This module has been placed in the public domain.
 
 This is ``the dps.parsers.restructuredtext`` package. It exports a single
@@ -59,11 +59,11 @@ class Parser(dps.parsers.Parser):
 
     def parse(self, inputstring, docroot):
         """Parse `inputstring` and populate `docroot`, a document tree."""
+        self.setup_parse(inputstring, docroot)
         debug = docroot.reporter[''].debug
         self.statemachine = states.RSTStateMachine(
               stateclasses=states.stateclasses, initialstate='Body',
               debug=debug)
-        self.setup_parse(inputstring, docroot)
         inputlines = dps.statemachine.string2lines(
               inputstring, convertwhitespace=1)
         self.statemachine.run(inputlines, docroot)
