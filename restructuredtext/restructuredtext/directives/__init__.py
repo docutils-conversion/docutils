@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/07 03:27:49 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/16 05:41:36 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains directive implementation modules.
@@ -32,6 +32,7 @@ Where:
 __docformat__ = 'reStructuredText'
 
 __all__ = ['directive']
+
 
 _directive_registry = {
       'attention': ('admonitions', 'attention'),
@@ -64,6 +65,9 @@ _directives = {}
 """Cache of imported directive functions."""
 
 def directive(directivename, languagemodule):
+    """
+    Locate and return a directive function from its language-dependent name.
+    """
     normname = directivename.lower()
     if _directives.has_key(normname):
         return _directives[normname]
