@@ -1,48 +1,117 @@
 #!/usr/bin/env python
-# $Id: quicktest.py,v 1.2 2001/07/27 04:10:28 goodger Exp $
+# $Id: quicktest.py,v 1.3 2001/08/03 01:19:37 gtk Exp $
 # 
-# I used to have a much prettier version of this script, but inadvertently 
-# deleted it. Oops. Here's a quick, ugly, grotty hack as a temporary 
-# replacement. --gtk
+# I used to have a much prettier version of this script, but
+# inadvertently deleted it. Oops. Here's a quick, ugly, grotty hack
+# as a temporary replacement. --gtk
 
 """\
 quicktest.py: quickly test the restructuredtext parser. 
 
-No command line arguments are supported in this version. 
-
-Proposed usage::
-
-  quicktest.py [-x|-p|-t] [filename] 
+Usage: quicktest.py [-x|-p|-t] [-q] [filename] 
 
     filename     : filename to use as input (default is stdin)
     -x --xml     : output raw xml
     -p --pretty  : output pretty print (default)
     -t --test    : output in test format as per test_states.py
+    -q --quiet   : don't print delimeters (except test wrappers)
 """
 
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.2 $
-Date: $Date: 2001/07/27 04:10:28 $
+Revision: $Revision: 1.3 $
+Date: $Date: 2001/08/03 01:19:37 $
 Copyright: This module has been placed in the public domain.
 
 """
 
 import sys
 import dps.parsers.restructuredtext
+import getopt
 
-# create a parser
-p = dps.parsers.restructuredtext.Parser()
+def usage(): 
+    print __doc__
 
-# gather input
-input = sys.stdin.read()
+def _parse_pretty(parser, text):
+    return parser.parse(text).pprint()
 
-# generate parsed output
-o = p.parse(input)
+def _parse_xml(parser, text):
+    return parser.parse(text).asdom().toxml()
 
-# print a delimiter
-print '=>'
+def _parse_test(parser, text):
+    tq = '"""'
+    output = _parse_pretty(parser, text)
+    return """\
+    proven['change_this_test_name'] = [
+[%s\\
+%s
+%s,
+%s\\
+%s
+%s],
+]""" % ( tq, text, tq, tq, output, tq )
 
-# print the parser output
-print o.pprint()
+_outputHandlers = {
+    'xml': _parse_xml,
+    'pretty' : _parse_pretty,
+    'test': _parse_test
+    }
+
+def formattedOutput(format, parser, text): 
+    handler = _outputHandlers[format]
+    return apply(handler, (parser, text))
+    
+def main(): 
+    outputFormat = 'pretty'
+    inputFile = sys.stdin
+    isQuiet = 0
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "xptq",
+            [ "xml", "pretty", "test", "quiet" ])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+    
+    for o, a in opts:
+        if o in ['-h', '--help']: # undocumented!
+            usage()
+            sys.exit()
+        elif o in ['-x', '--xml']:
+            outputFormat = 'xml'
+        elif o in ['-p', '--pretty']:
+            outputFormat = 'pretty'
+        elif o in ['-t', '--test']:
+            outputFormat = 'test'
+        elif o in ['-q', '--quiet']:
+            isQuiet = 1
+        else:
+            raise AssertionError, "getopt should have saved us!"
+    
+    if len(args)>1:
+        print "Only one file at a time, thanks."
+        usage()
+        sys.exit(1)
+    
+    if len(args) == 1:
+        inputFile = open(args[0])
+
+    # All of that hard work getting the options, when doing the work
+    # couldn't possibly be simpler:
+    
+    # create a parser
+    parser = dps.parsers.restructuredtext.Parser()
+
+    # gather input
+    input = inputFile.read()
+
+    # print a delimiter
+    if not isQuiet:
+        print '=>'
+        
+    # print the parser output
+    print formattedOutput(outputFormat, parser, input)
+
+if __name__ == '__main__':
+    main()
