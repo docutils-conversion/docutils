@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/10/18 03:35:50 $
+:Date: $Date: 2001/10/20 03:07:56 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -61,6 +61,8 @@ Changed contact email addresses.
   - Moved 'abstract' into bibliographic elements section.
   - Changed 'graphic' to 'image'.
   - Added 'docinfo', container for bibliographic elements.
+  - Added 'division', repeatable container for body elements.
+  - Renamed 'indirect' hyperlink targets -> 'external'.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -109,6 +111,8 @@ Changed contact email addresses.
 
 * test/test_utils.py: Converted from doctest to unittest & updated.
 
+* spec/doctree.txt: "DPS Document Tree Structure", added to project.
+
 * spec/pep-0256.txt:
 
   - Added ref to Ed Loper's STminus.
@@ -142,7 +146,10 @@ Changed contact email addresses.
   - Moved 'caption' to after 'image' in 'figure'.
   - Added 'error' admonishment element.
   - Added 'docinfo' as container for bibliographic elements.
-  - Added 'division'.
+  - Added 'division', repeatable container of body elements.
+  - Separated out %link.atts into constituent parts.
+  - Added "refname" and "anonymous" attrbites to "target".
+  - Added "anonymous" attribute to "link".
 
 * spec/pdpi.dtd:
 
