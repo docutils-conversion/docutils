@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/11/09 23:14:28 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/11/15 03:09:18 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -236,7 +236,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="1">
+    <system_warning level="2">
         <paragraph>
             Image URI at line 1 contains whitespace.
         <literal_block>
@@ -268,6 +268,145 @@ totest['images'] = [
 <document>
     <image height="100" scale="50" uri="a/very/long/path/to/picture.png" width="200">
 """],
+["""\
+.. image:: picture.png
+   [height=100 width=200 scale=50]
+   [alt="Alternate text for the picture"]
+""",
+"""\
+<document>
+    <image alt="Alternate text for the picture" height="100" scale="50" uri="picture.png" width="200">
+"""],
+["""\
+.. image:: picture.png
+   [height=100]
+   [width=200]
+   [scale=50]
+   [alt="Alternate text for the picture"]
+""",
+"""\
+<document>
+    <image alt="Alternate text for the picture" height="100" scale="50" uri="picture.png" width="200">
+"""],
+["""\
+.. image:: picture.png
+   [height=100]
+   [width=200 scale=50
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute data at line 1: input line not enclosed in "[" and "]".
+        <literal_block>
+            .. image:: picture.png
+               [height=100]
+               [width=200 scale=50
+"""],
+["""\
+.. image:: picture.png
+   [scale=]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute data at line 1: missing value after "scale=".
+        <literal_block>
+            .. image:: picture.png
+               [scale=]
+"""],
+["""\
+.. image:: picture.png
+   [scale 50]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute data at line 1: missing "=".
+        <literal_block>
+            .. image:: picture.png
+               [scale 50]
+"""],
+["""\
+.. image:: picture.png
+   [=50]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute data at line 1: missing attribute name before "=".
+        <literal_block>
+            .. image:: picture.png
+               [=50]
+"""],
+["""\
+.. image:: picture.png
+   [sale=50]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Unknown image attribute at line 1: "sale".
+        <literal_block>
+            .. image:: picture.png
+               [sale=50]
+"""],
+["""\
+.. image:: picture.png
+   [scale=fifty]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute value at line 1: invalid literal for int(): fifty.
+        <literal_block>
+            .. image:: picture.png
+               [scale=fifty]
+"""],
+["""\
+.. image:: picture.png
+   [scale=50 scale=50]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute data at line 1: duplicate attribute "scale".
+        <literal_block>
+            .. image:: picture.png
+               [scale=50 scale=50]
+"""],
+["""\
+.. image:: picture.png
+   [alt='a picture]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute data at line 1: attribute "alt" missing end quote (').
+        <literal_block>
+            .. image:: picture.png
+               [alt='a picture]
+"""],
+["""\
+.. image:: picture.png
+   [alt='a picture'scale=50]
+""",
+"""\
+<document>
+    <system_warning level="2">
+        <paragraph>
+            Invalid image attribute data at line 1: attribute "alt" end quote (') not followed by whitespace.
+        <literal_block>
+            .. image:: picture.png
+               [alt='a picture'scale=50]
+"""],
 ]
 
 totest['figures'] = [
@@ -284,6 +423,21 @@ totest['figures'] = [
             A picture with a caption.
 """],
 ["""\
+.. figure:: picture.png
+
+   ..
+
+   A picture with a legend but no caption.
+""",
+"""\
+<document>
+    <figure>
+        <image uri="picture.png">
+        <legend>
+            <paragraph>
+                A picture with a legend but no caption.
+"""],
+["""\
 .. Figure:: picture.png
    [height=100 width=200 scale=50]
 
@@ -295,6 +449,22 @@ totest['figures'] = [
         <image height="100" scale="50" uri="picture.png" width="200">
         <caption>
             A picture with image attributes and a caption.
+"""],
+["""\
+.. Figure:: picture.png
+   [height=100]
+   [alt="alternate text"]
+   [width=200]
+   [scale=50]
+
+   A picture with image attributes on individual lines, and this caption.
+""",
+"""\
+<document>
+    <figure>
+        <image alt="alternate text" height="100" scale="50" uri="picture.png" width="200">
+        <caption>
+            A picture with image attributes on individual lines, and this caption.
 """],
 ["""\
 This figure lacks a caption. It may still have a
