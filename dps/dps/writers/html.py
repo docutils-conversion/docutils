@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/07 03:58:30 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/07 05:00:58 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -155,13 +155,13 @@ class HTMLTranslator(nodes.NodeVisitor):
         if node.has_key('refname'):
             href = '#' + self.doctree.nameids[node['refname']]
         self.body.append(self.starttag(node, 'a', '[', href=href,
-                                       CLASS='citation_reference'))
+                                       CLASS='citation-reference'))
 
     def depart_citation_reference(self, node):
         self.body.append(']</A>')
 
     def visit_classifier(self, node):
-        self.body.append(' <SPAN CLASS="classifier_delimiter">:</SPAN> ')
+        self.body.append(' <SPAN CLASS="classifier-delimiter">:</SPAN> ')
         self.body.append(self.starttag(node, 'span', '', CLASS='classifier'))
 
     def depart_classifier(self, node):
@@ -234,8 +234,8 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_docinfo(self, node):
         self.body.append(self.starttag(node, 'table', CLASS='docinfo',
                                        frame="void", rules="none"))
-        self.body.append('<COL CLASS="docinfo_name">\n'
-                         '<COL CLASS="docinfo_content">\n'
+        self.body.append('<COL CLASS="docinfo-name">\n'
+                         '<COL CLASS="docinfo-content">\n'
                          '<TBODY VALIGN="top">\n')
 
     def depart_docinfo(self, node):
@@ -253,7 +253,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</P></TD>\n</TR>\n')
 
     def visit_doctest_block(self, node):
-        self.body.append(self.starttag(node, 'pre', CLASS='doctest_block'))
+        self.body.append(self.starttag(node, 'pre', CLASS='doctest-block'))
 
     def depart_doctest_block(self, node):
         self.body.append('</PRE>\n')
@@ -321,14 +321,14 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_field_argument(self, node):
         self.body.append(' ')
         self.body.append(self.starttag(node, 'span', '',
-                                       CLASS='field_argument'))
+                                       CLASS='field-argument'))
 
     def depart_field_argument(self, node):
         self.body.append('</SPAN>')
 
     def visit_field_body(self, node):
         self.body.append(':</P>\n</TD><TD>')
-        self.body.append(self.starttag(node, 'div', CLASS='field_body'))
+        self.body.append(self.starttag(node, 'div', CLASS='field-body'))
 
     def depart_field_body(self, node):
         self.body.append('</DIV></TD>\n')
@@ -336,8 +336,8 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_field_list(self, node):
         self.body.append(self.starttag(node, 'table', frame='void',
                                        rules='none'))
-        self.body.append('<COL CLASS="field_name">\n'
-                         '<COL CLASS="field_body">\n'
+        self.body.append('<COL CLASS="field-name">\n'
+                         '<COL CLASS="field-body">\n'
                          '<TBODY VALIGN="top">\n')
 
     def depart_field_list(self, node):
@@ -345,7 +345,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_field_name(self, node):
         self.body.append('<TD>\n')
-        self.body.append(self.starttag(node, 'p', '', CLASS='field_name'))
+        self.body.append(self.starttag(node, 'p', '', CLASS='field-name'))
 
     def depart_field_name(self, node):
         """
@@ -379,7 +379,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         elif node.has_key('refname'):
             href = '#' + self.doctree.nameids[node['refname']]
         self.body.append(self.starttag(node, 'a', '', href=href,
-                                       CLASS='footnote_reference'))
+                                       CLASS='footnote-reference'))
 
     def depart_footnote_reference(self, node):
         self.body.append('</A>')
@@ -439,7 +439,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</CODE>')
 
     def visit_literal_block(self, node):
-        self.body.append(self.starttag(node, 'pre', CLASS='literal_block'))
+        self.body.append(self.starttag(node, 'pre', CLASS='literal-block'))
 
     def depart_literal_block(self, node):
         self.body.append('</PRE>\n')
@@ -466,7 +466,7 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_option_argument(self, node):
         self.body.append(node.get('delimiter', ' '))
         self.body.append(self.starttag(node, 'span', '',
-                                       CLASS='option_argument'))
+                                       CLASS='option-argument'))
 
     def depart_option_argument(self, node):
         self.body.append('</SPAN>')
@@ -489,7 +489,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_option_list(self, node):
         self.body.append(
-              self.starttag(node, 'table', CLASS='option_list',
+              self.starttag(node, 'table', CLASS='option-list',
                             frame="void", rules="none", cellspacing=12))
         self.body.append('<COL CLASS="option">\n'
                          '<COL CLASS="description">\n'
@@ -601,7 +601,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         if node['level'] < self.doctree.reporter.getcategory('output')[1]:
             # @@@ need another threshold? gotta fix that
             raise nodes.SkipNode
-        self.body.append(self.starttag(node, 'div', CLASS='system_message'))
+        self.body.append(self.starttag(node, 'div', CLASS='system-message'))
         self.body.append('<H3>%s (level %s system message)</H3>\n'
                          % (node['type'], node['level']))
 
@@ -660,7 +660,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         """Only 6 section levels are supported by HTML."""
         if isinstance(node.parent, nodes.topic):
             self.body.append(
-                  self.starttag(node, 'H6', '', CLASS='topic_title'))
+                  self.starttag(node, 'H6', '', CLASS='topic-title'))
             self.context.append('</H6>\n')
         elif self.sectionlevel == 0:
             self.head.append('<TITLE>%s</TITLE>\n'
