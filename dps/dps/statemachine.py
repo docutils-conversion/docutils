@@ -2,10 +2,10 @@
 
 """
 :Author: David Goodger
-:Contact: dgoodger@bigfoot.com
+:Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/08/22 04:08:22 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/08/23 03:59:03 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -293,7 +293,7 @@ class StateMachine:
             if not line.strip():
                 break
             if line[0] == ' ':
-                self.nextline(len(block) - 1)
+                self.nextline(len(block) - 1) # advance to last line of block
                 raise UnexpectedIndentationError(block, self.abslineno() + 1)
             block.append(line)
         self.nextline(len(block) - 1)  # advance to last line of block
@@ -683,7 +683,7 @@ class StateMachineWS(StateMachine):
         else:
             return context, '', []      # neither blank line nor indented
 
-    def getindented(self, startoffset=0):
+    def getindented(self):
         """
         Return an indented block and info.
 
@@ -695,12 +695,11 @@ class StateMachineWS(StateMachine):
         - its first line offset from BOF, and
         - whether or not it finished with a blank line.
         """
-        offset = self.abslineoffset() + startoffset
+        offset = self.abslineoffset()
         indented, indent, blankfinish = extractindented(
-              self.inputlines[self.lineoffset + startoffset:])
+              self.inputlines[self.lineoffset:])
         if indented:
-            # advance to last indented line
-            self.nextline(len(indented) - 1 + startoffset)
+            self.nextline(len(indented) - 1) # advance to last indented line
         while indented and not indented[-1].strip():
             indented.pop()
         while indented and not indented[0].strip():
