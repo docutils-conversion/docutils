@@ -4,9 +4,13 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 0.3
-Date: $Date: 2001/07/21 22:14:04 $
+Version: Rrefactor-test (EXPERIMENTAL)
+Date: $Date: 2001/07/25 08:11:25 $
 Web-site: http://structuredtext.sf.net/
+
+**THIS IS AN EXPERIMENTAL VERSION**
+
+**IF YOU WANT THE OFFICIAL VERSION, CHECK OUT ``RELEASE``**
 
 Thank you for downloading the reStructuredText project archive. As
 this is a work in progress, please check the project web site for
