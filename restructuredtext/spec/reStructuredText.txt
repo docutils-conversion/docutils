@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.41 $
-:Date: $Date: 2002/03/07 03:37:41 $
+:Revision: $Revision: 1.42 $
+:Date: $Date: 2002/03/08 04:20:41 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -53,8 +53,9 @@ Here are examples of `body elements`_:
       *emphasis*, **strong emphasis**, `interpreted text`, ``inline
       literals``, standalone hyperlinks (http://www.python.org),
       external hyperlinks (Python_), internal cross-references
-      (example_), footnote references ([1]_), substitution
-      references (|example|), and _`inline hyperlink targets`.
+      (example_), footnote references ([1]_), citation references
+      ([CIT2002]_), substitution references (|example|), and _`inline
+      hyperlink targets`.
 
       Paragraphs are separated by blank lines and are left-aligned.
 
@@ -147,32 +148,33 @@ Here are examples of `body elements`_:
   two periods and a space:
 
   - Footnotes_::
-  
+
         .. [1] A footnote contains body elements, consistently
            indented by at least 3 spaces.
-  
+
   - Citations_::
-  
-        .. [CIT] Just like a footnote, except the label is textual.
-  
+
+        .. [CIT2002] Just like a footnote, except the label is
+           textual.
+
   - `Hyperlink targets`_::
-  
+
         .. _Python: http://www.python.org
-  
+
         .. _example:
-  
+
         The "_example" target above points to this paragraph.
-  
+
   - Directives_::
-  
+
         .. image:: mylogo.png
-  
+
   - `Substitution definitions`_::
-  
+
         .. |symbol here| image:: symbol.png
-  
+
   - Comments_::
-  
+
         .. Comments begin with two dots and a space. Anything may
            follow, except for the syntax of footnotes/citations,
            hyperlink targets, directives, or substitution definitions.
@@ -751,7 +753,7 @@ Field arguments are separated from the field name and each other by
 whitespace, and may not contain colons (":").  The interpretation of
 field arguments is up to the application.  For example::
 
-    :name1 word number=1: 
+    :name1 word number=1:
         Both "word" and "number=1" are single words.
 
 The syntax for field arguments may be extended in the future.  For
@@ -1181,7 +1183,7 @@ square bracket, the footnote label, a right square bracket, and
 whitespace, followed by indented body elements.  A footnote label can
 be:
 
-- a whole decimal number consisting of one or more digits, 
+- a whole decimal number consisting of one or more digits,
 
 - a single "#" (denoting `auto-numbered footnotes`_),
 
@@ -1239,6 +1241,8 @@ together with automatic numbering.  A footnote which has automatically
 received a label "1" generates an implicit hyperlink target with name
 "1", just as if the label was explicitly specified.
 
+.. _autonumber label: `autonumber labels`_
+
 A footnote may specify a label explicitly while at the same time
 requesting automatic numbering: ``[#label]``.  These labels are called
 _`autonumber labels`. Autonumber labels do two things:
@@ -1254,7 +1258,7 @@ _`autonumber labels`. Autonumber labels do two things:
       "[1]".  We can refer to it again as [#note]_ and again see
       "[1]".  We can also refer to it as note_ (an ordinary internal
       hyperlink reference).
-  
+
       .. [#note] This is the footnote labeled "note".
 
 The numbering is determined by the order of the footnotes, not by the
@@ -1287,7 +1291,7 @@ Auto-Symbol Footnotes
 The Chicago Manual of Style lists the following symbols for "Note
 Reference Marks" (section 12.51 in the 14th edition): asterisk/star
 ("*"), dagger (HTML character entity "&dagger;"), double dagger
-("&Dagger;"), section mark ("&sect;"), parallels ("||"), number sign
+("&Dagger;"), section mark ("&sect;"), parallels ("\|\|"), number sign
 ("#"). For more symbols, it suggests using doubles and triples of
 these symbols, ("**" etc.) in the same sequence, but I'm sure we could
 come up with some more interesting glyphs.
@@ -1600,7 +1604,7 @@ indirectly contain a circular substitution reference.
 `Substitution references`_ are replaced in-line by the processed
 contents of the corresponding definition (linked by matching
 substitution text).  Substitution definitions allow the power and
-flexibility of block-level directives_ to be shared by inline text. 
+flexibility of block-level directives_ to be shared by inline text.
 They are a way to include arbitrarily complex inline structures within
 text, while keeping the details out of the flow of text.  They are the
 equivalent of SGML/XML's named entities or programming language
@@ -2136,7 +2140,7 @@ a "_" (named) or "__" (anonymous) suffix; the substitution text is
 used for the reference text in the named case.
 
 The processing system replaces substitution references with the
-processed contents of the corresponding `substitution definitions`_. 
+processed contents of the corresponding `substitution definitions`_.
 Substitution definitions produce inline-compatible elements.
 
 Examples::
