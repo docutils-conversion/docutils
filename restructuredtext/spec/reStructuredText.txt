@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.45 $
-:Date: $Date: 2002/03/28 04:28:03 $
+:Revision: $Revision: 1.46 $
+:Date: $Date: 2002/04/13 16:42:47 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -1969,7 +1969,7 @@ markup start-strings: " * ", '"*"', "'*'", "(*)", "(* ", "[*]", "{*}",
 "\*", " ` ", etc.
 
 The inline markup recognition rules were devised intentionally to
-allow 90% of legitimate uses of "*", "`", "_", and "|" *without*
+allow 90% of non-markup uses of "*", "`", "_", and "|" *without*
 resorting to backslashes.  For 9 of the remaining 10%, use inline
 literals or literal blocks::
 
