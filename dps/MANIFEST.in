@@ -1,4 +1,0 @@
-include *.txt
-include *.py
-recursive-include spec *
-recursive-include test *
