@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/08/22 03:16:46 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/08/25 02:02:27 $
 :Copyright: This module has been placed in the public domain.
 
 This is ``the dps.parsers.restructuredtext`` package. It exports a single
@@ -54,7 +54,8 @@ class Parser(dps.parsers.model.Parser):
         self.setup_parse(inputstring)
         sm = states.RSTStateMachine(stateclasses=states.stateclasses,
                                     initialstate='Body')
-        inputlines = dps.statemachine.string2lines(self.inputstring)
+        inputlines = dps.statemachine.string2lines(self.inputstring,
+                                                   convertwhitespace=1)
         document = sm.run(inputlines, warninglevel=self.warninglevel,
                           errorlevel=self.errorlevel)
         sm.unlink()
