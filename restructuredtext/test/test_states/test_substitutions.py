@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/13 02:30:53 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/28 04:20:37 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -109,7 +109,7 @@ Here are some duplicate substitution definitions:
         <image alt="symbol" uri="symbol.png">
     <system_message level="3" type="ERROR">
         <paragraph>
-            Duplicate substitution definition name: "symbol"
+            Duplicate substitution definition name: "symbol".
     <substitution_definition name="symbol">
         <image alt="symbol" uri="symbol.png">
 """],

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.18 $
-:Date: $Date: 2002/03/16 05:29:51 $
+:Revision: $Revision: 1.19 $
+:Date: $Date: 2002/03/28 04:20:55 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -172,7 +172,7 @@ Duplicate external targets (different URIs):
     <target dupname="target" id="target" refuri="first">
     <system_message level="2" refid="id1" type="WARNING">
         <paragraph>
-            Duplicate explicit target name: "target"
+            Duplicate explicit target name: "target".
     <target dupname="target" id="id1" refuri="second">
 """],
 ["""\
@@ -189,7 +189,7 @@ Duplicate external targets (same URIs):
     <target dupname="target" id="target" refuri="first">
     <system_message level="1" refid="id1" type="INFO">
         <paragraph>
-            Duplicate explicit target name: "target"
+            Duplicate explicit target name: "target".
     <target id="id1" name="target" refuri="first">
 """],
 ["""\
@@ -219,7 +219,7 @@ Paragraph.
             Title
         <system_message level="1" refid="id1" type="INFO">
             <paragraph>
-                Duplicate implicit target name: "title"
+                Duplicate implicit target name: "title".
         <paragraph>
             Paragraph.
 """],
@@ -242,7 +242,7 @@ Paragraph.
             Title
         <system_message level="1" refid="id1" type="INFO">
             <paragraph>
-                Duplicate implicit target name: "title"
+                Duplicate implicit target name: "title".
         <target id="id1" name="title">
         <paragraph>
             Paragraph.
@@ -271,13 +271,13 @@ Third.
         First.
     <system_message level="2" refid="id1" type="WARNING">
         <paragraph>
-            Duplicate explicit target name: "title"
+            Duplicate explicit target name: "title".
     <target dupname="title" id="id1">
     <paragraph>
         Second.
     <system_message level="2" refid="id2" type="WARNING">
         <paragraph>
-            Duplicate explicit target name: "title"
+            Duplicate explicit target name: "title".
     <target dupname="title" id="id2">
     <paragraph>
         Third.
@@ -314,24 +314,24 @@ Explicit internal target.
                 target
             <system_message level="1" refid="id1" type="INFO">
                 <paragraph>
-                    Duplicate implicit target name: "target"
+                    Duplicate implicit target name: "target".
             <paragraph>
                 Citation target.
         <footnote auto="1" dupname="target" id="id2">
             <system_message level="2" refid="id2" type="WARNING">
                 <paragraph>
-                    Duplicate explicit target name: "target"
+                    Duplicate explicit target name: "target".
             <paragraph>
                 Autonumber-labeled footnote target.
         <system_message level="2" refid="id3" type="WARNING">
             <paragraph>
-                Duplicate explicit target name: "target"
+                Duplicate explicit target name: "target".
         <target dupname="target" id="id3">
         <paragraph>
             Explicit internal target.
         <system_message level="2" refid="id4" type="WARNING">
             <paragraph>
-                Duplicate explicit target name: "target"
+                Duplicate explicit target name: "target".
         <target dupname="target" id="id4" refuri="Explicit_external_target">
 """],
 ]
