@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/18 04:39:25 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/11/01 04:11:44 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -82,8 +82,8 @@ indented text block immediately following, with no intervening blank
 lines.  If there are multiple lines in the link block, they are
 stripped of leading and trailing whitespace and joined together.
 
-Optionally, the last line of the link block may contain an image
-attribute specification, in square brackets, as follows::
+Optionally, the last line of the link block may contain an _`image
+attribute specification`, in square brackets, as follows::
 
     .. image:: picture.png
                [height=100 width=200 scale=50]
@@ -99,8 +99,9 @@ Figure
 
 DTD elements: figure, image, caption, legend.
 
-A 'figure' consists of an image, an optional caption (a single
-paragraph), and an optional legend (arbitrary body elements)::
+A 'figure' consists of an image (optionally including the the `image
+attribute specification`_), an optional caption (a single paragraph),
+and an optional legend (arbitrary body elements)::
 
     .. figure:: picture.png
 
@@ -116,9 +117,9 @@ paragraph), and an optional legend (arbitrary body elements)::
        | .. image:: peak.png   | Mountain              |
        +-----------------------+-----------------------+
 
-There must be a blank line before the caption paragraph.  To specify a
-legend without a caption, use an empty comment ('..') in place of the
-caption.
+There must be a blank line before the caption paragraph and before the
+legend.  To specify a legend without a caption, use an empty comment
+('..') in place of the caption.
 
 
 --------------------------
