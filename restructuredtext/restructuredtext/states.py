@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/08/23 04:17:43 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/08/25 02:05:16 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -245,7 +245,7 @@ class RSTState(StateWS):
         textnodes, warnings = self.inline_text(title, lineno)
         titlenode = nodes.title(title, '', *textnodes)
         s += titlenode
-        s.extend(warnings)
+        s += warnings
         memo.document.addimplicitlink(normname(titlenode.astext()), s)
         sm = RSTStateMachine(stateclasses=stateclasses, initialstate='Body',
                              debug=self.debug)
@@ -1005,7 +1005,7 @@ class Body(RSTState):
     def tabletop(self, match, context, nextstate):
         """Top border of a table."""
         nodelist, blankfinish = self.table()
-        self.statemachine.node.extend(nodelist)
+        self.statemachine.node += nodelist
         if not blankfinish:
             sw = self.statemachine.memo.errorist.system_warning(
                   1, 'Blank line required after table at line %s.'
@@ -1147,7 +1147,7 @@ class Body(RSTState):
     def explicit_markup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
         nodelist, blankfinish = self.explicit_construct(match)
-        self.statemachine.node.extend(nodelist)
+        self.statemachine.node += nodelist
         offset = self.statemachine.lineoffset + 1   # next line
         kwargs = self.indentSMkwargs.copy()
         kwargs['initialstate'] = 'Explicit'
@@ -1341,7 +1341,7 @@ class Explicit(SpecializedBody):
     def explicit_markup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
         nodelist, blankfinish = self.explicit_construct(match)
-        self.statemachine.node.extend(nodelist)
+        self.statemachine.node += nodelist
         self.blankfinish = blankfinish
         return [], nextstate, []
 
@@ -1362,9 +1362,9 @@ class Text(RSTState):
         """End of paragraph."""
         p, literalnext = self.paragraph(context,
                                         self.statemachine.abslineno() - 1)
-        self.statemachine.node.extend(p)
+        self.statemachine.node += p
         if literalnext:
-            self.statemachine.node.extend(self.literal_block())
+            self.statemachine.node += self.literal_block()
         return [], 'Body', []
 
     def eof(self, context):
@@ -1375,9 +1375,9 @@ class Text(RSTState):
                 print >>sys.stderr, ('\nstates.Text.eof: context=%r, p=%r, '
                                      'node=%r' % (context, p,
                                                   self.statemachine.node))
-            self.statemachine.node.extend(p)
+            self.statemachine.node += p
             if literalnext:
-                self.statemachine.node.extend(self.literal_block())
+                self.statemachine.node += self.literal_block()
         return []
 
     def indent(self, match, context, nextstate):
@@ -1444,14 +1444,14 @@ class Text(RSTState):
         p, literalnext = self.paragraph(lines, startline)
         if self.debug:
             print >>sys.stderr, 'states.Text.text: p=%r' % p
-        self.statemachine.node.extend(p)
+        self.statemachine.node += p
         self.statemachine.node += sw
         if literalnext:
             try:
                 line = self.statemachine.nextline()
             except IndexError:
                 pass
-            self.statemachine.node.extend(self.literal_block())
+            self.statemachine.node += self.literal_block()
         return [], nextstate, []
 
     def literal_block(self):
