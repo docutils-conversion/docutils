@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/08/25 02:05:16 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/08/28 03:11:29 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -316,9 +316,11 @@ class RSTState(StateWS):
                              (
                                (              # start-strings only (group 2):
                                    \*\*         # strong
-                                 | \*           # emphasis
+                                 | 
+                                   \*           # emphasis
                                    (?!\*)         # but not strong
-                                 | ``           # literal
+                                 | 
+                                   ``           # literal
                                )
                                %s             # no whitespace after
                              |              # *OR*
@@ -331,7 +333,14 @@ class RSTState(StateWS):
                              |              # *OR*
                                (              # whole constructs (group 5):
                                    (%s)(_)      # link name, end-string (6,7)
-                                 | \[(%s)(\]_)  # footnote_reference, end (8,9)
+                                 | 
+                                   \[           # footnote_reference start, 
+                                   (            # footnote label (group 8):
+                                       \#         # anonymous auto-numbered
+                                     |          # *OR*
+                                       \#?%s      # (auto-numbered?) label
+                                   )
+                                   (\]_)        # end-string (group 9)
                                )
                                %s             # end-string suffix
                              )
@@ -520,9 +529,18 @@ class RSTState(StateWS):
     def footnote_reference(self, match, lineno, pattern=None):
         fnname = match.group(self.inline.groups.initial.footnotelabel)
         refname = normname(fnname)
-        fnrefnode = nodes.footnote_reference('[%s]_' % fnname, fnname,
-                                             refname=refname)
-        self.statemachine.memo.document.addrefname(refname, fnrefnode)
+        fnrefnode = nodes.footnote_reference('[%s]_' % fnname)
+        if refname[0] == '#':
+            refname = refname[1:]
+            fnname = fnname[1:]
+            #self.statemachine.memo.document.addautofootnoteref(refname,
+            #                                                   fnrefnode)
+            fnrefnode['auto'] = 1
+        else:
+            fnrefnode += nodes.Text(fnname)
+        if refname:
+            fnrefnode['refname'] = refname
+            self.statemachine.memo.document.addrefname(refname, fnrefnode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
@@ -750,6 +768,8 @@ class Body(RSTState):
         indented, lineoffset, blankfinish = \
               self.statemachine.getknownindented(indent)
         if self.debug:
+            print >>sys.stderr, ('\nstates.Body.list_item: blankfinish=%r'
+                                 % blankfinish)
             print >>sys.stderr, ('\nstates.Body.list_item: indented=%r'
                                  % indented)
         i = nodes.list_item('\n'.join(indented))
@@ -1059,10 +1079,14 @@ class Body(RSTState):
         label = match.group(1)
         name = normname(label)
         f = nodes.footnote('\n'.join(indented))
-        f += nodes.label('', label)
-        self.statemachine.memo.document.addimplicitlink(name, f)
+        if name[0] == '#':
+            name = name[1:]
+            #self.statemachine.memo.document.addautofootnote(name, f)
+        else:
+            f += nodes.label('', label)
+        if name:
+            self.statemachine.memo.document.addimplicitlink(name, f)
         if indented:
-            #print >>sys.stdout, 'Body.footnote: indented=%r' % indented
             sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
             sm.run(indented, inputoffset=offset,
                    memo=self.statemachine.memo, node=f, matchtitles=0)
@@ -1134,15 +1158,36 @@ class Body(RSTState):
                     raise IndexError
             except IndexError:          # "A tiny but practical wart."
                 return [nodes.comment()], 1
-        indented, offset, blankfinish = \
-              self.statemachine.getknownindented(match.end())
+        indented, indent, offset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end())
         text = '\n'.join(indented)
         return [nodes.comment(text, text)], blankfinish
 
-    explicit.constructs = [(re.compile(r'\.\. +\[(#|#?(%s))\](?: +|$)'
-                                       % RSTState.inline.simplename), footnote),
-                           (re.compile(r'\.\. +_'), hyperlink_target),
-                           (re.compile(r'\.\. +([\w-]+)::(?: +|$)'), directive)]
+    explicit.constructs = [
+          (footnote,
+           re.compile(r"""
+                      \.\.[ ]+          # explicit markup start
+                      \[
+                      (                 # footnote reference identifier:
+                          \#              # anonymous auto-numbered reference
+                        |               # *OR*
+                          \#?%s           # (auto-numbered?) footnote label
+                      )
+                      \]
+                      (?:[ ]+|$)        # whitespace or end of line
+                      """ % RSTState.inline.simplename, re.VERBOSE)),
+          (hyperlink_target,
+           re.compile(r"""
+                      \.\.[ ]+          # explicit markup start
+                      _                 # target indicator
+                      """, re.VERBOSE)),
+          (directive,
+           re.compile(r"""
+                      \.\.[ ]+          # explicit markup start
+                      ([\w-]+)          # directive name
+                      ::                # directive delimiter
+                      (?:[ ]+|$)        # whitespace or end of line
+                      """, re.VERBOSE))]
 
     def explicit_markup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
@@ -1170,7 +1215,7 @@ class Body(RSTState):
                            constructs=explicit.constructs):
         """Determine which explicit construct this is, parse & return it."""
         errors = []
-        for pattern, method in constructs:
+        for method, pattern in constructs:
             expmatch = pattern.match(match.string)
             if expmatch:
                 try:
@@ -1476,7 +1521,9 @@ class Text(RSTState):
         if self.debug:
             print >>sys.stderr, ('\nstates.Text.indent (definition): indented=%r'
                                  % indented)
+        i = nodes.definition_list_item('\n'.join(termline + indented))
         t, warnings = self.term(termline, self.statemachine.abslineno() - 1)
+        i += t
         d = nodes.definition('', *warnings)
         if termline[0][-2:] == '::':
             d += self.statemachine.memo.errorist.system_warning(
@@ -1487,15 +1534,23 @@ class Text(RSTState):
         sm.run(indented, inputoffset=lineoffset,
                memo=self.statemachine.memo, node=d, matchtitles=0)
         sm.unlink()
-        i = nodes.definition_list_item('\n'.join(termline + indented), t, d)
+        i += d
         return i, blankfinish
 
     def term(self, lines, lineno):
-        """Return a definition_list's term object."""
+        """Return a definition_list's term and optional classifier."""
         assert len(lines) == 1
-        textnodes, warnings = self.inline_text(lines[0], lineno)
-        t = nodes.term(lines[0], '', *textnodes)
-        return t, warnings
+        nodelist = []
+        parts = lines[0].split(' : ', 1)  # split into 1 or 2 parts
+        termpart = parts[0].rstrip()
+        textnodes, warnings = self.inline_text(termpart, lineno)
+        nodelist = [nodes.term(termpart, '', *textnodes)]
+        if len(parts) == 2:
+            classifierpart = parts[1].lstrip()
+            textnodes, cpwarnings = self.inline_text(classifierpart, lineno)
+            nodelist.append(nodes.classifier(classifierpart, '', *textnodes))
+            warnings += cpwarnings
+        return nodelist, warnings
 
 
 class SpecializedText(Text):
