@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.42 $
-:Date: $Date: 2002/03/08 04:20:41 $
+:Revision: $Revision: 1.43 $
+:Date: $Date: 2002/03/13 02:35:15 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -380,7 +380,15 @@ For example, the following `hyperlink references`_ are equivalent::
     - `A
       Hyperlink`_
 
-@@@ namespace: integers for footnotes
+Hyperlinks_, footnotes_, and citations_ all share the same namespace
+for reference names.  The labels of citations (simple reference names)
+and manually-numbered footnotes (numbers) are entered into the same
+database as other hyperlink names.  This means that a footnote
+(defined as "``.. [1]``") which can be referred to by a footnote
+reference (``[1]_``), can also be referred to by a plain hyperlink
+reference (1_).  Of course, each type of reference (hyperlink,
+footnote, citation) may be processed and rendered differently.  Some
+care should be taken to avoid reference name conflicts.
 
 
 Document Structure
@@ -731,12 +739,12 @@ RFC822_ headers. A field name is made up of one or more letters,
 numbers, and punctuation, except colons (":") and whitespace. Field
 names are case-insensitive. There may be additional data separated
 from the field name, called field arguments. The field name and
-optional field argument(s) together form the field marker. The field
-marker is preceded by a single colon, and followed by a single colon
-and whitespace; this is followed by the field body. The field body may
-contain multiple body elements, indented relative to the field marker.
-The first line after the field name marker determines the indentation
-of the field body. For example::
+optional field argument(s), along with a single colon prefix and
+suffix, together form the field marker. The field marker is followed
+by whitespace and the field body. The field body may contain multiple
+body elements, indented relative to the field marker.  The first line
+after the field name marker determines the indentation of the field
+body. For example::
 
     :Date: 2001-08-16
     :Version: 1
@@ -763,7 +771,8 @@ direct support for the "name=value" syntax may be added.
 Applications of reStructuredText may recognize field names and
 transform fields or field bodies in certain contexts; they are often
 used as part of an extension syntax. See `Bibliographic Fields`_ below
-for one example.
+for one example, or the "image" directive in `reStructuredText
+Directives`_ for another.
 
 Syntax diagram (simplified)::
 
@@ -1192,11 +1201,6 @@ be:
 
 - a single "*" (denoting `auto-symbol footnotes`_).
 
-Manually numbered and auto-numbered footnotes may be mixed within a
-single document, although the results may not be expected.  Manual
-numbering takes priority.  Only unused footnote numbers are assigned
-to auto-numbered footnotes.
-
 If the first body element within a footnote is a simple paragraph, it
 may begin on the same line as the footnote label.  Other elements must
 begin on a new line, consistently indented (by at least 3 spaces) and
@@ -1233,13 +1237,11 @@ label to request automatic numbering of the footnote or footnote
 reference.
 
 The first footnote to request automatic numbering is assigned the
-label "1", the second is assigned the label "2", and so on.  Automatic
-footnote numbering may not be mixed with manual footnote numbering; it
-would cause numbering and referencing conflicts.  Citations_, using
-non-numeric labels such as ``[note]`` or ``[GVR2001]``, may be used
-together with automatic numbering.  A footnote which has automatically
-received a label "1" generates an implicit hyperlink target with name
-"1", just as if the label was explicitly specified.
+label "1", the second is assigned the label "2", and so on (assuming
+there are no manually numbered footnotes present; see `Mixed Manual
+and Auto-Numbered Footnotes`_ below).  A footnote which has
+automatically received a label "1" generates an implicit hyperlink
+target with name "1", just as if the label was explicitly specified.
 
 .. _autonumber label: `autonumber labels`_
 
@@ -1286,26 +1288,81 @@ same as the order in which a person would read them.
 Auto-Symbol Footnotes
 .....................
 
-@@@
+An asterisk ("*") may be used for footnote labels to request automatic
+symbol generation for footnotes and footnote references.  The asterisk
+may be the only character in the label.  For example::
 
-The Chicago Manual of Style lists the following symbols for "Note
-Reference Marks" (section 12.51 in the 14th edition): asterisk/star
-("*"), dagger (HTML character entity "&dagger;"), double dagger
-("&Dagger;"), section mark ("&sect;"), parallels ("\|\|"), number sign
-("#"). For more symbols, it suggests using doubles and triples of
-these symbols, ("**" etc.) in the same sequence, but I'm sure we could
-come up with some more interesting glyphs.
+    Here is a symbolic footnote reference: [*]_.
+
+    .. [*] This is the footnote.
+
+A transform will insert symbols as labels into corresponding footnotes
+and footnote references.
+
+The standard Docutils system uses the following symbols for footnote
+marks [#]_:
+
+- asterisk/star ("*")
+- dagger (HTML character entity "&dagger;")
+- double dagger ("&Dagger;")
+- section mark ("&sect;")
+- pilcrow or paragraph mark ("&para;")
+- number sign ("#")
+- spade suit ("&spades;")
+- heart suit ("&hearts;")
+- diamond suit ("&diams;")
+- club suit ("&clubs;")
+
+.. [#] This list was inspired by the list of symbols for "Note
+   Reference Marks" in The Chicago Manual of Style, 14th edition,
+   section 12.51.  "Parallels" (``||``) were given in CMoS instead of
+   the pilcrow.  The last four symbols (the card suits) were added
+   arbitrarily.
+
+If more than ten symbols are required, the same sequence will be reused, doubled and then tripled, and so on ("**" etc.).
+
+
+Mixed Manual and Auto-Numbered Footnotes
+........................................
+
+Manual and automatic footnote numbering may both be used within a
+single document, although the results may not be expected.  Manual
+numbering takes priority.  Only unused footnote numbers are assigned
+to auto-numbered footnotes.  The following example should be
+illustrative::
+
+    [2]_ will be "2" (manually numbered),
+    [#]_ will be "3" (anonymous auto-numbered), and
+    [#label]_ will be "1" (labeled auto-numbered).
+
+    .. [2] This footnote is labeled manually, so its number is fixed.
+
+    .. [#label] This autonumber-labeled footnote will be labeled "1".
+       It is the first auto-numbered footnote and no other footnote
+       with label "1" exists.  The order of the footnotes is used to
+       determine numbering, not the order of the footnote references.
+    
+    .. [#] This footnote will be labeled "3".  It is the second
+       auto-numbered footnote, but footnote label "2" is already used.
 
 
 Citations
 `````````
 
-@@@
+Citations are identical to footnotes except that they use only
+non-numeric labels such as ``[note]`` or ``[GVR2001]``.  Citation
+labels are simple `reference names`_ (case-insensitive single words
+consisting of alphanumerics plus internal hyphens, underscores, and
+periods; no whitespace).  Citations may be rendered separately and
+differently from footnotes.  For example::
 
-- simple `reference names`_ (case-insensitive single words consisting
-  of alphanumerics plus internal hyphens, underscores, and periods; no
-  whitespace),
+    Here is a citation reference: [CIT2002]_.
 
+    .. [CIT2002] This is the citation.  It's just like a footnote,
+       except the label is textual.
+
+
+.. _hyperlinks:
 
 Hyperlink Targets
 `````````````````
