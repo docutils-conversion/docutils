@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/22 02:01:11 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/07 04:00:40 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Writer modules.
@@ -82,6 +82,7 @@ class Writer:
           (b) a path to a file, which is opened and then written; or
           (c) `None`, which implies `sys.stdout`.
         """
+        output = output.encode('raw-unicode-escape')    # @@@ temporary?
         if hasattr(self.destination, 'write'):
             destination.write(output)
         elif self.destination:
