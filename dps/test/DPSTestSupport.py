@@ -2,8 +2,8 @@
 """
 :Authors:  David Goodger; Garth Kidd
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/03/16 06:11:58 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/04/19 02:36:49 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -24,11 +24,7 @@ __docformat__ = 'reStructuredText'
 import UnitTestFolder
 import sys, os
 import unittest, difflib, inspect, os, sys
-
-# try to import the current working version if possible
-sys.path.insert(0, os.pardir)           # running in test framework dir?
 import dps                              # or restructuredtext on path?
-
 from dps import statemachine, nodes, urischemes, utils, transforms
 from dps.transforms import universal
 
