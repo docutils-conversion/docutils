@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2001/09/04 04:13:27 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2001/09/05 02:49:04 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -645,6 +645,186 @@ class RSTState(StateWS):
                   % (self.statemachine.abslineno() + 1)))
 
 
+class TableParser:
+
+    """
+    Parse a table structure using `parse()`
+    """
+
+    headBodySeparatorPat = re.compile(r'\+=[=+]+=\+$')
+
+    def init(self, block):
+        self.block = block[:]           # make a copy; it may be modified
+        self.bottom = len(block) - 1
+        self.right = len(block[0]) - 1
+        self.headbodysep = None
+        self.done = [-1] * len(block[0])
+        self.cells = []
+        self.rowseps = {0: [0]}
+        self.colseps = {0: [0]}
+
+    def parse(self, block):
+        self.init(block)
+        self.findheadbodysep()
+        self.parsegrid()
+        structure = self.structureFromCells()
+        return structure
+
+    def findheadbodysep(self):
+        for i in range(len(self.block)):
+            line = self.block[i]
+            if self.headBodySeparatorPat.match(line):
+                if self.headbodysep:
+                    raise MarkupError, ('Multiple head/body row separators '
+                          'in table (at line offset %s and %s); only one '
+                          'allowed.' % (self.headbodysep, i))
+                else:
+                    self.headbodysep = i
+                    self.block[i] = line.replace('=', '-')
+
+    def parsegrid(self):
+        corners = [(0, 0)]
+        while corners:
+            top, left = corners.pop(0)
+            if top == self.bottom or left == self.right \
+                  or top <= self.done[left]:
+                continue
+            result = self.scancell(top, left)
+            if not result:
+                continue
+            bottom, right, rowseps, colseps = result
+            updateDictOfLists(self.rowseps, rowseps)
+            updateDictOfLists(self.colseps, colseps)
+            self.markdone(top, left, bottom, right)
+            cellblock = self.getcellblock(top, left, bottom, right)
+            self.cells.append((top, left, bottom, right, cellblock))
+            corners.extend([(top, right), (bottom, left)])
+            corners.sort()
+        if not self.checkparsecomplete():
+            raise MarkupError, 'Malformed table; parse incomplete.'
+
+    def markdone(self, top, left, bottom, right):
+        before = top - 1
+        after = bottom - 1
+        for col in range(left, right):
+            assert self.done[col] == before
+            self.done[col] = after
+
+    def checkparsecomplete(self):
+        last = self.bottom - 1
+        for col in range(self.right):
+            if self.done[col] != last:
+                return None
+        return 1
+
+    def getcellblock(self, top, left, bottom, right):
+        cellblock = []
+        margin = right
+        for lineno in range(top + 1, bottom):
+            line = self.block[lineno][left + 1 : right].rstrip()
+            cellblock.append(line)
+            if line:
+                margin = margin and min(margin, len(line) - len(line.lstrip()))
+        if 0 < margin < right:
+            cellblock = [line[margin:] for line in cellblock]
+        return cellblock
+
+    def scancell(self, top, left):
+        assert self.block[top][left] == '+'
+        result = self.scanright(top, left)
+        return result
+
+    def scanright(self, top, left):
+        colseps = {}
+        line = self.block[top]
+        for i in range(left + 1, self.right + 1):
+            if line[i] == '+':
+                colseps[i] = [top]
+                result = self.scandown(top, left, i)
+                if result:
+                    bottom, rowseps, newcolseps = result
+                    updateDictOfLists(colseps, newcolseps)
+                    return bottom, i, rowseps, colseps
+            elif line[i] != '-':
+                return None
+        return None
+
+    def scandown(self, top, left, right):
+        rowseps = {}
+        for i in range(top + 1, self.bottom + 1):
+            if self.block[i][right] == '+':
+                rowseps[i] = [right]
+                result = self.scanleft(top, left, i, right)
+                if result:
+                    newrowseps, colseps = result
+                    updateDictOfLists(rowseps, newrowseps)
+                    return i, rowseps, colseps
+            elif self.block[i][right] != '|':
+                return None
+        return None
+
+    def scanleft(self, top, left, bottom, right):
+        colseps = {}
+        line = self.block[bottom]
+        for i in range(right - 1, left, -1):
+            if line[i] == '+':
+                colseps[i] = [bottom]
+            elif line[i] != '-':
+                return None
+        if line[left] != '+':
+            return None
+        result = self.scanup(top, left, bottom, right)
+        if result is not None:
+            rowseps = result
+            return rowseps, colseps
+        return None
+
+    def scanup(self, top, left, bottom, right):
+        rowseps = {}
+        for i in range(bottom - 1, top, -1):
+            if self.block[i][left] == '+':
+                rowseps[i] = [left]
+            elif self.block[i][left] != '|':
+                return None
+        return rowseps
+
+    def structureFromCells(self):
+        rowseps = self.rowseps.keys()
+        rowseps.sort()
+        rowindex = {}
+        for i in range(len(rowseps)):
+            rowindex[rowseps[i]] = i
+        colseps = self.colseps.keys()
+        colseps.sort()
+        colindex = {}
+        for i in range(len(colseps)):
+            colindex[colseps[i]] = i
+        colspecs = [(colseps[i] - colseps[i - 1] - 1)
+                    for i in range(1, len(colseps))]
+        onerow = [None for i in range(len(colseps) - 1)]
+        rows = [onerow[:] for i in range(len(rowseps) - 1)]
+        remaining = (len(rowseps) - 1) * (len(colseps) - 1)
+        for top, left, bottom, right, block in self.cells:
+            rownum = rowindex[top]
+            colnum = colindex[left]
+            assert rows[rownum][colnum] is None, \
+                  'Cell (row %s, column %s) already used.' % (rownum + 1,
+                                                              colnum + 1)
+            morerows = rowindex[bottom] - rownum - 1
+            morecols = colindex[right] - colnum - 1
+            remaining -= (morerows + 1) * (morecols + 1)
+            rows[rownum][colnum] = (morerows, morecols, top + 1, block)
+        assert remaining == 0, 'Unused cells remaining.'
+        if self.headbodysep:
+            numheadrows = rowindex[self.headbodysep]
+            headrows = rows[:numheadrows]
+            bodyrows = rows[numheadrows:]
+        else:
+            headrows = []
+            bodyrows = rows
+        return (colspecs, headrows, bodyrows)
+
+
 class Body(RSTState):
 
     """
@@ -680,12 +860,11 @@ class Body(RSTState):
         enum.sequenceREs[sequence] = re.compile(enum.sequencepats[sequence]
                                                 + '$')
 
-    tbl = Stuff()
-    """Table parsing information."""
+    tabletoppat = re.compile(r'\+-[-+]+-\+ *$')
+    """Matches the top (& bottom) of a table)."""
 
-    tbl.pats = {'tableside': re.compile('[+|].+[+|]$'),
-                'tabletop': re.compile(r'\+-[-+]+-\+ *$')}
-
+    tableparser = TableParser()
+    
     pats = {}
     """Fragments of patterns used by transitions."""
 
@@ -711,7 +890,7 @@ class Body(RSTState):
                 'fieldmarker': r':[^: ]([^:]*[^: ])?:( +|$)',
                 'optionmarker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
                 'doctest': r'>>>( +|$)',
-                'tabletop': tbl.pats['tabletop'],
+                'tabletop': tabletoppat,
                 'explicit_markup': r'\.\.( +|$)',
                 'overline': r'(%(nonAlphaNum7Bit)s)\1\1\1+ *$' % pats,
                 'rfc822': r'[!-9;-~]+:( +|$)',
@@ -1044,9 +1223,13 @@ class Body(RSTState):
         """Temporarily parse a table as a literal_block."""
         block, warnings, blankfinish = self.isolatetable()
         if block:
-            data = '\n'.join(block)
-            t = nodes.literal_block(data, data)
-            nodelist = [t] + warnings
+            try:
+                tabledata = self.tableparser.parse(block)
+                tableline = self.statemachine.abslineno() - len(block) + 1
+                t = self.buildtable(tabledata, tableline)
+                nodelist = [t] + warnings
+            except MarkupError, details:
+                nodelist = self.malformedtable(block, str(details)) + warnings
         else:
             nodelist = warnings
         return nodelist, blankfinish
@@ -1069,11 +1252,11 @@ class Body(RSTState):
                 self.statemachine.previousline(len(block) - i)
                 del block[i:]
                 break
-        if not self.tbl.pats['tabletop'].match(block[-1]): # find bottom
+        if not self.tabletoppat.match(block[-1]): # find bottom
             blankfinish = 0
             # from second-last to third line of table:
             for i in range(len(block) - 2, 1, -1):
-                if self.tbl.pats['tabletop'].match(block[i]):
+                if self.tabletoppat.match(block[i]):
                     self.statemachine.previousline(len(block) - i + 1)
                     del block[i+1:]
                     break
@@ -1086,14 +1269,54 @@ class Body(RSTState):
                 return [], warnings, blankfinish
         return block, warnings, blankfinish
 
-    def malformedtable(self, block):
+    def malformedtable(self, block, detail=''):
         data = '\n'.join(block)
-        nodelist = [
-              self.statemachine.memo.errorist.system_warning(
-              2, 'Malformed table at line %s; formatting as a literal '
-              'block.' % (self.statemachine.abslineno() - len(block) + 1)),
-              nodes.literal_block(data, data)]
+        message = 'Malformed table at line %s; formatting as a ' \
+                  'literal block.' % (self.statemachine.abslineno()
+                                      - len(block) + 1)
+        if detail:
+            message += '\n' + detail
+        nodelist = [self.statemachine.memo.errorist.system_warning(2, message),
+                    nodes.literal_block(data, data)]
         return nodelist
+
+    def buildtable(self, tabledata, tableline):
+        colspecs, headrows, bodyrows = tabledata
+        table = nodes.table()
+        tgroup = nodes.tgroup(cols=str(len(colspecs)))
+        table += tgroup
+        for colspec in colspecs:
+            tgroup += nodes.colspec(colwidth=str(colspec))
+        if headrows:
+            thead = nodes.thead()
+            tgroup += thead
+            for row in headrows:
+                thead += self.buildtablerow(row, tableline)
+        tbody = nodes.tbody()
+        tgroup += tbody
+        for row in bodyrows:
+            tbody += self.buildtablerow(row, tableline)
+        return table
+
+    def buildtablerow(self, rowdata, tableline):
+        row = nodes.row()
+        for cell in rowdata:
+            if cell is None:
+                continue
+            morerows, morecols, offset, cellblock = cell
+            attributes = {}
+            if morerows:
+                attributes['morerows'] = str(morerows)
+            if morecols:
+                attributes['morecols'] = str(morecols)
+            entry = nodes.entry(**attributes)
+            row += entry
+            sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
+            sm.run(cellblock, inputoffset=tableline+offset,
+                   memo=self.statemachine.memo, node=entry, matchtitles=0)
+            sm.unlink()
+        return row
+
 
     explicit = Stuff()
     """Patterns and constants used for explicit markup recognition."""
@@ -1633,144 +1856,6 @@ class Definition(SpecializedText):
 stateclasses = [Body, BulletList, DefinitionList, EnumeratedList, FieldList,
                 OptionList, RFC822List, Explicit, Text, Definition]
 """Standard set of State classes used to start `RSTStateMachine`."""
-
-
-class TableParser:
-
-    headBodySeparatorPat = re.compile(r'\+=[=+]+=\+$')
-
-    def init(self, block):
-        self.block = block[:]           # make a copy; it may be modified
-        self.bottom = len(block) - 1
-        self.right = len(block[0]) - 1
-        self.headbodysep = None
-        self.done = [-1] * len(block[0])
-        self.cells = []
-        self.rowseps = {0: [0]}
-        self.colseps = {0: [0]}
-
-    def parse(self, block):
-        self.init(block)
-        self.findheadbodysep()
-        self.parsegrid()
-
-    def findheadbodysep(self):
-        for i in range(len(self.block)):
-            line = self.block[i]
-            if self.headBodySeparatorPat.match(line):
-                if self.headbodysep:
-                    raise MarkupError, ('Multiple head/body row separators '
-                          'in table (at line offset %s and %s); only one '
-                          'allowed.' % (self.headbodysep, i))
-                else:
-                    self.headbodysep = i
-                    self.block[i] = line.replace('=', '-')
-
-    def parsegrid(self):
-        corners = [(0, 0)]
-        while corners:
-            top, left = corners.pop(0)
-            if top == self.bottom or left == self.right \
-                  or top <= self.done[left]:
-                continue
-            result = self.scancell(top, left)
-            if not result:
-                continue
-            bottom, right, rowseps, colseps = result
-            updateDictOfLists(self.rowseps, rowseps)
-            updateDictOfLists(self.colseps, colseps)
-            self.markdone(top, left, bottom, right)
-            cellblock = self.getcellblock(top, left, bottom, right)
-            self.cells.append((top, left, bottom, right, cellblock))
-            corners.extend([(top, right), (bottom, left)])
-            corners.sort()
-        if not self.checkparsecomplete():
-            raise MarkupError, 'Malformed table; parse incomplete.'
-
-    def markdone(self, top, left, bottom, right):
-        before = top - 1
-        after = bottom - 1
-        for col in range(left, right):
-            assert self.done[col] == before
-            self.done[col] = after
-
-    def checkparsecomplete(self):
-        last = self.bottom - 1
-        for col in range(self.right):
-            if self.done[col] != last:
-                return None
-        return 1
-
-    def getcellblock(self, top, left, bottom, right):
-        cellblock = []
-        margin = right
-        for lineno in range(top + 1, bottom):
-            line = self.block[lineno][left + 1 : right].rstrip()
-            cellblock.append(line)
-            if line:
-                margin = margin and min(margin, len(line) - len(line.lstrip()))
-        if 0 < margin < right:
-            cellblock = [line[margin:] for line in cellblock]
-        return cellblock
-
-    def scancell(self, top, left):
-        assert self.block[top][left] == '+'
-        result = self.scanright(top, left)
-        return result
-
-    def scanright(self, top, left):
-        colseps = {}
-        line = self.block[top]
-        for i in range(left + 1, self.right + 1):
-            if line[i] == '+':
-                colseps[i] = [top]
-                result = self.scandown(top, left, i)
-                if result:
-                    bottom, rowseps, newcolseps = result
-                    updateDictOfLists(colseps, newcolseps)
-                    return bottom, i, rowseps, colseps
-            elif line[i] != '-':
-                return None
-        return None
-
-    def scandown(self, top, left, right):
-        rowseps = {}
-        for i in range(top + 1, self.bottom + 1):
-            if self.block[i][right] == '+':
-                rowseps[i] = [right]
-                result = self.scanleft(top, left, i, right)
-                if result:
-                    newrowseps, colseps = result
-                    updateDictOfLists(rowseps, newrowseps)
-                    return i, rowseps, colseps
-            elif self.block[i][right] != '|':
-                return None
-        return None
-
-    def scanleft(self, top, left, bottom, right):
-        colseps = {}
-        line = self.block[bottom]
-        for i in range(right - 1, left, -1):
-            if line[i] == '+':
-                colseps[i] = [bottom]
-            elif line[i] != '-':
-                return None
-        if line[left] != '+':
-            return None
-        result = self.scanup(top, left, bottom, right)
-        if result is not None:
-            rowseps = result
-            return rowseps, colseps
-        return None
-
-    def scanup(self, top, left, bottom, right):
-        rowseps = {}
-        for i in range(bottom - 1, top, -1):
-            if self.block[i][left] == '+':
-                rowseps[i] = [left]
-            elif self.block[i][left] != '|':
-                return None
-        return rowseps
 
 
 def escape2null(text):
