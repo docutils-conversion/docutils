@@ -3,16 +3,14 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/03/28 04:47:16 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/04/04 05:53:56 $
 :Copyright: This module has been placed in the public domain.
 
 
 """
 
 __docformat__ = 'reStructuredText'
-
-__all__ = ['Publisher', 'publish']
 
 
 import readers, parsers, writers, utils
