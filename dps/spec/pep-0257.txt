@@ -1,7 +1,7 @@
 PEP: 257
 Title: Docstring Conventions
-Version: $Revision: 1.1 $
-Last-Modified: $Date: 2001/07/22 22:36:21 $
+Version: $Revision: 1.2 $
+Last-Modified: $Date: 2001/08/04 15:45:43 $
 Author: dgoodger@bigfoot.com (David Goodger),
         guido@digicool.com (Guido van Rossum)
 Discussions-To: doc-sig@python.org
@@ -70,7 +70,8 @@ Specification
 
     For consistency, always use """triple double quotes""" around
     docstrings.  Use r"""raw triple double quotes""" if you use any
-    backslashes in your docstrings.
+    backslashes in your docstrings.  For Unicode docstrings, use
+    u"""Unicode triple-quoted strings""".
 
     There are two forms of docstrings: one-liners and multi-line
     docstrings.
@@ -98,11 +99,12 @@ Specification
     - There's no blank line either before or after the docstring.
 
     - The docstring is a phrase ending in a period.  It prescribes the
-      function's effect as a command ("Do this", "Return that"), not
-      as a description: e.g. don't write "Returns the pathname ..."
+      function or method's effect as a command ("Do this", "Return
+      that"), not as a description: e.g. don't write "Returns the
+      pathname ..."
 
     - The one-line docstring should NOT be a "signature" reiterating
-      the function parameters (which can be obtained by
+      the function/method parameters (which can be obtained by
       introspection).  Don't do::
     
           def function(a, b):
@@ -132,11 +134,11 @@ Specification
     class's methods are separated from each other by a single blank
     line, and the docstring needs to be offset from the first method
     by a blank line; for symmetry, put a blank line between the class
-    header and the docstring.  Docstrings documenting functions
-    generally don't have this requirement, unless the function's body
-    is written as a number of blank-line separated sections -- in this
-    case, treat the docstring as another section, and precede it with
-    a blank line.
+    header and the docstring.  Docstrings documenting functions or
+    methods generally don't have this requirement, unless the function
+    or method's body is written as a number of blank-line separated
+    sections -- in this case, treat the docstring as another section,
+    and precede it with a blank line.
 
     The docstring of a script (a stand-alone program) should be usable
     as its "usage" message, printed when the script is invoked with
