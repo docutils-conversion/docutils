@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2002/03/11 03:40:58 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/03/13 02:47:35 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -34,12 +34,12 @@ class Hyperlinks(Transform):
                    text
            <target anonymous="1">
 
-       Corresponding references and targets are assigned names::
+       Corresponding references and targets are assigned ids::
 
            <paragraph>
-               <reference anonymous="1" refname="_:1:_">
+               <reference anonymous="1" refid="id1">
                    text
-           <target anonymous="1" id="id1" name="_:1:_">
+           <target anonymous="1" id="id1">
 
     2. Chained targets::
 
@@ -139,16 +139,19 @@ class Hyperlinks(Transform):
             self.doctree.anonymous_start += 1
             ref = self.doctree.anonymous_refs[i]
             ref['refname'] = name
-            #del ref['anonymous']
             self.doctree.note_refname(ref)
             target = self.doctree.anonymous_targets[i]
             target['name'] = name
-            #del target['anonymous']
+            id = self.doctree.set_id(target)
             self.doctree.note_implicit_target(target, self.doctree)
             if target.hasattr('refname'):
+                #ref['refname'] = target['refname']
                 self.doctree.note_indirect_target(target)
-            if target.hasattr('refuri'):
+            elif target.hasattr('refuri'):
+                #ref['refuri'] = target['refuri']
                 self.doctree.note_external_target(target)
+            #else:
+            #    ref['refid'] = id
 
     def resolve_chained_targets(self):
         visitor = ChainedTargetResolver(self.doctree)
@@ -317,10 +320,10 @@ class Footnotes(Transform):
 
         <document>
             <paragraph>
-                A labeled autonumbered footnote referece: 
+                A labeled autonumbered footnote referece:
                 <footnote_reference auto="1" refname="footnote">
             <paragraph>
-                An unlabeled autonumbered footnote referece: 
+                An unlabeled autonumbered footnote referece:
                 <footnote_reference auto="1">
             <footnote auto="1">
                 <paragraph>
@@ -339,11 +342,11 @@ class Footnotes(Transform):
 
         <document>
             <paragraph>
-                A labeled autonumbered footnote referece: 
+                A labeled autonumbered footnote referece:
                 <footnote_reference auto="1" refname="footnote">
                     2
             <paragraph>
-                An unlabeled autonumbered footnote referece: 
+                An unlabeled autonumbered footnote referece:
                 <footnote_reference auto="1" refname="1">
                     1
             <footnote auto="1" name="1">
@@ -363,7 +366,7 @@ class Footnotes(Transform):
     ``footnote`` and ``footnote_reference`` elements. The unlabeled
     auto-numbered footnote and reference are assigned name and refname
     attributes respectively, being the footnote number.
-    
+
     After adding labels and reference text, the "auto" attributes can be
     ignored.
     """
@@ -372,20 +375,20 @@ class Footnotes(Transform):
     """Keep track of unlabeled autonumbered footnotes."""
 
     symbols = [
-          # The first six entries below are from section 12.51 of
+          # Entries 1-4 and 6 below are from section 12.51 of
           # The Chicago Manual of Style, 14th edition.
           '*',                          # asterisk/star
           u'\u2020',                    # dagger &dagger;
           u'\u2021',                    # double dagger &Dagger;
           u'\u00A7',                    # section mark &sect;
-          # (Should be parallels; perhaps u'\u2016' &Verbar;? Not in HTML.)
           u'\u00B6',                    # paragraph mark (pilcrow) &para;
+                                        # (parallels ['||'] in CMoS)
           '#',                          # number sign
           # The entries below were chosen arbitrarily.
           u'\u2660',                    # spade suit &spades;
-          u'\u2663',                    # club suit &clubs;
           u'\u2665',                    # heart suit &hearts;
           u'\u2666',                    # diamond suit &diams;
+          u'\u2663',                    # club suit &clubs;
           ]
 
     def transform(self, doctree):
@@ -487,7 +490,7 @@ class Substitutions(Transform):
 
         <document>
             <paragraph>
-                The 
+                The
                 <substitution_reference refname="biohazard">
                     biohazard
                  symbol is deservedly scary-looking.
@@ -501,7 +504,7 @@ class Substitutions(Transform):
 
         <document>
             <paragraph>
-                The 
+                The
                 <image alt="biohazard" uri="biohazard.png">
                  symbol is deservedly scary-looking.
             <substitution_definition name="biohazard">
