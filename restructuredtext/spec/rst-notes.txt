@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/01 02:49:11 $
-Revision: $Revision: 1.3 $
+Date: $Date: 2001/08/04 15:22:24 $
+Revision: $Revision: 1.4 $
 
 
 To Do
@@ -24,6 +24,17 @@ To Do
 - Figure out field lists better: syntax, directive or not, context.
   Reply to issues raised in "usage docstrings and bibliographic field
   lists (Garth Kidd)" (Doc-SIG 2001-07-27).
+
+- Allow hyperlink references to targets in other documents? Not in an
+  HTML-centric way, though (it's trivial to say
+  http://www.whatever.com/doc#name, and useless in non-HTML contexts).
+  XLink/XPointer?
+
+- Explicitly define what characters constitute whitespace, and enable
+  the parser to recognize them all.
+
+- For duplicate indirect external hyperlink targets (explicit), check
+  the target URIs: same -> level-0 warning; different -> level-1.
 
 
 Enumerated Lists
@@ -100,7 +111,9 @@ Another approach: Going back to the first draft of reStructuredText
 Change that to *require* a blank line above and below, to reduce
 ambiguity. This "loosening" may be added later, once the parser's been
 nailed down. However, a serious drawback of this approach is to limit
-the content of each list item to a single paragraph. Garth Kidd is 
+the content of each list item to a single paragraph. Garth Kidd is
+attempting to work out a consistent set of rules for "lazy
+indentation".
 
 
 Horizontal Rules
@@ -122,6 +135,8 @@ significance do they have?
 Parser Notes
 ============
 
+Wonky cases, marked by "XXX" in the unit tests:
+
 - What should incorrect indentation do? E.g.::
 
       Here is a paragraph.
@@ -130,8 +145,28 @@ Parser Notes
 
           Indent 4 spaces.
 
-  As is, this generates a <block_quote><block_quote></></>. Should
-  this trigger a warning?
+  As is, this generates a <block_quote><block_quote>...</>...</>.
+  Should this trigger a warning?
+
+- Is this correct behavior? ::
+
+      -
+      Empty item, no blank line, but no space after hyphen.
+
+  Currently this generates a single paragraph.
+
+- Multi-line comments are incompatible with block quotes::
+
+      + bullet
+
+      .. a comment used to end a bullet before a blockquote
+         (if you can't think of what to write in the paragraph)
+
+        blockquote
+
+  Perhaps comments should be one-liners only? Would this mean that
+  footnotes, hyperlink targets, and directives must also be
+  one-liners?
 
 
 Local Variables:
