@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/05 02:44:58 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/07 01:43:00 $
 :Copyright: This module has been placed in the public domain.
 
 All of my previous ramblings about metaclasses_ are fatigue-deranged.
@@ -36,17 +36,12 @@ from pprint import pformat
 
 # try to import the current working version if possible
 try:
-    import states                       # works if running in local directory
-except ImportError:
-    try:                                # running in test framework dir?
-        sys.path.insert(0, os.path.join(os.pardir, 'restructuredtext'))
-        import states
-    except ImportError:
-        try:                            # restructuredtext on path?
-            from restructuredtext import states
-        except ImportError:             # try to run installed code
-            from dps.parsers.restructuredtext import states
+    sys.path.insert(0, os.pardir)       # running in test framework dir?
+    import restructuredtext             # or restructuredtext on path?
+except ImportError:                     # try to run installed code
+    from dps.parsers import restructuredtext
 
+from restructuredtext import states
 from dps.statemachine import string2lines
 
 try:
@@ -149,27 +144,22 @@ class CustomTestCase(unittest.TestCase):
         self.runInDebugger = runInDebugger
         # Ring your mother.
         unittest.TestCase.__init__(self, methodName)
-        # Cheat on the method documentation. Oh, the shame!
-        if shortDescription is not None:
-            self.__testMethodDoc = shortDescription
 
     def __str__(self):
         """
-        Return string conversion. Overridden to give test id, not method name.
+        Return string conversion. Overridden to give test id, in addition to
+        method name.
         """
-        return '%s (%s.%s)' % (self.id, self.__class__,
-                               self._TestCase__testMethodName)
+        return '%s; %s' % (self.id, unittest.TestCase.__str__(self))
 
     def compareOutput(self, input, output, expected):
         """`input`, `output`, and `expected` should all be strings."""
         try:
             self.assertEquals('\n' + output, '\n' + expected)
         except AssertionError:
-            print >>sys.stderr
-            print >>sys.stderr, 'input:'
+            print >>sys.stderr, '\n%s\ninput:' % (self,)
             print >>sys.stderr, input
-            print >>sys.stderr, '-: expected'
-            print >>sys.stderr, '+: output'
+            print >>sys.stderr, '-: expected\n+: output'
             print >>sys.stderr, ''.join(self.compare(expected.splitlines(1),
                                                      output.splitlines(1)))
             raise
@@ -205,7 +195,7 @@ class ParserTestSuite(CustomTestSuite):
                         runInDebugger = 1
                     else:
                         continue
-                self.addTestCase(ParserTestCase, 'test_statemachine',
+                self.addTestCase(ParserTestCase, 'test_parser',
                                  input=case[0], expected=case[1],
                                  id='%s[%r][%s]' % (dictname, name, casenum),
                                  runInDebugger=runInDebugger)
@@ -221,18 +211,16 @@ class ParserTestCase(CustomTestCase):
     cases that have nothing to do with the input and output of the parser.
     """
 
-    statemachine = states.RSTStateMachine(stateclasses=states.stateclasses,
-                                          initialstate='Body',
-                                          debug=UnitTestFolder.debug)
-    """states.RSTStateMachine shared by all ParserTestCases."""
+    parser = restructuredtext.Parser(warninglevel=4, errorlevel=4,
+                                     languagecode='en',
+                                     debug=UnitTestFolder.debug)
+    """restructuredtext.Parser shared by all ParserTestCases."""
 
-    def test_statemachine(self):
+    def test_parser(self):
         if self.runInDebugger:
             pdb.set_trace()
-        document = self.statemachine.run(string2lines(self.input),
-                                         warninglevel=4,
-                                         errorlevel=4)
-        output = document.pprint()
+        document = self.parser.parse(self.input)
+        output = document.pformat()
         self.compareOutput(self.input, output, self.expected)
 
 
@@ -261,7 +249,7 @@ class TableParserTestSuite(CustomTestSuite):
             for casenum in range(len(cases)):
                 case = cases[casenum]
                 runInDebugger = 0
-                if len(case)==4:
+                if len(case) == 4:
                     if case[3]:
                         runInDebugger = 1
                     else:
