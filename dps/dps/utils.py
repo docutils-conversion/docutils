@@ -3,14 +3,14 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.18 $
-:Date: $Date: 2002/03/13 02:43:47 $
+:Revision: $Revision: 1.19 $
+:Date: $Date: 2002/03/16 05:57:30 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
 """
 
-import sys
+import sys, re
 import nodes
 
 
@@ -183,7 +183,7 @@ class ConditionSet:
 
 
 class ExtensionAttributeError(Exception): pass
-class BadAttributeLineError(ExtensionAttributeError): pass
+class BadAttributeError(ExtensionAttributeError): pass
 class BadAttributeDataError(ExtensionAttributeError): pass
 class DuplicateAttributeError(ExtensionAttributeError): pass
 
@@ -203,7 +203,7 @@ def extract_extension_attributes(field_list, attribute_spec):
         - `ValueError` for invalid attribute values (raised by the conversion
            function).
         - `DuplicateAttributeError` for duplicate attributes.
-        - `BadAttributeError` for input lines not enclosed in brackets.
+        - `BadAttributeError` for invalid fields.
         - `BadAttributeDataError` for invalid attribute data (missing name,
           missing data, bad quotes, etc.).
     """
@@ -220,7 +220,7 @@ def extract_attributes(field_list):
         field body consists of a single paragraph only.
 
     :Exceptions:
-        - `BadAttributeError` for input lines not enclosed in brackets.?
+        - `BadAttributeError` for invalid fields.
         - `BadAttributeDataError` for invalid attribute data (missing name,
           missing data, bad quotes, etc.).
     """
@@ -231,12 +231,15 @@ def extract_attributes(field_list):
                   'extension attribute field may not contain field arguments')
         name = field[0].astext().lower()
         body = field[1]
-        if len(body) != 1 or not isinstance(body[0], nodes.paragraph) \
+        if len(body) == 0:
+            data = None
+        elif len(body) > 1 or not isinstance(body[0], nodes.paragraph) \
               or len(body[0]) != 1 or not isinstance(body[0][0], nodes.Text):
             raise BadAttributeDataError(
-                  'extension attribute field body may consist of\n'
+                  'extension attribute field body may contain\n'
                   'a single paragraph only (attribute "%s")' % name)
-        data = body[0][0].astext()
+        else:
+            data = body[0][0].astext()
         attlist.append((name, data))
     return attlist
 
@@ -263,8 +266,9 @@ def assemble_attribute_dict(attlist, attspec):
             raise DuplicateAttributeError('duplicate attribute "%s"' % name)
         try:
             attributes[name] = convertor(value)
-        except ValueError, detail:
-            raise ValueError('(attribute "%s") %s' % (name, detail))
+        except (ValueError, TypeError), detail:
+            raise detail.__class__('(attribute "%s", value "%r") %s'
+                                   % (name, value, detail))
     return attributes
 
 
@@ -319,6 +323,48 @@ def extract_name_value(line):
 def normname(name):
     """Return a case- and whitespace-normalized name."""
     return ' '.join(name.lower().split())
+
+def id(string):
+    """
+    Convert `string` into an identifier and return it.
+
+    Docutils identifiers will conform to the regular expression
+    ``[a-z][-a-z0-9]*``. For CSS compatibility, identifiers (the "class" and
+    "id" attributes) should have no underscores, colons, or periods. Hyphens
+    may be used.
+
+    - The `HTML 4.01 spec`_ defines identifiers based on SGML tokens:
+
+          ID and NAME tokens must begin with a letter ([A-Za-z]) and may be
+          followed by any number of letters, digits ([0-9]), hyphens ("-"),
+          underscores ("_"), colons (":"), and periods (".").
+
+    - However the `CSS1 spec`_ defines identifiers based on the "name" token,
+      a tighter interpretation ("flex" tokenizer notation; "latin1" and
+      "escape" 8-bit characters have been replaced with entities)::
+
+          unicode     \\[0-9a-f]{1,4}
+          latin1      [&iexcl;-&yuml;]
+          escape      {unicode}|\\[ -~&iexcl;-&yuml;]
+          nmchar      [-a-z0-9]|{latin1}|{escape}
+          name        {nmchar}+
+
+    The CSS1 "nmchar" rule does not include underscores ("_"), colons (":"),
+    or periods ("."), therefore "class" and "id" attributes should not contain
+    these characters. They should be replaced with hyphens ("-"). Combined
+    with HTML's requirements (the first character must be a letter; no
+    "unicode", "latin1", or "escape" characters), this results in the
+    ``[a-z][-a-z0-9]*`` pattern.
+
+    .. _HTML 4.01 spec: http://www.w3.org/TR/html401
+    .. _CSS1 spec: http://www.w3.org/TR/REC-CSS1
+    """
+    id = non_id_chars.sub('-', normname(string))
+    id = non_id_at_ends.sub('', id)
+    return str(id)
+
+non_id_chars = re.compile('[^a-z0-9]+')
+non_id_at_ends = re.compile('^[-0-9]+|-+$')
 
 def newdocument(languagecode='en', warninglevel=2, errorlevel=4,
                 stream=None, debug=0):
