@@ -1,15 +1,21 @@
 #! /usr/bin/env python
-# $Id: model.py,v 1.2 2001/08/01 02:56:35 goodger Exp $
+# $Id: model.py,v 1.3 2001/09/07 02:10:30 goodger Exp $
 # by David Goodger (dgoodger@bigfoot.com)
+
+
+from dps import utils
 
 
 class Parser:
 
-    def __init__(self, warninglevel=1, errorlevel=3, language='en'):
+    def __init__(self, warninglevel=1, errorlevel=3, languagecode='en',
+                 debug=0):
         """Initialize the Parser instance."""
         self.warninglevel = warninglevel
         self.errorlevel = errorlevel
-        self.language = language
+        self.languagecode = languagecode
+        self.language = utils.language(languagecode)
+        self.debug = debug
 
     def parse(self, inputstring):
         """Override to parse `inputstring` and return a document tree."""
