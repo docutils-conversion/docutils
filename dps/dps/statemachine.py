@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/08/23 03:59:03 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/08/25 01:47:48 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -108,7 +108,7 @@ __all__ = ['StateMachine', 'StateMachineWS', 'SearchStateMachine',
            'TransitionPatternNotFound', 'TransitionMethodNotFound',
            'UnexpectedIndentationError', 'string2lines', 'extractindented']
 
-import sys, re
+import sys, re, string
 
 
 class StateMachine:
@@ -930,7 +930,9 @@ class TransitionMethodNotFound(Exception): pass
 class UnexpectedIndentationError(Exception): pass
 
 
-def string2lines(astring, tabwidth=8):
+_whitespace_conversion_table = string.maketrans('\v\f', '  ')
+
+def string2lines(astring, tabwidth=8, convertwhitespace=0):
     """
     Return a list of one-line strings with tabs expanded and no newlines.
 
@@ -941,7 +943,10 @@ def string2lines(astring, tabwidth=8):
 
     - `astring`: a multi-line string.
     - `tabwidth`: the number of columns between tab stops.
+    - `convertwhitespace`: convert form feeds and vertical tabs to spaces?
     """
+    if convertwhitespace:
+        astring = astring.translate(_whitespace_conversion_table)
     return [s.expandtabs(tabwidth) for s in astring.splitlines()]
 
 def extractindented(lines):
