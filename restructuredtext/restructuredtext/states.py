@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.49 $
-:Date: $Date: 2002/03/16 05:38:29 $
+:Revision: $Revision: 1.50 $
+:Date: $Date: 2002/04/13 16:43:53 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -520,7 +520,7 @@ class RSTState(StateWS):
                                                        self.statemachine.node)
         problematic = nodes.problematic(rawsource, text, refid=msgid)
         prbid = self.statemachine.memo.document.set_id(problematic)
-        message['refid'] = prbid
+        message.add_backref(prbid)
         return problematic
 
     def emphasis(self, match, lineno):
@@ -1295,30 +1295,12 @@ class Body(RSTState):
               self.statemachine.getfirstknownindented(match.end())
         label = match.group(1)
         name = normname(label)
-        footnotenode = nodes.footnote('\n'.join(indented))
-        if name[0] == '#':
-            name = name[1:]
-            footnotenode['auto'] = 1
-            self.statemachine.memo.document.note_autofootnote(footnotenode)
-        else:
-            footnotenode += nodes.label('', label)
-        if name:
-            footnotenode['name'] = name
-            self.statemachine.memo.document.note_explicit_target(
-                  footnotenode, footnotenode)
-        if indented:
-            self.nestedparse(indented, inputoffset=offset, node=footnotenode)
-        return [footnotenode], blankfinish
-
-    def footnote(self, match):
-        indented, indent, offset, blankfinish = \
-              self.statemachine.getfirstknownindented(match.end())
-        label = match.group(1)
-        name = normname(label)
         footnote = nodes.footnote('\n'.join(indented))
         if name[0] == '#':              # auto-numbered
             name = name[1:]             # autonumber label
             footnote['auto'] = 1
+            if name:
+                footnote['name'] = name
             self.statemachine.memo.document.note_autofootnote(footnote)
         elif name == '*':               # auto-symbol
             name = ''
@@ -1326,8 +1308,9 @@ class Body(RSTState):
             self.statemachine.memo.document.note_symbol_footnote(footnote)
         else:                           # manually numbered
             footnote += nodes.label('', label)
-        if name:
             footnote['name'] = name
+            self.statemachine.memo.document.note_footnote(footnote)
+        if name:
             self.statemachine.memo.document.note_explicit_target(footnote,
                                                                  footnote)
         if indented:
@@ -1342,6 +1325,7 @@ class Body(RSTState):
         citation = nodes.citation('\n'.join(indented))
         citation += nodes.label('', label)
         citation['name'] = name
+        self.statemachine.memo.document.note_citation(citation)
         self.statemachine.memo.document.note_explicit_target(citation, citation)
         if indented:
             self.nestedparse(indented, inputoffset=offset, node=citation)
@@ -1376,8 +1360,7 @@ class Body(RSTState):
             if refname:
                 target = nodes.target(blocktext, '', refname=refname)
                 self.addtarget(targetmatch.group(namegroup), '', target)
-                if target.has_key('name'):
-                    self.statemachine.memo.document.note_indirect_target(target)
+                self.statemachine.memo.document.note_indirect_target(target)
                 return [target], blankfinish
         nodelist = []
         reference = ''.join([line.strip() for line in block])
@@ -1409,6 +1392,8 @@ class Body(RSTState):
             if refuri:
                 target['refuri'] = refuri
                 self.statemachine.memo.document.note_external_target(target)
+            else:
+                self.statemachine.memo.document.note_internal_target(target)
             self.statemachine.memo.document.note_explicit_target(
                   target, self.statemachine.node)
         else:                       # anonymous target
@@ -1642,6 +1627,7 @@ class Body(RSTState):
                 target = nodes.target(blocktext, '', refname=refname,
                                       anonymous=1)
                 self.statemachine.memo.document.note_anonymous_target(target)
+                self.statemachine.memo.document.note_indirect_target(target)
                 return [target], blankfinish
         nodelist = []
         reference = escape2null(''.join([line.strip() for line in block]))
