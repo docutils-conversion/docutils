@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/16 06:11:18 $
-:Revision: $Revision: 1.32 $
+:Date: $Date: 2002/03/28 04:34:58 $
+:Revision: $Revision: 1.33 $
 
 .. contents::
 
@@ -19,18 +19,8 @@ To Do
         there on how it all hangs together - the DTD is not enough
         (indeed, is it still meant to be correct? [Yes, it is.]).
 
-- Rework PEP 257, separating style from spec from tools, wrt DPS. See
+- Rework PEP 257, separating style from spec from tools, wrt DPS?  See
   Doc-SIG from 2001-06-19/20.
-
-- PEP 256:
-
-  - Incorporate "modes" (one or two sets).
-  - Draw the framework diagram properly as a graphic (once PEPs
-    support graphics !-).
-
-- PEP 258:
-
-  - Mention 2.2-style "properties" with attribute docstrings.
 
 - Document!
 
@@ -47,9 +37,6 @@ To Do
 - Add layout component to framework? Or part of the formatter?
 
 - Add validation? See http://pytrex.sourceforge.net, RELAX NG.
-
-- Incorporate readers/"input modes", using Tony Ibbs' 2001-08-03
-  Doc-SIG post 'Suggestions for reST "modes"' as a base.
 
 - Write modules for common transforms. See `Unimplemented Transforms`_
   below.
@@ -87,16 +74,6 @@ To Do
 - Add "name" -> "id" attribute conversion.  We must have unique,
   SGML-ID-friendly id's and a one-to-one mapping for later lookup.
 
-  - Implement a "name mangling" scheme: name "section title" becomes
-    id "section_title", name "1" becomes id "footnote1" (or just
-    "1"?).
-
-  - Whenever possible, use the "name mangling" scheme.  When that's
-    not possible (duplicate names, no name), and use an arbitrary
-    sequential id.
-
-  - ID as required.
-
   - Remove dependency on names as sole distinguishing characteristic.
     Use IDs instead.
 
@@ -110,7 +87,8 @@ To Do
   - When resolving reference IDs from names, we must check for
     non-existent mappings.  In the Writer or in a transform?
 
-- Add "refids" attribute to all target types, for backlinks.
+- Add support for "refids" attribute on footnotes & citations, for
+  backlinks.
 
 - Considerations for an HTML Writer [#]_:
 
@@ -297,183 +275,6 @@ the input mode? Or can/should they be independent?
 I envision interaction between the input parser, an "input mode" , and
 the output formatter. The same intermediate data format would be used
 between each of these, being transformed as it progresses.
-
-
-Docutils Project Model
-======================
-
-Here's the latest project model::
-
-                    +--------------------------+
-                    |        Docutils:         |
-                    | docutils.core.Publisher, |
-                    | docutils.core.publish()  |
-                    +--------------------------+
-                      /                      \
-                     /                        \
-           1,3,5    /                          \      6,8
-           +--------+                          +--------+
-           | READER | =======================> | WRITER |
-           +--------+ (purely presentational)  +--------+
-            //    \                              /    \
-           //      \                            /      \
-    2     //     4  \               7          /     9  \
-    +--------+   +------------+     +------------+   +--------------+
-    | PARSER |...| reader     |     | writer     |...| DISTRIBUTOR  |
-    +--------+   | transforms |     | transforms |   |              |
-                 |            |     |            |   | - one file   |
-                 | - docinfo  |     | - styling  |   | - many files |
-                 | - titles   |     | - writer-  |   | - objects in |
-                 | - linking  |     |   specific |   |   memory     |
-                 | - lookups  |     | - etc.     |   +--------------+
-                 | - reader-  |     +------------+
-                 |   specific |
-                 | - parser-  |
-                 |   specific |
-                 | - layout   |
-                 | - etc.     |
-                 +------------+
-
-The numbers indicate the path a document would take through the code.
-Double-width lines between reader & parser and between reader &
-writer, indicating that data sent along these paths should be standard
-(pure & unextended) DPS doc trees. Single-width lines signify that
-internal tree extensions are OK (but must be supported internally at
-both ends), and may in fact be totally unrelated to the DPS doc tree
-structure. I've added "reader-specific" and "layout" transforms to the
-list of transforms. BTW, these transforms are not necessarily all in
-one directory; it's a nebulous grouping (it's hard to draw ASCII
-clouds).
-
-
-Issues
-------
-
-- Transforms.  How to specify which transforms (and in what order)
-  apply to each combination of reader, parser/syntax, writer, and
-  distributor?  Even if we restrict ourselves to one parser, there
-  will eventually be a multitude of readers, writers, and distributor
-  options.
-
-  Or are readers & writers independent?  Then we have reader/parser
-  and writer/distributor combinations to consider.
-
-
-Components
-----------
-
-Production -> Publication -> Distribution
-
-Producer -> Publisher -> Distributor
-
-
-Parsers
-```````
-
-Responsibilities: Given raw input text and an empty doctree, populate
-the doctree by parsing the input text.
-
-
-Readers
-```````
-
-Most Readers will have to be told what parser to use. So far (see the
-list of examples below), only the Python Source Reader (PySource) will
-be able to determine the syntax on its own.
-
-Responsibilities:
-
-- Do raw input on the source.
-- Pass the raw text to the parser, along with a fresh doctree.
-- Combine and collate doctrees if necessary.
-- Run transforms over the doctree(s).
-
-Examples:
-
-- Standalone/Raw/Plain: Just read a text file and process it. The
-  reader needs to be told which parser to use. Parser-specific
-  readers?
-- Python Source: See `Python Source Reader`_ above.
-- Email: RFC-822 headers, quoted excerpts, signatures, MIME parts.
-- PEP: RFC-822 headers, "PEP xxxx" and "RFC xxxx" conversion to
-  URIs. Either interpret PEPs' indented sections or convert existing
-  PEPs to reStructuredText (or both?).
-- Wiki: Global reference lookups of "wiki links" incorporated into
-  transforms. (CamelCase only or unrestricted?) Lazy indentation?
-- Web Page: As standalone, but recognize meta fields as meta tags.
-  Support for templates of some sort? (After <body>, before </body>?)
-- FAQ: Structured "question & answer(s)" constructs.
-- Compound document: Merge chapters into a book. Master TOC file?
-
-
-Transforms
-``````````
-
-Responsibilities:
-
-- Modify a doctree in-place.
-
-Examples:
-
-- Already implemented: DocInfo, DocTitle (in frontmatter.py);
-  Hyperlinks, Footnotes, Substitutions (in references.py).
-- Unimplemented: See `Unimplemented Transforms`_ above.
-
-
-Writers
-```````
-
-Responsibilities:
-
-- Transform doctree into specific output formats.
-- Transform references into format-native forms.
-
-Examples:
-
-- XML: Various forms, such as DocBook. Also, raw doctree XML.
-- HTML
-- TeX
-- Plain text
-- reStructuredText?
-
-
-Distributors
-````````````
-
-(Writer/distributor components may change places. After rearranging,
-the model would look like this::
-
-
-           1,3,5                               6,8
-           +--------+                          +-------------+
-           | READER | =======================> | DISTRIBUTOR |
-           +--------+ (purely presentational)  +-------------+
-            //    \                              /    \
-           //      \                            /      \
-    2     //     4  \               7          /     9  \
-    +--------+   +------------+     +------------+   +--------+
-    | PARSER |...| reader     |     | writer     |...| WRITER |
-    +--------+   | transforms |     | transforms |   +--------+
-                 | ...        |     | ...        |
-
-We'll wait and see which arrangement works out best.  Is it better for
-the writer to control the distributor, or vice versa?  Or should they
-be equals?
-
-Looking at the list of writers, it seems that only HTML would require
-anything other than monolithic output.  Perhaps merge the HTML
-"distributor" into "writer" variants?)
-
-Responsibilities:
-
-- Do raw output to the destination.
-- Transform references per incarnation (type of distribution).
-
-Examples:
-
-- Single file
-- Multiple files & directories
-- Objects in memory
 
 
 

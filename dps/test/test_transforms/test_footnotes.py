@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/03/16 05:47:58 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/03/28 04:32:06 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Footnotes.
@@ -224,7 +224,7 @@ Mixed anonymous and labelled auto-numbered footnotes:
             6
         <system_message level="2" refid="id1" type="WARNING">
             <paragraph>
-                Duplicate explicit target name: "five"
+                Duplicate explicit target name: "five".
         <paragraph>
             Auto-numbered footnote 5 again (duplicate).
     <system_message id="id4" level="3" type="ERROR">
@@ -373,7 +373,7 @@ and labelled auto-numbered footnotes:
             7
         <system_message level="2" refid="id3" type="WARNING">
             <paragraph>
-                Duplicate explicit target name: "five"
+                Duplicate explicit target name: "five".
         <paragraph>
             Auto-numbered footnote 5 again (duplicate).
     <system_message id="id6" level="3" type="ERROR">

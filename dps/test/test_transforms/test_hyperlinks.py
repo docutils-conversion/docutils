@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/16 05:48:11 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/28 04:32:22 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Hyperlinks.
@@ -133,7 +133,7 @@ indirect_ internal
             Implicit
         <system_message level="1" refid="id1" type="INFO">
             <paragraph>
-                Duplicate implicit target name: "implicit"
+                Duplicate implicit target name: "implicit".
         <paragraph>
             <reference refname="implicit">
                 indirect
@@ -216,7 +216,7 @@ __ ztarget_
         First
     <system_message level="2" refid="id1" type="WARNING">
         <paragraph>
-            Duplicate explicit target name: "ztarget"
+            Duplicate explicit target name: "ztarget".
     <target dupname="ztarget" id="id1">
     <paragraph>
         Second
@@ -411,7 +411,7 @@ Duplicate external target_'s (different URIs):
     <target dupname="target" id="target" refuri="first">
     <system_message level="2" refid="id1" type="WARNING">
         <paragraph>
-            Duplicate explicit target name: "target"
+            Duplicate explicit target name: "target".
     <target dupname="target" id="id1" refuri="second">
 """],
 ])
