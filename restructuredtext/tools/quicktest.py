@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: quicktest.py,v 1.1 2001/07/27 02:11:50 gtk Exp $
+# $Id: quicktest.py,v 1.2 2001/07/27 04:10:28 goodger Exp $
 # 
 # I used to have a much prettier version of this script, but inadvertently 
 # deleted it. Oops. Here's a quick, ugly, grotty hack as a temporary 
@@ -23,27 +23,23 @@ Proposed usage::
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/27 02:11:50 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/07/27 04:10:28 $
 Copyright: This module has been placed in the public domain.
 
 """
 
+import sys
 import dps.parsers.restructuredtext
 
 # create a parser
 p = dps.parsers.restructuredtext.Parser()
 
 # gather input
-input = []
-try: 
-  while 1:
-    input.append(raw_input())
-except EOFError:
-  pass
+input = sys.stdin.read()
 
 # generate parsed output
-o = p.parse('\n'.join(input))
+o = p.parse(input)
 
 # print a delimiter
 print '=>'
