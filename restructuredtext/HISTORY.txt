@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/12 04:12:54 $
+:Date: $Date: 2001/09/13 03:43:30 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -86,9 +86,10 @@ Changed contact email addresses.
   - Added support for classifier after term in definition list items.
   - Fixed a bug with literal blocks.
   - Changed ``element.extend(nodelist)`` to ``element += nodelist``.
-  - Added full table support (class TableParser & Body.table() etc.).
+  - Added full table support (Body.table() etc.).
   - Split off NestedStateMachine (recursive) from RSTStateMachine
     (entry point).
+  - Changed indentSM to nestedSM where appropriate.
   - Added language module support.
   - Added 1-section -> document promotion transformation.
   - Added bibliographic field list transformations.
@@ -96,6 +97,9 @@ Changed contact email addresses.
   - Name changes (lowercased, updated, improved).
   - Integer attributes on elements as appropriate.
   - Added directive functionality.
+
+* restructuredtest/tableparser.py: Added to project. Contains the
+  TableParser class.
 
 * restructuredtext/test_states.py: Refactored to test directory. This
   file removed.
@@ -148,6 +152,8 @@ Changed contact email addresses.
 
 * spec/alternatives.txt: Added to project.
 
+* spec/directives.txt: Added to project.
+
 * spec/introduction.txt:
 
   - Python interpretation of interpreted text is a DPS job.
@@ -180,7 +186,8 @@ Changed contact email addresses.
   - Added auto-numbered footnotes.
   - Removed leading underscores from footnote definition; added
     implicit hyperlink generation.
-  - Updated directives.
+  - Updated & expanded definition of directives; added link to new
+    directives.txt.
   - Added a note on inline markup & escapes.
   - Added option lists & doctest blocks from pyextensions.txt.
   - Added VMS/DOS-style options to option lists.

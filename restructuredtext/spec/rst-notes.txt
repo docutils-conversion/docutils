@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/09/07 01:58:50 $
-:Revision: $Revision: 1.17 $
+:Date: $Date: 2001/09/13 03:44:00 $
+:Revision: $Revision: 1.18 $
 
 
 To Do
@@ -20,9 +20,10 @@ To Do
 - And for the sake of completeness, should definition list terms be
   allowed to be very long (two or more lines) also?
 
-- Interpret RCS keywords in field lists? ``$keyword: value$`` could
-  be interpreted as ``keyword: value``; ``$keyword$`` could be
-  interpreted as ``keyword:`` (no value).
+- Interpret RCS keywords in field lists? Just values, or the entire
+  field? I.E, ``$keyword: value$`` could be interpreted as ``keyword:
+  value``; ``$keyword$`` could be interpreted as ``keyword:`` (no
+  value).
 
 - Allow hyperlink references to targets in other documents? Not in an
   HTML-centric way, though (it's trivial to say
@@ -41,19 +42,6 @@ To Do
 - Tony says inline markup rule 7 could do with a *little* more
   exposition in the spec, to make clear what is going on for people
   with head colds.
-
-- Add to spec: discussion of directive behavior:
-
-    I think most directives won't survive (as directives) past the
-    parsing stage (they can't, since they're a *parser
-    construct*). Instead, they'll transform their contents into
-    elements on the doc tree. Only unknown directives will survive to
-    any later stage, and be formatted in a generic "directive" way,
-    perhaps as a system warning.
-    
-    Now, the newly transformed directive *contents* may be specialized
-    elements which require further processing later on, but they're no
-    longer raw directives.
 
 
 Or Not To Do?
