@@ -1,38 +1,58 @@
 /*
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:date: $Date: 2002/02/23 15:55:37 $
-:version: $Revision: 1.4 $
+:date: $Date: 2002/03/01 02:59:03 $
+:version: $Revision: 1.5 $
 :copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
 */
 
-h1.title {
-  text-align: center }
+a.footnote_reference {
+  font-size: smaller;
+  vertical-align: super }
 
-h2.subtitle {
-  text-align: center }
+col.docinfo_name {
+  font-weight: bold;
+  text-align: right }
 
-div.docinfo {
-  margin: 5em }
+col.field_name {
+  font-weight: bold }
 
 div.abstract {
-  margin: 5em }
+  margin: 2em 5em }
 
 div.abstract h3 {
   text-align: center }
 
-div.attention, div.caution, div.danger, div.error, dif.hint,
+div.attention, div.caution, div.danger, div.error, div.hint,
 div.important, div.note, div.tip, div.warning {
   margin: 2em;
   border: medium outset;
   padding: 1em }
 
-div.attention h3 {
+div.attention h3, div.caution h3, div.danger h3, div.error h3,
+div.warning h3 {
   color: red;
   font-weight: bold;
   font-family: sans-serif }
+
+div.hint h3, div.important h3, div.note h3, div.tip h3 {
+  font-weight: bold;
+  font-family: sans-serif }
+
+div.field_body {
+  margin-bottom: 1em }
+
+div.field_list {
+  margin-bottom: -1em }
+
+div.figure {
+  margin-left: 2em }
+
+div.footnote {
+  border-left: solid thin black;
+  padding-left: 1em }
 
 div.system_messages {
   margin: 5em }
@@ -50,12 +70,38 @@ div.system_message h3 {
 dt {
   margin-bottom: -1em }
 
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
 hr {
   width: 75% }
 
-.docinfo_name {
-  font-weight: bold;
-  text-align: right }
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.caption {
+  font-style: italic }
+
+p.field_name {
+  margin-bottom: 1em }
+
+pre.literal_block, pre.doctest_block {
+  margin-left: 2em }
 
 span.classifier {
   font-family: sans-serif;
@@ -65,8 +111,20 @@ span.classifier_delimiter {
   font-family: sans-serif;
   font-weight: bold }
 
+span.field_argument {
+  font-style: italic }
+
 span.interpreted {
   font-family: sans-serif }
 
+span.option_argument {
+  font-style: italic }
+
 span.problematic {
   color: red }
+
+table {
+  margin-top: 1em }
+
+table.docinfo {
+  margin: 2em 4em }
