@@ -2,17 +2,20 @@
  Record of reStructuredText Syntax Alternatives
 ================================================
 :Author: David Goodger
-:Contact: dgoodger@bigfoot.com
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/08/16 02:43:09 $
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/08/22 03:44:10 $
 
-The following are syntax ideas that were considered for
-reStructuredText, which did not originate with Setext_ or
-StructuredText_.
+The following are ideas, alternatives, and justifications that were
+considered for reStructuredText syntax, which did not originate with
+Setext_ or StructuredText_. See the `reStructuredText Markup
+Specification` for full details of the established syntax.
 
 .. _Setext: http://www.bsdi.com/setext
 .. _StructuredText:
     http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
+.. _reStructuredText Markup Specification:
+    http://structuredtext.sourceforge.net/spec/reStructuredText.txt
 
 
 Field Lists
@@ -127,10 +130,181 @@ syntax.
 
 .. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
 
+
+Interpreted Text "Roles"
+========================
+
+The original purpose of interpreted text was as a mechanism for
+descriptive markup, to describe the nature or role of a word or
+phrase. For example, in XML we could say "<function>len</function>" to
+mark up "len" as a function. It is envisaged that within Python
+docstrings (inline documentation in Python module source files, the
+primary market for reStructuredText) the role of a piece of
+interpreted text can be inferred implicitly from the context of the
+docstring within the program source. For other applications, however,
+the role may have to be indicated explicitly.
+
+Interpreted text is enclosed in single backquotes (`).
+
+1. Initially, it was proposed that an explicit role could be indicated
+   as a word or phrase within the enclosing backquotes:
+
+   - As a prefix, separated by a colon and whitespace::
+
+         `role: interpreted text`
+
+   - As a suffix, separated by whitespace and a colon::
+
+         `interpreted text :role`
+
+   There are problems with the initial approach:
+
+   - There could be ambiguity with interpreted text containing colons.
+     For example, an index entry of "Mission: Impossible" would
+     require a backslash-escaped colon.
+   
+   - The explicit role is descriptive markup, not content, and will
+     not be visible in the processed output. Putting it inside the
+     backquotes doesn't feel right; the *role* isn't being quoted.
+
+2. Tony Ibbs suggested that the role be placed outside the
+   backquotes::
+
+       role:`prefix` or `suffix`:role
+
+   This removes the embedded-colons ambiguity, but limits the role
+   identifier to be a single word (whitespace would be illegal). Since
+   roles are not meant to be visible after processing, the lack of
+   whitespace support is not important.
+
+   The suggested syntax remains ambiguous with respect to ratios and
+   some writing styles. For example, suppose there is a "signal"
+   identifier, and we write::
+
+       ...calculate the `signal`:noise ratio.
+
+   "noise" looks like a role.
+
+3. As an improvement on #2, we can bracket the role with colons::
+
+       :role:`prefix` or `suffix`:role:
+
+   This syntax is similar to that of field lists, which is fine since
+   both are doing similar things: describing.
+
+   Syntax #3 is the current reference implementation.
+
+4. Another alternative is two colons instead of one::
+
+       role::`prefix` or `suffix`::role
+
+   But this is used for analogies ("A:B::C:D": "A is to B as C is to
+   D").
+
+   Both alternative #2 and #4 lack delimiters on both sides of the
+   role, making it difficult to parse (by the reader).
+
+5. Some kind of bracketing could be used:
+
+   - Parentheses::
+
+         (role)`prefix` or `suffix`(role)
+
+   - Braces::
+
+         {role}`prefix` or `suffix`{role}
+
+   - Square brackets::
+
+         [role]`prefix` or `suffix`[role]
+
+   - Angle brackets::
+
+         <role>`prefix` or `suffix`<role>
+
+     (The overlap of \*ML tags with angle brackets would be too
+     confusing and precludes their use.)
+
+
+Comments
+========
+
+A problem with comments (actually, with all indented constructs) is
+that they cannot be followed by an indented block -- a block quote --
+without swallowing it up.
+
+I thought that perhaps comments should be one-liners only. But would
+this mean that footnotes, hyperlink targets, and directives must then
+also be one-liners? Not a good solution.
+
+Tony Ibbs suggested a "comment" directive. I added that we could limit
+a comment to a single text block, and that a "multi-block comment"
+could use "comment-start" and "comment-end" directives. This would
+remove the indentation incompatibility. A "comment" directive
+automatically suggests "footnote" and (hyperlink) "target" directives
+as well. This could go on forever! Bad choice.
+
+Garth Kidd suggested that an "empty comment", a ".." explicit markup
+start with nothing on the first line (except possibly whitespace) and
+a blank line immediately following, could serve as an "unindent". An
+empty comment does **not** swallow up indented blocks following it,
+so block quotes are safe. "A tiny but practical wart." Accepted.
+
+
+Justification for Backquotes in Phrase-Links
+============================================
+
+[From a 2001-06-05 Doc-SIG post in reply to questions from Doug
+Hellmann.]
+
+The first draft of the spec, posted to the Doc-SIG in November 2000,
+used square brackets for phrase-links. I changed my mind because:
+
+1. In the first draft, I had already decided on single-backquotes for
+   inline literal text.
+
+2. However, I wanted to minimize the necessity for backslash escapes,
+   for example when quoting Python repr-equivalent syntax that uses
+   backquotes.
+
+3. The processing of identifiers (funtion/method/attribute/module/etc.
+   names) into hyperlinks is a useful feature. PyDoc recognizes
+   identifiers heuristically, but it doesn't take much imagination to
+   come up with counter-examples where PyDoc's heuristics would result
+   in embarassing failure. I wanted to do it deterministically, and
+   that called for syntax. I called this construct 'interpreted text'.
+
+4. Leveraging off the *emphasis*/**strong** syntax, lead to the idea
+   of using double-backquotes as syntax.
+
+5. I worked out some rules for inline markup recognition.
+
+6. In combination with #5, double backquotes lent themselves to inline
+   literals, neatly satisfying #2, minimizing backslash escapes. In
+   fact, the spec says that no interpretation of any kind is done
+   within double-backquote inline literal text; backslashes do *no*
+   escaping within literal text.
+
+7. Single backquo;tes are then freed up for interpreted text.
+
+8. I already had square brackets required for footnote references.
+
+9. Since interpreted text will typically turn into hyperlinks, it was a
+   natural fit to use backquotes as the phrase-quoting syntax for
+   trailing-underscore hyperlinks.
+
+The original inspiration for the trailing underscore hyperlink syntax
+was Setext. But for phrases Setext used a very cumbersome
+``underscores_between_words_like_this_`` syntax.
+
+The underscores can be viewed as if they were right-pointing arrows:
+'-->'. So ``hyperlink_`` points away from the reference, and
+``.. _hyperlink:`` points toward the target.
+
+
 
 Local Variables:
 mode: indented-text
 indent-tabs-mode: nil
 fill-column: 70
 End:
-
