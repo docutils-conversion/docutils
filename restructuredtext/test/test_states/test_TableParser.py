@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/05 02:50:21 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 22:33:37 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -149,8 +149,8 @@ totest['tables'] = [
 | Cells must be rectangles.  |
 +----------------------------+
 """,
-'MarkupError: Malformed table; parse incomplete.',
-'MarkupError: Malformed table; parse incomplete.'],
+'TableMarkupError: Malformed table; parse incomplete.',
+'TableMarkupError: Malformed table; parse incomplete.'],
 ["""\
 +-------------------------------+
 | A table with two header rows, |
@@ -186,9 +186,9 @@ totest['tables'] = [
 | That's bad. |                 |
 +-------------+-----------------+
 """,
-'MarkupError: Multiple head/body row separators in table '
+'TableMarkupError: Multiple head/body row separators in table '
 '(at line offset 2 and 4); only one allowed.',
-'MarkupError: Multiple head/body row separators in table '
+'TableMarkupError: Multiple head/body row separators in table '
 '(at line offset 2 and 4); only one allowed.'],
 ]
 
