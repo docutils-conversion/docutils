@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/10 04:47:17 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/09/12 03:57:04 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of
@@ -46,6 +46,7 @@ directives = {
       'note': 'note',
       'tip': 'tip',
       'warning': 'warning',
+      'error': 'error',
       'caution': 'caution',
       'danger': 'danger',
       'important': 'important',}
