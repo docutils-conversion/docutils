@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/02/12 02:26:03 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/02/13 02:22:00 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -157,7 +157,7 @@ Directive block: directive data and following indented lines (up to
 the first blank line).
 
 The 'meta' directive is used to specify HTML metadata stored in HTML
-META tags.  Metadata is data about data, in this case data about web
+META tags.  "Metadata" is data about data, in this case data about web
 pages.  Metadata is used to describe and classify web pages in the
 World Wide Web, in a form that is easy for search engines to extract
 and collate.
