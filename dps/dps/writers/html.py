@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2002/03/08 04:32:05 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/03/11 03:35:07 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -241,10 +241,11 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</TBODY>\n</TABLE>\n')
 
     def visit_docinfo_item(self, node, name):
-        self.head.append(self.starttag(node, 'meta', name=name,
-                                       content=node.astext()))
-        self.body.append('<TR><TD>\n'
-                         '<P>%s:</P>\n'
+        self.head.append('<META NAME="%s" CONTENT="%s">\n'
+                         % (name, self.encode(node.astext())))
+        self.body.append(self.starttag(node, 'tr', ''))
+        self.body.append('<TD>\n'
+                         '<P CLASS="docinfo-name">%s:</P>\n'
                          '</TD><TD>\n'
                          '<P>' % self.language.labels[name])
 
@@ -522,10 +523,16 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</P>\n')
 
     def visit_problematic(self, node):
+        if node.hasattr('refid'):
+            self.body.append('<A HREF="#%s">' % node['refid'])
+            self.context.append('</A>')
+        else:
+            self.context.append('')
         self.body.append(self.starttag(node, 'span', '', CLASS='problematic'))
 
     def depart_problematic(self, node):
         self.body.append('</SPAN>')
+        self.body.append(self.context.pop())
 
     def visit_raw(self, node):
         if node.has_key('format') and node['format'] == 'html':
@@ -597,18 +604,24 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</H1>\n')
 
     def visit_system_message(self, node):
-        if node['level'] < self.doctree.reporter.getcategory('output')[1]:
-            # @@@ need another threshold? gotta fix that
+        if node['level'] < self.doctree.reporter['output'].warninglevel:
+            # @@@ need another threshold for writer? gotta fix that
             raise nodes.SkipNode
         self.body.append(self.starttag(node, 'div', CLASS='system-message'))
-        self.body.append('<H3>%s (level %s system message)</H3>\n'
-                         % (node['type'], node['level']))
+        if node.hasattr('refid'):
+            self.body.append('<H3><A HREF="#%s">%s (level %s system message)'
+                             '</A></H3>\n' % (node['refid'], node['type'],
+                                              node['level']))
+        else:
+            self.body.append('<H3>%s (level %s system message)</H3>\n'
+                             % (node['type'], node['level']))
 
     def depart_system_message(self, node):
         self.body.append('</DIV>\n')
 
     def visit_table(self, node):
-        self.body.append(self.starttag(node, 'table', frame='box', rules='all'))
+        self.body.append(
+              self.starttag(node, 'table', frame='border', rules='all'))
 
     def depart_table(self, node):
         self.body.append('</TABLE>\n')
