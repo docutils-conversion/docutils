@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/12 03:28:45 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/13 02:30:53 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -50,7 +50,8 @@ Here's a series of substitution definitions:
 
 .. |symbol 1| image:: symbol1.png
 .. |SYMBOL 2| image:: symbol2.png
-   [height=50 width=100]
+   :height: 50
+   :width: 100
 .. |symbol 3| image:: symbol3.png
 """,
 """\

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/03/12 03:32:18 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/03/13 02:29:57 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for images.py figure directives.
@@ -100,7 +100,9 @@ totest['figures'] = [
 """],
 ["""\
 .. Figure:: picture.png
-   [height=100 width=200 scale=50]
+   :height: 100
+   :width: 200
+   :scale: 50
 
    A picture with image attributes and a caption.
 """,
@@ -113,10 +115,10 @@ totest['figures'] = [
 """],
 ["""\
 .. Figure:: picture.png
-   [height=100]
-   [alt="alternate text"]
-   [width=200]
-   [scale=50]
+   :height: 100
+   :alt: alternate text
+   :width: 200
+   :scale: 50
 
    A picture with image attributes on individual lines, and this caption.
 """,
