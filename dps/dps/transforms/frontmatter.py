@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/26 00:00:50 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/06 02:51:57 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms related to the front matter of a document (information
@@ -260,7 +260,7 @@ class DocInfo(Transform):
                         self.extract_authors(field, name, docinfo)
                     elif issubclass(biblioclass, nodes.abstract):
                         if abstract:
-                            field[-1] += self.doctree.reporter.error(
+                            field[-1] += self.doctree.reporter.warning(
                                   'There can only be one abstract.')
                             raise TransformError
                         abstract = nodes.abstract('', *field[1].children)
@@ -281,18 +281,18 @@ class DocInfo(Transform):
 
     def check_empty_biblio_field(self, field, name):
         if len(field[1]) < 1:
-            field[-1] += self.doctree.reporter.error(
+            field[-1] += self.doctree.reporter.warning(
                   'Cannot extract empty bibliographic field "%s".' % name)
             return None
         return 1
 
     def check_compound_biblio_field(self, field, name):
         if len(field[1]) > 1:
-            field[-1] += self.doctree.reporter.error(
+            field[-1] += self.doctree.reporter.warning(
                   'Cannot extract compound bibliographic field "%s".' % name)
             return None
         if not isinstance(field[1][0], nodes.paragraph):
-            field[-1] += self.doctree.reporter.error(
+            field[-1] += self.doctree.reporter.warning(
                   'Cannot extract bibliographic field "%s" containing anything '
                   'other than a single paragraph.'
                   % name)
@@ -330,7 +330,7 @@ class DocInfo(Transform):
                            for author in authors if author]
             docinfo.append(nodes.authors('', *authornodes))
         except TransformError:
-            field[-1] += self.doctree.reporter.error(
+            field[-1] += self.doctree.reporter.warning(
                   'Bibliographic field "%s" incompatible with extraction: '
                   'it must contain either a single paragraph (with authors '
                   'separated by one of "%s"), multiple paragraphs (one per '
