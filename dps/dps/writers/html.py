@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/02/21 03:41:31 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/22 01:59:22 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -61,15 +61,23 @@ class HTMLTranslator(nodes.NodeVisitor):
         text = text.replace(">", "&gt;")
         return text
 
-    def starttag(self, node, tagname, suffix='\n', **attrs):
-        attlist = attrs.items()
-        for att in ('id', 'class'):
+    def starttag(self, node, tagname, suffix='\n', **attributes):
+        attrs = {}
+        for (name, value) in attributes.items():
+            attrs[name.lower()] = value
+        for att in ('class',):          # append to node attribute
             if node.has_key(att):
-                attlist.append((att, node[att]))
+                if attrs.has_key(att):
+                    attrs[att] = node[att] + ' ' + attrs[att]
+        for att in ('id',):             # node attribute overrides
+            if node.has_key(att):
+                attrs[att] = node[att]
+        attlist = attrs.items()
         attlist.sort()
-        return '<%s>%s' % (' '.join([tagname.upper()] +
-                                    ['%s="%s"' % (n.upper(), self.encode(v))
-                                     for n, v in attlist]),
+        return '<%s>%s' % (' '.join([tagname.upper()]
+                                    + ['%s="%s"' % (name.upper(),
+                                                    self.encode(value))
+                                       for name, value in attlist]),
                            suffix)
 
     def visit_Text(self, node):
@@ -203,10 +211,10 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_docinfo(self, node):
         # @@@ as a table?
-        pass
+        self.body.append(self.starttag(node, 'DIV', CLASS='docinfo'))
 
     def depart_docinfo(self, node):
-        pass
+        self.body.append('</DIV>\n')
 
     def visit_doctest_block(self, node):
         pass
@@ -474,10 +482,11 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</H1>\n')
 
     def visit_system_message(self, node):
-        pass
+        self.body.append(self.starttag(node, 'DIV', CLASS='system_message'))
+        self.body.append('<H3>%s (%s)</H3>\n' % (node['type'], node['level']))
 
     def depart_system_message(self, node):
-        pass
+        self.body.append('</DIV>\n')
 
     def visit_table(self, node):
         pass
