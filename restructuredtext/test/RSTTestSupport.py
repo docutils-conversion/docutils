@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/02 13:59:35 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/09/04 04:14:11 $
 :Copyright: This module has been placed in the public domain.
 
 All of my previous ramblings about metaclasses_ are fatigue-deranged.
@@ -198,7 +198,8 @@ class ParserTestSuite(CustomTestSuite):
         """
         for name, cases in dict.items():
             casenum = 0
-            for case in cases:
+            for casenum in range(len(cases)):
+                case = cases[casenum]
                 runInDebugger = 0
                 if len(case)==3:
                     if case[2]:
@@ -209,7 +210,6 @@ class ParserTestSuite(CustomTestSuite):
                                  input=case[0], expected=case[1],
                                  id='%s[%r][%s]' % (dictname, name, casenum),
                                  runInDebugger=runInDebugger)
-                casenum = casenum + 1
 
 
 class ParserTestCase(CustomTestCase):
@@ -259,8 +259,8 @@ class TableParserTestSuite(CustomTestSuite):
         self-documenting and not require external comments.
         """
         for name, cases in dict.items():
-            casenum = 0
-            for case in cases:
+            for casenum in range(len(cases)):
+                case = cases[casenum]
                 runInDebugger = 0
                 if len(case)==4:
                     if case[3]:
@@ -275,7 +275,6 @@ class TableParserTestSuite(CustomTestSuite):
                                  input=case[0], expected=case[2],
                                  id='%s[%r][%s]' % (dictname, name, casenum),
                                  runInDebugger=runInDebugger)"""
-                casenum = casenum + 1
 
 
 class TableParserTestCase(CustomTestCase):
@@ -283,7 +282,12 @@ class TableParserTestCase(CustomTestCase):
     parser = states.TableParser()
 
     def test_parsegrid(self):
-        self.parser.init(self.input)
-        output = self.parser.parsegrid()
-        self.compareOutput(pformat(self.input), pformat(output),
-                           pformat(self.expected))
+        self.parser.init(string2lines(self.input))
+        try:
+            self.parser.findheadbodysep()
+            self.parser.parsegrid()
+            output = self.parser.cells
+        except Exception, details:
+            output = '%s: %s' % (details.__class__.__name__, details)
+        self.compareOutput(self.input, pformat(output) + '\n',
+                           pformat(self.expected) + '\n')
