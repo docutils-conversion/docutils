@@ -2,10 +2,10 @@
  Python Docstring Processing System Project History
 ====================================================
 
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/08/17 02:32:42 $
-Website: http://docstring.sourceforge.net/
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Date: $Date: 2001/08/22 04:12:27 $
+:Website: http://docstring.sourceforge.net/
 
 
 Acknowledgements
@@ -32,9 +32,17 @@ I have.
 Release 0.4? (pending)
 ========================
 
+Updated docstrings for new field list syntax (bibliographic info).
+Changed contact email addresses.
+
 * install.py: Added to project.
 
 * setup.py: Modified for import by install.py.
+
+* dps/nodes.py:
+
+  - Added vms_option.
+  - Fixed link bookkeeping.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -43,6 +51,9 @@ Release 0.4? (pending)
 
   - Fixed bug in StateMachineWS.getknownindented().
   - Cleaned up & updated.
+  - Fixed bug in StateMachine.getunindented().
+  - Added startoffset parameter to StateMachineWS.getindented() (but
+    I may be backing this off soon -- not the right solution).
 
 * dps/parsers/model.py:
 
@@ -71,11 +82,15 @@ Release 0.4? (pending)
   - Fixed typos & omissions; now validates.
   - Changed field_argument's model to PCDATA.
   - Added option_list and doctest_block from ppdi.dtd.
-  
+  - Added vms_option.
+  - Added dupname attribute to %basic.atts; for duplicate names.
+
 * spec/pdpi.dtd:
 
   - Fixed typos; now validates.
   - Moved option_list and doctest_block from gpdi.dtd.
+
+* spec/python-mode.txt: Added to project (from reStructuredText).
 
 
 Release 0.3 (2001-07-19)
