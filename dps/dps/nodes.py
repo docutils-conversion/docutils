@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.33 $
-:Date: $Date: 2002/03/01 03:17:06 $
+:Revision: $Revision: 1.34 $
+:Date: $Date: 2002/03/04 04:47:06 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -696,7 +696,6 @@ class revision(Bibliographic, TextElement): pass
 class status(Bibliographic, TextElement): pass
 class date(Bibliographic, TextElement): pass
 class copyright(Bibliographic, TextElement): pass
-class abstract(Bibliographic, Element): pass
 
 
 # =====================
@@ -704,6 +703,7 @@ class abstract(Bibliographic, Element): pass
 # =====================
 
 class section(Structural, Element): pass
+class topic(Structural, Element): pass
 class transition(Structural, Element): pass
 
 
@@ -769,6 +769,7 @@ class comment(Special, PreBibliographic, TextElement): pass
 class substitution_definition(Special, TextElement): pass
 class target(Special, Inline, TextElement, ToBeResolved): pass
 class footnote(General, Element): pass
+class citation(General, Element): pass
 class label(Component, TextElement): pass
 class figure(General, Element): pass
 class caption(Component, TextElement): pass
@@ -805,6 +806,7 @@ class interpreted(Inline, Referential, TextElement): pass
 class literal(Inline, TextElement): pass
 class reference(Inline, Referential, TextElement): pass
 class footnote_reference(Inline, Referential, TextElement): pass
+class citation_reference(Inline, Referential, TextElement): pass
 class substitution_reference(Inline, Referential, TextElement): pass
 class image(General, Inline, TextElement): pass
 class problematic(Inline, TextElement): pass
@@ -816,9 +818,10 @@ class problematic(Inline, TextElement): pass
 
 node_class_names = """
     Text
-    abstract attention author authors
+    attention author authors
     block_quote bullet_list
-    caption caution classifier colspec comment contact copyright
+    caption caution citation citation_reference classifier colspec
+        comment contact copyright
     danger date definition definition_list definition_list_item
         description docinfo doctest_block document
     emphasis entry enumerated_list error
@@ -834,7 +837,7 @@ node_class_names = """
     reference revision row
     section status strong substitution_definition
         substitution_reference subtitle system_message
-    table target tbody term tgroup thead tip title transition
+    table target tbody term tgroup thead tip title topic transition
     version
     warning""".split()
 """A list of names of all concrete Node subclasses."""
