@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/13 02:28:51 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/03/16 05:36:07 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.tableparser`` module. It defines
@@ -86,7 +86,7 @@ class TableParser:
     def parse(self, block):
         """
         Analyze the text `block` and return a table data structure.
-        
+
         Given a plaintext-graphic table in `block` (list of lines of text; no
         whitespace padding), parse the table, construct and return the data
         necessary to construct a CALS table or equivalent.
@@ -135,7 +135,7 @@ class TableParser:
         potential upper-left corners of further cells. Process the queue in
         top-to-bottom order, keeping track of how much of each text column has
         been seen.
-        
+
         We'll end up knowing all the row and column boundaries, cell positions
         and their dimensions.
         """
