@@ -3,8 +3,8 @@
 ==============================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/21 22:14:19 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/08/06 04:43:26 $
 
 There are several problems, unresolved issues, and areas of
 controversy within StructuredText_ (Classic and Next Generation). In
@@ -38,7 +38,7 @@ Tony Ibbs has been working on deducing a `detailed description`_ from
 the documentation and code of StructuredTextNG_. Edward Loper's
 STMinus_ is another attempt to formalize a spec.
 
-For this kind of a project, the specification should always preceed
+For this kind of a project, the specification should always precede
 the code. Otherwise, the markup is a moving target which can never be
 adopted as a standard. Of course, a specification may be revised
 during lifetime of the code, but without a spec there is no visible
@@ -139,6 +139,11 @@ understandable. Python docstrings can be raw (prefixed with an 'r', as
 in 'r""'), which would obviate the need for gratuitous doubling-up of
 backslashes.
 
+(On 2001-03-29 on the Doc-SIG mailing list, GvR endorsed backslash
+escapes, saying, "'nuff said.  Backslash it is." Although neither
+legally binding nor irrevocable nor any kind of guarantee of anything,
+it is a good sign.)
+
 The rule would be: An unescaped backslash followed by any markup
 character escapes the character. The escaped character represents the
 character itself, and is prevented from playing a role in any markup
@@ -156,7 +161,7 @@ literal block may be used instead. Inside literal blocks, no markup is
 recognized, therefore backslashes (for the purpose of escaping markup)
 become unnecessary.
 
-We could allow backslashes preceeding non-markup characters to remain
+We could allow backslashes preceding non-markup characters to remain
 in the output. This would make describing regular expressions and
 other uses of backslashes easier. However, this would complicate the
 markup rules and would be confusing.
@@ -241,17 +246,6 @@ It is also recommended that the enumerator of the first list item be
 ordinal-1 ('1', 'A', 'a', 'I', or 'i'), as output formats may not be
 able to begin a list at an arbitrary enumeration.
 
-For the future: Should the digits/letters/numerals themselves be
-interpreted, allowing nested enumerated lists to be created without
-indentation? Via compound enumerators for example? Simply count the
-'length' (number of sub-enumerators) of the compound enumerator::
-
-   1. one
-   1.a. two
-   1.a.I. three
-   2.a. two
-   2.b.I. three
-
 
 Definition List Markup
 ======================
@@ -284,14 +278,14 @@ A simpler, and at least equally visually distinctive construct
 A reStructuredText definition list item consists of a term and a
 definition. A term is a simple one-line paragraph. A definition is a
 block indented relative to the term, and may contain multiple
-paragraphs and other body elements. No blank line preceedes a
+paragraphs and other body elements. No blank line precedes a
 definition (this distinguishes definition lists from block quotes).
 
 
 Literal Blocks
 ==============
 The StructuredText_ specification has literal blocks indicated by
-'example', 'examples', or '::' ending the preceeding paragraph. STNG
+'example', 'examples', or '::' ending the preceding paragraph. STNG
 only recognizes '::'; 'example'/'examples' are not implemented. This
 is good; it fixes an unnecessary language dependency. The problem is
 what to do with the sometimes- unwanted '::'.
@@ -299,10 +293,10 @@ what to do with the sometimes- unwanted '::'.
 In reStructuredText_ '::' at the end of a paragraph indicates that
 subsequent *indented* blocks are treated as literal text. No further
 markup interpretation is done within literal blocks (not even
-backslash-escapes). If the '::' is preceeded by whitespace, '::' is
+backslash-escapes). If the '::' is preceded by whitespace, '::' is
 omitted from the output; if '::' was the sole content of a paragraph,
 the entire paragraph is removed (no 'empty' paragraph remains). If
-'::' is preceeded by a non-whitespace character, '::' is replaced by
+'::' is preceded by a non-whitespace character, '::' is replaced by
 ':' (i.e., the extra colon is removed).
 
 Thus, a section could begin with a literal block as follows::
