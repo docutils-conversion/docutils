@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/10 04:52:37 $
+:Date: $Date: 2001/09/12 04:12:54 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -19,10 +19,10 @@ contributions, and ideas borrowed from related projects:
     David Ascher, Remi Bertholet, Fred Drake, Jim Fulton, Peter Funk,
     Doug Hellmann, Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel
     Larsson, Marc-Andre Lemburg, Wolfgang Lipp, Edward Loper, Ken
-    Manheimer, Alex Martelli, Michel Pelletier, Sam Penrose, Tim
-    Peters, Mark Pilgrim, Tavis Rudd, Bob Tolbert, Laurence Tratt,
-    Guido van Rossum, Barry Warsaw, Edward Welbourne, Ka-Ping Yee,
-    Moshe Zadka
+    Manheimer, Alex Martelli, Paul Moore, Michel Pelletier, Sam
+    Penrose, Tim Peters, Mark Pilgrim, Tavis Rudd, Bob Tolbert,
+    Laurence Tratt, Guido van Rossum, Barry Warsaw, Edward Welbourne,
+    Ka-Ping Yee, Moshe Zadka
 
 (I'm still waiting for contributions of yummy treats, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten
@@ -38,7 +38,10 @@ Changed contact email addresses.
 
 * install.py: Added to project.
 
-* setup.py: Modified for import by install.py.
+* setup.py:
+
+  - Modified for import by install.py.
+  - Added 'restructuredtext.languages' subpackage.
 
 * docs: Subdirectory added. Contains quickref.html by Tony Ibbs.
 
@@ -61,6 +64,7 @@ Changed contact email addresses.
   - Changed RSTStateMachine.run() to return the document instance.
   - Extracted checksubsection() and newsubsection() from
     RSTState.section().
+  - Added RSTState.nestedparse().
   - Fixed bugs with overline-section-header level parsing.
   - Fixed URI pattern to match absolute paths & news (opaque).
   - Removed dependency on trailing spaces.
@@ -91,7 +95,7 @@ Changed contact email addresses.
   - Changed numbered errorist.system_warning calls to named methods.
   - Name changes (lowercased, updated, improved).
   - Integer attributes on elements as appropriate.
-  - Beginnings of directive functionality.
+  - Added directive functionality.
 
 * restructuredtext/test_states.py: Refactored to test directory. This
   file removed.
@@ -103,6 +107,12 @@ Changed contact email addresses.
 
 * restructuredtext/directives/directivetest.py: Implementation of a
   test directive, 'restructuredtext-test-directive'. Added to project.
+
+* restructuredtext/directives/admonitions.py: Implementation of
+  admonition directives 'note', 'caution', etc. Added to project.
+
+* restructuredtext/directives/images.py: Implementation of
+  directives 'image' & 'figure'. Added to project.
 
 * restructuredtext/languages: Subpackage added to project. Contains
   modules for language-dependent language-dependent parser features.
@@ -130,6 +140,9 @@ Changed contact email addresses.
   - New test for comment edge case.
   - Added 'term : classifier' tests.
   - Added auto-numbered footnote tests.
+  - Updated 'test directive' tests.
+  - Added 'unknown directive' tests.
+  - Added tests for admonitions and image/figure directives.
 
 * tools: Subdirectory added; contains quicktest.py by Garth Kidd.
 
