@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/08/25 01:44:16 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/08/28 03:27:31 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -273,9 +273,10 @@ class document(_Element):
               or self.indirectlinks.has_key(name) \
               or self.implicitlinks.has_key(name):
             sw = self.errorhandler.system_warning(
-                  0, 'duplicate implicit link name: "%s"' % name)
+                  0, 'Duplicate implicit link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.implicitlinks)
+            linknode['dupname'] = name
             self.implicitlinks.setdefault(name, []).append(linknode)
         else:
             self.implicitlinks[name] = [linknode]
@@ -286,15 +287,16 @@ class document(_Element):
             innode = linknode
         if self.explicitlinks.has_key(name):
             sw = self.errorhandler.system_warning(
-                  1, 'duplicate explicit link name: "%s"' % name)
+                  1, 'Duplicate explicit link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.explicitlinks, self.implicitlinks,
                                 self.indirectlinks)
+            linknode['dupname'] = name
             self.explicitlinks.setdefault(name, []).append(linknode)
             return
         elif self.implicitlinks.has_key(name):
             sw = self.errorhandler.system_warning(
-                  0, 'duplicate implicit link name: "%s"' % name)
+                  0, 'Duplicate implicit link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.implicitlinks)
         self.explicitlinks[name] = [linknode]
@@ -304,31 +306,28 @@ class document(_Element):
         for linkdict in linkdicts:
             for node in linkdict.get(name, []):
                 if node.has_key('name'):
+                    node['dupname'] = node['name']
                     del node['name']
 
     def addrefname(self, name, node):
         self.refnames.setdefault(name, []).append(node)
 
     def addindirectlink(self, name, reference, linknode, innode):
-        #print >>sys.stderr, 'Adding indirect link: %s -> %s' % (name, reference)
-        #print >>sys.stderr, 'self.indirectlinks=%r' % self.indirectlinks
-        #print >>sys.stderr, 'self.explicitlinks=%r' % self.explicitlinks
         if self.explicitlinks.has_key(name):
-            #print >>sys.stderr, "already has explicit link"
             level = 0
             for t in self.explicitlinks.get(name, []):
                 if len(t) != 1 or str(t[0]) != reference:
                     level = 1
                     break
             sw = self.errorhandler.system_warning(
-                  level, 'duplicate indirect link name: "%s"' % name)
+                  level, 'Duplicate indirect link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.explicitlinks, self.indirectlinks,
                                 self.implicitlinks)
         elif self.implicitlinks.has_key(name):
             print >>sys.stderr, "already has explicit link"
             sw = self.errorhandler.system_warning(
-                  0, 'duplicate implicit link name: "%s"' % name)
+                  0, 'Duplicate implicit link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.implicitlinks)
         self.indirectlinks.setdefault(name, []).append(linknode)
