@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/18 04:43:19 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/26 03:44:25 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -27,11 +27,12 @@ Title
 Paragraph.
 """,
 """\
-<document name="title">
-    <title>
-        Title
-    <paragraph>
-        Paragraph.
+<document>
+    <section name="title">
+        <title>
+            Title
+        <paragraph>
+            Paragraph.
 """],
 ["""\
 Title
@@ -39,11 +40,12 @@ Title
 Paragraph (no blank line).
 """,
 """\
-<document name="title">
-    <title>
-        Title
-    <paragraph>
-        Paragraph (no blank line).
+<document>
+    <section name="title">
+        <title>
+            Title
+        <paragraph>
+            Paragraph (no blank line).
 """],
 ["""\
 Paragraph.
@@ -88,14 +90,15 @@ Title
 Test short underline.
 """,
 """\
-<document name="title">
-    <title>
-        Title
+<document>
     <system_warning level="0">
         <paragraph>
             Title underline too short at line 2.
-    <paragraph>
-        Test short underline.
+    <section name="title">
+        <title>
+            Title
+        <paragraph>
+            Test short underline.
 """],
 ["""\
 =====
@@ -105,11 +108,12 @@ Title
 Test overline title.
 """,
 """\
-<document name="title">
-    <title>
-        Title
-    <paragraph>
-        Test overline title.
+<document>
+    <section name="title">
+        <title>
+            Title
+        <paragraph>
+            Test overline title.
 """],
 ["""\
 =======
@@ -119,11 +123,12 @@ Test overline title.
 Test overline title with inset.
 """,
 """\
-<document name="title">
-    <title>
-        Title
-    <paragraph>
-        Test overline title with inset.
+<document>
+    <section name="title">
+        <title>
+            Title
+        <paragraph>
+            Test overline title with inset.
 """],
 ["""\
 ========================
@@ -160,14 +165,15 @@ Test missing underline, with paragraph.
 Test long title and space normalization.
 """,
 """\
-<document name="long title">
-    <title>
-        Long    Title
+<document>
     <system_warning level="0">
         <paragraph>
             Title overline too short at line 1.
-    <paragraph>
-        Test long title and space normalization.
+    <section name="long title">
+        <title>
+            Long    Title
+        <paragraph>
+            Test long title and space normalization.
 """],
 ["""\
 =======
