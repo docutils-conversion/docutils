@@ -3,8 +3,8 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/20 02:57:46 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/01/16 02:40:29 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -96,13 +96,6 @@ def loadModulesFromFolder(path, name='', subfolders=None):
         # if there's a suite defined, incorporate its contents
         try:
             suite = getattr(module, 'suite')
-            if type(suite) == types.FunctionType:
-                testSuite.addTest(suite())
-            elif type(suite) == types.InstanceType \
-                  and isinstance(suite, unittest.TestSuite):
-                testSuite.addTest(suite)
-            else:
-                raise AssertionError, "don't understand suite"
         except AttributeError:
             # Look for individual tests
             moduleTests = testLoader.loadTestsFromModule(module)
@@ -110,6 +103,14 @@ def loadModulesFromFolder(path, name='', subfolders=None):
             # as it can't load tests from another TestSuite, so we have
             # to cheat:
             testSuite.addTest(moduleTests)
+            continue
+        if type(suite) == types.FunctionType:
+            testSuite.addTest(suite())
+        elif type(suite) == types.InstanceType \
+              and isinstance(suite, unittest.TestSuite):
+            testSuite.addTest(suite)
+        else:
+            raise AssertionError, "don't understand suite (%s)" % modpath
     return testSuite
 
 
