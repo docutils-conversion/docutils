@@ -1,7 +1,7 @@
 PEP: 258
 Title: DPS Generic Implementation Details
-Version: $Revision: 1.2 $
-Last-Modified: $Date: 2001/08/04 15:43:33 $
+Version: $Revision: 1.3 $
+Last-Modified: $Date: 2001/08/16 02:28:00 $
 Author: dgoodger@bigfoot.com (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
@@ -366,6 +366,10 @@ Specification
       which halt processing.  If ignored, the output will contain
       severe errors.
 
+    Although the warning levels above were devised independently, they
+    have a strong correspondence to VMS error condition severity
+    levels [9]. The names in quotes were borrowed from VMS.
+
 
 References and Footnotes
 
@@ -388,7 +392,10 @@ References and Footnotes
 
     [8] http://docstring.sourceforge.net/spec/soextblx.dtd
 
-    [9] http://www.python.org/sigs/doc-sig/
+    [9] http://www.openvms.compaq.com:8000/73final/5841/
+        5841pro_027.html#error_cond_severity
+
+    [10] http://www.python.org/sigs/doc-sig/
 
 
 Project Web Site
@@ -405,7 +412,7 @@ Copyright
 Acknowledgements
 
     This document borrows ideas from the archives of the Python
-    Doc-SIG [9].  Thanks to all members past & present.
+    Doc-SIG [10].  Thanks to all members past & present.
 
 
 
