@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/28 02:19:47 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/01/29 02:17:32 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -144,7 +144,8 @@ class Hyperlinks(Transform):
                 self.doctree.note_external_target(target)
 
     def resolve_chained_targets(self):
-        ChainedTargetResolver(self.doctree).walk()
+        visitor = ChainedTargetResolver(self.doctree)
+        self.doctree.walk(visitor)
 
     def resolve_indirect(self):
         for name, targets in self.doctree.indirect_targets.items():
@@ -298,16 +299,80 @@ class ChainedTargetResolver(nodes.Visitor):
 class Footnotes(Transform):
 
     """
+    Assign numbers and resolve links to autonumbered footnotes and references.
+
+    Given the following ``doctree`` as input::
+
+        <document>
+            <paragraph>
+                A labeled autonumbered footnote referece: 
+                <footnote_reference auto="1" refname="footnote">
+            <paragraph>
+                An unlabeled autonumbered footnote referece: 
+                <footnote_reference auto="1">
+            <footnote auto="1">
+                <paragraph>
+                    Unlabeled autonumbered footnote.
+            <footnote auto="1" name="footnote">
+                <paragraph>
+                    Labeled autonumbered footnote.
+
+    Auto-numbered footnotes have attribute ``auto="1"`` and no label.
+    Auto-numbered footnote_references have no reference text (they're
+    empty elements). When resolving the numbering, a ``label`` element
+    is added to the beginning of the ``footnote``, and reference text
+    to the ``footnote_reference``.
+
+    The transformed result will be::
+
+        <document>
+            <paragraph>
+                A labeled autonumbered footnote referece: 
+                <footnote_reference auto="1" refname="footnote">
+                    2
+            <paragraph>
+                An unlabeled autonumbered footnote referece: 
+                <footnote_reference auto="1" refname="1">
+                    1
+            <footnote auto="1" name="1">
+                <label>
+                    1
+                <paragraph>
+                    Unlabeled autonumbered footnote.
+            <footnote auto="1" name="footnote">
+                <label>
+                    2
+                <paragraph>
+                    Labeled autonumbered footnote.
+
+    Note that the footnotes are not in the same order as the references.
+
+    The labels and reference text are added to the auto-numbered
+    ``footnote`` and ``footnote_reference`` elements. The unlabeled
+    auto-numbered footnote and reference are assigned name and refname
+    attributes respectively, being the footnote number.
+    
+    After adding labels and reference text, the "auto" attributes can be
+    ignored.
     """
+
+    autofootnote_labels = None
+    """Keep track of unlabeled autonumbered footnotes."""
 
     def transform(self, doctree):
         self.setup_transform(doctree)
-        startnum = doctree.autofootnote_start
         self.autofootnote_labels = []
+        startnum = doctree.autofootnote_start
         self.number_footnotes()
         self.number_footnote_references(startnum)
 
     def number_footnotes(self):
+        """
+        Assign numbers to autonumbered footnotes.
+
+        For labeled footnotes, copy the number over to corresponding footnote
+        references.
+        """
         for footnote in self.doctree.autofootnotes:
             label = str(self.doctree.autofootnote_start)
             self.doctree.autofootnote_start += 1
@@ -325,6 +390,7 @@ class Footnotes(Transform):
                 self.autofootnote_labels.append(label)
 
     def number_footnote_references(self, startnum):
+        """Assign numbers to unlabeled autonumbered footnote references."""
         i = 0
         for ref in self.doctree.autofootnote_refs:
             if ref.resolved or ref.hasattr('refname'):
@@ -346,7 +412,45 @@ class Footnotes(Transform):
 class Substitutions(Transform):
 
     """
+    Given the following ``doctree`` as input::
+
+        <document>
+            <paragraph>
+                The 
+                <substitution_reference refname="biohazard">
+                    biohazard
+                 symbol is deservedly scary-looking.
+            <substitution_definition name="biohazard">
+                <image alt="biohazard" uri="biohazard.png">
+
+    The ``substitution_reference`` will simply be replaced by the
+    contents of the corresponding ``substitution_definition``.
+
+    The transformed result will be::
+
+        <document>
+            <paragraph>
+                The 
+                <image alt="biohazard" uri="biohazard.png">
+                 symbol is deservedly scary-looking.
+            <substitution_definition name="biohazard">
+                <image alt="biohazard" uri="biohazard.png">
     """
 
     def transform(self, doctree):
-        pass
+        self.setup_transform(doctree)
+        self.do_substitutions()
+
+    def do_substitutions(self):
+        defs = self.doctree.substitution_defs
+        for refname, refs in self.doctree.substitution_refs.items():
+            for ref in refs:
+                if defs.has_key(refname):
+                    ref.parent.replace(ref, defs[refname].getchildren())
+                else:
+                    sw = self.doctree.reporter.error(
+                          'Undefined substitution referenced: "%s".' % refname)
+                    self.doctree += sw
+                    ref.parent.replace(ref, nodes.problematic(
+                          ref.rawsource, '', *ref.getchildren()))
+        self.doctree.substitution_refs = None  # release replaced references

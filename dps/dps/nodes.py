@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.23 $
-:Date: $Date: 2002/01/28 02:18:45 $
+:Revision: $Revision: 1.24 $
+:Date: $Date: 2002/01/29 02:17:18 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -29,6 +29,9 @@ from UserString import MutableString
 class Node:
 
     """Abstract base class of nodes in a document tree."""
+
+    parent = None
+    """Back-reference to the `Node` containing this `Node`."""
 
     def __nonzero__(self):
         """Node instances are always true."""
@@ -131,8 +134,10 @@ class Element(Node):
         self.rawsource = rawsource
         """The raw text from which this element was constructed."""
 
-        self.children = list(children)
-        """List of child nodes (elements and/or text)."""
+        self.children = []
+        """List of child nodes (elements and/or `Text`)."""
+
+        self.extend(children)           # extend self.children w/ attributes
 
         self.attributes = attributes
         """Dictionary of attribute {name: value}."""
@@ -216,9 +221,12 @@ class Element(Node):
         if isinstance(key, StringType):
             self.attributes[key] = item
         elif isinstance(key, IntType):
+            item.parent = self
             self.children[key] = item
         elif isinstance(key, SliceType):
             assert key.step is None, 'cannot handle slice with stride'
+            for node in item:
+                node.parent = self
             self.children[key.start:key.stop] = item
         else:
             raise TypeError, ('element index must be an integer, a slice, or '
@@ -245,8 +253,11 @@ class Element(Node):
     def __iadd__(self, other):
         """Append a node or a list of nodes to `self.children`."""
         if isinstance(other, Node):
+            other.parent = self
             self.children.append(other)
         elif other is not None:
+            for node in other:
+                node.parent = self
             self.children.extend(other)
         return self
 
@@ -268,22 +279,35 @@ class Element(Node):
     has_key = hasattr
 
     def append(self, item):
-        assert isinstance(item, Node)
+        item.parent = self
         self.children.append(item)
 
     def extend(self, item):
+        for node in item:
+            node.parent = self
         self.children.extend(item)
 
     def insert(self, i, item):
         assert isinstance(item, Node)
+        item.parent = self
         self.children.insert(i, item)
 
     def pop(self, i=-1):
         return self.children.pop(i)
 
     def remove(self, item):
-        assert isinstance(item, Node)
         self.children.remove(item)
+
+    def index(self, item):
+        return self.children.index(item)
+
+    def replace(self, old, new):
+        """Replace one child `Node` with another child or children."""
+        index = self.index(old)
+        if isinstance(new, Node):
+            self[index] = new
+        elif new is not None:
+            self[index:index+1] = new
 
     def findclass(self, childclass, start=0, end=sys.maxint):
         """
@@ -672,6 +696,7 @@ class reference(Inline, Reference, TextElement): pass
 class footnote_reference(Inline, Reference, TextElement): pass
 class substitution_reference(Inline, Reference, TextElement): pass
 class image(General, Inline, TextElement): pass
+class problematic(Inline, TextElement): pass
 
 
 # ========================================
@@ -693,7 +718,7 @@ node_class_names = """
     label legend list_item literal literal_block long_option
     note
     option option_argument option_list option_list_item organization
-    paragraph
+    paragraph problematic
     reference revision row
     section short_option status strong substitution_definition
         substitution_reference subtitle system_warning
@@ -713,7 +738,7 @@ class Visitor:
     override individual methods for specific and useful behaviour. The
     "``visit_`` + node class name" method is called by `Node.walk()` upon
     entering a node.
-    
+
     .. [GoF95] Gamma, Helm, Johnson, Vlissides. *Design Patterns: Elements of
        Reusable Object-Oriented Software*. Addison-Wesley, Reading, MA, USA,
        1995.
