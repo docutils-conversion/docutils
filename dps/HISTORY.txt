@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/22 02:13:27 $
+:Date: $Date: 2002/02/23 16:54:23 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -152,6 +152,8 @@ Changed contact email addresses.
   - Added 'bibliographic_fields' and 'author_separators' (transform
     support).
   - Removed Python-specific interpreted text mapping.
+  - Changed 'bibliographic_labels' to 'labels'.
+  - Added labels for admonitions.
 
 * dps/transforms: Subpackage added. Thanks to Ueli Schlaepfer for the
   initial work.
@@ -189,6 +191,7 @@ Changed contact email addresses.
   - Changed field_argument's model to PCDATA.
   - Added option_list and doctest_block from ppdi.dtd.
   - Added vms_option element to option.
+  - Added support for 'option_list' attribute 'optarg_delimiter'.
   - Added classifier element to definition_list_item.
   - Added dupname attribute to %basic.atts; for duplicate names.
   - Added support for auto-numbered footnotes.
