@@ -3,8 +3,8 @@
 =====================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/03/28 04:27:31 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/04/18 02:42:48 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system.  It is useful for in-line
@@ -47,7 +47,8 @@ intended purpose of the reStructuredText markup is twofold:
 - the establishment of a set of standard conventions allowing the
   expression of structure within plaintext, and
 
-- the conversion of such documents into useful structured data formats.
+- the conversion of such documents into useful structured data
+  formats.
 
 The secondary goal of reStructuredText is to be accepted by the Python
 community (by way of being blessed by PythonLabs and the BDFL [#]_) as
@@ -244,9 +245,14 @@ development moved over to the other Docutils components, the
 and a basic HTML writer (producing HTML 4.01, using CSS-1) was
 completed in early March.
 
+`PEP 287`_, "reStructuredText Standard Docstring Format", was created
+to formally propose reStructuredText as a standard format for Python
+docstrings, PEPs, and other files.  It was first posted to
+comp.lang.python_ and the Python-dev_ mailing list on 2002-04-02.
+
 Version 0.4 of the reStructuredText_ and `Docstring Processing
-System`_ projects were released on @@@.  The two projects were
-immediately merged and renamed "Docutils_", and a 0.1 release soon
+System`_ projects were released on 2002-04-??.  The two projects were
+immediately merged, renamed to "Docutils_", and a 0.1 release soon
 followed.
 
 .. [#spec-2]
@@ -266,6 +272,10 @@ followed.
    - `PEP 258: DPS Generic Implementation Details`__
    - `PEP 257: Docstring Conventions`__
 
+   Current working versions of the PEPs can be found in
+   http://docutils.sourceforge.net/spec/, and official versions can be
+   found in the `master PEP repository`_.
+
    __ http://mail.python.org/pipermail/doc-sig/2001-June/001855.html
    __ http://mail.python.org/pipermail/doc-sig/2001-June/001856.html
    __ http://mail.python.org/pipermail/doc-sig/2001-June/001857.html
@@ -278,7 +288,9 @@ followed.
     http://dev.zope.org/Members/jim/StructuredTextWiki/StructuredTextNG
 .. _HISTORY.txt:
     http://structuredtext.sourceforge.net/HISTORY.txt
+.. _PEP 287: http://docutils.sourceforge.net/spec/pep-0287.txt
 .. _Docutils: http://docutils.sourceforge.net/
+.. _master PEP repository: http://www.python.org/peps/
 
 
 ..

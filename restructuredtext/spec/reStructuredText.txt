@@ -3,21 +3,21 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.46 $
-:Date: $Date: 2002/04/13 16:42:47 $
+:Revision: $Revision: 1.47 $
+:Date: $Date: 2002/04/18 02:43:13 $
 
 reStructuredText_ is plain text that uses simple and intuitive
-constructs to indicate the structure of a document. These constructs
-are equally easy to read in raw and processed forms. This document is
+constructs to indicate the structure of a document.  These constructs
+are equally easy to read in raw and processed forms.  This document is
 itself an example of reStructuredText (raw, if you are reading the
 text file, or processed, if you are reading an HTML document, for
-example). reStructuredText is a candidate markup syntax for the
+example).  reStructuredText is a candidate markup syntax for the
 `Python Docstring Processing System`_.
 
 Simple, implicit markup is used to indicate special constructs, such
-as section headings, bullet lists, and emphasis. The markup used is as
-minimal and unobtrusive as possible. Less often-used constructs and
-extensions to the basic reStructuredText syntax may have more
+as section headings, bullet lists, and emphasis.  The markup used is
+as minimal and unobtrusive as possible.  Less often-used constructs
+and extensions to the basic reStructuredText syntax may have more
 elaborate or explicit markup.
 
 reStructuredText is applicable to documents of any length, from the
@@ -25,7 +25,7 @@ very small (such as inline program documentation fragments, e.g.
 Python docstrings) to the quite large (this document).
 
 The first section gives a quick overview of the syntax of the
-reStructuredText markup by example. A complete specification is given
+reStructuredText markup by example.  A complete specification is given
 in the `Syntax Details`_ section.
 
 `Literal blocks`_ (in which no markup processing is done) are used for
@@ -90,7 +90,7 @@ Here are examples of `body elements`_:
   4. `Field lists`_::
 
          :what: Field lists map field names to field bodies, like
-                database records. They are often part of an extension
+                database records.  They are often part of an extension
                 syntax.
 
          :how: The field marker is a colon, the field name, optional
@@ -178,7 +178,7 @@ Here are examples of `body elements`_:
 
   - Comments_::
 
-        .. Comments begin with two dots and a space. Anything may
+        .. Comments begin with two dots and a space.  Anything may
            follow, except for the syntax of footnotes/citations,
            hyperlink targets, directives, or substitution definitions.
 
@@ -188,7 +188,7 @@ Here are examples of `body elements`_:
 ----------------
 
 Descriptions below list "DTD elements" (XML "generic identifiers")
-corresponding to syntax constructs. For details on the hierarchy of
+corresponding to syntax constructs.  For details on the hierarchy of
 elements, please see `DPS Document Tree Structure`_ and the `Generic
 Plaintext Document Interface DTD`_ XML document type definition.
 
@@ -197,7 +197,7 @@ Whitespace
 ==========
 
 Spaces are recommended for indentation_, but tabs may also be used.
-Tabs will be converted to spaces. Tab stops are at every 8th column.
+Tabs will be converted to spaces.  Tab stops are at every 8th column.
 
 Other whitespace characters (form feeds [chr(12)] and vertical tabs
 [chr(11)]) are converted to single spaces before processing.
@@ -210,7 +210,7 @@ Blank lines are used to separate paragraphs and other elements.
 Multiple successive blank lines are equivalent to a single blank line,
 except within literal blocks (where all whitespace is preserved).
 Blank lines may be omitted when the markup makes element separation
-unambiguous, in conjunction with indentation. The first line of a
+unambiguous, in conjunction with indentation.  The first line of a
 document is treated as if it is preceded by a blank line, and the last
 line of a document is treated as if it is followed by a blank line.
 
@@ -233,7 +233,7 @@ Any text whose indentation is less than that of the current level
 indentation.
 
 Since all indentation is significant, the level of indentation must be
-consistent. For example, indentation is the sole markup indicator for
+consistent.  For example, indentation is the sole markup indicator for
 `block quotes`_::
 
     This is a top-level paragraph.
@@ -255,34 +255,34 @@ more complex structures::
 
             This paragraph belongs to a second-level block quote.
 
-        This paragraph belongs to a first-level block quote. The
+        This paragraph belongs to a first-level block quote.  The
         second-level block quote above is inside this first-level
         block quote.
 
 When a paragraph or other construct consists of more than one line of
 text, the lines must be left-aligned::
 
-    This is a paragraph. The lines of
+    This is a paragraph.  The lines of
     this paragraph are aligned at the left.
 
-        This paragraph has problems. The
-    lines are not left-aligned. In addition
+        This paragraph has problems.  The
+    lines are not left-aligned.  In addition
       to potential misinterpretation, warning
         and/or error messages will be generated
       by the parser.
 
 Several constructs begin with a marker, and the body of the construct
-must be indented relative to the marker. For constructs using simple
+must be indented relative to the marker.  For constructs using simple
 markers (`bullet lists`_, `enumerated lists`_, footnotes_, citations_,
 `hyperlink targets`_, directives_, and comments_), the level of
 indentation of the body is determined by the position of the first
-line of text, which begins on the same line as the marker. For
+line of text, which begins on the same line as the marker.  For
 example, bullet list bodies must be indented by at least two columns
 relative to the left edge of the bullet::
 
     - This is the first line of a bullet list
-      item's paragraph. All lines must align
-      relative to the first line. [1]_
+      item's paragraph.  All lines must align
+      relative to the first line.  [1]_
 
           This indented paragraph is interpreted
           as a block quote.
@@ -291,14 +291,14 @@ relative to the left edge of the bullet::
     this paragraph does not belong to the list
     item.
 
-    .. [1] Here's a footnote. The second line is aligned
-       with the beginning of the footnote label. The ".."
+    .. [1] Here's a footnote.  The second line is aligned
+       with the beginning of the footnote label.  The ".."
        marker is what determines the indentation.
 
 For constructs using complex markers (`field lists`_ and `option
 lists`_), where the marker may contain arbitrary text, the indentation
 of the first line *after* the marker determines the left edge of the
-body. For example, field lists may have very long markers (containing
+body.  For example, field lists may have very long markers (containing
 the field names)::
 
     :Hello: This field has a short field name, so aligning the field
@@ -306,7 +306,7 @@ the field names)::
 
     :Number-of-African-swallows-requried-to-carry-a-coconut: It would
         be very difficult to align the field body with the left edge
-        of the first line. It may even be preferable not to begin the
+        of the first line.  It may even be preferable not to begin the
         body on the same line as the marker.
 
 
@@ -314,35 +314,35 @@ Escaping Mechanism
 ==================
 
 The character set universally available to plain text documents, 7-bit
-ASCII, is limited. No matter what characters are used for markup, they
-will already have multiple meanings in written text. Therefore markup
-characters *will* sometimes appear in text **without being intended as
-markup**. Any serious markup system requires an escaping mechanism to
-override the default meaning of the characters used for the markup. In
-reStructuredText we use the backslash, commonly used as an escaping
-character in other domains.
+ASCII, is limited.  No matter what characters are used for markup,
+they will already have multiple meanings in written text.  Therefore
+markup characters *will* sometimes appear in text **without being
+intended as markup**.  Any serious markup system requires an escaping
+mechanism to override the default meaning of the characters used for
+the markup.  In reStructuredText we use the backslash, commonly used
+as an escaping character in other domains.
 
-A backslash followed by any character escapes that character. The
+A backslash followed by any character escapes that character.  The
 escaped character represents the character itself, and is prevented
-from playing a role in any markup interpretation. The backslash is
-removed from the output. A literal backslash is represented by two
+from playing a role in any markup interpretation.  The backslash is
+removed from the output.  A literal backslash is represented by two
 backslashes in a row (the first backslash "escapes" the second,
 preventing it being interpreted in an "escaping" role).
 
 There are two contexts in which backslashes have no special meaning:
-literal blocks and inline literals. In these contexts, a single
+literal blocks and inline literals.  In these contexts, a single
 backslash represents a literal backslash, without having to double up.
 
 Please note that the reStructuredText specification and parser do not
 address the issue of the representation or extraction of text input
 (how and in what form the text actually *reaches* the parser).
 Backslashes and other characters may serve a character-escaping
-purpose in certain contexts and must be dealt with appropriately. For
+purpose in certain contexts and must be dealt with appropriately.  For
 example, Python uses backslashes in strings to escape certain
-characters, but not others. The simplest solution when backslashes
+characters, but not others.  The simplest solution when backslashes
 appear in Python docstrings is to use raw docstrings::
 
-    r"""This is a raw docstring. Backslashes (\) are not touched."""
+    r"""This is a raw docstring.  Backslashes (\) are not touched."""
 
 
 Reference Names
@@ -350,7 +350,7 @@ Reference Names
 
 Simple reference names are single words consisting of alphanumerics
 plus internal hypens, underscores, and periods; no whitespace or other
-characters are allowed. Footnote labels (Footnotes_ & `Footnote
+characters are allowed.  Footnote labels (Footnotes_ & `Footnote
 References`_), citation labels (Citations_ & `Citation References`_),
 `interpreted text`_ roles, and some `hyperlink references`_ use the
 simple reference name syntax.
@@ -366,7 +366,7 @@ and treating the backquoted text as a reference name::
 
 Simple reference names may also optionally use backquotes.
 
-Reference names are whitespace-neutral and case-insensitive. When
+Reference names are whitespace-neutral and case-insensitive.  When
 resolving reference names internally:
 
 - whitespace is normalized (one or more spaces, horizontal or vertical
@@ -403,20 +403,20 @@ Document
 DTD element: document.
 
 The top-level element of a parsed reStructuredText document is the
-"document" element. After initial parsing, the document element is a
+"document" element.  After initial parsing, the document element is a
 simple container for a document fragment, consisting of `body
 elements`_, transitions_, and sections_, but lacking a document title
-or other bibliographic elements. The code that calls the parser may
+or other bibliographic elements.  The code that calls the parser may
 choose to run one or more optional post-parse transforms_,
 rearranging the document fragment into a complete document with a
 title and possibly other metadata elements (author, date, etc.; see
 `Bibliographic Fields`_).
 
 Specifically, there is no way to specify a document title and subtitle
-explicitly in reStructuredText. Instead, a lone top-level section
+explicitly in reStructuredText.  Instead, a lone top-level section
 title (see Sections_ below) can be treated as the document
-title. Similarly, a lone second-level section title immediately after
-the "document title" can become the document subtitle. See the
+title.  Similarly, a lone second-level section title immediately after
+the "document title" can become the document subtitle.  See the
 `DocTitle transform`_ for details.
 
 
@@ -427,14 +427,14 @@ DTD elements: section, title.
 
 Sections are identified through their titles, which are marked up with
 adornment: "underlines" below the title text, and, in some cases,
-matching "overlines" above the title. An underline/overline is a
+matching "overlines" above the title.  An underline/overline is a
 single repeated punctuation character that begins in column 1 and
 forms a line extending at least as far as the right edge of the title
-text. Specifically, an underline/overline character may be any
-non-alphanumeric printable 7-bit ASCII character [#]_. An
+text.  Specifically, an underline/overline character may be any
+non-alphanumeric printable 7-bit ASCII character [#]_.  An
 underline/overline must be at least 4 characters long (to avoid
-mistaking ellipses ["..."] for overlines). When an overline is used,
-the length and character used must match the underline. There may be
+mistaking ellipses ["..."] for overlines).  When an overline is used,
+the length and character used must match the underline.  There may be
 any number of levels of section titles, although some output formats
 may have limits (HTML has 6 levels).
 
@@ -443,7 +443,7 @@ may have limits (HTML has 6 levels).
 
        ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
 
-   Some characters are more suitable than others. The following are
+   Some characters are more suitable than others.  The following are
    recommended::
 
        = - ` : ' " ~ ^ _ * + # < >
@@ -492,21 +492,22 @@ Below are examples of section title styles::
     ^^^^^^^^^^^^^
 
 When a title has both an underline and an overline, the title text may
-be inset, as in the first two examples above. This is merely aesthetic
-and not significant. Underline-only title text may *not* be inset.
+be inset, as in the first two examples above.  This is merely
+aesthetic and not significant.  Underline-only title text may *not* be
+inset.
 
-A blank line after a title is optional. All text blocks up to the next
-title of the same or higher level are included in a section (or
+A blank line after a title is optional.  All text blocks up to the
+next title of the same or higher level are included in a section (or
 subsection, etc.).
 
 All section title styles need not be used, nor need any specific
-section title style be used. However, a document must be consistent in
-its use of section titles: once a hierarchy of title styles is
+section title style be used.  However, a document must be consistent
+in its use of section titles: once a hierarchy of title styles is
 established, sections must use that hierarchy.
 
 Each section title automatically generates a hyperlink target pointing
-to the section. The text of the hyperlink target (the "reference
-name") is the same as that of the section title. See `Implicit
+to the section.  The text of the hyperlink target (the "reference
+name") is the same as that of the section title.  See `Implicit
 Hyperlink Targets`_ for a complete description.
 
 Sections may contain `body elements`_, transitions_, and nested
@@ -559,8 +560,8 @@ Paragraphs
 DTD element: paragraph.
 
 Paragraphs consist of blocks of left-aligned text with no markup
-indicating any other body element. Blank lines separate paragraphs
-from each other and from other body elements. Paragraphs may contain
+indicating any other body element.  Blank lines separate paragraphs
+from each other and from other body elements.  Paragraphs may contain
 `inline markup`_.
 
 Syntax diagram::
@@ -582,24 +583,24 @@ Bullet Lists
 DTD elements: bullet_list, list_item.
 
 A text block which begins with a "-", "*", or "+", followed by
-whitespace, is a bullet list item (a.k.a. "unordered" list item). List
-item bodies must be left-aligned and indented relative to the bullet;
-the text immediately after the bullet determines the indentation. For
-example::
+whitespace, is a bullet list item (a.k.a. "unordered" list item).
+List item bodies must be left-aligned and indented relative to the
+bullet; the text immediately after the bullet determines the
+indentation.  For example::
 
-    - This is the first bullet list item. The blank line above the
+    - This is the first bullet list item.  The blank line above the
       first list item is required; blank lines between list items
       (such as below this paragraph) are optional.
 
     - This is the first paragraph in the second item in the list.
 
-      This is the second paragraph in the second item in the list. The
-      blank line above this paragraph is required. The left edge of
-      this paragraph lines up with the paragraph above, both indented
-      relative to the bullet.
+      This is the second paragraph in the second item in the list.
+      The blank line above this paragraph is required.  The left edge
+      of this paragraph lines up with the paragraph above, both
+      indented relative to the bullet.
 
-      - This is a sublist. The bullet lines up with the left edge of
-        the text blocks above. A sublist is a new list so requires a
+      - This is a sublist.  The bullet lines up with the left edge of
+        the text blocks above.  A sublist is a new list so requires a
         blank line above and below.
 
     - This is the third item of the main list.
@@ -614,7 +615,7 @@ Here are examples of **incorrectly** formatted bullet lists::
 
     - The following line appears to be a new sublist, but it is not:
       - This is a paragraph contination, not a sublist (since there's
-        no blank line). This line is also incorrectly indented.
+        no blank line).  This line is also incorrectly indented.
       - Warnings may be issued by the implementation.
 
 Syntax diagram::
@@ -631,7 +632,7 @@ Enumerated Lists
 DTD elements: enumerated_list, list_item.
 
 Enumerated lists (a.k.a. "ordered" lists) are similar to bullet lists,
-but use enumerators instead of bullets. An enumerator consists of an
+but use enumerators instead of bullets.  An enumerator consists of an
 enumeration sequence member and formatting, followed by whitespace.
 The following enumeration sequences are recognized:
 
@@ -655,17 +656,17 @@ A system message will be generated for each of the following cases:
   level-1 [info] system message and produces two separate lists).
 
 It is recommended that the enumerator of the first list item be
-ordinal-1 ("1", "A", "a", "I", or "i"). Although other start-values
+ordinal-1 ("1", "A", "a", "I", or "i").  Although other start-values
 will be recognized, they may not be supported by the output format.
 
 Lists using Roman numerals must begin with "I"/"i" or a
-multi-character value, such as "II" or "XV". Any other
+multi-character value, such as "II" or "XV".  Any other
 single-character Roman numeral ("V", "X", etc.) will be interpreted as
-a letter of the alphabet, not as a Roman numeral. Likewise, lists
+a letter of the alphabet, not as a Roman numeral.  Likewise, lists
 using letters of the alphabet may not begin with "I"/"i", since these
 are recognized as Roman numeral 1.
 
-Nested enumerated lists must be created with indentation. For
+Nested enumerated lists must be created with indentation.  For
 example::
 
     1. Item 1.
@@ -688,14 +689,14 @@ DTD elements: definition_list, definition_list_item, term, classifier,
 definition.
 
 Each definition list item contains a term, an optional classifier, and
-a definition. A term is a simple one-line word or phrase. An optional
-classifier may follow the term on the same line, after " : " (space,
-colon, space). A definition is a block indented relative to the term,
-and may contain multiple paragraphs and other body elements. There may
-be no blank line between a term and a definition (this distinguishes
-definition lists from `block quotes`_). Blank lines are required
-before the first and after the last definition list item, but are
-optional in-between. For example::
+a definition.  A term is a simple one-line word or phrase.  An
+optional classifier may follow the term on the same line, after " : "
+(space, colon, space).  A definition is a block indented relative to
+the term, and may contain multiple paragraphs and other body elements.
+There may be no blank line between a term and a definition (this
+distinguishes definition lists from `block quotes`_).  Blank lines are
+required before the first and after the last definition list item, but
+are optional in-between.  For example::
 
     term 1
         Definition 1.
@@ -710,14 +711,14 @@ optional in-between. For example::
 
 A definition list may be used in various ways, including:
 
-- As a dictionary or glossary. The term is the word itself, a
+- As a dictionary or glossary.  The term is the word itself, a
   classifier may be used to indicate the usage of the term (noun,
   verb, etc.), and the definition follows.
 
-- To describe program variables. The term is the variable name, a
+- To describe program variables.  The term is the variable name, a
   classifier may be used to indicate the type of the variable (string,
   integer, etc.), and the definition describes the variable's use in
-  the program. This usage of definition lists supports the classifier
+  the program.  This usage of definition lists supports the classifier
   syntax of Grouch_, a system for describing and enforcing a Python
   object schema.
 
@@ -738,16 +739,16 @@ DTD elements: field_list, field, field_name, field_argument,
 field_body.
 
 Field lists are mappings from field names to field bodies, modeled on
-RFC822_ headers. A field name is made up of one or more letters,
-numbers, and punctuation, except colons (":") and whitespace. Field
-names are case-insensitive. There may be additional data separated
-from the field name, called field arguments. The field name and
+RFC822_ headers.  A field name is made up of one or more letters,
+numbers, and punctuation, except colons (":") and whitespace.  Field
+names are case-insensitive.  There may be additional data separated
+from the field name, called field arguments.  The field name and
 optional field argument(s), along with a single colon prefix and
-suffix, together form the field marker. The field marker is followed
-by whitespace and the field body. The field body may contain multiple
+suffix, together form the field marker.  The field marker is followed
+by whitespace and the field body.  The field body may contain multiple
 body elements, indented relative to the field marker.  The first line
 after the field name marker determines the indentation of the field
-body. For example::
+body.  For example::
 
     :Date: 2001-08-16
     :Version: 1
@@ -773,8 +774,8 @@ direct support for the "name=value" syntax may be added.
 
 Applications of reStructuredText may recognize field names and
 transform fields or field bodies in certain contexts; they are often
-used as part of an extension syntax. See `Bibliographic Fields`_ below
-for one example, or the "image" directive in `reStructuredText
+used as part of an extension syntax.  See `Bibliographic Fields`_
+below for one example, or the "image" directive in `reStructuredText
 Directives`_ for another.
 
 Standard RFC822 headers cannot be used for this construct because they
@@ -800,25 +801,25 @@ version, status, date, copyright, topic.
 
 When a field list is the first non-comment element in a document
 (after the document title, if there is one), it may have certain
-specific fields transformed to document bibliographic data. This
+specific fields transformed to document bibliographic data.  This
 bibliographic data corresponds to the front matter of a book, such as
 the title page and copyright page.
 
 Certain field names (listed below) are recognized and transformed to
 the corresponding DTD elements, most becoming child elements of the
-"docinfo" element. No ordering is required of these fields, although
-they may be rearranged to fit the document structure, as noted. Unless
-otherwise indicated in the list below, each of the bibliographic
-elements' field bodies may contain a single paragraph only. Field
-bodies may be checked for `RCS keywords`_ and cleaned up. Any
-unrecognized fields will remain in a generic field list in the
+"docinfo" element.  No ordering is required of these fields, although
+they may be rearranged to fit the document structure, as noted.
+Unless otherwise indicated in the list below, each of the
+bibliographic elements' field bodies may contain a single paragraph
+only.  Field bodies may be checked for `RCS keywords`_ and cleaned up.
+Any unrecognized fields will remain in a generic field list in the
 document body.
 
 The registered bibliographic field names and their corresponding DTD
 elements are as follows:
 
 - Field name "Author": author element.
-- "Authors": authors. May contain either: a single paragraph
+- "Authors": authors.  May contain either: a single paragraph
   consisting of a list of authors, separated by ";" or ","; or a
   bullet list whose elements each contain a single paragraph per
   author.
@@ -828,13 +829,13 @@ elements are as follows:
 - "Status": status.
 - "Date": date.
 - "Copyright": copyright.
-- "Abstract": topic. May contain arbitrary body elements. Only one
-  abstract is allowed. The abstract becomes a topic element with title
-  "Abstract" (or language equivalent) immediately following the
+- "Abstract": topic.  May contain arbitrary body elements.  Only one
+  abstract is allowed.  The abstract becomes a topic element with
+  title "Abstract" (or language equivalent) immediately following the
   docinfo element.
 
 This field-name-to-element mapping can be extended, or replaced for
-other languages. See the `DocInfo transform`_ implementation
+other languages.  See the `DocInfo transform`_ implementation
 documentation for details.
 
 
@@ -842,19 +843,19 @@ RCS Keywords
 ````````````
 
 `Bibliographic fields`_ recognized by the parser are normally checked
-for RCS [#]_ keywords and cleaned up [#]_. RCS keywords may be entered
-into source files as "$keyword$", and once stored under RCS or CVS
-[#]_, they are expanded to "$keyword: expansion text $". For example,
-a "Status" field will be transformed to a "status" element::
+for RCS [#]_ keywords and cleaned up [#]_.  RCS keywords may be
+entered into source files as "$keyword$", and once stored under RCS or
+CVS [#]_, they are expanded to "$keyword: expansion text $".  For
+example, a "Status" field will be transformed to a "status" element::
 
     :Status: $keyword: expansion text $
 
 .. [#] Revision Control System.
 .. [#] RCS keyword processing can be turned off (unimplemented).
-.. [#] Concurrent Versions System. CVS uses the same keywords as RCS.
+.. [#] Concurrent Versions System.  CVS uses the same keywords as RCS.
 
 Processed, the "status" element's text will become simply "expansion
-text". The dollar sign delimiters and leading RCS keyword name are
+text".  The dollar sign delimiters and leading RCS keyword name are
 removed.
 
 The RCS keyword processing only kicks in when all of these conditions
@@ -877,7 +878,7 @@ DTD elements: option_list, option_list_item, option_group, option,
 option_string, option_argument, description.
 
 Option lists are two-column lists of command-line options and
-descriptions, documenting a program's options. For example::
+descriptions, documenting a program's options.  For example::
 
     -a         Output all.
     -b         Output both (this description is
@@ -888,11 +889,11 @@ descriptions, documenting a program's options. For example::
     -p         This option has two paragraphs in the description.
                This is the first.
 
-               This is the second. Blank lines may be omitted between
+               This is the second.  Blank lines may be omitted between
                options (as above) or left in (as here and below).
 
-    --very-long-option  A VMS-syle option. Note the adjustment for the
-                        required two spaces.
+    --very-long-option  A VMS-syle option.  Note the adjustment for
+                        the required two spaces.
 
     --an-even-longer-option
                The description can also start on the next line.
@@ -914,34 +915,34 @@ There are several types of options recognized by reStructuredText:
 - DOS/VMS options consist of a slash and an option letter or word.
 
 Please note that both POSIX-style and DOS/VMS-style options may be
-used by DOS or Windows software. These and other variations are
-sometimes used mixed together. The names above have been chosen for
+used by DOS or Windows software.  These and other variations are
+sometimes used mixed together.  The names above have been chosen for
 convenience only.
 
 The syntax for short and long POSIX options is based on the syntax
 supported by Python's getopt.py_ module, which implements an option
 parser similar to the `GNU libc getopt_long()`_ function but with some
-restrictions. There are many variant option systems, and
+restrictions.  There are many variant option systems, and
 reStructuredText option lists do not support all of them.
 
 Although long POSIX and DOS/VMS option words may be allowed to be
 truncated by the operating system or the application when used on the
 command line, reStructuredText option lists do not show or support
-this with any special syntax. The complete option word should be
+this with any special syntax.  The complete option word should be
 given, supported by notes about truncation if and when applicable.
 
 Options may be followed by an argument placeholder, whose role and
-syntax should be explained in the description text. Either a space or
+syntax should be explained in the description text.  Either a space or
 an equals sign may be used as a delimiter between options and option
 argument placeholders.
 
 Multiple option "synonyms" may be listed, sharing a single
-description. They must be separated by comma-space.
+description.  They must be separated by comma-space.
 
 There must be at least two spaces between the option(s) and the
-description. The description may contain multiple body elements. The
+description.  The description may contain multiple body elements.  The
 first line after the option marker determines the indentation of the
-description. As with other types of lists, blank lines are required
+description.  As with other types of lists, blank lines are required
 before the first option list item and after the last, but are optional
 between option entries.
 
@@ -960,11 +961,11 @@ Literal Blocks
 DTD element: literal_block.
 
 A paragraph consisting of two colons ("::") signifies that all
-following **indented** text blocks comprise a literal block. No markup
-processing is done within a literal block. It is left as-is, and is
-typically rendered in a monospaced typeface::
+following **indented** text blocks comprise a literal block.  No
+markup processing is done within a literal block.  It is left as-is,
+and is typically rendered in a monospaced typeface::
 
-    This is a typical paragraph. A literal block follows.
+    This is a typical paragraph.  A literal block follows.
 
     ::
 
@@ -982,7 +983,7 @@ output; no empty paragraph will remain.
 
 As a convenience, the "::" is recognized at the end of any paragraph.
 If immediately preceded by whitespace, both colons will be removed
-from the output (this is the "partially minimized" form). When text
+from the output (this is the "partially minimized" form).  When text
 immediately precedes the "::", *one* colon will be removed from the
 output, leaving only one colon visible (i.e., "::" will be replaced by
 ":"; this is the "fully minimized" form).
@@ -1011,10 +1012,10 @@ colons after "Paragraph"):
           Literal block
 
 The minimum leading whitespace will be removed from each line of the
-literal block. Other than that, all whitespace (including line breaks)
-is preserved. Blank lines are required before and after a literal
-block, but these blank lines are not included as part of the literal
-block.
+literal block.  Other than that, all whitespace (including line
+breaks) is preserved.  Blank lines are required before and after a
+literal block, but these blank lines are not included as part of the
+literal block.
 
 Syntax diagram::
 
@@ -1033,13 +1034,13 @@ Block Quotes
 DTD element: block_quote.
 
 A text block that is indented relative to the preceding text, without
-markup indicating it to be a literal block, is a block quote. All
+markup indicating it to be a literal block, is a block quote.  All
 markup processing (for body elements and inline markup) continues
 within the block quote::
 
     This is an ordinary paragraph, introducing a block quote.
 
-        "It is my business to know things. That is my trade."
+        "It is my business to know things.  That is my trade."
 
         -- Sherlock Holmes
 
@@ -1064,14 +1065,14 @@ Doctest Blocks
 DTD element: doctest_block.
 
 Doctest blocks are interactive Python sessions cut-and-pasted into
-docstrings. They are meant to illustrate usage by example, and provide
-an elegant and powerful testing environment via the `doctest module`_
-in the Python standard library.
+docstrings.  They are meant to illustrate usage by example, and
+provide an elegant and powerful testing environment via the `doctest
+module`_ in the Python standard library.
 
 Doctest blocks are text blocks which begin with ``">>> "``, the Python
 interactive interpreter main prompt, and end with a blank line.
 Doctest blocks are treated as a special case of literal blocks,
-without requiring the literal block syntax. If both are present, the
+without requiring the literal block syntax.  If both are present, the
 literal block syntax takes priority over Doctest block syntax::
 
     This is an ordinary paragraph.
@@ -1082,7 +1083,7 @@ literal block syntax takes priority over Doctest block syntax::
     The following is a literal block::
 
         >>> This is not recognized as a doctest block by
-        reStructuredText. It *will* be recognized by the doctest
+        reStructuredText.  It *will* be recognized by the doctest
         module, though!
 
 Indentation is not required for doctest blocks.
@@ -1094,10 +1095,10 @@ Tables
 DTD elements: table, tgroup, colspec, thead, tbody, row, entry.
 
 Tables are described with a visual outline made up of the characters
-"-", "=", "|", and "+". The hyphen ("-") is used for horizontal lines
-(row separators). The equals sign ("=") may be used to separate
-optional header rows from the table body. The vertical bar ("|") is
-used for vertical lines (column separators). The plus sign ("+") is
+"-", "=", "|", and "+".  The hyphen ("-") is used for horizontal lines
+(row separators).  The equals sign ("=") may be used to separate
+optional header rows from the table body.  The vertical bar ("|") is
+used for vertical lines (column separators).  The plus sign ("+") is
 used for intersections of horizontal and vertical lines.
 
 Each table cell is treated as a miniature document; the top and bottom
@@ -1119,12 +1120,12 @@ right margins, which are removed before processing.  Example::
     +------------------------+------------+---------------------+
 
 As with other body elements, blank lines are required before and after
-tables. Tables' left edges should align with the left edge of
+tables.  Tables' left edges should align with the left edge of
 preceding text blocks; otherwise, the table is considered to be part
 of a block quote.
 
 Some care must be taken with tables to avoid undesired interactions
-with cell text in rare cases. For example, the following table
+with cell text in rare cases.  For example, the following table
 contains a cell in row 2 spanning from column 2 to column 4::
 
     +--------------+----------+-----------+-----------+
@@ -1182,10 +1183,10 @@ An explicit markup block is a text block:
 - which ends before an unindented line.
 
 Explicit markup blocks are analogous to bullet list items, with ".."
-as the bullet. The text immediately after the explicit markup start
-determines the indentation of the block body. Blank lines are required
-between explicit markup blocks and other elements, but are optional
-between explicit markup blocks where unambiguous.
+as the bullet.  The text immediately after the explicit markup start
+determines the indentation of the block body.  Blank lines are
+required between explicit markup blocks and other elements, but are
+optional between explicit markup blocks where unambiguous.
 
 The explicit markup syntax is used for footnotes, citations, hyperlink
 targets, directives, and comments.
@@ -1256,7 +1257,7 @@ target with name "1", just as if the label was explicitly specified.
 
 A footnote may specify a label explicitly while at the same time
 requesting automatic numbering: ``[#label]``.  These labels are called
-_`autonumber labels`. Autonumber labels do two things:
+_`autonumber labels`.  Autonumber labels do two things:
 
 - On the footnote itself, they generate a hyperlink target whose name
   is the autonumber label (doesn't include the "#").
@@ -1328,7 +1329,8 @@ marks [#]_:
    the pilcrow.  The last four symbols (the card suits) were added
    arbitrarily.
 
-If more than ten symbols are required, the same sequence will be reused, doubled and then tripled, and so on ("**" etc.).
+If more than ten symbols are required, the same sequence will be
+reused, doubled and then tripled, and so on ("**" etc.).
 
 
 Mixed Manual and Auto-Numbered Footnotes
@@ -1384,14 +1386,14 @@ them from `implicit hyperlink targets`_ defined below.
 Hyperlink targets identify a location within or outside of a document,
 which may be linked to by `hyperlink references`_.
 
-Hyperlink targets may be named or anonymous. Named hyperlink targets
+Hyperlink targets may be named or anonymous.  Named hyperlink targets
 consist of an explicit markup start (".. "), an underscore, the
 reference name (no trailing underscore), a colon, whitespace, and a
 link block::
 
     .. _hyperlink-name: link-block
 
-Reference names are whitespace-neutral and case-insensitive. See
+Reference names are whitespace-neutral and case-insensitive.  See
 `Reference Names`_ for details and examples.
 
 Anonymous hyperlink targets consist of an explicit markup start
@@ -1410,10 +1412,10 @@ See `Anonymous Hyperlinks`_ below.
 There are three types of hyperlink targets: internal, external, and
 indirect.
 
-1. _`Internal hyperlink targets` have empty link blocks. They provide
+1. _`Internal hyperlink targets` have empty link blocks.  They provide
    an end point allowing a hyperlink to connect one place to another
-   within a document. An internal hyperlink target points to the
-   element following the target. For example::
+   within a document.  An internal hyperlink target points to the
+   element following the target.  For example::
 
        Clicking on this internal hyperlink will take us to the target_
        below.
@@ -1422,7 +1424,7 @@ indirect.
 
        The hyperlink target above points to this paragraph.
 
-   Internal hyperlink targets may be "chained". Multiple adjacent
+   Internal hyperlink targets may be "chained".  Multiple adjacent
    internal hyperlink targets all point to the same element::
 
        .. _target1:
@@ -1434,8 +1436,8 @@ indirect.
    If the element "pointed to" is an external hyperlink target (with a
    URI in its link block; see #2 below) the URI from the external
    hyperlink target is propagated to the internal hyperlink targets;
-   they will all "point to" the same URI. There is no need to
-   duplicate a URI. For example, all three of the following hyperlink
+   they will all "point to" the same URI.  There is no need to
+   duplicate a URI.  For example, all three of the following hyperlink
    targets refer to the same URI::
 
        .. _Python DOC-SIG mailing list archive:
@@ -1446,7 +1448,7 @@ indirect.
     `Inline Hyperlink Targets`_.
 
 2. _`External hyperlink targets` have an absolute or relative URI in
-   their link blocks. For example, take the following input::
+   their link blocks.  For example, take the following input::
 
        See the Python_ home page for info.
 
@@ -1460,7 +1462,7 @@ indirect.
    An external hyperlink's URI may begin on the same line as the
    explicit markup start and target name, or it may begin in an
    indented text block immediately following, with no intervening
-   blank lines. If there are multiple lines in the link block, they
+   blank lines.  If there are multiple lines in the link block, they
    are stripped of leading and trailing whitespace and concatenated.
    The following external hyperlink targets are equivalent::
 
@@ -1482,10 +1484,10 @@ indirect.
        .. _link: underscore\_
 
 3. _`Indirect hyperlink targets` have a hyperlink reference in their
-   link blocks. In the following example, target "one" indirectly
+   link blocks.  In the following example, target "one" indirectly
    references whatever target "two" references, and target "two"
-   references target "three", an internal hyperlink target. In effect,
-   all three reference the same thing::
+   references target "three", an internal hyperlink target.  In
+   effect, all three reference the same thing::
 
        .. _one: two_
        .. _two: three_
@@ -1493,9 +1495,9 @@ indirect.
 
    Just as with `hyperlink references`_ anywhere else in a document,
    if a phrase-reference is used in the link block it must be enclosed
-   in backquotes. As with `external hyperlink targets`_, the link
+   in backquotes.  As with `external hyperlink targets`_, the link
    block of an indirect hyperlink target may begin on the same line as
-   the explicit markup start or the next line. It may also be split
+   the explicit markup start or the next line.  It may also be split
    over multiple lines, in which case the lines are joined with
    whitespace before being normalized.
 
@@ -1540,9 +1542,9 @@ The `World Wide Web Consortium`_ recommends in its `HTML Techniques
 for Web Content Accessibility Guidelines`_ that authors should
 "clearly identify the target of each link." Hyperlink references
 should be as verbose as possible, but duplicating a verbose hyperlink
-name in the target is onerous and error-prone. Anonymous hyperlinks
+name in the target is onerous and error-prone.  Anonymous hyperlinks
 are designed to allow convenient verbose hyperlink references, and are
-analogous to `Auto-Numbered Footnotes`_. They are particularly useful
+analogous to `Auto-Numbered Footnotes`_.  They are particularly useful
 in short or one-off documents.
 
 Anonymous `hyperlink references`_ are specified with two underscores
@@ -1561,9 +1563,9 @@ only::
     __ http://www.python.org
 
 The reference name of the reference is not used to match the reference
-to its target. Instead, the order of anonymous hyperlink references
+to its target.  Instead, the order of anonymous hyperlink references
 and targets within the document is significant: the first anonymous
-reference will link to the first anonymous target. The number of
+reference will link to the first anonymous target.  The number of
 anonymous hyperlink references in a document must match the number of
 anonymous targets.
 
@@ -1574,10 +1576,10 @@ Directives
 DTD elements: depend on the directive.
 
 Directives are indicated by an explicit markup start (".. ") followed
-by the directive type, two colons, and whitespace. Directive types are
-case-insensitive single words (alphanumerics plus internal hyphens,
-underscores, and periods; no whitespace). Two colons are used after
-the directive type for these reasons:
+by the directive type, two colons, and whitespace.  Directive types
+are case-insensitive single words (alphanumerics plus internal
+hyphens, underscores, and periods; no whitespace).  Two colons are
+used after the directive type for these reasons:
 
 - To avoid clashes with common comment text like::
 
@@ -1586,29 +1588,29 @@ the directive type for these reasons:
 - If an implementation of reStructuredText does not recognize a
   directive (i.e., the directive-handler is not installed), the entire
   directive block (including the directive itself) will be treated as
-  a literal block, and a level-? () system message generated. Thus
-  "::" is a natural choice.
+  a literal block, and a level-3 (error) system message generated.
+  Thus "::" is a natural choice.
 
 Any text on the first line after the directive indicator is directive
-data. The interpretation of directive data is up to the directive
+data.  The interpretation of directive data is up to the directive
 code.  Directive data may be interpreted as arguments to the
 directive, or simply as the first line of the directive's text block.
 
 Actions taken in response to directives and the interpretation of text
 in the directive block or subsequent text block(s) are
-directive-dependent. Indented text following a directive may be
-interpreted as a directive block. Simple directives may not require
+directive-dependent.  Indented text following a directive may be
+interpreted as a directive block.  Simple directives may not require
 any text beyond the directive data (if that), and will not process any
 following indented text.
 
 Directives which have been implemented and registered in the reference
 reStructuredText parser are described in the `reStructuredText
-Directives`_ document. Below are examples of implemented directives.
+Directives`_ document.  Below are examples of implemented directives.
 
 Directives are meant for the arbitrary processing of their contents
 (the directive data & text block), which can be transformed into
-something possibly unrelated to the original text. Directives are used
-as an extension mechanism for reStructuredText, a way of adding
+something possibly unrelated to the original text.  Directives are
+used as an extension mechanism for reStructuredText, a way of adding
 support for new constructs without adding new syntax.  For example,
 here's how an image may be placed::
 
@@ -1627,15 +1629,15 @@ An admonition (note, caution, etc.) contains other body elements::
 
 It may also be possible for directives to be used as pragmas, to
 modify the behavior of the parser, such as to experiment with
-alternate syntax. There is no parser support for this functionality at
-present; if a reasonable need for pragma directives is found, they may
-be supported.
+alternate syntax.  There is no parser support for this functionality
+at present; if a reasonable need for pragma directives is found, they
+may be supported.
 
 Directives normally do not survive as "directive" elements past the
 parsing stage; they are a *parser construct* only, and have no
-intrinsic meaning outside of reStructuredText. Instead, the parser
+intrinsic meaning outside of reStructuredText.  Instead, the parser
 will transform recognized directives into (possibly specialized)
-document elements. Unknown directives will trigger level-3 (error)
+document elements.  Unknown directives will trigger level-3 (error)
 system messages.
 
 Syntax diagram::
@@ -1717,7 +1719,7 @@ Objects
     The same approach can be used in documents which frequently refer
     to a particular type of objects with unique identifiers but
     ambiguous common names.  Movies, albums, books, photos, court
-    cases, and laws are possible. For example::
+    cases, and laws are possible.  For example::
 
         |The Transparent Society| offers a fascinating alternate view
         on privacy issues.
@@ -1777,16 +1779,16 @@ Styles [#]_
 
     .. @@@ This needs to be rethought & rewritten or removed:
 
-       Interpreted text is unsuitable for this purpose because the set of
-       style names cannot be predefined - it is the domain of the content
-       author, not the author of the parser and output formatter - and
-       there is no way to associate a stylename argument with an
-       interpreted text style role.  Also, it may be desirable to use the
-       same mechanism for styling blocks::
+       Interpreted text is unsuitable for this purpose because the set
+       of style names cannot be predefined - it is the domain of the
+       content author, not the author of the parser and output
+       formatter - and there is no way to associate a stylename
+       argument with an interpreted text style role.  Also, it may be
+       desirable to use the same mechanism for styling blocks::
    
            .. style:: motto
-              At Bob's Underwear Shop, we'll do anything to get in your
-              pants.
+              At Bob's Underwear Shop, we'll do anything to get in
+              your pants.
    
            .. style:: disclaimer
               All rights reversed.  Reprint what you like.
@@ -1847,17 +1849,17 @@ Comments
 DTD element: comment.
 
 Arbitrary indented text may follow the explicit markup start and will
-be processed as a comment element. No further processing is done on
-the comment block text; a comment contains a single "text
-blob". Depending on the output formatter, comments may be removed from
-the processed output. The only restriction on comments is that they
-not use the same syntax as directives, footnotes, citations, or
-hyperlink targets.
+be processed as a comment element.  No further processing is done on
+the comment block text; a comment contains a single "text blob".
+Depending on the output formatter, comments may be removed from the
+processed output.  The only restriction on comments is that they not
+use the same syntax as directives, footnotes, citations, or hyperlink
+targets.
 
 A explicit markup start followed by a blank line and nothing else
-(apart from whitespace) is an "empty comment". It serves to terminate
+(apart from whitespace) is an "empty comment".  It serves to terminate
 a preceding construct, and does **not** consume any indented text
-following. To have a block quote follow a list or any indented
+following.  To have a block quote follow a list or any indented
 construct, insert an unindented empty comment in-between.
 
 Syntax diagram::
@@ -1881,24 +1883,24 @@ Problems of ambiguity due to conflicting duplicate implicit and
 explicit reference names are avoided by following this procedure:
 
 1. `Explicit hyperlink targets`_ override any implicit targets having
-   the same reference name. The implicit hyperlink targets are
+   the same reference name.  The implicit hyperlink targets are
    removed, and level-1 (info) system messages are inserted.
 
 2. Duplicate implicit hyperlink targets are removed, and level-1
-   (info) system messages inserted. For example, if two or more
+   (info) system messages inserted.  For example, if two or more
    sections have the same title (such as "Introduction" subsections of
    a rigidly-structured document), there will be duplicate implicit
    hyperlink targets.
 
 3. Duplicate explicit hyperlink targets are removed, and level-2
-   (warning) system messages are inserted. Exception: duplicate
+   (warning) system messages are inserted.  Exception: duplicate
    `external hyperlink targets`_ (identical hyperlink names and
    referenced URIs) do not conflict, and are not removed.
 
-System messages are inserted where target links have been removed. See
-"Error Handling" in `PEP 258`_.
+System messages are inserted where target links have been removed.
+See "Error Handling" in `PEP 258`_.
 
-The parser must return a set of *unique* hyperlink targets. The
+The parser must return a set of *unique* hyperlink targets.  The
 calling software (such as the `Python Docstring Processing System`_)
 can warn of unresolvable links, giving reasons for the messages.
 
@@ -1976,7 +1978,7 @@ literals or literal blocks::
     "``\*``" -> "\*" (possibly in another font or quoted)
 
 Only those who understand the escaping and inline markup rules should
-attempt the remaining 1%. ;-)
+attempt the remaining 1%.  ;-)
 
 Inline markup delimiter characters are used for multiple constructs,
 so to avoid ambiguity there must be a specific recognition order for
@@ -2041,15 +2043,15 @@ Text enclosed by single backquote characters is interpreted::
 
 Interpreted text is text that is meant to be related, indexed, linked,
 summarized, or otherwise processed, but the text itself is left
-alone. The text is "tagged" directly, in-place. The semantics of
-interpreted text are domain-dependent. It can be used as implicit or
+alone.  The text is "tagged" directly, in-place.  The semantics of
+interpreted text are domain-dependent.  It can be used as implicit or
 explicit descriptive markup (such as for program identifiers, as in
 the `Python Source Reader`_), for cross-reference interpretation (such
 as index entries), or for other applications where context can be
 inferred.
 
 The role of the interpreted text determines how the text is
-interpreted. It is normally inferred implicitly. The role of the
+interpreted.  It is normally inferred implicitly.  The role of the
 interpreted text may also be indicated explicitly, using a role
 marker, either as a prefix or as a suffix to the interpreted text,
 depending on which reads better::
@@ -2063,8 +2065,8 @@ emphasis_, `strong emphasis`_, `inline literals`_, and `hyperlink
 references`_, we can add "index entry", "acronym", "class", "red",
 "blinking" or anything else we want.
 
-A role marker consists of a colon, the role name, and another colon. A
-role name is a single word consisting of alphanumerics plus internal
+A role marker consists of a colon, the role name, and another colon.
+A role name is a single word consisting of alphanumerics plus internal
 hypens, underscores, and periods; no whitespace or other characters
 are allowed.
 
@@ -2082,17 +2084,17 @@ Text enclosed by double-backquotes is treated as inline literals::
 
 Inline literals may contain any characters except two adjacent
 backquotes in an end-string context (according to the recognition
-rules above). No markup interpretation (including backslash-escape
+rules above).  No markup interpretation (including backslash-escape
 interpretation) is done within inline literals.
 
-Line breaks are *not* preserved in inline literals. Although a
+Line breaks are *not* preserved in inline literals.  Although a
 reStructuredText parser will preserve runs of spaces in its output,
 the final representation of the processed document is dependent on the
 output formatter, thus the preservation of whitespace cannot be
-guaranteed. If the preservation of line breaks and/or other whitespace
-is important, `literal blocks`_ should be used.
+guaranteed.  If the preservation of line breaks and/or other
+whitespace is important, `literal blocks`_ should be used.
 
-Inline literals are useful for short code snippets. For example::
+Inline literals are useful for short code snippets.  For example::
 
     The regular expression ``[+-]?(\d+(\.\d*)?|\.\d+)`` matches
     floating-point numbers (without exponents).
@@ -2106,27 +2108,27 @@ DTD element: reference.
 - Named hyperlink references:
 
   - Start-string = "" (empty string), end-string = "_".
-  - Start-string = "`", end-string = "\`_". (Phrase references.)
+  - Start-string = "`", end-string = "\`_".  (Phrase references.)
 
 - Anonymous hyperlink references:
 
   - Start-string = "" (empty string), end-string = "__".
-  - Start-string = "`", end-string = "\`__". (Phrase references.)
+  - Start-string = "`", end-string = "\`__".  (Phrase references.)
 
 Hyperlink references are indicated by a trailing underscore, "_",
 except for `standalone hyperlinks`_ which are recognized
-independently. The underscore can be thought of as a right-pointing
-arrow. The trailing underscores point away from hyperlink references,
+independently.  The underscore can be thought of as a right-pointing
+arrow.  The trailing underscores point away from hyperlink references,
 and the leading underscores point toward `hyperlink targets`_.
 
-Hyperlinks consist of two parts. In the text body, there is a source
+Hyperlinks consist of two parts.  In the text body, there is a source
 link, a reference name with a trailing underscore (or two underscores
 for `anonymous hyperlinks`_)::
 
     See the Python_ home page for info.
 
 A target link with a matching reference name must exist somewhere else
-in the document. See `Hyperlink Targets`_ for a full description).
+in the document.  See `Hyperlink Targets`_ for a full description).
 
 `Anonymous hyperlinks`_ (which see) do not use reference names to
 match references to targets, but otherwise behave similarly to named
@@ -2141,15 +2143,15 @@ DTD element: target.
 Start-string = "_`", end-string = "`".
 
 Inline hyperlink targets are the equivalent of explicit `internal
-hyperlink targets`_, but may appear within running text. The syntax
+hyperlink targets`_, but may appear within running text.  The syntax
 begins with an underscore and a backquote, is followed by a hyperlink
-name or phrase, and ends with a backquote. Inline hyperlink targets
+name or phrase, and ends with a backquote.  Inline hyperlink targets
 may not be anonymous.
 
 For example, the following paragraph contains a hyperlink target named
 "Norwegian Blue"::
 
-    Oh yes, the _`Norwegian Blue`. What's, um, what's wrong with it?
+    Oh yes, the _`Norwegian Blue`.  What's, um, what's wrong with it?
 
 See `Implicit Hyperlink Targets`_ for the resolution of duplicate
 reference names.
@@ -2163,7 +2165,7 @@ DTD element: footnote_reference.
 Start-string = "[", end-string = "]_".
 
 Each footnote reference consists of a square-bracketed label followed
-by a trailing underscore. Footnote labels are one of:
+by a trailing underscore.  Footnote labels are one of:
 
 - one or more digits (i.e., a number),
 
@@ -2219,8 +2221,8 @@ Substitution definitions produce inline-compatible elements.
 
 Examples::
 
-    This is a simple |substitution reference|.  It will be replaced by the
-    processing system.
+    This is a simple |substitution reference|.  It will be replaced by
+    the processing system.
 
     This is a combination |substitution and hyperlink reference|_.  In
     addition to being replaced, the replacement text or element will
@@ -2236,7 +2238,7 @@ Start-string = end-string = "" (empty string).
 
 A URI (absolute URI [#URI]_ or standalone email address) within a text
 block is treated as a general external hyperlink with the URI itself
-as the link's text. For example::
+as the link's text.  For example::
 
     See http://www.python.org for info.
 
@@ -2247,12 +2249,12 @@ would be marked up in HTML as::
 
 Two forms of URI are recognized:
 
-1. Absolute URIs. These consist of a scheme, a colon (":"), and a
+1. Absolute URIs.  These consist of a scheme, a colon (":"), and a
    scheme-specific part whose interpretation depends on the scheme.
 
    The scheme is the name of the protocol, such as "http", "ftp",
-   "mailto", or "telnet". The scheme consists of an initial letter,
-   followed by letters, numbers, and/or "+", "-", ".". Recognition is
+   "mailto", or "telnet".  The scheme consists of an initial letter,
+   followed by letters, numbers, and/or "+", "-", ".".  Recognition is
    limited to known schemes, per the W3C's `Index of WWW Addressing
    Schemes`_.
 
@@ -2267,7 +2269,7 @@ Two forms of URI are recognized:
 
          ftp://ftp.python.org/pub/python
 
-   - Opaque identifiers do not begin with slashes. Examples are
+   - Opaque identifiers do not begin with slashes.  Examples are
      email addresses and newsgroups::
 
          mailto:someone@somewhere.com
@@ -2275,19 +2277,19 @@ Two forms of URI are recognized:
          news:comp.lang.python
 
    With queries, fragments, and %-escape sequences, URIs can become
-   quite complicated. A reStructuredText parser must be able to
+   quite complicated.  A reStructuredText parser must be able to
    recognize any absolute URI, as defined in RFC2396_ and RFC2732_.
 
 2. Standalone email addresses, which are treated as if they were
-   ablsolute URIs with a "mailto:" scheme. Example::
+   ablsolute URIs with a "mailto:" scheme.  Example::
 
        someone@somewhere.com
 
 Punctuation at the end of a URI is not considered part of the URI.
 
-.. [#URI] Uniform Resource Identifier. URIs are a general form of URLs
-   (Uniform Resource Locators). For the syntax of URIs see RFC2396_
-   and RFC2732_.
+.. [#URI] Uniform Resource Identifier.  URIs are a general form of
+   URLs (Uniform Resource Locators).  For the syntax of URIs see
+   RFC2396_ and RFC2732_.
 
 
 ----------------
@@ -2316,7 +2318,8 @@ Markup errors are handled according to the specification in `PEP
    http://docstring.sourceforge.net/dps/transforms/frontmatter.py
 .. _doctest module:
    http://www.python.org/doc/current/lib/module-doctest.html
-.. _getopt.py: http://www.python.org/doc/current/lib/module-getopt.html
+.. _getopt.py:
+   http://www.python.org/doc/current/lib/module-getopt.html
 .. _GNU libc getopt_long():
    http://www.gnu.org/manual/glibc-2.2.3/html_node/libc_516.html
 .. _Index of WWW Addressing Schemes:
