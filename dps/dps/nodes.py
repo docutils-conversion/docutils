@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.28 $
-:Date: $Date: 2002/02/13 02:26:54 $
+:Revision: $Revision: 1.29 $
+:Date: $Date: 2002/02/15 22:42:44 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -464,7 +464,7 @@ class document(Root, Element):
         Element.__init__(self, *args, **kwargs)
 
         self.reporter = reporter
-        """System warning generator."""
+        """System message generator."""
 
         self.languagecode = languagecode
         """ISO 639 2-letter language identifier."""
@@ -545,7 +545,7 @@ class document(Root, Element):
                 if t.has_key('name') and t.has_key('refuri') \
                       and t['refuri'] == refuri:
                     level = 1           # just inform if refuri's identical
-            sw = self.reporter.system_warning(
+            sw = self.reporter.system_message(
                   level, 'Duplicate explicit target name: "%s"' % name)
             innode += sw
             self.clear_target_names(name, self.explicit_targets,
@@ -702,7 +702,7 @@ class row(Component, Element): pass
 class entry(Component, Element): pass
 
 
-class system_warning(Special, PreBibliographic, Element):
+class system_message(Special, PreBibliographic, Element):
 
     def __init__(self, comment=None, *children, **attributes):
         if comment:
@@ -752,7 +752,7 @@ node_class_names = """
     paragraph problematic
     reference revision row
     section short_option status strong substitution_definition
-        substitution_reference subtitle system_warning
+        substitution_reference subtitle system_message
     table target tbody term tgroup thead tip title transition
     version vms_option
     warning""".split()

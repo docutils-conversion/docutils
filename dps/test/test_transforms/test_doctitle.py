@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/12 02:11:00 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/15 22:45:58 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.frontmatter.DocTitle.
@@ -103,7 +103,7 @@ Test short underline.
 <document name="title">
     <title>
         Title
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Title underline too short at line 2.
     <paragraph>
@@ -115,19 +115,19 @@ Test short underline.
 =======
 
 Test long title and space normalization.
-The system_warning should move after the document title
+The system_message should move after the document title
 (it was before the beginning of the section).
 """,
 """\
 <document name="long title">
     <title>
         Long    Title
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Title overline too short at line 1.
     <paragraph>
         Test long title and space normalization.
-        The system_warning should move after the document title
+        The system_message should move after the document title
         (it was before the beginning of the section).
 """],
 ["""\

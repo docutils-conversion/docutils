@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/06 03:11:25 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/15 22:45:58 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Substitutions.
@@ -52,7 +52,7 @@ Here's an |unknown| substitution.
         <problematic>
             unknown
          substitution.
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Undefined substitution referenced: "unknown".
 """],

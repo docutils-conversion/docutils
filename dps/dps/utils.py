@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2002/02/12 02:16:27 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/02/15 22:42:44 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
@@ -14,24 +14,25 @@ import sys
 import nodes
 
 
-class SystemWarning(Exception):
+class SystemMessage(Exception):
 
-    def __init__(self, system_warning):
-        Exception.__init__(self, system_warning.astext())
+    def __init__(self, system_message):
+        Exception.__init__(self, system_message.astext())
 
 
 class Reporter:
 
     """
-    Info/warning/error reporter and ``system_warning`` element generator.
+    Info/warning/error reporter and ``system_message`` element generator.
 
-    Five levels of system warnings are defined, along with corresponding
+    Five levels of system messages are defined, along with corresponding
     methods: `debug()`, `info()`, `warning()`, `error()`, and `severe()`.
 
     There is typically one Reporter object per process. A Reporter object is
     instantiated with thresholds for generating warnings and errors (raising
-    exceptions), a switch to turn debug output on or off, and a I/O stream for
-    warnings. These are stored in the default reporting category, ''.
+    exceptions), a switch to turn debug output on or off, and an I/O stream
+    for warnings. These are stored in the default reporting category, ''
+    (zero-length string).
 
     Multiple reporting categories [#]_ may be set, each with its own warning
     and error thresholds, debugging switch, and warning stream. Categories are
@@ -40,18 +41,18 @@ class Reporter:
     'spam.bacon.eggs'. Unset categories inherit stored values from their
     closest ancestor category that has been set.
 
-    When a system warning is generated, the stored values from its category
-    (or ancestor if unset) are retrieved. The system warning level is compared
+    When a system message is generated, the stored values from its category
+    (or ancestor if unset) are retrieved. The system message level is compared
     to the thresholds stored in the category, and a warning or error is
-    generated as appropriate. Debug warnings are produced iff the stored debug
-    switch is on. Warning output is sent to the stored warning stream.
+    generated as appropriate. Debug messages are produced iff the stored debug
+    switch is on. Message output is sent to the stored warning stream.
 
     .. [#]_ The concept of "categories" was inspired by the log4j project:
        http://jakarta.apache.org/log4j/.
     """
 
     levels = 'DEBUG INFO WARNING ERROR SEVERE'.split()
-    """List of names for system warning levels, indexed by level."""
+    """List of names for system message levels, indexed by level."""
 
     def __init__(self, warninglevel, errorlevel, warningstream=None, debug=0):
         """
@@ -61,9 +62,9 @@ class Reporter:
 
         - `warninglevel`: The level at or above which warning output will be
           sent to `warningstream`.
-        - `errorlevel`: The level at or above which `SystemWarning` exceptions
+        - `errorlevel`: The level at or above which `SystemMessage` exceptions
           will be raised.
-        - `debug`: Show debug (level=0) system warnings?
+        - `debug`: Show debug (level=0) system messages?
         - `warningstream`: Where warning output is sent (`None` implies
           `sys.stderr`).
         """
@@ -90,13 +91,13 @@ class Reporter:
             category = category[:category.rfind('.') + 1][:-1]
         return self.categories[category]
 
-    def system_warning(self, level, comment=None, children=[], category=''):
+    def system_message(self, level, comment=None, children=[], category=''):
         """
-        Return a system_warning object.
+        Return a system_message object.
 
         Raise an exception or generate a warning if appropriate.
         """
-        sw = nodes.system_warning(comment, level=level,
+        sw = nodes.system_message(comment, level=level,
                                   type=self.levels[level], *children)
         debug, warninglevel, errorlevel, stream = self.getcategory(category)
         if level >= warninglevel or debug and level == 0:
@@ -105,45 +106,45 @@ class Reporter:
             else:
                 print >>stream, 'Reporter:', sw.astext()
         if level >= errorlevel:
-            raise SystemWarning(sw)
+            raise SystemMessage(sw)
         return sw
 
     def debug(self, comment=None, children=[], category=''):
         """
         Level-0, "DEBUG": an internal reporting issue. Typically, there is no
-        effect on the processing. Level-0 system warnings are handled
+        effect on the processing. Level-0 system messages are handled
         separately from the others.
         """
-        return self.system_warning(0, comment, children, category)
+        return self.system_message(0, comment, children, category)
 
     def info(self, comment=None, children=[], category=''):
         """
         Level-1, "INFO": a minor issue that can be ignored. Typically there is
-        no effect on processing, and level-1 system warnings are not reported.
+        no effect on processing, and level-1 system messages are not reported.
         """
-        return self.system_warning(1, comment, children, category)
+        return self.system_message(1, comment, children, category)
 
     def warning(self, comment=None, children=[], category=''):
         """
         Level-2, "WARNING": an issue that should be addressed. If ignored,
         there may be unpredictable problems with the output.
         """
-        return self.system_warning(2, comment, children, category)
+        return self.system_message(2, comment, children, category)
 
     def error(self, comment=None, children=[], category=''):
         """
         Level-3, "ERROR": an error that should be addressed. If ignored, the
         output will contain errors.
         """
-        return self.system_warning(3, comment, children, category)
+        return self.system_message(3, comment, children, category)
 
     def severe(self, comment=None, children=[], category=''):
         """
         Level-4, "SEVERE": a severe error that must be addressed. If ignored,
         the output will contain severe errors. Typically level-4 system
-        warnings are turned into exceptions which halt processing.
+        messages are turned into exceptions which halt processing.
         """
-        return self.system_warning(4, comment, children, category)
+        return self.system_message(4, comment, children, category)
 
 
 class AttributeParsingError(Exception): pass

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/06 03:11:35 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/15 22:45:30 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for utils.py.
@@ -29,9 +29,9 @@ class ReporterTests(unittest.TestCase):
         self.stream.truncate()
 
     def test_level0(self):
-        sw = self.reporter.system_warning(0, 'debug output')
+        sw = self.reporter.system_message(0, 'debug output')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="0" type="DEBUG">
+<system_message level="0" type="DEBUG">
     <paragraph>
         debug output
 """)
@@ -39,18 +39,18 @@ class ReporterTests(unittest.TestCase):
                           'Reporter: DEBUG [level 0] debug output\n')
 
     def test_level1(self):
-        sw = self.reporter.system_warning(1, 'a little reminder')
+        sw = self.reporter.system_message(1, 'a little reminder')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="1" type="INFO">
+<system_message level="1" type="INFO">
     <paragraph>
         a little reminder
 """)
         self.assertEquals(self.stream.getvalue(), '')
 
     def test_level2(self):
-        sw = self.reporter.system_warning(2, 'a warning')
+        sw = self.reporter.system_message(2, 'a warning')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="2" type="WARNING">
+<system_message level="2" type="WARNING">
     <paragraph>
         a warning
 """)
@@ -58,9 +58,9 @@ class ReporterTests(unittest.TestCase):
                           'Reporter: WARNING [level 2] a warning\n')
 
     def test_level3(self):
-        sw = self.reporter.system_warning(3, 'an error')
+        sw = self.reporter.system_message(3, 'an error')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="3" type="ERROR">
+<system_message level="3" type="ERROR">
     <paragraph>
         an error
 """)
@@ -68,7 +68,7 @@ class ReporterTests(unittest.TestCase):
                           'Reporter: ERROR [level 3] an error\n')
 
     def test_level4(self):
-        self.assertRaises(utils.SystemWarning, self.reporter.system_warning, 4,
+        self.assertRaises(utils.SystemMessage, self.reporter.system_message, 4,
                           'a severe error, raises an exception')
         self.assertEquals(self.stream.getvalue(), 'Reporter: SEVERE [level 4] '
                           'a severe error, raises an exception\n')
@@ -86,7 +86,7 @@ class QuietReporterTests(unittest.TestCase):
     def test_debug(self):
         sw = self.reporter.debug('a debug message')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="0" type="DEBUG">
+<system_message level="0" type="DEBUG">
     <paragraph>
         a debug message
 """)
@@ -95,7 +95,7 @@ class QuietReporterTests(unittest.TestCase):
     def test_info(self):
         sw = self.reporter.info('an informational message')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="1" type="INFO">
+<system_message level="1" type="INFO">
     <paragraph>
         an informational message
 """)
@@ -104,7 +104,7 @@ class QuietReporterTests(unittest.TestCase):
     def test_warning(self):
         sw = self.reporter.warning('a warning')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="2" type="WARNING">
+<system_message level="2" type="WARNING">
     <paragraph>
         a warning
 """)
@@ -113,7 +113,7 @@ class QuietReporterTests(unittest.TestCase):
     def test_error(self):
         sw = self.reporter.error('an error')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="3" type="ERROR">
+<system_message level="3" type="ERROR">
     <paragraph>
         an error
 """)
@@ -122,7 +122,7 @@ class QuietReporterTests(unittest.TestCase):
     def test_severe(self):
         sw = self.reporter.severe('a severe error')
         self.assertEquals(sw.pformat(), """\
-<system_warning level="4" type="SEVERE">
+<system_message level="4" type="SEVERE">
     <paragraph>
         a severe error
 """)
@@ -187,7 +187,7 @@ Reporter "lemon.curry": WARNING [level 2] a warning
         sw = self.reporter.error('an error')
         self.assertEquals(self.stream.getvalue(),
                           'Reporter: ERROR [level 3] an error\n')
-        self.assertRaises(utils.SystemWarning, self.reporter.error,
+        self.assertRaises(utils.SystemMessage, self.reporter.error,
                           'an error', category='lemon.curry')
         self.assertEquals(self.stream.getvalue(), """\
 Reporter: ERROR [level 3] an error
@@ -195,11 +195,11 @@ Reporter "lemon.curry": ERROR [level 3] an error
 """)
 
     def test_severe(self):
-        self.assertRaises(utils.SystemWarning, self.reporter.severe,
+        self.assertRaises(utils.SystemMessage, self.reporter.severe,
                           'a severe error')
         self.assertEquals(self.stream.getvalue(),
                           'Reporter: SEVERE [level 4] a severe error\n')
-        self.assertRaises(utils.SystemWarning, self.reporter.severe,
+        self.assertRaises(utils.SystemMessage, self.reporter.severe,
                           'a severe error', category='lemon.curry')
         self.assertEquals(self.stream.getvalue(), """\
 Reporter: SEVERE [level 4] a severe error
