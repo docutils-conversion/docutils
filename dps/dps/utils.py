@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2002/03/11 03:37:55 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2002/03/13 02:43:47 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
@@ -35,17 +35,22 @@ class Reporter:
     (zero-length string).
 
     Multiple reporting categories [#]_ may be set, each with its own warning
-    and error thresholds, debugging switch, and warning stream. Categories are
-    hierarchically-named strings that look like attribute references: 'spam',
-    'spam.eggs', 'neeeow.wum.ping'. The 'spam' category is the ancestor of
-    'spam.bacon.eggs'. Unset categories inherit stored values from their
-    closest ancestor category that has been set.
+    and error thresholds, debugging switch, and warning stream (collectively a
+    `ConditionSet`). Categories are hierarchically-named strings that look
+    like attribute references: 'spam', 'spam.eggs', 'neeeow.wum.ping'. The
+    'spam' category is the ancestor of 'spam.bacon.eggs'. Unset categories
+    inherit stored conditions from their closest ancestor category that has
+    been set.
 
-    When a system message is generated, the stored values from its category
-    (or ancestor if unset) are retrieved. The system message level is compared
-    to the thresholds stored in the category, and a warning or error is
-    generated as appropriate. Debug messages are produced iff the stored debug
-    switch is on. Message output is sent to the stored warning stream.
+    When a system message is generated, the stored conditions from its
+    category (or ancestor if unset) are retrieved. The system message level is
+    compared to the thresholds stored in the category, and a warning or error
+    is generated as appropriate. Debug messages are produced iff the stored
+    debug switch is on. Message output is sent to the stored warning stream.
+
+    The default category is '' (empty string). By convention, Writers should
+    retrieve reporting conditions from the 'writer' category (which, unless
+    explicitly set, defaults to the conditions of the default category).
 
     .. [#]_ The concept of "categories" was inspired by the log4j project:
        http://jakarta.apache.org/log4j/.
@@ -177,90 +182,124 @@ class ConditionSet:
                 self.stream)
 
 
-class AttributeParsingError(Exception): pass
-class BadAttributeLineError(AttributeParsingError): pass
-class BadAttributeDataError(AttributeParsingError): pass
-class DuplicateAttributeError(AttributeParsingError): pass
+class ExtensionAttributeError(Exception): pass
+class BadAttributeLineError(ExtensionAttributeError): pass
+class BadAttributeDataError(ExtensionAttributeError): pass
+class DuplicateAttributeError(ExtensionAttributeError): pass
 
 
-def parseattributes(lines, attributespec):
+def extract_extension_attributes(field_list, attribute_spec):
     """
-    Return a dictionary mapping attribute names to converted values.
+    Return a dictionary mapping extension attribute names to converted values.
 
     :Parameters:
-        - `lines`: List of one-line strings of the form::
-
-            ['[name1=value1 name2=value2]', '[name3="value 3"]']
-
-        - `attributespec`: Dictionary mapping known attribute names to a
+        - `field_list`: A flat field list without field arguments, where each
+          field body consists of a single paragraph only.
+        - `attribute_spec`: Dictionary mapping known attribute names to a
           conversion function such as `int` or `float`.
 
     :Exceptions:
         - `KeyError` for unknown attribute names.
-        - `ValueError` for invalid attribute values (raised by conversion
+        - `ValueError` for invalid attribute values (raised by the conversion
            function).
         - `DuplicateAttributeError` for duplicate attributes.
-        - `BadAttributeLineError` for input lines not enclosed in brackets.
+        - `BadAttributeError` for input lines not enclosed in brackets.
         - `BadAttributeDataError` for invalid attribute data (missing name,
           missing data, bad quotes, etc.).
     """
-    attlist = extractattributes(lines)
-    attdict = assembleattributes(attlist, attributespec)
+    attlist = extract_attributes(field_list)
+    attdict = assemble_attribute_dict(attlist, attribute_spec)
     return attdict
 
-def extractattributes(lines):
+def extract_attributes(field_list):
     """
-    Return a list of attribute (name, value) pairs.
+    Return a list of attribute (name, value) pairs from field names & bodies.
 
     :Parameter:
-        `lines`: List of one-line strings of the form::
-
-            ['[name1=value1 name2=value2]', '[name3="value 3"]']
+        `field_list`: A flat field list without field arguments, where each
+        field body consists of a single paragraph only.
 
     :Exceptions:
-        - `BadAttributeLineError` for input lines not enclosed in brackets.
+        - `BadAttributeError` for input lines not enclosed in brackets.?
         - `BadAttributeDataError` for invalid attribute data (missing name,
           missing data, bad quotes, etc.).
     """
     attlist = []
-    for line in lines:
-        line = line.strip()
-        if line[:1] != '[' or line[-1:] != ']':
-            raise BadAttributeLineError(
-                  'input line not enclosed in "[" and "]"')
-        line = line[1:-1].strip()
-        attlist += extract_name_value(line)
+    for field in field_list:
+        if len(field) != 2:
+            raise BadAttributeError(
+                  'extension attribute field may not contain field arguments')
+        name = field[0].astext().lower()
+        body = field[1]
+        if len(body) != 1 or not isinstance(body[0], nodes.paragraph) \
+              or len(body[0]) != 1 or not isinstance(body[0][0], nodes.Text):
+            raise BadAttributeDataError(
+                  'extension attribute field body may consist of\n'
+                  'a single paragraph only (attribute "%s")' % name)
+        data = body[0][0].astext()
+        attlist.append((name, data))
     return attlist
+
+def assemble_attribute_dict(attlist, attspec):
+    """
+    Return a mapping of attribute names to values.
+
+    :Parameters:
+        - `attlist`: A list of (name, value) pairs (the output of
+          `extract_attributes()`).
+        - `attspec`: Dictionary mapping known attribute names to a
+          conversion function such as `int` or `float`.
+
+    :Exceptions:
+        - `KeyError` for unknown attribute names.
+        - `DuplicateAttributeError` for duplicate attributes.
+        - `ValueError` for invalid attribute values (raised by conversion
+           function).
+    """
+    attributes = {}
+    for name, value in attlist:
+        convertor = attspec[name]       # raises KeyError if unknown
+        if attributes.has_key(name):
+            raise DuplicateAttributeError('duplicate attribute "%s"' % name)
+        try:
+            attributes[name] = convertor(value)
+        except ValueError, detail:
+            raise ValueError('(attribute "%s") %s' % (name, detail))
+    return attributes
+
+
+class NameValueError(Exception): pass
+
 
 def extract_name_value(line):
     """
     Return a list of (name, value) from a line of the form "name=value ...".
 
     :Exception:
-        `BadAttributeDataError` for invalid attribute data (missing name,
-        missing data, bad quotes, etc.).
+        `NameValueError` for invalid input (missing name, missing data, bad
+        quotes, etc.).
     """
     attlist = []
     while line:
         equals = line.find('=')
         if equals == -1:
-            raise BadAttributeDataError('missing "="')
+            raise NameValueError('missing "="')
         attname = line[:equals].strip()
         if equals == 0 or not attname:
-            raise BadAttributeDataError(
+            raise NameValueError(
                   'missing attribute name before "="')
         line = line[equals+1:].lstrip()
         if not line:
-            raise BadAttributeDataError(
+            raise NameValueError(
                   'missing value after "%s="' % attname)
         if line[0] in '\'"':
             endquote = line.find(line[0], 1)
             if endquote == -1:
-                raise BadAttributeDataError(
+                raise NameValueError(
                       'attribute "%s" missing end quote (%s)'
                       % (attname, line[0]))
             if len(line) > endquote + 1 and line[endquote + 1].strip():
-                raise BadAttributeDataError(
+                raise NameValueError(
                       'attribute "%s" end quote (%s) not followed by '
                       'whitespace' % (attname, line[0]))
             data = line[1:endquote]
@@ -276,29 +315,6 @@ def extract_name_value(line):
         attlist.append((attname.lower(), data))
     return attlist
 
-def assembleattributes(attlist, attributespec):
-    """
-    Return a mapping of attribute names to values.
-
-    :Parameters:
-        - `attlist`: A list of (name, value) pairs (the output of
-          `extractattributes()`).
-        - `attributespec`: Dictionary mapping known attribute names to a
-          conversion function such as `int` or `float`.
-
-    :Exceptions:
-        - `KeyError` for unknown attribute names.
-        - `DuplicateAttributeError` for duplicate attributes.
-        - `ValueError` for invalid attribute values (raised by conversion
-           function).
-    """
-    attributes = {}
-    for name, value in attlist:
-        convertor = attributespec[name] # raises KeyError if unknown
-        if attributes.has_key(name):
-            raise DuplicateAttributeError('duplicate attribute "%s"' % name)
-        attributes[name] = convertor(value) # raises ValueError if invalud
-    return attributes
 
 def normname(name):
     """Return a case- and whitespace-normalized name."""
