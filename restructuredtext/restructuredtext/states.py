@@ -1,8 +1,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.3 $
-Date: $Date: 2001/08/01 03:00:54 $
+Revision: $Revision: 1.4 $
+Date: $Date: 2001/08/02 02:11:19 $
 Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -119,6 +119,8 @@ class RSTStateMachine(StateMachineWS):
             warninglevel=1, errorlevel=3,
             memo=None, node=None, matchtitles=1):
         """
+        Parse `inputlines` and return a `dps.nodes.document` instance.
+
         Extend `StateMachineWS.run()`: set up document-wide data.
 
         When called initially (from outside, to parse a document), `memo` and
@@ -150,7 +152,7 @@ class RSTStateMachine(StateMachineWS):
                     state.removetransition('firstfield')
         results = StateMachineWS.run(self, inputlines, inputoffset)
         assert results == [], 'RSTStateMachine results should be empty.'
-        if memo is none:                # initial (external) call
+        if memo is None:                # initial (external) call
             self.node = self.memo = None
             return docroot
 
@@ -162,10 +164,6 @@ class RSTState(StateWS):
     def __init__(self, statemachine, debug=0):
         self.indentSMkwargs = {'stateclasses': stateclasses,
                                'initialstate': 'Body'}
-
-        self.errorist = statemachine.memo.errorist
-        """Shortcut to error/warning generator."""
-
         StateWS.__init__(self, statemachine, debug)
 
     def bof(self, context):
@@ -185,40 +183,61 @@ class RSTState(StateWS):
         """
         # XXX need to catch title as first element (after comments),
         # so firstfields will work
+        if self.checksubsection(source, style, lineno):
+            self.newsubsection(title, lineno)
+
+    def checksubsection(self, source, style, lineno):
+        """
+        Check for a valid subsection header. Return 1 (true) or None (false).
+        Raise `EOFError` when a sibling or supersection encountered.
+        """
         memo = self.statemachine.memo
         titlestyles = memo.titlestyles
-        try:
-            mylevel = memo.sectionlevel
+        mylevel = memo.sectionlevel
+        try:                            # check for existing title style
             level = titlestyles.index(style) + 1
-            if self.debug:
-                print >>sys.stderr, ('\nstates.RSTState.section: mylevel=%s, '
-                                     'new level=%s (exists)' % (mylevel, level))
-            if level <= mylevel:        # sibling or supersection
-                memo.sectionlevel = level
-                self.statemachine.previousline(2)
-                raise EOFError          # return to parent section
-            if level == mylevel + 1:    # subsection
-                memo.sectionlevel += 1
-            else:
-                sw = self.errorist.strong_system_warning(
-                      'ABORT', 'Title level inconsistent at line %s:' % lineno,
-                      source)
-                self.statemachine.node += sw
-                return
         except ValueError:              # new title style
-            if len(titlestyles) == memo.sectionlevel:
-                memo.sectionlevel += 1
+            if len(titlestyles) == memo.sectionlevel: # new subsection
                 titlestyles.append(style)
+                if self.debug:
+                    print >>sys.stderr, ('\nstates.RSTState.checksubsection: '
+                                         'mylevel=%s, new level=%s (new)'
+                                         % (mylevel, len(titlestyles)))
+                return 1
             else:                       # not at lowest level
-                sw = self.errorist.strong_system_warning(
+                sw = memo.errorist.strong_system_warning(
                       'ABORT', 'Title level inconsistent at line %s:' % lineno,
                       source)
                 self.statemachine.node += sw
-                return
+                return None
         if self.debug:
-            print >>sys.stderr, ('\nstates.RSTState.section: starting a new '
-                                 'subsection (level %s)' % (mylevel + 1))
+            print >>sys.stderr, ('\nstates.RSTState.checksubsection: '
+                                 'mylevel=%s, new level=%s (exists)'
+                                 % (mylevel, level))
+        if level <= mylevel:            # sibling or supersection
+            memo.sectionlevel = level   # bubble up to parent section
+            # back up 2 lines for underline title, 3 for overline title
+            self.statemachine.previousline(len(style) + 1)
+            raise EOFError              # let parent section re-evaluate
+        if level == mylevel + 1:        # immediate subsection
+            return 1
+        else:                           # invalid subsection
+            sw = memo.errorist.strong_system_warning(
+                  'ABORT', 'Title level inconsistent at line %s:' % lineno,
+                  source)
+            self.statemachine.node += sw
+            return None
+
+    def newsubsection(self, title, lineno):
+        """Append new subsection to document tree. On return, check level."""
+        memo = self.statemachine.memo
+        mylevel = memo.sectionlevel
+        memo.sectionlevel += 1
+        if self.debug:
+            print >>sys.stderr, ('\nstates.RSTState.newsubsection: starting a '
+                                 'new subsection (level %s)' % (mylevel + 1))
         s = nodes.section()
+        self.statemachine.node += s
         textnodes, warnings = self.inline_text(title, lineno)
         titlenode = nodes.title(title, '', *textnodes)
         s += titlenode
@@ -231,9 +250,8 @@ class RSTState(StateWS):
         sm.run(self.statemachine.inputlines[offset:], inputoffset=absoffset,
                memo=memo, node=s, matchtitles=1)
         sm.unlink()
-        self.statemachine.node += s
         if self.debug:
-            print >>sys.stderr, ('\nstates.RSTState.section: back from '
+            print >>sys.stderr, ('\nstates.RSTState.newsubsection: back from '
                                  'subsection (mylevel=%s, new level=%s)'
                                  % (mylevel,
                                     memo.sectionlevel))
@@ -243,8 +261,8 @@ class RSTState(StateWS):
             self.statemachine.gotoline(sm.abslineoffset())
         except IndexError:
             pass
-        if memo.sectionlevel <= mylevel:
-            raise EOFError              # pass on to supersection
+        if memo.sectionlevel <= mylevel: # can't handle next section?
+            raise EOFError              # bubble up to supersection
         # reset sectionlevel; next pass will detect it properly
         memo.sectionlevel = mylevel
 
@@ -417,7 +435,7 @@ class RSTState(StateWS):
                 return (string[:matchstart], [inlineobj],
                         string[matchend:][endmatch.end(1):], [])
             else:
-                sw = self.errorist.system_warning(
+                sw = self.statemachine.memo.errorist.system_warning(
                       1, 'Inline %s start-string without end-string '
                       'at line %s.' % (nodeclass.__name__, lineno))
                 return (string[:matchend], [], string[matchend:], [sw])
@@ -456,7 +474,7 @@ class RSTState(StateWS):
                 return (string[:matchstart], [inlineobj],
                         string[matchend:][endmatch.end(1):], sw)
             else:
-                sw = self.errorist.system_warning(
+                sw = self.statemachine.memo.errorist.system_warning(
                       1, 'Inline %s start-string without end-string '
                       'at line %s.' % (nodeclass.__name__, lineno))
                 return (string[:matchend], [], string[matchend:], [sw])
@@ -483,7 +501,7 @@ class RSTState(StateWS):
             text = unescape(escaped[:match.start(suffix)])
         #print >>sys.stderr, 'RSTState.interpreted: aftercolon=%r' % aftercolon
         if pattern.search(aftercolon):
-            sw.append(self.errorist.system_warning(
+            sw.append(self.statemachine.memo.errorist.system_warning(
                   1, 'Multiple role-separators in interpreted text '
                   'at line %s.' % lineno))
         return nodes.interpreted(rawsource, text, role=role), sw
@@ -594,7 +612,7 @@ class RSTState(StateWS):
         return processed, warnings
 
     def unindentwarning(self):
-        return self.errorist.system_warning(
+        return self.statemachine.memo.errorist.system_warning(
               1, ('Unindent without blank line at line %s.'
                   % (self.statemachine.abslineno() + 1)))        
 
@@ -819,7 +837,7 @@ class Body(RSTState):
                     return method(self, expmatch)
                 except MarkupError, detail:
                     errors.append(
-                          self.errorist.system_warning(
+                          self.statemachine.memo.errorist.system_warning(
                           1, detail.__class__.__name__ + ': ' + str(detail)))
                     break
         nodelist, blankfinish = self.comment(match)
@@ -830,41 +848,41 @@ class Body(RSTState):
         makesection = 1
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
-            sw = self.errorist.system_warning(
+            sw = self.statemachine.memo.errorist.system_warning(
                   3, 'Unexpected section title at line %s.' % lineno)
             self.statemachine.node += sw
             return [], nextstate, []
+        title = underline = ''
         try:
-            title = underline = ''
             title = self.statemachine.nextline()
             underline = self.statemachine.nextline()
         except IndexError:
-            sw = self.errorist.system_warning(
+            sw = self.statemachine.memo.errorist.system_warning(
                   3, 'Incomplete section title at line %s.' % lineno)
             self.statemachine.node += sw
             makesection = 0
-        source = match.string + title + underline
+        source = '%s\n%s\n%s' % (match.string, title, underline)
         overline = match.string.rstrip()
         underline = underline.rstrip()
         if not self.transitions['overline'][0].match(underline):
-            sw = self.errorist.system_warning(
+            sw = self.statemachine.memo.errorist.system_warning(
                   3, 'Missing underline for overline at line %s.' % lineno)
             self.statemachine.node += sw
             makesection = 0
         elif overline != underline:
-            sw = self.errorist.system_warning(
+            sw = self.statemachine.memo.errorist.system_warning(
                   3, 'Title overline & underline mismatch at ' 'line %s.'
                   % lineno)
             self.statemachine.node += sw
             makesection = 0
-        title = title.strip()
+        title = title.rstrip()
         if len(title) > len(overline):
             self.statemachine.node += \
-                  self.errorist.system_warning(
+                  self.statemachine.memo.errorist.system_warning(
                   0, 'Title overline too short at line %s.'% lineno)
         if makesection:
             style = (overline[0], underline[0])
-            self.section(title, source, style, lineno + 1)
+            self.section(title.lstrip(), source, style, lineno + 1)
         return [], nextstate, []
 
     def firstfield(self, match, context, nextstate):
@@ -1007,7 +1025,7 @@ class Text(RSTState):
         """Section title."""
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
-            sw = self.errorist.system_warning(
+            sw = self.statemachine.memo.errorist.system_warning(
                   3, 'Unexpected section title at line %s.' % lineno)
             self.statemachine.node += sw
             return [], nextstate, []
@@ -1021,7 +1039,7 @@ class Text(RSTState):
                                     self.statemachine.memo.titlestyles))
         if len(title) > len(underline):
             self.statemachine.node += \
-                  self.errorist.system_warning(
+                  self.statemachine.memo.errorist.system_warning(
                   0, 'Title underline too short at line %s.' % lineno)
         style = underline[0]
         context[:] = []
@@ -1036,7 +1054,7 @@ class Text(RSTState):
             block = self.statemachine.getunindented()
         except statemachine.UnexpectedIndentationError, instance:
             block, lineno = instance.args
-            sw = self.errorist.system_warning(
+            sw = self.statemachine.memo.errorist.system_warning(
                   2, 'Unexpected indentation at line %s.' % lineno)
         lines = context + block
         if self.debug:
@@ -1058,7 +1076,7 @@ class Text(RSTState):
             data = '\n'.join(indented)
             nodelist.append(nodes.literal_block(data, data))
         else:
-            nodelist.append(self.errorist.system_warning(
+            nodelist.append(self.statemachine.memo.errorist.system_warning(
                   1, 'Literal block expected at line %s; none found.'
                   % self.statemachine.abslineno()))
         if not blankfinish:
@@ -1074,7 +1092,7 @@ class Text(RSTState):
         t, warnings = self.term(termline, self.statemachine.abslineno() - 1)
         d = nodes.definition('', *warnings)
         if termline[0][-2:] == '::':
-            d += self.errorist.system_warning(
+            d += self.statemachine.memo.errorist.system_warning(
                   2, 'Blank line missing before literal block? '
                   'Interpreted as a definition list item. '
                   'At line %s.' % (lineoffset + 1))
