@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/03/07 04:00:40 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/16 05:53:52 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Writer modules.
@@ -60,7 +60,7 @@ class Writer:
         for xclass in (universal.first_writer_transforms
                        + tuple(self.transforms)
                        + universal.last_writer_transforms):
-            xclass().transform(self.document)
+            xclass(self.document).transform()
 
     def translate(self):
         """Override to do final document tree translation."""
@@ -82,7 +82,7 @@ class Writer:
           (b) a path to a file, which is opened and then written; or
           (c) `None`, which implies `sys.stdout`.
         """
-        output = output.encode('raw-unicode-escape')    # @@@ temporary?
+        output = output.encode('raw-unicode-escape')    # @@@ temporary
         if hasattr(self.destination, 'write'):
             destination.write(output)
         elif self.destination:
