@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/09/18 21:24:27 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/09/22 02:42:02 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -470,6 +470,7 @@ Title
 :Subtitle: First Subtitle
 :Abstract: Abstract 1.
 :Author: Me
+:Contact: me@my.org
 :Version: 1
 :Abstract: Abstract 2 (should generate a warning).
 :Date: 2001-08-11
@@ -484,6 +485,9 @@ Title
         First Subtitle
     <author>
         Me
+    <contact>
+        <link refuri="mailto:me@my.org">
+            me@my.org
     <version>
         1
     <date>
@@ -542,6 +546,11 @@ Title
 """,
 """\
 <document>
+    <status>
+        a 
+        <emphasis>
+            simple
+         paragraph
     <field_list>
         <field>
             <field_name>
@@ -553,19 +562,7 @@ Title
                             must be a paragraph
                 <system_warning level="2">
                     <paragraph>
-                        Cannot extract bibliographic field "Author" containing anything other than a simple, unformatted paragraph.
-        <field>
-            <field_name>
-                Status
-            <field_body>
-                <paragraph>
-                    a 
-                    <emphasis>
-                        simple
-                     paragraph
-                <system_warning level="2">
-                    <paragraph>
-                        Cannot extract bibliographic field "Status" containing anything other than a simple, unformatted paragraph.
+                        Cannot extract bibliographic field "Author" containing anything other than a single paragraph.
         <field>
             <field_name>
                 Date
@@ -717,7 +714,7 @@ Title
 .. RCS keyword extraction.
 
 :Title: $RCSfile: test_field_lists.py,v $
-:Date: $Date: 2001/09/18 21:24:27 $
+:Date: $Date: 2001/09/22 02:42:02 $
 
 RCS keyword 'RCSfile' doesn't change unless the file name changes,
 so it's safe. The 'Date' keyword changes every time the file is
@@ -737,7 +734,7 @@ derived (hacked) in parallel in order to stay in sync.
         so it's safe. The 'Date' keyword changes every time the file is
         checked in to CVS, so the test's expected output text has to be
         derived (hacked) in parallel in order to stay in sync.
-""" % ('$Date: 2001/09/18 21:24:27 $'[7:17].replace('/', '-'),)],
+""" % ('$Date: 2001/09/22 02:42:02 $'[7:17].replace('/', '-'),)],
 ]
 
 if __name__ == '__main__':
