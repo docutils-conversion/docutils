@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2001/09/12 03:39:23 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2001/09/25 03:02:55 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -41,13 +41,14 @@ Attributes shared by all elements in this DTD:
 
 - `id` is a unique identifier, typically assigned by the system.
 - `name` is an identifier assigned in the markup.
-- `rawdata` contains the unprocessed text that produced the element.
+- `dupname` is the same as `name`, used when it's a duplicate.
+- `source` is the name of the source of this document or fragment.
 -->
 <!ENTITY % basic.atts
   " id        ID        #IMPLIED
     name      CDATA     #IMPLIED
     dupname   CDATA     #IMPLIED
-    rawtext   CDATA     #IMPLIED
+    source    CDATA     #IMPLIED
     %additional.basic.atts; ">
 
 <!ENTITY % additional.link.atts "">
