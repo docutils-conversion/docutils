@@ -3,11 +3,30 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/11/06 00:53:24 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/02/12 02:29:02 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains directive implementation modules.
+
+The interface for directive functions is as follows::
+
+    def directivefn(match, type, data, state, statemachine, attributes)
+
+Where:
+
+- ``match`` is a regular expression match object which matched the first line
+  of the directive. ``match.group(1)`` gives the directive name.
+- ``type`` is the directive type or name.
+- ``data`` contains the remainder of the first line of the directive after the
+  "::".
+- ``state`` is the state which called the directive function.
+- ``statemachine`` is the state machine which controls the state which called
+  the directive function.
+- ``attributes`` is a dictionary of extra attributes which may be added to the
+  element the directive produces. Currently, only an "alt" attribute is passed
+  by substitution definitions (value: the substitution name), which may by
+  used by an embedded image directive.
 """
 
 __docformat__ = 'reStructuredText'
@@ -27,7 +46,9 @@ _directive_registry = {
       'note': ('admonitions', 'note'),
       'tip': ('admonitions', 'tip'),
       'hint': ('admonitions', 'hint'),
-      'warning': ('admonitions', 'warning'),}
+      'warning': ('admonitions', 'warning'),
+      'meta': ('html', 'meta'),
+      'imagemap': ('html', 'imagemap'),}
 """Mapping of directive name to (module name, function name). The directive
 'name' is canonical & must be lowercase; language-dependent names are defined
 in the language package."""
