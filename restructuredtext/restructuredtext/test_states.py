@@ -3,8 +3,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/21 22:14:13 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/07/28 05:17:44 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -15,11 +15,11 @@ import sys
 class Tee:
 
     """Write to a file and a stream (default: stdout) simulteaneously."""
-    
+
     def __init__(self, filename, stream=sys.__stdout__):
         self.file = open(filename, 'w')
         self.stream = stream
-    
+
     def write(self, string):
         self.stream.write(string)
         self.file.write(string)
@@ -28,7 +28,7 @@ class Tee:
 sys.stderr = sys.stdout = Tee('test_states.out')
 
 
-import unittest, re, ndiff
+import unittest, re, difflib
 import states
 from dps.statemachine import string2lines
 try:
@@ -46,6 +46,8 @@ class DataTests(unittest.TestCase):
     needs to be done.
     """
 
+    diff = difflib.Differ().compare
+
     def setUp(self):
         self.sm = states.RSTStateMachine(stateclasses=states.stateclasses,
                                          initialstate='Body', debug=debug)
@@ -61,9 +63,10 @@ class DataTests(unittest.TestCase):
             print
             print 'input:'
             print input
-            print '-: output'
-            print '+: expected'
-            ndiff.lcompare(output.splitlines(1), expected.splitlines(1))
+            print '-: expected'
+            print '+: output'
+            print ''.join(self.diff(expected.splitlines(1),
+                                    output.splitlines(1)))
             raise
 
     totest = {}
@@ -72,7 +75,7 @@ class DataTests(unittest.TestCase):
     Each test is a list: input, expected output, optional modifier. The
     optional third entry, a behavior modifier, can be 0 (temporarily disable
     this test) or 1 (run this test under the pdb debugger)."""
-    
+
     proven = {}
     """tests that have proven successful"""
 
@@ -1667,6 +1670,31 @@ No blank line.
     </paragraph>
 </document>
 """],
+["""\
+.. _[foot label with spaces] text 
+
+.. _[*footlabelwithmarkup*] text 
+""",
+"""\
+<document>
+    <comment>
+        _[foot label with spaces] text 
+    </comment>
+    <system_warning level="1">
+        <paragraph>
+            MarkupError: malformed hyperlink target at line 1.
+        </paragraph>
+    </system_warning>
+    <comment>
+        _[*footlabelwithmarkup*] text 
+    </comment>
+    <system_warning level="1">
+        <paragraph>
+            MarkupError: malformed hyperlink target at line 3.
+        </paragraph>
+    </system_warning>
+</document>
+"""],
 ]
 
     proven['target'] = [
@@ -2090,6 +2118,31 @@ Find the ```interpreted text``` in this paragraph!
     </paragraph>
 </document>
 """],
+["""\
+`interpreted`-text `interpreted`: text `interpreted`:text `text`'s interpreted
+""",
+"""\
+<document>
+    <paragraph>
+        <interpreted>
+            interpreted
+        </interpreted>
+        -text 
+        <interpreted>
+            interpreted
+        </interpreted>
+        : text 
+        <interpreted>
+            interpreted
+        </interpreted>
+        :text 
+        <interpreted>
+            text
+        </interpreted>
+        's interpreted
+    </paragraph>
+</document>
+"""],
 ]
 
     proven['link'] = [
@@ -2215,7 +2268,7 @@ http://www.standalone.hyperlink.com
 
 mailto:someone@somewhere.com
 
-someone@somewhere.com
+An email address in a sentence: someone@somewhere.com.
 
 ftp://ends.with.a.period.
 
@@ -2234,9 +2287,11 @@ ftp://ends.with.a.period.
         </link>
     </paragraph>
     <paragraph>
+        An email address in a sentence: 
         <link refuri="mailto:someone@somewhere.com">
             someone@somewhere.com
         </link>
+        .
     </paragraph>
     <paragraph>
         <link refuri="ftp://ends.with.a.period">
@@ -2251,6 +2306,145 @@ ftp://ends.with.a.period.
         </link>
         ?)
     </paragraph>
+</document>
+"""],
+]
+
+    totest['comments_in_bullets'] = [
+["""\
++ bullet paragraph 1
+
+  bullet paragraph 2
+
+  .. comment between bullet paragraphs 2 and 3
+
+  bullet paragraph 3
+""",
+"""\
+<document>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet paragraph 1
+            </paragraph>
+            <paragraph>
+                bullet paragraph 2
+            </paragraph>
+            <comment>
+                comment between bullet paragraphs 2 and 3
+            </comment>
+            <paragraph>
+                bullet paragraph 3
+            </paragraph>
+        </list_item>
+    </bullet_list>
+</document>
+"""],
+["""\
++ bullet paragraph 1
+
+  .. comment between bullet paragraphs 1 (leader) and 2
+
+  bullet paragraph 2
+""",
+"""\
+<document>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet paragraph 1
+            </paragraph>
+            <comment>
+                comment between bullet paragraphs 1 (leader) and 2
+            </comment>
+            <paragraph>
+                bullet paragraph 2
+            </paragraph>
+        </list_item>
+    </bullet_list>
+</document>
+"""],
+["""\
++ bullet
+
+  .. trailing comment
+""",
+"""\
+<document>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet
+            </paragraph>
+            <comment>
+                trailing comment
+            </comment>
+        </list_item>
+    </bullet_list>
+</document>
+"""],
+]
+
+    totest['outdenting'] = [
+["""\
+Anywhere a paragraph would have an effect on the current
+indentation level, a comment or list item should also.
+
++ bullet
+
+paragraph used to end a bullet before a blockquote
+
+  blockquote
+""",
+"""\
+<document>
+    <paragraph>
+        Anywhere a paragraph would have an effect on the current
+        indentation level, a comment or list item should also.
+    </paragraph>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet
+            </paragraph>
+        </list_item>
+    </bullet_list>
+    <paragraph>
+        paragraph used to end a bullet before a blockquote
+    </paragraph>
+    <block_quote>
+        <paragraph>
+            blockquote
+        </paragraph>
+    </block_quote>
+</document>
+"""],
+["""\
++ bullet
+
+.. a comment used to end a bullet before a blockquote
+   (if you can't think of what to write in the paragraph)
+
+  blockquote
+""",
+"""\
+<document>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet
+            </paragraph>
+        </list_item>
+    </bullet_list>
+    <comment>
+        a comment used to end a bullet before a blockquote
+        (if you can't think of what to write in the paragraph)
+    </comment>
+    <block_quote>
+        <paragraph>
+            blockquote
+        </paragraph>
+    </block_quote>
 </document>
 """],
 ]
