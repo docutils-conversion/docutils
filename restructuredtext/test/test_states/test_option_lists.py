@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/03/01 03:00:21 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/04/18 02:40:50 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -493,17 +493,8 @@ empty item above, no blank line
 """,
 """\
 <document>
-    <option_list>
-        <option_list_item>
-            <option_group>
-                <option>
-                    <option_string>
-                        --option
-            <description>
-    <system_message level="2" type="WARNING">
-        <paragraph>
-            Unindent without blank line at line 2.
     <paragraph>
+        --option
         empty item above, no blank line
 """],
 ["""\
@@ -638,6 +629,16 @@ Some edge cases:
 --                everything missing
 
 -                 this should be a bullet list item
+
+These next ones should be simple paragraphs:
+
+-1
+
+--option
+
+--1
+
+-1 and this one too.
 """,
 """\
 <document>
@@ -665,6 +666,16 @@ Some edge cases:
         <list_item>
             <paragraph>
                 this should be a bullet list item
+    <paragraph>
+        These next ones should be simple paragraphs:
+    <paragraph>
+        -1
+    <paragraph>
+        --option
+    <paragraph>
+        --1
+    <paragraph>
+        -1 and this one too.
 """],
 ]
 
