@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.35 $
-:Date: $Date: 2002/02/12 02:24:53 $
+:Revision: $Revision: 1.36 $
+:Date: $Date: 2002/02/20 04:22:55 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -700,7 +700,7 @@ Syntax diagram::
     +---------------------------+
     | term [ " : " classifier ] |
     +--+------------------------+--+
-       | defninition               |
+       | definition                |
        | (body elements)+          |
        +---------------------------+
 
