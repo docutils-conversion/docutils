@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/10/30 05:06:16 $
+:Date: $Date: 2001/10/31 05:53:32 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -105,6 +105,7 @@ Changed contact email addresses.
   - Added inline literal targets.
   - Added anonymous hyperlinks (``.. __:`` & ``__`` syntax).
   - External targets' URIs now in "refuri" attribute, not data.
+  - Changed "[hyper]link" to "reference".
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
@@ -233,6 +234,7 @@ Changed contact email addresses.
   - Added "division" construct.
   - Removed element hierarchy diagram to dps/spec/doctree.txt.
   - Added inline hyperlink targets.
+  - Changed "hyperlink names" to "reference names".
 
 * spec/pyextensions.txt:
 
