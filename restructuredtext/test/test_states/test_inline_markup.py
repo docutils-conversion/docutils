@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/10/20 02:46:58 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/10/27 05:21:36 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -435,7 +435,7 @@ totest['standalone_hyperlink'] = [
 ["""\
 http://www.standalone.hyperlink.com
 
-one-slash-only:/absolute.path
+http:/one-slash-only.absolute.path
 
 mailto:someone@somewhere.com
 
@@ -453,8 +453,8 @@ ftp://ends.with.a.period.
         <link refuri="http://www.standalone.hyperlink.com">
             http://www.standalone.hyperlink.com
     <paragraph>
-        <link refuri="one-slash-only:/absolute.path">
-            one-slash-only:/absolute.path
+        <link refuri="http:/one-slash-only.absolute.path">
+            http:/one-slash-only.absolute.path
     <paragraph>
         <link refuri="mailto:someone@somewhere.com">
             mailto:someone@somewhere.com
@@ -475,6 +475,16 @@ ftp://ends.with.a.period.
         <link refuri="mailto:a.question.mark@end">
             a.question.mark@end
         ?)
+"""],
+["""\
+None of these are standalone hyperlinks (their "schemes"
+are not recognized): signal:noise, a:b.
+""",
+"""\
+<document>
+    <paragraph>
+        None of these are standalone hyperlinks (their "schemes"
+        are not recognized): signal:noise, a:b.
 """],
 ]
 
