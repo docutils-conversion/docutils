@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.31 $
-:Date: $Date: 2002/02/21 03:44:53 $
+:Revision: $Revision: 1.32 $
+:Date: $Date: 2002/02/22 02:11:14 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -178,8 +178,11 @@ class Element(Node):
 
         self.extend(children)           # extend self.children w/ attributes
 
-        self.attributes = attributes
+        self.attributes = {}
         """Dictionary of attribute {name: value}."""
+
+        for att, value in attributes.items():
+            self.attributes[att.lower()] = value
 
         if self.tagname is None:
             self.tagname = self.__class__.__name__
@@ -539,19 +542,22 @@ class document(Root, Element):
         self.id_start = 1
         """Initial ID number."""
 
+        self.messages = Element()
+        """System messages generated after parsing."""
+
     def asdom(self, dom=xml.dom.minidom):
         domroot = dom.Document()
         domroot.appendChild(Element._rooted_dom_node(self, domroot))
         return domroot
 
-    def set_id(self, node, innode=None):
-        if innode == None:
-            innode = self
+    def set_id(self, node, msgnode=None):
+        if msgnode == None:
+            msgnode = self.messages
         if node.has_key('id'):
             id = node['id']
             if self.ids.has_key(id) and self.ids[id] is not node:
                 msg = self.reporter.error('Duplicate ID: "%s"' % id)
-                innode += msg
+                msgnode += msg
         else:
             while 1:
                 id = 'id%s' % self.id_start
@@ -567,28 +573,28 @@ class document(Root, Element):
                 msg = self.reporter.info(
                       'Multiple IDs for name "%s": "%s", "%s"'
                       % (name, self.nameids[name], id))
-                innode += msg
+                msgnode += msg
             self.nameids[name] = id
 
-    def note_implicit_target(self, targetnode, innode=None):
+    def note_implicit_target(self, targetnode, msgnode=None):
+        if msgnode == None:
+            msgnode = self.messages
         name = targetnode['name']
         if self.explicit_targets.has_key(name) \
               or self.external_targets.has_key(name) \
               or self.implicit_targets.has_key(name):
-            sw = self.reporter.info(
+            msg = self.reporter.info(
                   'Duplicate implicit target name: "%s"' % name)
-            if innode == None:
-                innode = self
-            innode += sw
+            msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
             del targetnode['name']
             targetnode['dupname'] = name
         self.implicit_targets[name] = targetnode
-        self.set_id(targetnode)
+        self.set_id(targetnode, msgnode)
 
-    def note_explicit_target(self, targetnode, innode=None):
-        if innode == None:
-            innode = self
+    def note_explicit_target(self, targetnode, msgnode=None):
+        if msgnode == None:
+            msgnode = self.messages
         name = targetnode['name']
         if self.explicit_targets.has_key(name):
             level = 2
@@ -598,21 +604,21 @@ class document(Root, Element):
                 if t.has_key('name') and t.has_key('refuri') \
                       and t['refuri'] == refuri:
                     level = 1           # just inform if refuri's identical
-            sw = self.reporter.system_message(
+            msg = self.reporter.system_message(
                   level, 'Duplicate explicit target name: "%s"' % name)
-            innode += sw
+            msgnode += msg
             self.clear_target_names(name, self.explicit_targets,
                                     self.implicit_targets)
             if level > 1:
                 del targetnode['name']
                 targetnode['dupname'] = name
         elif self.implicit_targets.has_key(name):
-            sw = self.reporter.info(
+            msg = self.reporter.info(
                   'Duplicate implicit target name: "%s"' % name)
-            innode += sw
+            msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
         self.explicit_targets[name] = targetnode
-        self.set_id(targetnode)
+        self.set_id(targetnode, msgnode)
 
     def clear_target_names(self, name, *targetdicts):
         for targetdict in targetdicts:
@@ -649,14 +655,14 @@ class document(Root, Element):
         self.footnote_refs.setdefault(refnode['refname'], []).append(refnode)
         self.note_refname(refnode)
 
-    def note_substitution_def(self, substitutiondefnode, innode=None):
+    def note_substitution_def(self, substitutiondefnode, msgnode=None):
         name = substitutiondefnode['name']
         if self.substitution_defs.has_key(name):
-            sw = self.reporter.error(
+            msg = self.reporter.error(
                   'Duplicate substitution definition name: "%s"' % name)
-            if innode == None:
-                innode = self
-            innode += sw
+            if msgnode == None:
+                msgnode = self.messages
+            msgnode += msg
             oldnode = self.substitution_defs[name]
             oldnode['dupname'] = oldnode['name']
             del oldnode['name']
