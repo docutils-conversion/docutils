@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/08 04:32:03 $
-:Revision: $Revision: 1.29 $
+:Date: $Date: 2002/03/11 03:45:15 $
+:Revision: $Revision: 1.30 $
 
 
 To Do
@@ -26,6 +26,10 @@ To Do
   - Incorporate "modes" (one or two sets).
   - Draw the framework diagram properly as a graphic (once PEPs
     support graphics !-).
+
+- PEP 258:
+
+  - Mention 2.2-style "properties" with attribute docstrings.
 
 - Document!
 
@@ -67,11 +71,12 @@ To Do
   - Merge test directories.
   - Remove complex import code.
   - Rename gpdi.dtd to docutils.dtd.
+  - Rename writers/html.py to html4_css1.py. With aliases?
 
 - Provide a mechanism to pass options to Readers, Writers, and Parsers
-  through dps.core.convert/Publisher? Or create custom
+  through dps.core.publish/Publisher? Or create custom
   Reader/Writer/Parser objects first, and pass *them* to
-  convert/Publisher?
+  publish/Publisher?
 
 - In reader.get_reader_class (& parser & writer too), should we be
   importing 'standalone' or 'dps.readers.standalone'? (This would
@@ -110,8 +115,13 @@ To Do
   - Put the language code into an appropriate element's LANG
     attribute (<HTML>?).
 
+  - "Class" attributes should have no underscores (CSS requirement).
+
   .. [#] Source: `HTML 4.0 in Netscape and Explorer`__.
   __ http://www.webreference.com/dev/html4nsie/index.html
+
+- The Reporter needs another threshold writers. Use warninglevel as a
+  default.
 
 
 Coding Conventions
@@ -297,7 +307,14 @@ Docutils Project Model
 
 Here's the latest project model::
 
-           1,3,5                               6,8
+                    +--------------------------+
+                    |        Docutils:         |
+                    | docutils.core.Publisher, |
+                    | docutils.core.publish()  |
+                    +--------------------------+
+                      /                      \
+                     /                        \
+           1,3,5    /                          \      6,8
            +--------+                          +--------+
            | READER | =======================> | WRITER |
            +--------+ (purely presentational)  +--------+
@@ -363,8 +380,6 @@ the doctree by parsing the input text.
 Readers
 ```````
 
-("Readers" may be renamed to "Directors".)
-
 Most Readers will have to be told what parser to use. So far (see the
 list of examples below), only the Python Source Reader (PySource) will
 be able to determine the syntax on its own.
@@ -385,7 +400,7 @@ Examples:
 - Email: RFC-822 headers, quoted excerpts, signatures, MIME parts.
 - PEP: RFC-822 headers, "PEP xxxx" and "RFC xxxx" conversion to
   URIs. Either interpret PEPs' indented sections or convert existing
-  PEPs to reStructuredText.
+  PEPs to reStructuredText (or both?).
 - Wiki: Global reference lookups of "wiki links" incorporated into
   transforms. (CamelCase only or unrestricted?) Lazy indentation?
 - Web Page: As standalone, but recognize meta fields as meta tags.
