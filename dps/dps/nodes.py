@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.19 $
-:Date: $Date: 2001/11/19 04:06:00 $
+:Revision: $Revision: 1.20 $
+:Date: $Date: 2001/11/22 04:11:44 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -419,7 +419,6 @@ class document(Root, Element):
             self.cleartargetnames(name, self.explicittargets,
                                   self.externaltargets, self.implicittargets)
         elif self.implicittargets.has_key(name):
-            print >>sys.stderr, "already has explicit target"
             sw = self.errorhandler.information(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
