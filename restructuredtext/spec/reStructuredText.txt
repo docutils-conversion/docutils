@@ -3,8 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.5 $
-Date: $Date: 2001/08/04 15:23:48 $
+Revision: $Revision: 1.6 $
+Date: $Date: 2001/08/06 04:49:18 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -52,7 +52,7 @@ Here are examples of body elements:
       indirect hyperlinks (Python_), internal cross-references
       (example_), footnote references ([1]_).
 
-      Paragraphs are separated by blank lines and are flush left.
+      Paragraphs are separated by blank lines and are left-aligned.
 
 - Three types of lists:
 
@@ -82,7 +82,7 @@ Here are examples of body elements:
 - `Literal blocks`_::
 
       Literal blocks are indented, and indicated with a double-colon
-      ('::') at the end of the preceeding paragraph::
+      ('::') at the end of the preceding paragraph::
 
           if literal_block:
               text = 'is left as-is'
@@ -169,9 +169,14 @@ corresponding to syntax constructs.
 Whitespace
 ==========
 
-Blank lines are used to separate paragraphs and other elements. Blank
-lines may be omitted when the markup makes element separation
-unambiguous, in conjunction with indentation.
+Blank lines are used to separate paragraphs and other elements.
+Multiple successive blank lines are equivalent to a single blank line,
+except within literal blocks (where all whitespace is preserved).
+Blank lines may be omitted when the markup makes element separation
+unambiguous, in conjunction with indentation. The first line of a
+document is treated as if it is preceded by a blank line, and the
+last line of a document is treated as if it is followed by a blank
+line.
 
 Indentation is used to indicate, and is only significant in
 indicating:
@@ -280,7 +285,7 @@ A blank line after a title is optional. All text blocks up to the next
 title of the same or higher level are included in a section (or
 subsection, etc.).
 
-All section title styles need not be used, nor must any specific
+All section title styles need not be used, nor need any specific
 section title style be used. However, a document must be consistent in
 its use of section titles: once a hierarchy of title styles is
 established, sections must use that hierarchy.
@@ -352,8 +357,8 @@ Here are examples of **incorrectly** formatted bullet lists::
     (Warning)
 
     - The following line appears to be a new sublist, but it is not:
-      - This is a paragraph contination, not a sublist (no blank
-        line).
+      - This is a paragraph contination, not a sublist (since there's
+        no blank line). This line is also incorrectly indented.
       - Warnings may be issued by the implementation.
 
 Syntax diagram::
@@ -404,6 +409,13 @@ example::
 
        a) item 1a.
        b) Item 1b.
+
+Syntax diagram::
+
+    +-------+----------------------+
+    | '1. ' | list item            |
+    +-------| (body elements)+     |
+            +----------------------+
 
 
 Definition Lists
@@ -589,8 +601,8 @@ typically rendered in a monospaced typeface::
     is outside of the literal block, and therefore treated as an
     ordinary paragraph.
 
-When '::' is immediately preceeded by whitespace, both colons will be
-removed from the output. When text immediately preceeds the '::',
+When '::' is immediately preceded by whitespace, both colons will be
+removed from the output. When text immediately precedes the '::',
 *one* colon will be removed from the output, leaving only one (i.e.,
 '::' will be replaced by ':'). When '::' is alone on a line, it will
 be completely removed from the output; no empty paragraph will remain.
@@ -639,7 +651,7 @@ Block Quotes
 
 DTD element: block_quote.
 
-A text block that is indented relative to the preceeding text, without
+A text block that is indented relative to the preceding text, without
 markup indicating it to be a literal block, is a block quote. All
 markup processing (for body elements and inline markup) continues
 within the block quote::
@@ -677,7 +689,9 @@ optional header rows from the table body. The vertical bar ('|') is
 used for vertical lines (column separators). The plus sign ('+') is
 used for intersections of horizontal and vertical lines.
 
-Each cell contains zero or more body elements. Example::
+Each table cell is treated as a miniature document; the top and
+bottom cell boundaries act as delimiting blank lines. Each cell
+contains zero or more body elements. Example::
 
     +------------------------+------------+----------+----------+
     | Header row, column 1   | Header 2   | Header 3 | Header 4 |
@@ -694,7 +708,7 @@ Each cell contains zero or more body elements. Example::
 
 As with other body elements, blank lines are required before and after
 tables. Tables' left edges should align with the left edge of
-preceeding text blocks; otherwise, the table is considered to be part
+preceding text blocks; otherwise, the table is considered to be part
 of a block quote.
 
 
@@ -723,13 +737,12 @@ Footnotes
 DTD elements: footnote, label.
 
 Footnotes consist of an explicit markup start ('.. '), an underscore,
-an left square bracket, the footnote label, a right square bracket,
-and whitespace, followed by body elements. Footnote labels are
-case-insensitive single words (alphanumerics plus hyphens,
+a left square bracket, the footnote label, a right square bracket,
+and whitespace, followed by body elements. Footnote labels are simple `hyperlink names`_ (case-insensitive single words consisting of alphanumerics plus hyphens,
 underscores, and periods; no whitespace). If the first body element
 within a footnote is a simple paragraph, it may begin on the same line
 as the footnote label. Other elements must begin on a new line,
-left-aligned with the underscore.
+consistently indented and left-aligned.
 
 Footnotes may occur anywhere in the document, not only at the end.
 Where or how they appear in the processed output depends on the output
@@ -759,7 +772,7 @@ hyperlink targets', to differentiate them from `implicit hyperlink
 targets`_ defined below.
 
 Hyperlink names are whitespace-neutral and case-insensitive. See
-`Indirect Hyperlinks`_ for examples.
+`Hyperlink Names`_ below for details and examples.
 
 To differentiate hyperlink targets from footnotes:
 
@@ -934,20 +947,21 @@ markup.
 The inline markup start-string and end-string recognition rules are as
 follows:
 
-1. Inline markup start-strings must be immediately preceeded by
-   whitespace, single or double quotes, '(', '[', '{', or '<'.
+1. Inline markup start-strings must start a text block or be
+   immediately preceded by whitespace, single or double quotes, '(',
+   '[', '{', or '<'.
 
 2. Inline markup start-strings must be immediately followed by
    non-whitespace.
 
-3. Inline markup end-strings must be immediately preceeded by
+3. Inline markup end-strings must be immediately preceded by
    non-whitespace.
 
-4. Inline markup end-strings must be immediately followed by
-   whitespace, single or double quotes, '.', ',', ':', ';', '!', '?',
-   '-', ')', ']', '}', or '>'.
+4. Inline markup end-strings must end a text block or be immediately
+   followed by whitespace, single or double quotes, '.', ',', ':',
+   ';', '!', '?', '-', ')', ']', '}', or '>'.
 
-5. If an inline markup start-string is immediately preceeded by a
+5. If an inline markup start-string is immediately preceded by a
    single or double quote, '(', '[', '{', or '<', it must not be
    immediately followed by the corresponding single or double quote,
    ')', ']', '}', or '>'.
@@ -955,7 +969,7 @@ follows:
 6. An inline markup end-string must be separated by at least one
    character from the start-string.
 
-7. An unescaped backslash preceeding a start-string or end-string will
+7. An unescaped backslash preceding a start-string or end-string will
    disable markup recognition, except for the end-string of `inline
    literals`_. See `escaping mechanism`_ above for details.
 
@@ -1061,26 +1075,41 @@ underscores point away from hyperlink references, and the leading
 underscores point toward `hyperlink targets`_.
 
 
-Standalone Hyperlinks
-`````````````````````
+Hyperlink Names
+```````````````
 
-DTD element: link.
+Simple hyperlink names are single words consisting of alphanumerics
+plus internal hypens, underscores, and periods; no whitespace or other
+characters are allowed. Footnote labels must be simple hyperlink
+names.
 
-Start-string = end-string = '' (empty string).
+Hyperlink names using punctuation or whose names are phrases (two or
+more space-separated words) are called 'phrase-links'. Phrase-links
+are expressed by enclosing the phrase in backquotes and treating
+the backquoted text as a link name::
 
-An absolute URI [URI]_ within a text block is treated as a general
-external hyperlink with the URI itself as the link's text. For
-example::
+    Want to learn about `my favorite programming language`_?
 
-    See http://www.python.org for info.
+    .. _my favorite programming language: http://www.python.org
 
-would be marked up in HTML as::
+Simple hyperlink names may also optionally use backquotes.
 
-    See <A HREF="http://www.python.org">http://www.python.org</A> for
-    info.
+Hyperlink names are whitespace-neutral and case-insensitive. When
+resolving hyperlink names internally:
 
-.. _[URI] Uniform Resource Identifier. URIs are a general form of URLs
-   (Uniform Resource Locators). For the syntax of URIs see RFC2396_.
+- whitespace is normalized (one or more spaces, horizontal or vertical
+  tabs, newlines, carriage returns, or form feeds, are interpreted as
+  a single space), and
+
+- case is normalized (all alphabetic characters are converted to
+  lowercase).
+
+For example, the following hyperlinks are equivalent::
+
+    - `A HYPERLINK`_
+    - `a    hyperlink`_
+    - `A
+      Hyperlink`_
 
 
 Indirect Hyperlinks
@@ -1096,37 +1125,15 @@ source link, a hyperlink name with a trailing underscore::
 
     See the Python_ home page for info.
 
-Simple hyperlink names are single words consisting of alphanumerics
-plus internal hypens, underscores, and periods; no whitespace or other
-characters are allowed.
-
-Somewhere else in the document is a target link containing a URI (see
-`Hyperlink Targets`_ for a full description)::
+A target link containing a URI must exist somewhere else in the
+document (see `Hyperlink Targets`_ for a full description)::
 
     .. _Python: http://www.python.org
 
-After processing into HTML, this should be expressed as::
+After processing into HTML, this would be expressed as::
 
     See the <A HREF="http://www.python.org">Python</A> home page for
     info.
-
-Hyperlink names using punctuation or whose names are phrases (two or
-more space-separated words) are called 'phrase-links'. Phrase-links
-can be expressed by enclosing the phrase in backquotes and treating
-the backquoted text as a link name::
-
-    Want to learn about `my favorite programming language`_?
-
-    .. _my favorite programming language: http://www.python.org
-
-Hyperlink names are whitespace-neutral and case-insensitive. When
-resolving hyperlink names internally, whitespace and case are
-normalized. For example, the following hyperlinks are equivalent::
-
-    - `A HYPERLINK`_
-    - `a    hyperlink`_
-    - `A
-      Hyperlink`_
 
 
 Internal Hyperlinks
@@ -1158,13 +1165,46 @@ DTD element: footnote_reference.
 Start-string = '[', end-string = ']_'.
 
 Footnote references consist of a square-bracketed label followed by a
-trailing underscore. Footnote labels are case-insensitive single words
-(alphanumerics plus internal hyphens, underscores, and periods; no
-whitespace). For example::
+trailing underscore. Footnote labels are simple `hyperlink names`_
+(case-insensitive single words, consisting of alphanumerics plus
+internal hyphens, underscores, and periods; no whitespace). For
+example::
 
     Please refer to the fine manual [GVR2001]_.
 
 See Footnotes_ for the footnote itself.
+
+
+Standalone Hyperlinks
+`````````````````````
+
+DTD element: link.
+
+Start-string = end-string = '' (empty string).
+
+An absolute URI [URI]_ within a text block is treated as a general
+external hyperlink with the URI itself as the link's text. For
+example::
+
+    See http://www.python.org for info.
+
+would be marked up in HTML as::
+
+    See <A HREF="http://www.python.org">http://www.python.org</A> for
+    info.
+
+Two forms of URI are recognized:
+
+- absolute URIs beginning with a scheme ('http:', 'ftp:', 'mailto:',
+  'telnet:', etc.), and
+
+- standalone email addresses ('user@host').
+
+Standalone email addresses are treated as if they had a 'mailto:'
+prefix.
+
+.. _[URI] Uniform Resource Identifier. URIs are a general form of URLs
+    (Uniform Resource Locators). For the syntax of URIs see RFC2396_.
 
 
 ----------------
