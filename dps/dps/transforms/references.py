@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/01/26 00:10:09 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/01/28 02:19:47 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -301,7 +301,46 @@ class Footnotes(Transform):
     """
 
     def transform(self, doctree):
-        pass
+        self.setup_transform(doctree)
+        startnum = doctree.autofootnote_start
+        self.autofootnote_labels = []
+        self.number_footnotes()
+        self.number_footnote_references(startnum)
+
+    def number_footnotes(self):
+        for footnote in self.doctree.autofootnotes:
+            label = str(self.doctree.autofootnote_start)
+            self.doctree.autofootnote_start += 1
+            footnote.insert(0, nodes.label('', label))
+            if footnote.hasattr('dupname'):
+                continue
+            if footnote.hasattr('name'):
+                name = footnote['name']
+                for ref in self.doctree.footnote_refs.get(name, []):
+                    ref += nodes.Text(label)
+                    ref.resolved = 1
+            else:
+                footnote['name'] = label
+                self.doctree.note_explicit_target(footnote, footnote)
+                self.autofootnote_labels.append(label)
+
+    def number_footnote_references(self, startnum):
+        i = 0
+        for ref in self.doctree.autofootnote_refs:
+            if ref.resolved or ref.hasattr('refname'):
+                continue
+            try:
+                ref += nodes.Text(self.autofootnote_labels[i])
+                ref['refname'] = self.autofootnote_labels[i]
+            except IndexError:
+                sw = self.doctree.reporter.error(
+                      'Too many autonumbered footnote references: only %s '
+                      'corresponding footnotes available.'
+                      % len(self.autofootnote_labels))
+                self.doctree += sw
+                break
+            ref.resolved = 1
+            i += 1
 
 
 class Substitutions(Transform):
