@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.18 $
-:Date: $Date: 2001/09/26 03:37:26 $
+:Revision: $Revision: 1.19 $
+:Date: $Date: 2001/09/28 04:59:27 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -463,7 +463,7 @@ The following formatting types are recognized:
 
 A system warning will be generated for each of the following cases:
 
-1. The enumerators do not all have the same format and sequence type. 
+1. The enumerators do not all have the same format and sequence type.
 
 2. The enumerators are not in sequence (i.e., "1.", "3." generates a
    warning).
@@ -501,15 +501,15 @@ Definition Lists
 DTD elements: definition_list, definition_list_item, term, classifier,
 definition.
 
-Each definition list item contains a term and a definition. A term is
-a simple one-line word or phrase. An optional classifier may follow
-the term on the same line, after " : " (space, colon, space). A
-definition is a block indented relative to the term, and may contain
-multiple paragraphs and other body elements. There may be no blank
-line between a term and a definition (this distinguishes definition
-lists from `block quotes`_). Blank lines are required before the first
-and after the last definition list item, but are optional in-between.
-For example::
+Each definition list item contains a term, an optional classifier, and
+a definition. A term is a simple one-line word or phrase. An optional
+classifier may follow the term on the same line, after " : " (space,
+colon, space). A definition is a block indented relative to the term,
+and may contain multiple paragraphs and other body elements. There may
+be no blank line between a term and a definition (this distinguishes
+definition lists from `block quotes`_). Blank lines are required
+before the first and after the last definition list item, but are
+optional in-between. For example::
 
     term 1
         Definition 1.
@@ -521,6 +521,19 @@ For example::
 
     term 3 : classifier
         Definition 3.
+
+A definition list may be used in various ways, including:
+
+- As a dictionary or glossary. The term is the word itself, a
+  classifier may be used to indicate the usage of the term (noun,
+  verb, etc.), and the definition follows.
+
+- To describe program variables. The term is the variable name, a
+  classifier may be used to indicate the type of the variable (string,
+  integer, etc.), and the definition describes the variable's use in
+  the program. This usage of definition lists supports the classifier
+  syntax of Grouch_, a system for describing and enforcing a Python
+  object schema.
 
 Syntax diagram::
 
@@ -580,17 +593,48 @@ DTD elements: option_list, option_list_item, option, short_option,
 long_option, vms_option, option_argument, description.
 
 Option lists are two-column lists of command-line options and
-descriptions. There are three types of options: short, long, and
-VMS/DOS. Short options consist of one dash and an option letter. Long
-options consist of two dashes and an option word. VMS/DOS options
-consist of a slash an option letter. Each type of option may be
-followed by a single space and an argument placeholder. Multiple
-command-line options may be listed, separated by comma-space. There
-must be at least two spaces between the option(s) and the description.
-The description may contain multiple body elements. As with other
-types of lists, blank lines are required before the first option list
-item and after the last, but are optional between option entries. For
-example::
+descriptions. There are three types of options:
+
+- Short POSIX options consist of one dash and an option letter.
+- Long POSIX options consist of two dashes and an option word.
+- DOS options consist of a slash and an option letter.
+- VMS options consist of a slash and an option word.
+
+(Please note that POSIX-style and VMS-style options may also be used
+by DOS or Windows software. The names above have been chosen for
+convenience only.)
+
+Although long POSIX option words and VMS option words may be allowed
+to be truncated by the operating system or the application,
+reStructuredText option lists do not show or support this with any
+special syntax. The complete option word should be given, supported by
+notes about truncation if and when applicable.
+
+Options may be followed by an argument placeholder, whose role and
+syntax should be explained in the description text. A variety of
+separators may be used before argument placeholders. The following
+table details the valid combinations (empty cells are invalid):
+
++-------------+----------+-------------------------------------------+
+|             | Option   | Separator (between option & argument)     |
+|             | With No  +--------------+--------------+-------------+
+| Option Type | Argument | Space (" ")  | Equals ("=") | Colon (":") |
++=============+==========+==============+==============+=============+
+| Short POSIX | -o       | -o arg       |              |             |
++-------------+----------+--------------+--------------+-------------+
+| Long POSIX  | --option | --option arg | --option=arg |             |
++-------------+----------+--------------+--------------+-------------+
+| DOS         | /O       | /O arg       |              |             |
++-------------+----------+--------------+--------------+-------------+
+| VMS         | /OPTION  | /OPTION arg  | /OPTION=arg  | /OPTION:arg |
++-------------+----------+--------------+--------------+-------------+
+
+Multiple variant option types may be listed for each option, separated
+by comma-space. There must be at least two spaces between the
+option(s) and the description. The description may contain multiple
+body elements. As with other types of lists, blank lines are required
+before the first option list item and after the last, but are optional
+between option entries. For example::
 
     -a         Output all.
     -b         Output both (this description is
@@ -598,7 +642,9 @@ example::
     -c arg     Output just arg.
     --long     Output all day long.
     -2, --two  This option has two variants.
-    /V         A VMS/DOS-style option.
+    /V         A DOS-style option.
+    /DIRECTORY  A VMS-syle option. Note the adjustment for the required
+                two spaces.
 
     -p         This option has two paragraphs in the description.
                This is the first.
@@ -743,7 +789,7 @@ literal block syntax takes priority over Doctest block syntax::
 
         >>> This is not recognized as a doctest block by
         reStructuredText. It *will* be recognized by the doctest
-        module, though! 
+        module, though!
 
 Indentation is not required for doctest blocks.
 
@@ -1088,7 +1134,7 @@ A comment start followed by a blank line and nothing else (apart from
 whitespace) is an "empty comment". It serves to terminate a preceding
 construct, and does **not** consume any indented text following. To
 have a block quote follow a list or any indented construct, insert an
-empty comment in-between.
+unindented empty comment in-between.
 
 Syntax diagram::
 
@@ -1109,7 +1155,7 @@ There are eight inline markup constructs. Four of the constructs
 (emphasis_, `strong emphasis`_, `interpreted text`_, and `inline
 literals`_) use identical start-strings and end-strings to indicate
 the markup. The `footnote references`_, `indirect hyperlinks`_, and
-`internal hyperlinks`_ use differenct start-strings and end-strings.
+`internal hyperlinks`_ use different start-strings and end-strings.
 `Standalone hyperlinks`_ are recognized implicitly, and use no extra
 markup.
 
@@ -1311,7 +1357,7 @@ document (see `Hyperlink Targets`_ for a full description)::
 
     .. _Python: http://www.python.org
 
-After processing into HTML, this would be expressed as::
+After processing into HTML, this might be expressed as::
 
     See the <A HREF="http://www.python.org">Python</A> home page for
     info.
@@ -1463,26 +1509,26 @@ corresponding section contents) to the document level.
        =================
         Top-Level Title
        =================
-   
+
        A paragraph.
-   
+
    Once parsed, it looks like this::
-   
+
        <document>
            <section name="top-level title">
                <title>
                    Top-Level Title
-               <paragraph>        
+               <paragraph>
                    A paragraph.
-   
+
    After running the Section Promotion transformation, we have::
-   
+
        <document name="top-level title">
            <title>
                Top-Level Title
-           <paragraph>        
+           <paragraph>
                A paragraph.
-   
+
 2. If step 1 successfully determines the document title, we continue
    by checking for a subtitle.
 
@@ -1490,27 +1536,27 @@ corresponding section contents) to the document level.
    section as its first non-comment element, that section's title is
    promoted to the document's subtitle, and that section's contents
    become the document's immediate contents. Given this input text::
-   
+
        =================
         Top-Level Title
        =================
-   
+
        Second-Level Title
        ~~~~~~~~~~~~~~~~~~
-   
+
        A paragraph.
-   
+
    After parsing and running the Section Promotion transformation, the
    result is::
-   
+
        <document name="top-level title">
            <title>
                Top-Level Title
            <subtitle name="second-level title">
                Second-Level Title
-           <paragraph>        
+           <paragraph>
                A paragraph.
-   
+
    (Note that the implicit hyperlink target generated by the
    "Second-Level Title" is preserved on the "subtitle" element itself.)
 
@@ -1630,12 +1676,13 @@ XXX
     http://docstring.sourceforge.net
 .. _Doc-SIG: http://www.python.org/sigs/doc-sig/
 .. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
+.. _Grouch: http://www.mems-exchange.org/software/grouch/
 .. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
 .. _RFC2396: http://www.rfc-editor.org/rfc/rfc2396.txt
-.. _reStructuredText Directives: 
+.. _reStructuredText Directives:
     http://structuredtext.sourceforge.net/spec/directives.txt
-.. _DPS Python Mode:
-    http://docstring.sourceforge.net/spec/python-mode.txt
+.. _Python Source Reader:
+    http://docstring.sourceforge.net/spec/python-source.txt
 .. _PEP 258: http://docstring.sourceforge.net/spec/pep-0258.txt
 
 
