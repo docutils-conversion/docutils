@@ -4,7 +4,7 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/08/11 02:14:02 $
+Date: $Date: 2001/08/14 03:55:22 $
 Website: http://structuredtext.sf.net/
 
 
@@ -59,6 +59,10 @@ Release 0.4? (pending)
   - Extracted Body.block_quote() from Body.indent().
   - Changed underlines/overlines to require at least 4 characters
     (avoids '...', '???', etc.).
+  - Factored SpecializedBody out of Body subclasses.
+  - Added support for field lists, option lists.
+  - Added temporary support for tables.
+  - Updated docstrings for new field list syntax.
 
 * restructuredtext/test_states.py:
 
@@ -71,6 +75,8 @@ Release 0.4? (pending)
   - Moved some tests around to where they make more sense.
   - Added enumerated list tests.
   - Clarified some edge-case tests.
+  - Added tests for field lists, option lists.
+  - Added temporary test for tables.
 
 * restructuredtext/difflib.py: Added to project. Modified version of
   standard library module, contributed back to Python.
