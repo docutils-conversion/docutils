@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/19 04:34:52 $
+:Date: $Date: 2001/11/22 04:28:43 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -108,6 +108,8 @@ Changed contact email addresses.
   - Changed "[hyper]link" to "reference".
   - Added substitution definitions & substitution references.
   - Modified ``RSTState.inlineobj()`` to return end-string.
+  - Added support for multi-line label text for hyperlink targets &
+    substitution definitions.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
