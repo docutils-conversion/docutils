@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.27 $
-:Date: $Date: 2002/02/12 02:21:18 $
+:Revision: $Revision: 1.28 $
+:Date: $Date: 2002/02/13 02:26:54 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -42,9 +42,10 @@ class Node:
 
     def walk(self, visitor):
         """
-        Traverse a tree of `Node` objects, calling ``visit_*`` methods of
-        `visitor`. If there is no ``visit_particular_node`` method for a node
-        of type ``particular_node``, the ``unknown_visit`` method is called.
+        Traverse a tree of `Node` objects, calling ``visit_...`` methods of
+        `visitor` when entering each node. If there is no
+        ``visit_particular_node`` method for a node of type
+        ``particular_node``, the ``unknown_visit`` method is called.
 
         Doesn't handle arbitrary modification in-place during the traversal.
         Replacing one element with one element is OK.
@@ -58,6 +59,26 @@ class Node:
         children = self.getchildren()
         for i in range(len(children)):
             children[i].walk(visitor)
+
+    def walkabout(self, visitor):
+        """
+        Perform a tree traversal similarly to `Node.walk()`, except also call
+        ``depart_...`` methods before exiting each node. If there is no
+        ``depart_particular_node`` method for a node of type
+        ``particular_node``, the ``unknown_departure`` method is called.
+
+        Parameter `visitor`: A `NodeVisitor` object, containing ``visit_...``
+        and ``depart_...`` methods for each `Node` subclass encountered.
+        """
+        method = getattr(visitor, 'visit_' + self.__class__.__name__,
+                         visitor.unknown_visit)
+        method(self)
+        children = self.getchildren()
+        for i in range(len(children)):
+            children[i].walkabout(visitor)
+        method = getattr(visitor, 'depart_' + self.__class__.__name__,
+                         visitor.unknown_departure)
+        method(self)
 
 
 class Text(Node, MutableString):
@@ -747,7 +768,8 @@ class NodeVisitor:
     Each node class has corresponding methods, doing nothing by default;
     override individual methods for specific and useful behaviour. The
     "``visit_`` + node class name" method is called by `Node.walk()` upon
-    entering a node.
+    entering a node. `Node.walkabout()` also calls the "``depart_`` + node
+    class name" method before exiting a node.
 
     .. [GoF95] Gamma, Helm, Johnson, Vlissides. *Design Patterns: Elements of
        Reusable Object-Oriented Software*. Addison-Wesley, Reading, MA, USA,
@@ -758,12 +780,27 @@ class NodeVisitor:
         self.doctree = doctree
 
     def unknown_visit(self, node):
-        """Called for unknown `Node` types. Does nothing unless overridden."""
-        pass
+        """
+        Called when entering unknown `Node` types.
+
+        Raise an exception unless overridden.
+        """
+        raise NotImplementedError('visiting unknown node type: %s'
+                                  % node.__class__.__name__)
+
+    def unknown_departure(self, node):
+        """
+        Called before exiting unknown `Node` types.
+
+        Raise exception unless overridden.
+        """
+        raise NotImplementedError('departing unknown node type: %s'
+                                  % node.__class__.__name__)
 
     # Save typing with dynamic definitions.
     for name in node_class_names:
         exec """def visit_%s(self, node): pass\n""" % name
+        exec """def depart_%s(self, node): pass\n""" % name
     del name
 
 
@@ -772,17 +809,24 @@ class GenericNodeVisitor(NodeVisitor):
     """
     Generic "Visitor" abstract superclass, for simple traversals.
 
-    Unless overridden, each ``visit_*`` method calls `default_visit()`.
-    ``default_visit()`` must be overridden in subclasses.
+    Unless overridden, each ``visit_...`` method calls `default_visit()`, and
+    each ``depart_...`` method (when using `Node.walkabout()`) calls
+    `default_departure()`. `default_visit()` (`default_departure()`) must be
+    overridden in subclasses.
 
-    Define fully generic visitors by overriding ``default_visit()`` only.
-    Define semi-generic visitors by overriding individual ``visit_*()``
-    methods also.
+    Define fully generic visitors by overriding `default_visit()`
+    (`default_departure()`) only. Define semi-generic visitors by overriding
+    individual ``visit_...()`` (``depart_...()``) methods also.
 
-    `NodeVisitor.unknown_visit()` should be overridden for default behavior.
+    `NodeVisitor.unknown_visit()` (`NodeVisitor.unknown_departure()`) should
+    be overridden for default behavior.
     """
 
     def default_visit(self, node):
+        """Override for generic, uniform traversals."""
+        raise NotImplementedError
+
+    def default_departure(self, node):
         """Override for generic, uniform traversals."""
         raise NotImplementedError
 
@@ -790,4 +834,6 @@ class GenericNodeVisitor(NodeVisitor):
     for name in node_class_names:
         exec """def visit_%s(self, node):
                     self.default_visit(node)\n""" % name
+        exec """def depart_%s(self, node):
+                    self.default_departure(node)\n""" % name
     del name
