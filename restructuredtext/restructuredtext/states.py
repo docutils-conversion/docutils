@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.36 $
-:Date: $Date: 2002/01/16 06:16:00 $
+:Revision: $Revision: 1.37 $
+:Date: $Date: 2002/01/25 23:48:14 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -311,10 +311,11 @@ class RSTState(StateWS):
         self.statemachine.node += sectionnode
         textnodes, warnings = self.inline_text(title, lineno)
         titlenode = nodes.title(title, '', *textnodes)
+        name = normname(titlenode.astext())
+        sectionnode['name'] = name
         sectionnode += titlenode
         sectionnode += warnings
-        memo.document.addimplicittarget(normname(titlenode.astext()),
-                                        sectionnode)
+        memo.document.note_implicit_target(sectionnode, sectionnode)
         offset = self.statemachine.lineoffset + 1
         absoffset = self.statemachine.abslineoffset() + 1
         newabsoffset = self.nestedparse(
@@ -571,10 +572,11 @@ class RSTState(StateWS):
         refname = normname(text)
         reference = nodes.reference(rawsource, text)
         if rawsource[-2:] == '__':
-            self.statemachine.memo.document.addanonymousref(reference)
+            reference['anonymous'] = 1
+            self.statemachine.memo.document.note_anonymous_ref(reference)
         else:
             reference['refname'] = refname
-        self.statemachine.memo.document.addrefname(refname, reference)
+            self.statemachine.memo.document.note_refname(reference)
         return before, [reference], after, []
 
     def interpreted(self, before, after, endmatch, role, position, lineno,
@@ -607,8 +609,9 @@ class RSTState(StateWS):
             target = inlines[0]
             name = normname(target.astext())
             assert isinstance(target, nodes.target)
-            self.statemachine.memo.document.addexplicittarget(
-                  name, target, self.statemachine.node)
+            target['name'] = name
+            self.statemachine.memo.document.note_explicit_target(
+                  target, self.statemachine.node)
         return before, inlines, remaining, syswarnings
 
     def substitution_reference(self, match, lineno,
@@ -618,17 +621,19 @@ class RSTState(StateWS):
         if inlines:
             assert len(inlines) == 1
             subrefnode = inlines[0]
+            assert isinstance(subrefnode, nodes.substitution_reference)
             subreftext = subrefnode.astext()
             refname = normname(subreftext)
-            assert isinstance(subrefnode, nodes.substitution_reference)
-            self.statemachine.memo.document.addsubstitutionref(refname, subrefnode)
+            subrefnode['refname'] = refname
+            self.statemachine.memo.document.note_substitution_ref(subrefnode)
             if endstring[-1:] == '_':
                 referencenode = nodes.reference('|%s%s' % (subreftext, endstring), '')
                 if endstring[-2:] == '__':
-                    self.statemachine.memo.document.addanonymousref(referencenode)
+                    referencenode['anonymous'] = 1
+                    self.statemachine.memo.document.note_anonymous_ref(referencenode)
                 else:
-                    self.statemachine.memo.document.addrefname(refname, referencenode)
                     referencenode['refname'] = refname
+                    self.statemachine.memo.document.note_refname(referencenode)
                 referencenode += subrefnode
                 inlines = [referencenode]
         return before, inlines, remaining, syswarnings
@@ -640,13 +645,13 @@ class RSTState(StateWS):
         if refname[0] == '#':
             refname = refname[1:]
             fnname = fnname[1:]
-            self.statemachine.memo.document.addautofootnoteref(refname,
-                                                               fnrefnode)
+            fnrefnode['auto'] = 1
+            self.statemachine.memo.document.note_autofootnote_ref(fnrefnode)
         else:
             fnrefnode += nodes.Text(fnname)
         if refname:
             fnrefnode['refname'] = refname
-            self.statemachine.memo.document.addrefname(refname, fnrefnode)
+            self.statemachine.memo.document.note_refname(fnrefnode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
@@ -658,11 +663,12 @@ class RSTState(StateWS):
         referencenode = nodes.reference(
               referencename + match.group(self.inline.groups.initial.refend),
               referencename)
-        self.statemachine.memo.document.addrefname(refname, referencenode)
         if anonymous:
-            self.statemachine.memo.document.addanonymousref(referencenode)
+            referencenode['anonymous'] = 1
+            self.statemachine.memo.document.note_anonymous_ref(referencenode)
         else:
             referencenode['refname'] = refname
+            self.statemachine.memo.document.note_refname(referencenode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
@@ -1265,12 +1271,14 @@ class Body(RSTState):
         footnotenode = nodes.footnote('\n'.join(indented))
         if name[0] == '#':
             name = name[1:]
-            self.statemachine.memo.document.addautofootnote(name, footnotenode)
+            footnotenode['auto'] = 1
+            self.statemachine.memo.document.note_autofootnote(footnotenode)
         else:
             footnotenode += nodes.label('', label)
         if name:
-            self.statemachine.memo.document.addimplicittarget(name,
-                                                              footnotenode)
+            footnotenode['name'] = name
+            self.statemachine.memo.document.note_implicit_target(footnotenode,
+                                                               footnotenode)
         if indented:
             self.nestedparse(indented, inputoffset=offset, node=footnotenode)
         return [footnotenode], blankfinish
@@ -1302,10 +1310,10 @@ class Body(RSTState):
             reference = ' '.join([line.strip() for line in block])
             refname = self.isreference(reference)
             if refname:
-                target = nodes.target(blocktext, '')
+                target = nodes.target(blocktext, '', refname=refname)
                 self.addtarget(targetmatch.group(namegroup), '', target)
-                self.statemachine.memo.document.addindirecttarget(refname,
-                                                                  target)
+                if target.has_key('name'):
+                    self.statemachine.memo.document.note_indirect_target(target)
                 return [target], blankfinish
         nodelist = []
         reference = ''.join([line.strip() for line in block])
@@ -1332,19 +1340,20 @@ class Body(RSTState):
             return None
         return unescape(match.group(simplegroup) or match.group(phrasegroup))
 
-    def addtarget(self, targetname, reference, target):
+    def addtarget(self, targetname, refuri, target):
         if targetname:
             name = normname(unescape(targetname))
-            if reference:
-                self.statemachine.memo.document.addexternaltarget(
-                      name, reference, target, self.statemachine.node)
-            else:
-                self.statemachine.memo.document.addexplicittarget(
-                      name, target, self.statemachine.node)
+            target['name'] = name
+            if refuri:
+                target['refuri'] = refuri
+                self.statemachine.memo.document.note_external_target(target)
+            self.statemachine.memo.document.note_explicit_target(
+                  target, self.statemachine.node)
         else:                       # anonymous target
-            self.statemachine.memo.document.addanonymoustarget(target)
-            if reference:
-                target['refuri'] = reference
+            if refuri:
+                target['refuri'] = refuri
+            target['anonymous'] = 1
+            self.statemachine.memo.document.note_anonymous_target(target)
 
     def substitutiondef(self, match,
                         pattern=explicit.patterns.substitution,
@@ -1398,8 +1407,8 @@ class Body(RSTState):
                 self.statemachine.node += sw
             else:
                 del substitutionnode['alt']
-                self.statemachine.memo.document.addsubstitutiondef(
-                      name, substitutionnode, self.statemachine.node)
+                self.statemachine.memo.document.note_substitution_def(
+                      substitutionnode, self.statemachine.node)
                 return [substitutionnode], blankfinish
         else:
             sw = self.statemachine.memo.reporter.warning(
@@ -1529,11 +1538,9 @@ class Body(RSTState):
             reference = escape2null(' '.join([line.strip() for line in block]))
             refname = self.isreference(reference)
             if refname:
-                target = nodes.target(blocktext, '')
-                self.addtarget('', '', target)
-                self.statemachine.memo.document.addanonymoustarget(target)
-                self.statemachine.memo.document.addindirecttarget(refname,
-                                                                  target)
+                target = nodes.target(blocktext, '', refname=refname,
+                                      anonymous=1)
+                self.statemachine.memo.document.note_anonymous_target(target)
                 return [target], blankfinish
         nodelist = []
         reference = escape2null(''.join([line.strip() for line in block]))
@@ -1545,10 +1552,11 @@ class Body(RSTState):
             warning += nodes.literal_block(blocktext, blocktext)
             nodelist.append(warning)
         else:
-            unescaped = unescape(reference)
-            target = nodes.target(blocktext, '')
-            target['refuri'] = unescaped
-            self.statemachine.memo.document.addanonymoustarget(target)
+            target = nodes.target(blocktext, '', anonymous=1)
+            if reference:
+                unescaped = unescape(reference)
+                target['refuri'] = unescaped
+            self.statemachine.memo.document.note_anonymous_target(target)
             nodelist.append(target)
         return nodelist, blankfinish
 
@@ -1590,7 +1598,7 @@ class SpecializedBody(Body):
     doctest = invalid_input
     tabletop = invalid_input
     explicitmarkup = invalid_input
-    anonymoustarget = invalid_input
+    anonymous = invalid_input
     line = invalid_input
     text = invalid_input
 
