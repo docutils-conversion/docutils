@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/23 16:51:31 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/03/01 03:16:22 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -41,14 +41,16 @@ class HTMLTranslator(nodes.NodeVisitor):
     def __init__(self, doctree):
         nodes.NodeVisitor.__init__(self, doctree)
         self.language = languages.getlanguage(doctree.languagecode)
-        self.head = ['<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
-                     ' "http://www.w3.org/TR/html4/strict.dtd">\n',
+        self.head = ['<!DOCTYPE HTML PUBLIC'
+                     ' "-//W3C//DTD HTML 4.01 Transitional//EN"\n'
+                     ' "http://www.w3.org/TR/html4/loose.dtd">\n',
                      '<HTML LANG="%s">\n<HEAD>\n' % doctree.languagecode,
                      '<LINK REL="StyleSheet" HREF="default.css"'
                      ' TYPE="text/css">']
         self.body = ['</HEAD>\n<BODY>\n']
         self.foot = ['</BODY>\n</HTML>\n']
         self.sectionlevel = 0
+        self.context = []
 
     def astext(self):
         return ''.join(self.head + self.body + self.foot)
@@ -62,21 +64,21 @@ class HTMLTranslator(nodes.NodeVisitor):
         return text
 
     def starttag(self, node, tagname, suffix='\n', **attributes):
-        attrs = {}
+        atts = {}
         for (name, value) in attributes.items():
-            attrs[name.lower()] = value
+            atts[name.lower()] = value
         for att in ('class',):          # append to node attribute
             if node.has_key(att):
-                if attrs.has_key(att):
-                    attrs[att] = node[att] + ' ' + attrs[att]
+                if atts.has_key(att):
+                    atts[att] = node[att] + ' ' + atts[att]
         for att in ('id',):             # node attribute overrides
             if node.has_key(att):
-                attrs[att] = node[att]
-        attlist = attrs.items()
+                atts[att] = node[att]
+        attlist = atts.items()
         attlist.sort()
         return '<%s>%s' % (' '.join([tagname.upper()]
                                     + ['%s="%s"' % (name.upper(),
-                                                    self.encode(value))
+                                                    self.encode(str(value)))
                                        for name, value in attlist]),
                            suffix)
 
@@ -118,10 +120,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_block_quote(self, node):
-        pass
+        self.body.append(self.starttag(node, 'blockquote'))
 
     def depart_block_quote(self, node):
-        pass
+        self.body.append('</BLOCKQUOTE>\n')
 
     def visit_bullet_list(self, node):
         self.body.append(self.starttag(node, 'ul',
@@ -131,16 +133,16 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</UL>\n')
 
     def visit_caption(self, node):
-        pass
+        self.body.append(self.starttag(node, 'p', '', CLASS='caption'))
 
     def depart_caption(self, node):
-        pass
+        self.body.append('</P>\n')
 
     def visit_caution(self, node):
-        pass
+        self.visit_admonition(node, 'caution')
 
     def depart_caution(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_classifier(self, node):
         self.body.append(' <SPAN CLASS="classifier_delimiter">:</SPAN> ')
@@ -150,7 +152,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</SPAN>')
 
     def visit_colspec(self, node):
-        pass
+        atts = {}
+        #if node.has_key('colwidth'):
+        #    atts['width'] = str(node['colwidth']) + '*'
+        self.body.append(self.starttag(node, 'col', **atts))
 
     def depart_colspec(self, node):
         pass
@@ -174,10 +179,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.depart_docinfo_item()
 
     def visit_danger(self, node):
-        pass
+        self.visit_admonition(node, 'danger')
 
     def depart_danger(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_date(self, node):
         self.visit_docinfo_item(node, 'date')
@@ -205,20 +210,20 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_description(self, node):
-        pass
+        self.body.append('<TD>\n')
 
     def depart_description(self, node):
-        pass
+        self.body.append('</TD>')
 
     def visit_docinfo(self, node):
-        self.body.append(self.starttag(node, 'DIV', CLASS='docinfo'))
-        self.body.append('<TABLE FRAME="void" RULES="none">\n'
-                         '<COL CLASS="docinfo_name">\n'
+        self.body.append(self.starttag(node, 'table', CLASS='docinfo',
+                                       frame="void", rules="none"))
+        self.body.append('<COL CLASS="docinfo_name">\n'
                          '<COL CLASS="docinfo_content">\n'
                          '<TBODY VALIGN="top">\n')
 
     def depart_docinfo(self, node):
-        self.body.append('</TABLE>\n</TBODY>\n</DIV>\n')
+        self.body.append('</TBODY>\n</TABLE>\n')
 
     def visit_docinfo_item(self, node, name):
         self.head.append(self.starttag(node, 'meta', name=name,
@@ -232,10 +237,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</P></TD>\n</TR>\n')
 
     def visit_doctest_block(self, node):
-        pass
+        self.body.append(self.starttag(node, 'pre', CLASS='doctest_block'))
 
     def depart_doctest_block(self, node):
-        pass
+        self.body.append('</PRE>\n')
 
     def visit_document(self, node):
         self.body.append(self.starttag(node, 'div', CLASS='document'))
@@ -250,93 +255,139 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</EM>')
 
     def visit_entry(self, node):
-        pass
+        if isinstance(node.parent.parent, nodes.thead):
+            tagname = 'th'
+        else:
+            tagname = 'td'
+        atts = {}
+        if node.has_key('morerows'):
+            atts['rowspan'] = node['morerows'] + 1
+        if node.has_key('morecols'):
+            atts['colspan'] = node['morecols'] + 1
+        self.body.append(self.starttag(node, tagname, **atts))
+        self.context.append('</%s>' % tagname.upper())
+        if len(node) == 0:              # empty cell
+            self.body.append('&nbsp;')
 
     def depart_entry(self, node):
-        pass
+        self.body.append(self.context.pop())
 
     def visit_enumerated_list(self, node):
-        pass
+        """
+        The 'start' attribute does not conform to HTML 4.01's strict.dtd, but
+        CSS1 doesn't help. CSS2 isn't widely enough supported yet to be
+        usable.
+        """        
+        atts = {}
+        if node.has_key('start'):
+            atts['start'] = node['start']
+        if node.has_key('enumtype'):
+            atts['class'] = node['enumtype']
+        # @@@ To do: prefix, suffix. How? Change prefix/suffix to a
+        # single "format" attribute? Use CSS2?
+        self.body.append(self.starttag(node, 'ol', **atts))
 
     def depart_enumerated_list(self, node):
-        pass
+        self.body.append('</OL>\n')
 
     def visit_error(self, node):
-        pass
+        self.visit_admonition(node, 'error')
 
     def depart_error(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_field(self, node):
-        pass
+        self.body.append(self.starttag(node, 'tr', CLASS='field'))
 
     def depart_field(self, node):
-        pass
+        self.body.append('</TR>\n')
 
     def visit_field_argument(self, node):
-        pass
+        self.body.append(' ')
+        self.body.append(self.starttag(node, 'span', '',
+                                       CLASS='field_argument'))
 
     def depart_field_argument(self, node):
-        pass
+        self.body.append('</SPAN>')
 
     def visit_field_body(self, node):
-        pass
+        self.body.append(':</P>\n</TD><TD>')
+        self.body.append(self.starttag(node, 'div', CLASS='field_body'))
 
     def depart_field_body(self, node):
-        pass
+        self.body.append('</DIV></TD>\n')
 
     def visit_field_list(self, node):
-        pass
+        self.body.append(self.starttag(node, 'table', frame='void',
+                                       rules='none'))
+        self.body.append('<COL CLASS="field_name">\n'
+                         '<COL CLASS="field_body">\n'
+                         '<TBODY VALIGN="top">\n')
 
     def depart_field_list(self, node):
-        pass
+        self.body.append('</TBODY>\n</TABLE>\n')
 
     def visit_field_name(self, node):
-        pass
+        self.body.append('<TD>\n')
+        self.body.append(self.starttag(node, 'p', '', CLASS='field_name'))
 
     def depart_field_name(self, node):
+        """
+        Leave the end tag to `self.visit_field_body()`, in case there are any
+        field_arguments.
+        """
         pass
 
     def visit_figure(self, node):
-        pass
+        self.body.append(self.starttag(node, 'div', CLASS='figure'))
 
     def depart_figure(self, node):
-        pass
+        self.body.append('</DIV>\n')
 
     def visit_footnote(self, node):
-        pass
+        self.body.append(self.starttag(node, 'table', CLASS='footnote',
+                                       frame="void", rules="none"))
+        self.body.append('<COL CLASS="label">\n'
+                         '<COL>\n'
+                         '<TBODY VALIGN="top">\n'
+                         '<TR><TD>\n')
 
     def depart_footnote(self, node):
-        pass
+        self.body.append('</TD></TR>\n'
+                         '</TBODY>\n</TABLE>\n')
 
     def visit_footnote_reference(self, node):
-        pass
+        href = ''
+        if node.has_key('refname'):
+            href = '#' + self.doctree.nameids[node['refname']]
+        self.body.append(self.starttag(node, 'a', '[', href=href,
+                                       CLASS='footnote_reference'))
 
     def depart_footnote_reference(self, node):
-        pass
+        self.body.append(']</A>')
 
     def visit_hint(self, node):
-        pass
+        self.visit_admonition(node, 'hint')
 
     def depart_hint(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_image(self, node):
-        attrs = node.attributes.copy()
-        attrs['src'] = attrs['uri']
-        del attrs['uri']
-        if not attrs.has_key('alt'):
-            attrs['alt'] = attrs['src']
-        self.body.append(self.starttag(node, 'img', '', **attrs))
+        atts = node.attributes.copy()
+        atts['src'] = atts['uri']
+        del atts['uri']
+        if not atts.has_key('alt'):
+            atts['alt'] = atts['src']
+        self.body.append(self.starttag(node, 'img', '', **atts))
 
     def depart_image(self, node):
         pass
 
     def visit_important(self, node):
-        pass
+        self.visit_admonition(node, 'important')
 
     def depart_important(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_interpreted(self, node):
         self.body.append('<SPAN class="interpreted">')
@@ -345,16 +396,17 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</SPAN>')
 
     def visit_label(self, node):
-        pass
+        self.body.append(self.starttag(node, 'p', '[', CLASS='label'))
 
     def depart_label(self, node):
-        pass
+        self.body.append(']</P>\n'
+                         '</TD><TD>\n')
 
     def visit_legend(self, node):
-        pass
+        self.body.append(self.starttag(node, 'div', CLASS='legend'))
 
     def depart_legend(self, node):
-        pass
+        self.body.append('</DIV>\n')
 
     def visit_list_item(self, node):
         self.body.append(self.starttag(node, 'li'))
@@ -369,16 +421,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</CODE>')
 
     def visit_literal_block(self, node):
-        pass
+        self.body.append(self.starttag(node, 'pre', CLASS='literal_block'))
 
     def depart_literal_block(self, node):
-        pass
-
-    def visit_long_option(self, node):
-        pass
-
-    def depart_long_option(self, node):
-        pass
+        self.body.append('</PRE>\n')
 
     def visit_meta(self, node):
         self.head.append(self.starttag(node, 'meta', **node.attributes))
@@ -387,34 +433,64 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_note(self, node):
-        pass
+        self.visit_admonition(node, 'note')
 
     def depart_note(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_option(self, node):
-        pass
+        if self.context[-1]:
+            self.body.append(', ')
 
     def depart_option(self, node):
-        pass
+        self.context[-1] += 1
 
     def visit_option_argument(self, node):
-        pass
+        self.body.append(node.get('delimiter', ' '))
+        self.body.append(self.starttag(node, 'span', '',
+                                       CLASS='option_argument'))
 
     def depart_option_argument(self, node):
-        pass
+        self.body.append('</SPAN>')
+
+    def visit_option_group(self, node):
+        atts = {}
+        if len(node.astext()) > 14:
+            atts['colspan'] = 2
+            self.context.append('</TR>\n<TR><TD>&nbsp;</TD>')
+        else:
+            self.context.append('')
+        self.body.append(self.starttag(node, 'td', **atts))
+        self.body.append('<P><CODE>')
+        self.context.append(0)
+
+    def depart_option_group(self, node):
+        self.context.pop()
+        self.body.append('</CODE></P>\n</TD>')
+        self.body.append(self.context.pop())
 
     def visit_option_list(self, node):
-        pass
+        self.body.append(
+              self.starttag(node, 'table', CLASS='option_list',
+                            frame="void", rules="none", cellspacing=12))
+        self.body.append('<COL CLASS="option">\n'
+                         '<COL CLASS="description">\n'
+                         '<TBODY VALIGN="top">\n')
 
     def depart_option_list(self, node):
-        pass
+        self.body.append('</TBODY>\n</TABLE>\n')
 
     def visit_option_list_item(self, node):
-        pass
+        self.body.append(self.starttag(node, 'tr', ''))
 
     def depart_option_list_item(self, node):
-        pass
+        self.body.append('</TR>\n')
+
+    def visit_option_string(self, node):
+        self.body.append(self.starttag(node, 'span', '', CLASS='option'))
+
+    def depart_option_string(self, node):
+        self.body.append('</SPAN>')
 
     def visit_organization(self, node):
         self.visit_docinfo_item(node, 'organization')
@@ -435,10 +511,18 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</SPAN>')
 
     def visit_reference(self, node):
-        pass
+        if node.has_key('refuri'):
+            href = node['refuri']
+        elif node.has_key('refid'):
+            href = '#' + node['refid']
+        elif node.has_key('refname'):
+            # @@@ Check for non-existent mappings. Here or in a transform?
+            href = '#' + self.doctree.nameids[node['refname']]
+        self.body.append(self.starttag(node, 'a', '', href=href,
+                                       CLASS='reference'))
 
     def depart_reference(self, node):
-        pass
+        self.body.append('</A>')
 
     def visit_revision(self, node):
         self.visit_docinfo_item(node, 'revision')
@@ -447,10 +531,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.depart_docinfo_item()
 
     def visit_row(self, node):
-        pass
+        self.body.append(self.starttag(node, 'tr', ''))
 
     def depart_row(self, node):
-        pass
+        self.body.append('</TR>\n')
 
     def visit_section(self, node):
         self.sectionlevel += 1
@@ -459,12 +543,6 @@ class HTMLTranslator(nodes.NodeVisitor):
     def depart_section(self, node):
         self.sectionlevel -= 1
         self.body.append('</DIV>\n')
-
-    def visit_short_option(self, node):
-        pass
-
-    def depart_short_option(self, node):
-        pass
 
     def visit_status(self, node):
         self.visit_docinfo_item(node, 'status')
@@ -497,7 +575,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</H1>\n')
 
     def visit_system_message(self, node):
-        self.body.append(self.starttag(node, 'DIV', CLASS='system_message'))
+        if node['level'] < self.doctree.reporter.getcategory('output')[1]:
+            # @@@ need another threshold? gotta fix that
+            raise nodes.SkipNode
+        self.body.append(self.starttag(node, 'div', CLASS='system_message'))
         self.body.append('<H3>%s (level %s system message)</H3>\n'
                          % (node['type'], node['level']))
 
@@ -505,28 +586,33 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</DIV>\n')
 
     def visit_table(self, node):
-        pass
+        self.body.append(self.starttag(node, 'table', rules='all'))
 
     def depart_table(self, node):
-        pass
+        self.body.append('</TABLE>\n')
 
     def visit_target(self, node):
-        pass
+        if not (node.has_key('refuri') or node.has_key('refid')
+                or node.has_key('refname')):
+            self.body.append(self.starttag(node, 'a', ''))
 
     def depart_target(self, node):
-        pass
+        self.body.append('</A>')
 
     def visit_tbody(self, node):
-        pass
+        self.body.append(self.starttag(node, 'tbody', valign='top'))
 
     def depart_tbody(self, node):
-        pass
+        self.body.append('</TBODY>\n')
 
     def visit_term(self, node):
         self.body.append(self.starttag(node, 'dt', ''))
 
     def depart_term(self, node):
-        # leave the end tag to visit_definition, in case there's a classifier
+        """
+        Leave the end tag to `self.visit_definition()`, in case there's a
+        classifier.
+        """
         pass
 
     def visit_tgroup(self, node):
@@ -536,33 +622,33 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_thead(self, node):
-        pass
+        self.body.append(self.starttag(node, 'thead', valign='bottom'))
 
     def depart_thead(self, node):
-        pass
+        self.body.append('</THEAD>\n')
 
     def visit_tip(self, node):
-        pass
+        self.visit_admonition(node, 'tip')
 
     def depart_tip(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_title(self, node):
+        """Only 6 section levels are supported by HTML."""
         if self.sectionlevel == 0:
             self.head.append('<TITLE>%s</TITLE>\n' % self.encode(node.astext()))
             self.body.append(self.starttag(node, 'H1', '', CLASS='title'))
         else:
             self.body.append(self.starttag(node, 'H%s' % self.sectionlevel, ''))
-            # @@@ >H6?
 
     def depart_title(self, node):
         if self.sectionlevel == 0:
             self.body.append('</H1>\n')
         else:
-            self.body.append('</H%s>\n' % self.sectionlevel) # @@@ >H6?
+            self.body.append('</H%s>\n' % self.sectionlevel)
 
     def visit_transition(self, node):
-        self.body.append('<HR>\n')
+        self.body.append(self.starttag(node, 'hr'))
 
     def depart_transition(self, node):
         pass
@@ -573,14 +659,8 @@ class HTMLTranslator(nodes.NodeVisitor):
     def depart_version(self, node):
         self.depart_docinfo_item()
 
-    def visit_vms_option(self, node):
-        pass
-
-    def depart_vms_option(self, node):
-        pass
-
     def visit_warning(self, node):
-        pass
+        self.visit_admonition(node, 'warning')
 
     def depart_warning(self, node):
-        pass
+        self.depart_admonition()
