@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/30 04:43:12 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/06 03:11:14 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Hyperlinks.
@@ -20,7 +20,7 @@ except ImportError:
 
 
 def suite():
-    parser = Parser(debug=UnitTestFolder.debug)
+    parser = Parser()
     s = DPSTestSupport.TransformTestSuite(parser)
     s.generateTests(totest)
     return s
@@ -213,7 +213,7 @@ The results of the transform are not visible at the XML level.
 <document>
     <target name="external hyperlink" refuri="http://uri">
     <target name="indirect target" refuri="http://uri">
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             External hyperlink target "indirect target" is not referenced.
 """],
@@ -326,7 +326,7 @@ Duplicate external target_'s (different URIs):
             target
         's (different URIs):
     <target dupname="target" refuri="first">
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "target"
     <target dupname="target" refuri="second">

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/01/30 04:43:05 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/06 03:11:01 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Footnotes.
@@ -20,7 +20,7 @@ except ImportError:
 
 
 def suite():
-    parser = Parser(debug=UnitTestFolder.debug)
+    parser = Parser()
     s = DPSTestSupport.TransformTestSuite(parser)
     s.generateTests(totest)
     return s
@@ -237,12 +237,12 @@ Mixed anonymous and labelled auto-numbered footnotes:
     <footnote auto="1" dupname="five">
         <label>
             6
-        <system_warning level="1">
+        <system_warning level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "five"
         <paragraph>
             Auto-numbered footnote 5 again (duplicate).
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Too many autonumbered footnote references: only 2 corresponding footnotes available.
 """],
@@ -267,7 +267,7 @@ Mixed auto-numbered and manual footnotes:
             1
         <paragraph>
             auto-numbered
-        <system_warning level="1">
+        <system_warning level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "1"
     <footnote auto="1" name="label">

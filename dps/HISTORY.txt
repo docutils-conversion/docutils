@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/01/30 04:56:45 $
+:Date: $Date: 2002/02/06 03:11:28 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -41,6 +41,8 @@ Changed contact email addresses.
 
 * dps/__init__.py: Added docstring.
 
+* dps/core.py: Added to project.
+
 * dps/nodes.py:
 
   - Added 'vms_option'.
@@ -73,7 +75,7 @@ Changed contact email addresses.
   - Added "hint", "substitution", "substitution_reference" classes.
   - Added element hierarchy base classes.
   - Removed generic 'directive'.
-  - 'errorhandler' -> 'reporter'.
+  - 'errorhandler' -> 'reporter'. ``dps.utils.Reporter`` reform.
   - Added document.languagecode.
   - Added Visitor classes & Node.walk().
   - Improved ``__repr__()``.
@@ -114,6 +116,7 @@ Changed contact email addresses.
     Reporter.
   - Removed Reporter.strong_system_warning (not needed).
   - Improved error stream handling.
+  - Reworked ``Reporter`` based on "log4j".
   - Added some docstrings.
   - Added 'parseattributes()', associated functions and exceptions.
   - Moved 'normname()' from restructuredtext.states.
@@ -121,12 +124,16 @@ Changed contact email addresses.
 
 * dps/test_*.py: Moved to new test/ directory.
 
+* dps/readers: Subpackage added to project.
+
 * dps/parsers/model.py:
 
   - Added setup_parse() so unoverridden parse() could raise a
     NotImplementedError.
   - Moved Parser class to __init__.py, with updates. Module removed
     from project.
+
+* dps/writers: Subpackage added to project.
 
 * dps/languages/__init__.py:
 
@@ -144,8 +151,8 @@ Changed contact email addresses.
 * dps/transforms: Subpackage added. Thanks to Ueli Schlaepfer for the
   initial work.
 
-* dps/formatters: Removed subpackage from project. To be replaced by
-  "writers" or "builders" subpackage.
+* dps/formatters: Removed subpackage from project. Replaced by
+  "writers".
 
 * test: Subdirectory added. The top-level consists of a modular test
   framework begun by Garth Kidd.
@@ -167,7 +174,7 @@ Changed contact email addresses.
 * spec/pep-0258.txt:
 
   - Clarifications due to Tony Ibbs.
-  - Added names to system warnings.
+  - Added names to system warnings, updated.
 
 * spec/gdpi.dtd:
 
@@ -204,6 +211,7 @@ Changed contact email addresses.
     allowing nested inline elements.
   - Removed generic 'directive'.
   - Added 'problematic', inline relative of 'system_warning'.
+  - Added 'type' attribute to 'system_warning', removed 'warning'.
 
 * spec/pdpi.dtd:
 

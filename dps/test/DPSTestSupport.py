@@ -2,8 +2,8 @@
 """
 :Authors:  David Goodger; Garth Kidd
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/01/30 04:47:11 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/06 03:10:12 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -222,7 +222,8 @@ class TransformTestCase(CustomTestCase):
     def test_transforms(self):
         if self.runInDebugger:
             pdb.set_trace()
-        doctree = utils.newdocument(warninglevel=4, errorlevel=4)
+        doctree = utils.newdocument(warninglevel=5, errorlevel=5,
+                                    debug=UnitTestFolder.debug)
         self.parser.parse(self.input, doctree)
         for transformClass in self.transforms:
             transformClass().transform(doctree)
@@ -235,8 +236,8 @@ class TransformTestCase(CustomTestCase):
         print '\n', self.id
         print '-' * 70
         print self.input
-        doctree = utils.newdocument(
-              languagecode='en', warninglevel=4, errorlevel=4)
+        doctree = utils.newdocument(warninglevel=5, errorlevel=5,
+                                    debug=UnitTestFolder.debug)
         self.parser.parse(self.input, doctree)
         print '-' * 70
         print doctree.pformat()

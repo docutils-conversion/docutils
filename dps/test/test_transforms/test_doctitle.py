@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/30 04:42:56 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/06 03:10:48 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.frontmatter.DocTitle.
@@ -20,7 +20,7 @@ except ImportError:
 
 
 def suite():
-    parser = Parser(debug=UnitTestFolder.debug)
+    parser = Parser()
     s = DPSTestSupport.TransformTestSuite(parser)
     s.generateTests(totest)
     return s
@@ -87,7 +87,7 @@ Test unexpected section title.
     <paragraph>
         Test unexpected section title.
     <block_quote>
-        <system_warning level="3">
+        <system_warning level="4" type="SEVERE">
             <paragraph>
                 Unexpected section title at line 4.
         <paragraph>
@@ -103,7 +103,7 @@ Test short underline.
 <document name="title">
     <title>
         Title
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Title underline too short at line 2.
     <paragraph>
@@ -145,7 +145,7 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="3">
+    <system_warning level="4" type="SEVERE">
         <paragraph>
             Missing underline for overline at line 1.
     <paragraph>
@@ -159,7 +159,7 @@ Test missing underline, with paragraph.
 """,
 """\
 <document>
-    <system_warning level="3">
+    <system_warning level="4" type="SEVERE">
         <paragraph>
             Missing underline for overline at line 1.
     <paragraph>
@@ -176,7 +176,7 @@ Test long title and space normalization.
 <document name="long title">
     <title>
         Long    Title
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Title overline too short at line 1.
     <paragraph>
@@ -191,7 +191,7 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="3">
+    <system_warning level="4" type="SEVERE">
         <paragraph>
             Title overline & underline mismatch at line 1.
     <paragraph>
@@ -371,7 +371,7 @@ Paragraph 4.
             Title 3
         <paragraph>
             Paragraph 3.
-        <system_warning level="3">
+        <system_warning level="4" type="SEVERE">
             <paragraph>
                 Title level inconsistent at line 15:
             <literal_block>
@@ -422,7 +422,7 @@ Paragraph 4.
             Title 3
         <paragraph>
             Paragraph 3.
-        <system_warning level="3">
+        <system_warning level="4" type="SEVERE">
             <paragraph>
                 Title level inconsistent at line 19:
             <literal_block>

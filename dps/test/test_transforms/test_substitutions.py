@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/30 04:43:23 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/06 03:11:25 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Substitutions.
@@ -20,7 +20,7 @@ except ImportError:
 
 
 def suite():
-    parser = Parser(debug=UnitTestFolder.debug)
+    parser = Parser()
     s = DPSTestSupport.TransformTestSuite(parser)
     s.generateTests(totest)
     return s
@@ -52,7 +52,7 @@ Here's an |unknown| substitution.
         <problematic>
             unknown
          substitution.
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Undefined substitution referenced: "unknown".
 """],

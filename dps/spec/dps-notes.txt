@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/01/30 04:56:54 $
-:Revision: $Revision: 1.22 $
+:Date: $Date: 2002/02/06 03:11:41 $
+:Revision: $Revision: 1.23 $
 
 
 To Do
@@ -46,7 +46,8 @@ To Do
 - Incorporate readers/"input modes", using Tony Ibbs' 2001-08-03
   Doc-SIG post 'Suggestions for reST "modes"' as a base.
 
-- Write modules for common transforms. See Transforms_ below.
+- Write modules for common transforms. See `Unimplemented Transforms`_
+  below.
 
 - Ask Python-dev for opinions (GvR for a pronouncement) on special
   variables (__author__, __version__, etc.): convenience vs. namespace
@@ -59,6 +60,9 @@ To Do
 - Refactor:
 
   - Apply the `coding conventions`_ as given below.
+
+- Merge reStructuredText into DPS and rename it to "docutils".
+  (SourceForge project registered & waiting.)
 
 
 Coding Conventions
@@ -85,8 +89,8 @@ __ http://www.python.org/peps/pep-0008.html
 __ http://www.python.org/peps/pep-0257.html
 
 
-Transforms
-==========
+Unimplemented Transforms
+========================
 
 Footnote Gathering
 ------------------
@@ -110,7 +114,7 @@ When merging two or more subdocuments (such as docstrings),
 conflicting references may need to be resolved.  There may be:
 
 - duplicate reference and/or substitution names that need to be made
-  unique; and
+  unique; and/or
 - duplicate footnote numbers that need to be renumbered.
 
 Should this be done before or after reference-resolving transforms
@@ -118,14 +122,31 @@ are applied? What about references from within one subdocument to
 inside another?
 
 
+Document Splitting
+------------------
+
+If the processed document is written to multiple files (possibly in a
+directory tree), it will need to be split up. References will have to
+be adjusted.
+
+(HTML only? See Deployment_ below.)
+
+
+Navigation
+----------
+
+If a document is split up, each segment will need navigation links:
+parent, children (small TOC), previous (preorder), next (preorder).
+
+
 Table of Contents
 -----------------
 
 This runs over the entire tree, and locates <section> elements. It
 produces a <contents> subtree, which can be inserted at the
-appropriate place, with links to the <section>s. It needs to make sure
-that the links it uses are *real*, so ideally it will use the
-"implicit" link for a section when it exists, and it will have to
+appropriate place, with links to the <section> elements. It needs to
+make sure that the links it uses are *real*, so ideally it will use
+the "implicit" link for a section when it exists, and it will have to
 invent one when the implicit link isn't there (presumably because the
 section is the twelfth "Introduction" in the document...).
 
@@ -170,37 +191,45 @@ See python-dev/docstring-develop thread "AST mining", started on
 2001-08-14.
 
 
-Modes and Styles
-================
+Python Source Reader
+====================
 
-The Python docstring mode model that's evolving in my mind goes
-something like this:
+The Python Source Reader ("PySource") model that's evolving in my mind
+goes something like this:
 
-1. Extract the docstring/namespace tree from the module(s) and/or
+1. Extract the docstring/namespace [#]_ tree from the module(s) and/or
    package(s).
+
+   .. [#] See `Docstring Extractor`_ above.
 
 2. Run the parser on each docstring in turn, producing a forest of
    trees (internal data structure as per nodes.py).
 
-3. Run various transformations on the individual docstring trees.
-   Examples: resolving cross-references; resolving hyperlinks;
-   footnote auto-numbering; first field list -> bibliographic
-   elements.
+3. Join the docstring trees together into a single tree, running
+   transforms:
 
-4. Join the docstring trees together into a single tree, running more
-   transformations (such as creating various sections like "Module
-   Attributes", "Functions", "Classes", "Class Attributes", etc.; see
-   the DPS spec/ppdi.dtd).
+   - merge hyperlinks
+   - merge namespaces
+   - create various sections like "Module Attributes", "Functions",
+     "Classes", "Class Attributes", etc.; see the DPS spec/ppdi.dtd
+   - convert the above special sections to ordinary DPS nodes
 
-5. Pass the resulting unified tree to the output formatter.
+4. Run transforms on the combined doctree.  Examples: resolving
+   cross-references/hyperlinks (including interpreted text on Python
+   identifiers); footnote auto-numbering; first field list ->
+   bibliographic elements.
+
+   (Or should step 4's transforms come before step 3?)
+
+5. Pass the resulting unified tree to the writer/builder.
 
 I've had trouble reconciling the roles of input parser and output
-formatter with the idea of "modes". Does the mode govern the
-tranformation of the input, the output, or both? Perhaps the mode
-should be split into two.
+writer with the idea of modes ("readers" or "directors"). Does the
+mode govern the tranformation of the input, the output, or both?
+Perhaps the mode should be split into two.
 
 For example, say the source of our input is a Python module. Our
-"input mode" should be "Python Docstring Mode". It discovers (from
+"input mode" should be the "Python Source Reader". It discovers (from
 ``__docformat__``) that the input parser is "reStructuredText". If we
 want HTML, we'll specify the "HTML" output formatter. But there's a
 piece missing. What *kind* or *style* of HTML output do we want?
@@ -209,59 +238,203 @@ and control their own style). Is the output style specific to a
 particular output format (XML, HTML, etc.)? Is the style specific to
 the input mode? Or can/should they be independent?
 
-I envision interaction between the input parser, an "input mode"
-(would control steps 1, 2, & 3), a "transformation style" (would
-control step 4), and the output formatter. The same intermediate data
-format would be used between each of these, gaining detail as it
-progresses.
+I envision interaction between the input parser, an "input mode" , and
+the output formatter. The same intermediate data format would be used
+between each of these, being transformed as it progresses.
 
-This requires thought.
 
-Tony's contribution:
+Docutils Project Model
+======================
 
-    OK - my model is not dissimilar, but goes like:
-    
-    1. Parse the Python module(s) [remembering we may have a package]
-       This locates the docstrings, amongst other things.
-    
-    2. Trim the tree to lose stuff we didn't need (!).
-    
-    3. Parse the docstrings (this might, instead, be done at the time
-       that each docstring is "discovered").
-    
-    4. Integrate the docstring into the tree - this *may* be as simple
-       as having "thing.docstring = <docstring instance>"
-    
-    5. Perform internal resolutions on the docstring (footnotes, etc.)
-    
-    6. Perform intra-module/package resolutions on the docstring
-       (so this is when we work out that `Fred` in *this* docstring
-       refers to class Fred over here in the datastructure).
-    
-    7. Format.
+Here's the latest project model::
 
-    ...
+           1,3,5                               6,8
+           +--------+                          +--------+
+           | READER | =======================> | WRITER |
+           +--------+ (purely presentational)  +--------+
+            //    \                              /    \
+           //      \                            /      \
+    2     //     4  \               7          /     9  \
+    +--------+   +------------+     +------------+   +--------------+
+    | PARSER |...| reader     |     | writer     |...| deployment   |
+    +--------+   | transforms |     | transforms |   |              |
+                 |            |     |            |   | - one file   |
+                 | - docinfo  |     | - styling  |   | - many files |
+                 | - titles   |     | - writer-  |   | - objects in |
+                 | - linking  |     |   specific |   |   memory     |
+                 | - lookups  |     | - etc.     |   +--------------+
+                 | - reader-  |     +------------+
+                 |   specific |
+                 | - parser-  |
+                 |   specific |
+                 | - layout   |
+                 | - etc.     |
+                 +------------+
 
-    A mode needs to:
-    
-    1. Provide plugins for parsing - this *may* go so far as to
-       subsume the DPS functionality into a new program, as I'm doing
-       for Python. In this case the "plugin" for parsing may be
-       virtual - I just need to ferret around in the docstring looking
-       for things that are already there, perhaps.
-    
-    2. Provide plugins for formatting - again, these may subsume a
-       DPS parser process. In the Python case, I clearly want to *use*
-       the normal HTML parser for HTML output, but with extra support
-       "around it" for the Python specific infrastructure.
+The numbers indicate the path a document would take through the code.
+Double-width lines between reader & parser and between reader &
+writer, indicating that data sent along these paths should be standard
+(pure & unextended) DPS doc trees. Single-width lines signify that
+internal tree extensions are OK (but must be supported internally at
+both ends), and may in fact be totally unrelated to the DPS doc tree
+structure. I've added "reader-specific" and "layout" transforms to the
+list of transforms. BTW, these transforms are not necessarily all in
+one directory; it's a nebulous grouping (it's hard to draw ASCII
+clouds).
+
+
+Issues
+------
+
+- Naming. Use "director"/"builder" instead of "reader"/"writer"? Then
+  "deployment" could be replaced by "writer".
+
+- Transforms. How to specify which transforms (and in what order)
+  apply to each combination of reader, parser/syntax, writer, and
+  deployment?  Even if we restrict ourselves to one parser, there will
+  eventually be a multitude of readers, writers, and deployment
+  options.
+
+  Or are readers & writers independent? Then we have reader/parser and
+  writer/deployment combinations to consider.
+
+
+Components
+----------
+
+Parsers
+```````
+
+Responsibilities: Given raw input text and an empty doctree, populate
+the doctree by parsing the input text.
+
+
+Readers
+```````
+
+("Readers" may be renamed to "Directors".)
+
+Most Readers will have to be told what parser to use. So far (see the
+list of examples below), only the Python Source Reader (PySource) will
+be able to determine the syntax on its own.
+
+Responsibilities:
+
+- Do raw input on the source.
+- Pass the raw text to the parser, along with a fresh doctree.
+- Combine and collate doctrees if necessary.
+- Run transforms over the doctree(s).
+
+Examples:
+
+- Standalone/Raw/Plain: Just read a text file and process it. The
+  reader needs to be told which parser to use. Parser-specific
+  readers?
+- Python Source: See `Python Source Reader`_ above.
+- Email: RFC-822 headers, quoted excerpts, signatures, MIME parts.
+- PEP: RFC-822 headers, "PEP xxxx" and "RFC xxxx" conversion to
+  URIs. Either interpret PEPs' indented sections or convert existing
+  PEPs to reStructuredText.
+- Wiki: Global reference lookups of "wiki links" incorporated into
+  transforms. (CamelCase only or unrestricted?) Lazy indentation?
+- Web Page: As standalone, but recognize meta fields as meta tags.
+- FAQ: Structured "question & answer(s)" constructs.
+- Compound document: Merge chapters into a book. Master TOC file?
+
+
+Transforms
+``````````
+
+Responsibilities:
+
+- Modify a doctree in-place.
+
+Examples:
+
+- Already implemented: DocInfo, DocTitle (in frontmatter.py);
+  Hyperlinks, Footnotes, Substitutions (in references.py).
+- Unimplemented: See `Unimplemented Transforms`_ above.
+
+
+Writers
+```````
+
+("Writers" may be renamed to "Builders".)
+
+Responsibilities:
+
+- Transform doctree into specific output formats.
+- Transform references into format-native forms.
+
+Examples:
+
+- XML: Various forms, such as DocBook. Also, raw doctree XML.
+- HTML
+- TeX
+- Plain text
+- reStructuredText?
+
+
+Deployment
+``````````
+
+("Deployment" may be renamed to "Writers" or "Publishers", and current
+writer/deployment [renamed to builder/writer] components may change
+places. After renaming, the model would look like this::
+
+           1,3,5                               6,8
+           +--------+                          +---------+ formerly
+           | READER | =======================> | BUILDER | writer
+           +--------+ (purely presentational)  +---------+
+            //    \                              /    \
+           //      \                            /      \
+    2     //     4  \               7          /     9  \
+    +--------+   +------------+     +------------+   +--------+
+    | PARSER |...| reader     |     | writer     |...| WRITER |
+    +--------+   | transforms |     | transforms |   +--------+
+                 | ...        |     | ...        |    formerly
+                                                      deployment
+
+After renaming *and* rearrangement, the model would look like this::
+
+           1,3,5                               6,8
+           +--------+                          +--------+ formerly
+           | READER | =======================> | WRITER | deployment
+           +--------+ (purely presentational)  +--------+
+            //    \                              /    \
+           //      \                            /      \
+    2     //     4  \               7          /     9  \
+    +--------+   +------------+     +------------+   +---------+
+    | PARSER |...| reader     |     | writer     |...| BUILDER |
+    +--------+   | transforms |     | transforms |   +---------+
+                 | ...        |     | ...        |    formerly writer
+
+We'll wait and see which arrangement works out best. Is it better for
+the writer/builder to control the deployment/writer, or vice versa? Or
+should they be equals?
+
+Looking at the list of writers, it seems that only HTML would require
+anything other than monolithic output. Perhaps merge the "deployment"
+into the "writer"?)
+
+Responsibilities:
+
+- Do raw output to the destination.
+- Transform references per incarnation.
+
+Examples:
+
+- Single file
+- Multiple files & directories
+- Objects in memory
 
 
 Visitors
 ========
 
-To nodes.py, add ``Node.walkabout()``, ``Visitor.walkabout()``,
-``Visitor.leave_*()``, and ``GenericVisitor.default_leave()`` methods
-to catch elements on the way out? Here's ``Node.walkabout()``::
+To nodes.py, add ``Node.walkabout()``, ``Visitor.leave_*()``, and
+``GenericVisitor.default_leave()`` methods to catch elements on the
+way out? Here's ``Node.walkabout()``::
 
     def walkabout(self, visitor, ancestry=()):
         """
@@ -285,11 +458,6 @@ to catch elements on the way out? Here's ``Node.walkabout()``::
         method = getattr(visitor, 'leave_' + self.__class__.__name__)
         method(self, ancestry)
 
-Here's ``Visitor.walkabout()``::
-
-    def walkabout(self):
-        self.doctree.walkabout(self)
-
 
 Mixing Automatic and Manual Footnote Numbering
 ==============================================
@@ -300,31 +468,31 @@ I'm re-examining (for validity) what I wrote in the spec:
     Automatic footnote numbering may not be mixed with manual footnote
     numbering; it would cause numbering and referencing conflicts.
 
-Would such mixing inevitably cause conflicts? We could probably work around
-potential conflicts with a decent algorithm. Should we? Requires thought.
-Opinions?
+Would such mixing inevitably cause conflicts? We could probably work
+around potential conflicts with a decent algorithm. Should we?
+Requires thought.  Opinions?
 
 [Tony]
 Well, I read that paragraph in the documentation, and decided that it
 was in the category of "don't, in practice, care" so far as I was
 concerned. This is the same category I put the forbidding of nested
-inline markup - quite clearly one *can* do it, but equally clearly it's
-a pain to implement, and not a terribly great gain, all things
+inline markup - quite clearly one *can* do it, but equally clearly
+it's a pain to implement, and not a terribly great gain, all things
 considered.
 
 It's a category with the subtext "examine for correctness after we've
 had some experience of people *using* reST in the wild".
 
-Thus, given there are lots of other things to do, I would tend to leave
-it as-is (especially if you are able to *warn* people about it if they
-do it by mistake).
+Thus, given there are lots of other things to do, I would tend to
+leave it as-is (especially if you are able to *warn* people about it
+if they do it by mistake).
 
 To my mind, being able to do ``[#thing]_`` probably give people enough
-precision over footnotes whils still allowing autonumbering - the *only*
-potential problem is when referring to a footnote in a different
-document (and that, again, is something I would leave fallow for the
-moment, although we know I tend to want to use roles as annotation for
-that sort of thing).
+precision over footnotes whils still allowing autonumbering - the
+*only* potential problem is when referring to a footnote in a
+different document (and that, again, is something I would leave fallow
+for the moment, although we know I tend to want to use roles as
+annotation for that sort of thing).
 
 
 
