@@ -4,7 +4,7 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/08/14 03:55:22 $
+Date: $Date: 2001/08/16 02:43:51 $
 Website: http://structuredtext.sf.net/
 
 
@@ -85,6 +85,8 @@ Release 0.4? (pending)
 
 * tools: Subdirectory added; contains quicktest.py by Garth Kidd.
 
+* spec/alternatives.txt: Added to project.
+
 * spec/introduction.txt:
 
   - Python interpretation of interpreted text is a DPS job.
@@ -99,11 +101,12 @@ Release 0.4? (pending)
 * spec/reStructuredText.txt:
 
   - Modified inline markup prefix & suffix definitions.
-  - Updated field lists, comments, indent/dedent.
-  - Loosened enumerated list requirements
+  - Settled on field list syntax.
+  - Updated comments, indent/dedent.
+  - Loosened enumerated list requirements; clarified Roman numerals &
+    alphabet letters; added syntax diagram.
   - Converted sf->sourceforge.
   - Expanded definition of whitespace.
-  - Added enumerated lists syntax diagram.
   - Added Hyperlink Names section.
   - Moved Standalone Hyperlinks section.
   - Clarified definition of underlines/overlines.
