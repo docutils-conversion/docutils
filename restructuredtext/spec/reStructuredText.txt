@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.28 $
-:Date: $Date: 2001/11/13 03:13:53 $
+:Revision: $Revision: 1.29 $
+:Date: $Date: 2001/11/19 04:18:41 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -53,8 +53,8 @@ Here are examples of `body elements`_:
       *emphasis*, **strong emphasis**, `interpreted text`, ``inline
       literals``, standalone hyperlinks (http://www.python.org),
       external hyperlinks (Python_), internal cross-references
-      (example_), footnote references ([1]_), subsitution
-      references (`/symbol/`), and _`inline hyperlink targets`.
+      (example_), footnote references ([1]_), substitution
+      references (|example|), and _`inline hyperlink targets`.
 
       Paragraphs are separated by blank lines and are left-aligned.
 
@@ -157,15 +157,15 @@ Here are examples of `body elements`_:
 
       .. graphic:: mylogo.png
 
-- Substitutions_::
+- Substitution definitions_::
 
-      .. /symbol/ image:: symbol.png
+      .. |symbol here| image:: symbol.png
 
 - Comments_::
 
       .. Comments begin with two dots and a space. Anything may
          follow, except for the syntax of footnotes, hyperlink
-         targets, directives, or substitutions.
+         targets, directives, or substitution definitions.
 
 
 ----------------
@@ -340,9 +340,9 @@ References`_), `interpreted text`_ roles, and some `hyperlink
 references`_ use the simple reference name syntax.
 
 Reference names using punctuation or whose names are phrases (two or
-more space-separated words) are called "phrase-links". Phrase-links
-are expressed by enclosing the phrase in backquotes and treating
-the backquoted text as a reference name::
+more space-separated words) are called "phrase-references".
+Phrase-references are expressed by enclosing the phrase in backquotes
+and treating the backquoted text as a reference name::
 
     Want to learn about `my favorite programming language`_?
 
@@ -1032,9 +1032,10 @@ optional header rows from the table body. The vertical bar ("|") is
 used for vertical lines (column separators). The plus sign ("+") is
 used for intersections of horizontal and vertical lines.
 
-Each table cell is treated as a miniature document; the top and
-bottom cell boundaries act as delimiting blank lines. Each cell
-contains zero or more body elements. Example::
+Each table cell is treated as a miniature document; the top and bottom
+cell boundaries act as delimiting blank lines.  Each cell contains
+zero or more body elements.  Cell contents may include left and/or
+right margins, which are removed before processing.  Example::
 
     +------------------------+------------+----------+----------+
     | Header row, column 1   | Header 2   | Header 3 | Header 4 |
@@ -1053,6 +1054,52 @@ As with other body elements, blank lines are required before and after
 tables. Tables' left edges should align with the left edge of
 preceding text blocks; otherwise, the table is considered to be part
 of a block quote.
+
+Some care must be taken with tables to avoid undesired interactions
+with cell text in rare cases. For example, the following table
+contains a cell in row 2 spanning from column 2 to column 4::
+
+    +--------------+----------+-----------+-----------+
+    | row 1, col 1 | column 2 | column 3  | column 4  |
+    +--------------+----------+-----------+-----------+
+    | row 2        |                                  |
+    +--------------+----------+-----------+-----------+
+    | row 3        |          |           |           |
+    +--------------+----------+-----------+-----------+
+
+If a vertical bar is used in the text of that cell, it could have
+unintended effects if accidentally aligned with column boundaries::
+
+    +--------------+----------+-----------+-----------+
+    | row 1, col 1 | column 2 | column 3  | column 4  |
+    +--------------+----------+-----------+-----------+
+    | row 2        | Use the command ``ls | more``.   |
+    +--------------+----------+-----------+-----------+
+    | row 3        |          |           |           |
+    +--------------+----------+-----------+-----------+
+
+Several solutions are possible.  All that is needed is to break the
+continuity of the cell outline rectangle.  One possibility is to shift
+the text by adding an extra space before::
+
+    +--------------+----------+-----------+-----------+
+    | row 1, col 1 | column 2 | column 3  | column 4  |
+    +--------------+----------+-----------+-----------+
+    | row 2        |  Use the command ``ls | more``.  |
+    +--------------+----------+-----------+-----------+
+    | row 3        |          |           |           |
+    +--------------+----------+-----------+-----------+
+
+Another possibility is to add an extra line to row 2::
+
+    +--------------+----------+-----------+-----------+
+    | row 1, col 1 | column 2 | column 3  | column 4  |
+    +--------------+----------+-----------+-----------+
+    | row 2        | Use the command ``ls | more``.   |
+    |              |                                  |
+    +--------------+----------+-----------+-----------+
+    | row 3        |          |           |           |
+    +--------------+----------+-----------+-----------+
 
 
 Explicit Markup Blocks
@@ -1291,12 +1338,12 @@ indirect.
        .. _three:
 
    Just as with `hyperlink references`_ anywhere else in a document,
-   if a phrase-link is used in the link block it must be enclosed in
-   backquotes. As with `external hyperlink targets`_, the link block
-   of an indirect hyperlink target may begin on the same line as the
-   explicit markup start or the next line. It may also be split over
-   multiple lines, in which case the lines are joined with whitespace
-   before being normalized.
+   if a phrase-reference is used in the link block it must be enclosed
+   in backquotes. As with `external hyperlink targets`_, the link
+   block of an indirect hyperlink target may begin on the same line as
+   the explicit markup start or the next line. It may also be split
+   over multiple lines, in which case the lines are joined with
+   whitespace before being normalized.
 
    For example, the following indirect hyperlink targets are
    equivalent::
@@ -1446,51 +1493,194 @@ Syntax diagram::
             +----------------------+
 
 
-Substitutions
-`````````````
+Substitution Definitions
+````````````````````````
 
-DTD element: substitution.
+DTD element: substitution_definition.
 
-Substitutions are indicated by an explicit markup start (".. ")
-followed by a slash, the substitution name, another slash, whitespace,
-and the substitution block.  Substitution names are simple `reference
-names`_ (case-insensitive single words consisting of alphanumerics
-plus internal hyphens, underscores, and periods; no whitespace).
+Substitution definitions are indicated by an explicit markup start
+(".. ") followed by a vertical bar, the substitution text, another
+vertical bar, whitespace, and the definition block.  Substitution text
+may not begin or end with whitespace.  A substitution definition block
+contains an embedded inline-compatible directive (without the leading
+".. "), such as an image.  For example::
 
-`Substitution references`_ are replaced in-line by the processed
-contents of the corresponding substitution block (matching
-substitution names).  Substitutions allow the power and flexibility of
-directives_ to be shared by inline text.  They are a way to include
-arbitrarily complex inline objects within text, while keeping the
-details out of the flow of text.  They are the equivalent of
-SGML/XML's named entities.
-
-Substitutions allow arbitrary text-level (inline) structures, the way
-directives allow arbitrary block-level structures.  They could be
-called "indirect inline directives".  Without substitutions, every
-time someone wants an application-specific new inline structure, they
-would have to petition for a syntax change.  In combination with
-existing directive syntax, any inline structure can be coded without
-new syntax (except possibly a new directive).
-
-A substitution block contains a nested inline-compatible directive
-(without the leading ".. "), such as an image.  For example::
-
-    The `/biohazard/` symbol must be used on containers used to
+    The |biohazard| symbol must be used on containers used to
     dispose of medical waste.
 
-    .. /biohazard/ image:: biohazard.png
+    .. |biohazard| image:: biohazard.png
 
-It is an error for a substitution block to directly or indirectly
-contain a circular substitution reference. 
+It is an error for a substitution definition block to directly or
+indirectly contain a circular substitution reference.
+
+`Substitution references`_ are replaced in-line by the processed
+contents of the corresponding definition (linked by matching
+substitution text).  Substitution definitions allow the power and
+flexibility of block-level directives_ to be shared by inline text. 
+They are a way to include arbitrarily complex inline structures within
+text, while keeping the details out of the flow of text.  They are the
+equivalent of SGML/XML's named entities or programming language
+macros.
+
+Without the substitution mechanism, every time someone wants an
+application-specific new inline structure, they would have to petition
+for a syntax change.  In combination with existing directive syntax,
+any inline structure can be coded without new syntax (except possibly
+a new directive).
 
 Syntax diagram::
 
     +-------+---------------------------+
-    | ".. " | "/" name "/ " directive   |
+    | ".. " | "|" text "| " directive   |
     +-------+ type "::" directive       |
             | block                     |
             +---------------------------+
+
+Following are some use cases for the substitution mechanism.  Please
+note that most of the embedded directives shown are examples only and
+have not been implemented.
+
+Objects
+    Substitution references may be used to associate ambiguous text
+    with a unique object identifier.
+
+    For example, many sites may wish to implement an inline "user"
+    directive::
+
+        |Michael| and |Jon| are our widget-wranglers.
+
+        .. |Michael| user:: mjones
+        .. |Jon|     user:: jhl
+
+    Depending on the needs of the site, this may be used to index the
+    document for later searching, to hyperlink the inline text in
+    various ways (mailto, homepage, mouseover Javascript with profile
+    and contact information, etc.), or to customize presentation of
+    the text (include username in the inline text, include an icon
+    image with a link next to the text, make the text bold or a
+    different color, etc.).
+
+    The same approach can be used in documents which frequently refer
+    to a particular type of objects with unique identifiers but
+    ambiguous common names.  Movies, albums, books, photos, court
+    cases, and laws are possible. For example::
+
+        |The Transparent Society| offers a fascinating alternate view
+        on privacy issues.
+
+        .. |The Transparent Society| book:: isbn=0738201448
+
+    Classes or functions, in contexts where the module or class names
+    are unclear and/or interpreted text cannot be used, are another
+    possibility::
+
+        4XSLT has the convenience method |runString|, so you don't
+        have to mess with DOM objects if all you want is the
+        transformed output.
+
+        .. |runString| function:: module=xml.xslt class=Processor
+
+Images
+    Images are a common use for substitution references::
+
+        West led the |H| 3, covered by dummy's |H| Q, East's |H| K,
+        and trumped in hand with the |S| 2.
+
+        .. |H| image:: /images/heart.png
+                       [height=11 width=11]
+        .. |S| image:: /images/spade.png
+                       [height=11 width=11]
+
+        * |Red light| means stop.
+        * |Green light| means go.
+        * |Yellow light| means go really fast.
+
+        .. |Red light|    image:: red_light.png
+        .. |Green light|  image:: green_light.png
+        .. |Yellow light| image:: yellow_light.png
+
+        |-><-| is the official symbol of POEE_.
+
+        .. |-><-| image:: discord.png
+        .. _POEE: http://www.poee.org/
+
+    The "image" directive has been implemented.
+
+Styles [#]_
+    Substitution references may be used to associate inline text with
+    an externally defined presentation style::
+
+        Even |the text in Texas| is big.
+
+        .. |the text in Texas| style:: big
+
+    The style name may be meaningful in the context of some particular
+    output format (CSS class name for HTML output, LaTeX style name
+    for LaTeX, etc), or may be ignored for other output formats (often
+    for plain text).
+
+    Interpreted text is unsuitable for this purpose because the set of
+    style names cannot be predefined - it is the domain of the content
+    author, not the author of the parser and output formatter - and
+    there is no way to associate a stylename argument with an
+    interpreted text style role.  Also, it may be desirable to use the
+    same mechanism for styling blocks::
+
+        .. style:: motto
+           At Bob's Underwear Shop, we'll do anything to get in your
+           pants.
+
+        .. style:: disclaimer
+           All rights reversed.  Reprint what you like.
+
+    .. [#] There may be sufficient need for a "style" mechanism to
+       warrant simpler syntax such as an extension to the interpreted
+       text role syntax.  The substitution mechanism is cumbersome for
+       simple text styling.
+
+Templates
+    Inline markup may be used for later processing by a template
+    engine.  For example, a Zope_ author might write::
+
+        Welcome back, |name|!
+
+        .. |name| tal:: replace user/getUserName
+
+    After processing, this ZPT output would result::
+
+        Welcome back,
+        <span tal:replace="user/getUserName">name</span>!
+
+    Zope would then transform this to something like "Welcome back,
+    David!" during a session with an actual user.
+
+Replacement text
+    The substitution mechanism may be used for simple macro
+    substitution.  This may be appropriate when the replacement text
+    is repeated many times throughout one or more documents,
+    especially if it may need to change later.  A short example is
+    unavoidably contrived::
+
+        |RST| is a little annoying to type over and over, especially
+        when writing about |RST| itself, and spelling out the
+        bicapitalized word |RST| every time isn't really necessary for
+        |RST| source readability.
+
+        .. |RST| replace:: reStructuredText_
+        .. _reStructuredText: http://structuredtext.sourceforge.net/
+
+    Substitution is also appropriate when the replacement text cannot
+    be represented using other inline constructs, or is obtrusively
+    long::
+
+        But still, that's nothing compared to a name like
+        |j2ee-cas|__.
+
+        .. |j2ee-cas| replace::
+           the Java `TM`:super: 2 Platform, Enterprise Edition Client
+           Access Services
+        __ http://developer.java.sun.com/developer/earlyAccess/
+           j2eecas/
 
 
 Comments
@@ -1558,18 +1748,31 @@ Inline Markup
 =============
 
 Inline markup is the markup of words or phrases within a text block.
-Inline markup cannot be nested.
+Inline markup cannot be nested.  The text within inline markup may not
+begin or end with whitespace.
 
-There are nine inline markup constructs. Four of the constructs
-(emphasis_, `strong emphasis`_, `interpreted text`_, and `inline
-literals`_) use identical start-strings and end-strings to indicate
-the markup.  `Inline hyperlink targets`_, `footnote references`_,
-`hyperlink references`_, and `substitution references`_ use different
-start-strings and end-strings.  `Standalone hyperlinks`_ are
-recognized implicitly, and use no extra markup.
+There are nine inline markup constructs.  Five of the constructs use
+identical start-strings and end-strings to indicate the markup:
+
+- emphasis_: "*"
+- `strong emphasis`_: "**"
+- `interpreted text`_: "`"
+- `inline literals`_: "``"
+- `substitution references`_: "|"
+
+Three constructs use different start-strings and end-strings:
+
+- `inline hyperlink targets`_: "_`" and "`"
+- `footnote references`_: "[" and "]_"
+- `hyperlink references`_: "" and "_" (single words), or "`" and
+  "\`_" (phrases)
+
+`Standalone hyperlinks`_ are recognized implicitly, and use no extra
+markup.
 
 The inline markup start-string and end-string recognition rules are as
-follows:
+follows.  If any of the conditions are not met, the start-string or
+end-string will not be recognized or processed.
 
 1. Inline markup start-strings must start a text block or be
    immediately preceded by whitespace, single or double quotes, "(",
@@ -1595,16 +1798,16 @@ follows:
 
 7. An unescaped backslash preceding a start-string or end-string will
    disable markup recognition, except for the end-string of `inline
-   literals`_. See `escaping mechanism`_ above for details.
+   literals`_.  See `Escaping Mechanism`_ above for details.
 
 For example, none of the following are recognized as containing inline
 markup start-strings: " * ", '"*"', "'*'", "(*)", "(* ", "[*]", "{*}",
 "\*", " ` ", etc.
 
 The inline markup recognition rules were devised intentionally to
-allow 90% of legitimate uses of "*" and "`" *without* resorting to
-backslashes. For 9 of the remaining 10%, use inline literals or
-literal blocks::
+allow 90% of legitimate uses of "*", "`", "_", and "|" *without*
+resorting to backslashes.  For 9 of the remaining 10%, use inline
+literals or literal blocks::
 
     "``\*``" -> "\*" (possibly in another font or quoted)
 
@@ -1613,20 +1816,22 @@ attempt the remaining 1%. ;-)
 
 Inline markup delimiter characters are used for multiple constructs,
 so to avoid ambiguity there must be a specific recognition order for
-each character. The inline markup recognition order is as follows:
+each character.  The inline markup recognition order is as follows:
 
 - Asterisks: `Strong emphasis`_ ("**") is recognized before emphasis_
   ("*").
 
-- Backquotes: `Inline literals`_ ("``"), `substitution references`_
-  (leading "`/", trailing "/`"), `inline hyperlink targets`_ (leading
-  "_`", trailing "`"), are mutually independent, and are recognized
-  before phrase `hyperlink references`_ (leading "`", trailing "`_")
-  and `interpreted text`_ ("`").
+- Backquotes: `Inline literals`_ ("``"), `inline hyperlink targets`_
+  (leading "_`", trailing "`"), are mutually independent, and are
+  recognized before phrase `hyperlink references`_ (leading "`",
+  trailing "`_") and `interpreted text`_ ("`").
 
 - Trailing underscores: Footnote references ("[" + label + "]_") and
   simple `hyperlink references`_ (name + trailing "_") are mutually
   independent.
+
+- Vertical bars: `Substitution references`_ ("|") are independently
+  recognized.
 
 - `Standalone hyperlinks`_ are the last to be recognized.
 
@@ -1721,7 +1926,7 @@ reStructuredText parser will preserve runs of spaces in its output,
 the final representation of the processed document is dependent on the
 output formatter, thus the preservation of whitespace cannot be
 guaranteed. If the preservation of line breaks and/or other whitespace
-is important, literal blocks should be used.
+is important, `literal blocks`_ should be used.
 
 Inline literals are useful for short code snippets. For example::
 
@@ -1737,12 +1942,12 @@ DTD element: reference.
 - Named hyperlink references:
 
   - Start-string = "" (empty string), end-string = "_".
-  - Start-string = "`", end-string = "\`_". (Phrase links.)
+  - Start-string = "`", end-string = "\`_". (Phrase references.)
 
 - Anonymous hyperlink references:
 
   - Start-string = "" (empty string), end-string = "__".
-  - Start-string = "`", end-string = "\`__". (Phrase links.)
+  - Start-string = "`", end-string = "\`__". (Phrase references.)
 
 Hyperlink references are indicated by a trailing underscore, "_",
 except for `standalone hyperlinks`_ which are recognized
@@ -1816,28 +2021,26 @@ Substitution References
 
 DTD element: substitution_reference, reference.
 
-Start-string = "`/", end-string = "/`" (optionally followed by "_" or
+Start-string = "|", end-string = "|" (optionally followed by "_" or
 "__").
 
-Substitution references use a variant of the `interpreted text`_
-syntax, with a backquote, a forward slash, the substitution name (a
-simple reference name; see `Reference Names`_), a forward slash, and a
-backquote.  A substitution may also be a reference by appending a "_"
-(named) or "__" (anonymous) suffix; the substitution name is used for
-the reference name in the named case.
+Vertical bars are used to bracket the substitution reference text.  A
+substitution reference may also be a hyperlink reference by appending
+a "_" (named) or "__" (anonymous) suffix; the substitution text is
+used for the reference text in the named case.
 
 The processing system replaces substitution references with the
-processed contents of the corresponding substitutions_.  Substitutions
-are inline-compatible elements.
+processed contents of the corresponding `substitution definitions`_. 
+Substitution definitions produce inline-compatible elements.
 
 Examples::
 
-    This is a simple `/substitution/`.  It will be replaced by the
+    This is a simple |substitution reference|.  It will be replaced by the
     processing system.
 
-    This is a combination `/substitution-and-reference/`_.  In
+    This is a combination |substitution and hyperlink reference|_.  In
     addition to being replaced, the replacement text or element will
-    refer to the "substitution-and-reference" target.
+    refer to the "substitution and hyperlink reference" target.
 
 
 Standalone Hyperlinks
@@ -1934,6 +2137,7 @@ Markup errors are handled according to the specification in `PEP
    http://docstring.sourceforge.net/spec/pysource.txt
 .. _RFC2396: http://www.rfc-editor.org/rfc/rfc2396.txt
 .. _RFC2732: http://www.rfc-editor.org/rfc/rfc2732.txt
+.. _Zope: http://www.zope.com/
 .. _PEP 258: http://docstring.sourceforge.net/spec/pep-0258.txt
 
 
