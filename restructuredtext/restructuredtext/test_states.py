@@ -2,9 +2,9 @@
 
 """
 :Author: David Goodger
-:Contact: dgoodger@bigfoot.com
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/08/14 03:41:14 $
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/08/22 03:38:30 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -295,8 +295,27 @@ A paragraph::
 </document>
 """],
 ["""\
+A paragraph
+on more than
+one line::
+
+    A literal block.
+""",
+"""\
+<document>
+    <paragraph>
+        A paragraph
+        on more than
+        one line:
+    </paragraph>
+    <literal_block>
+        A literal block.
+    </literal_block>
+</document>
+"""],
+["""\
 A paragraph::
-    A literal block without a blank line first.
+    A literal block without a blank line first?
 """,
 """\
 <document>
@@ -306,13 +325,13 @@ A paragraph::
                 A paragraph::
             </term>
             <definition>
-                <system_warning level="2">
+                <system_warning level="0">
                     <paragraph>
                         Blank line missing before literal block? Interpreted as a definition list item. At line 2.
                     </paragraph>
                 </system_warning>
                 <paragraph>
-                    A literal block without a blank line first.
+                    A literal block without a blank line first?
                 </paragraph>
             </definition>
         </definition_list_item>
@@ -414,6 +433,21 @@ A paragraph::
         
           Literal line 3.
     </literal_block>
+</document>
+"""],
+["""\
+EOF, even though a literal block is indicated::
+""",
+"""\
+<document>
+    <paragraph>
+        EOF, even though a literal block is indicated:
+    </paragraph>
+    <system_warning level="1">
+        <paragraph>
+            Literal block expected at line 2; none found.
+        </paragraph>
+    </system_warning>
 </document>
 """],
 ]
@@ -673,14 +707,14 @@ no blank line
                 <paragraph>
                     definition
                 </paragraph>
-                <system_warning level="1">
-                    <paragraph>
-                        Unindent without blank line at line 3.
-                    </paragraph>
-                </system_warning>
             </definition>
         </definition_list_item>
     </definition_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 3.
+        </paragraph>
+    </system_warning>
     <paragraph>
         no blank line
     </paragraph>
@@ -736,11 +770,6 @@ term 2
                 <paragraph>
                     definition 1 (no blank line below)
                 </paragraph>
-                <system_warning level="1">
-                    <paragraph>
-                        Unindent without blank line at line 3.
-                    </paragraph>
-                </system_warning>
             </definition>
         </definition_list_item>
         <definition_list_item>
@@ -1515,6 +1544,29 @@ Paragraph.
 </document>
 """],
 ["""\
+
+.. Next is an empty comment, which serves to end this comment and
+   prevents the following block quote being swallowed up.
+
+..
+
+    A block quote.
+""",
+"""\
+<document>
+    <comment>
+        Next is an empty comment, which serves to end this comment and
+        prevents the following block quote being swallowed up.
+    </comment>
+    <comment/>
+    <block_quote>
+        <paragraph>
+            A block quote.
+        </paragraph>
+    </block_quote>
+</document>
+"""],
+["""\
 term 1
   definition 1
 
@@ -1689,11 +1741,11 @@ Paragraph.
 
     proven['footnote'] = [
 ["""\
-.. _[footnote] This is a footnote.
+.. [footnote] This is a footnote.
 """,
 """\
 <document>
-    <footnote name="[footnote]">
+    <footnote name="footnote">
         <label>
             footnote
         </label>
@@ -1704,12 +1756,12 @@ Paragraph.
 </document>
 """],
 ["""\
-.. _[footnote] This is a footnote
+.. [footnote] This is a footnote
    on multiple lines.
 """,
 """\
 <document>
-    <footnote name="[footnote]">
+    <footnote name="footnote">
         <label>
             footnote
         </label>
@@ -1721,15 +1773,15 @@ Paragraph.
 </document>
 """],
 ["""\
-.. _[footnote1] This is a footnote
+.. [footnote1] This is a footnote
      on multiple lines with more space.
 
-.. _[footnote2] This is a footnote
+.. [footnote2] This is a footnote
   on multiple lines with less space.
 """,
 """\
 <document>
-    <footnote name="[footnote1]">
+    <footnote name="footnote1">
         <label>
             footnote1
         </label>
@@ -1738,7 +1790,7 @@ Paragraph.
             on multiple lines with more space.
         </paragraph>
     </footnote>
-    <footnote name="[footnote2]">
+    <footnote name="footnote2">
         <label>
             footnote2
         </label>
@@ -1750,13 +1802,13 @@ Paragraph.
 </document>
 """],
 ["""\
-.. _[footnote]
+.. [footnote]
    This is a footnote on multiple lines
    whose block starts on line 2.
 """,
 """\
 <document>
-    <footnote name="[footnote]">
+    <footnote name="footnote">
         <label>
             footnote
         </label>
@@ -1768,13 +1820,13 @@ Paragraph.
 </document>
 """],
 ["""\
-.. _[footnote]
+.. [footnote]
 
 That was an empty footnote.
 """,
 """\
 <document>
-    <footnote name="[footnote]">
+    <footnote name="footnote">
         <label>
             footnote
         </label>
@@ -1785,12 +1837,12 @@ That was an empty footnote.
 </document>
 """],
 ["""\
-.. _[footnote]
+.. [footnote]
 No blank line.
 """,
 """\
 <document>
-    <footnote name="[footnote]">
+    <footnote name="footnote">
         <label>
             footnote
         </label>
@@ -1806,28 +1858,18 @@ No blank line.
 </document>
 """],
 ["""\
-.. _[foot label with spaces] text
+.. [foot label with spaces] this isn't a footnote
 
-.. _[*footlabelwithmarkup*] text
+.. [*footlabelwithmarkup*] this isn't a footnote
 """,
 """\
 <document>
     <comment>
-        _[foot label with spaces] text
+        [foot label with spaces] this isn't a footnote
     </comment>
-    <system_warning level="1">
-        <paragraph>
-            MarkupError: malformed hyperlink target at line 1.
-        </paragraph>
-    </system_warning>
     <comment>
-        _[*footlabelwithmarkup*] text
+        [*footlabelwithmarkup*] this isn't a footnote
     </comment>
-    <system_warning level="1">
-        <paragraph>
-            MarkupError: malformed hyperlink target at line 3.
-        </paragraph>
-    </system_warning>
 </document>
 """],
 ]
@@ -1871,6 +1913,21 @@ No blank line.
 </document>
 """],
 ["""\
+.. _target: Not a proper hyperlink target
+""",
+"""\
+<document>
+    <system_warning level="1">
+        <paragraph>
+            Hyperlink target at line 1 contains whitespace. Perhaps a footnote was intended?
+        </paragraph>
+        <literal_block>
+            .. _target: Not a proper hyperlink target
+        </literal_block>
+    </system_warning>
+</document>
+"""],
+["""\
 .. _a long target name:
 
 .. _`a target name: including a colon (quoted)`:
@@ -1900,7 +1957,7 @@ No blank line.
 </document>
 """],
 ["""\
-Duplicate indirect links:
+Duplicate indirect links (different URIs):
 
 .. _target: first
 
@@ -1909,9 +1966,9 @@ Duplicate indirect links:
 """\
 <document>
     <paragraph>
-        Duplicate indirect links:
+        Duplicate indirect links (different URIs):
     </paragraph>
-    <target name="target">
+    <target>
         first
     </target>
     <system_warning level="1">
@@ -1921,6 +1978,31 @@ Duplicate indirect links:
     </system_warning>
     <target name="target">
         second
+    </target>
+</document>
+"""],
+["""\
+Duplicate indirect links (same URIs):
+
+.. _target: first
+
+.. _target: first
+""",
+"""\
+<document>
+    <paragraph>
+        Duplicate indirect links (same URIs):
+    </paragraph>
+    <target>
+        first
+    </target>
+    <system_warning level="0">
+        <paragraph>
+            duplicate indirect link name: "target"
+        </paragraph>
+    </system_warning>
+    <target name="target">
+        first
     </target>
 </document>
 """],
@@ -2038,6 +2120,67 @@ Third.
     <paragraph>
         Third.
     </paragraph>
+</document>
+"""],
+["""\
+Duplicate targets:
+
+Target
+======
+
+Implicit section header target.
+
+.. [target] Implicit footnote target.
+
+.. _target:
+
+Explicit internal target.
+
+.. _target: Explicit_indirect_target.
+""",
+"""\
+<document>
+    <paragraph>
+        Duplicate targets:
+    </paragraph>
+    <section>
+        <title>
+            Target
+        </title>
+        <paragraph>
+            Implicit section header target.
+        </paragraph>
+        <footnote>
+            <label>
+                target
+            </label>
+            <system_warning level="0">
+                <paragraph>
+                    duplicate implicit link name: "target"
+                </paragraph>
+            </system_warning>
+            <paragraph>
+                Implicit footnote target.
+            </paragraph>
+        </footnote>
+        <system_warning level="0">
+            <paragraph>
+                duplicate implicit link name: "target"
+            </paragraph>
+        </system_warning>
+        <target/>
+        <paragraph>
+            Explicit internal target.
+        </paragraph>
+        <system_warning level="1">
+            <paragraph>
+                duplicate indirect link name: "target"
+            </paragraph>
+        </system_warning>
+        <target name="target">
+            Explicit_indirect_target.
+        </target>
+    </section>
 </document>
 """],
 ]
@@ -2295,7 +2438,7 @@ Find the ```interpreted text``` in this paragraph!
 """],
 ]
 
-    proven['interpreted'] = [
+    totest['interpreted'] = [
 ["""\
 `interpreted`
 """,
@@ -2309,56 +2452,51 @@ Find the ```interpreted text``` in this paragraph!
 </document>
 """],
 ["""\
-`role: interpreted`
+:role:`interpreted`
 """,
 """\
 <document>
     <paragraph>
-        <interpreted role="role">
+        <interpreted position="prefix" role="role">
             interpreted
         </interpreted>
     </paragraph>
 </document>
 """],
 ["""\
-`interpreted :role`
+`interpreted`:role:
 """,
 """\
 <document>
     <paragraph>
-        <interpreted role="role">
+        <interpreted position="suffix" role="role">
             interpreted
         </interpreted>
     </paragraph>
 </document>
 """],
 ["""\
-`role\: escaped: interpreted`
+:role:`:not-role: interpreted`
 """,
 """\
 <document>
     <paragraph>
-        <interpreted role="role: escaped">
-            interpreted
+        <interpreted position="prefix" role="role">
+            :not-role: interpreted
         </interpreted>
     </paragraph>
 </document>
 """],
 ["""\
-`role: not escaped: interpreted`
+:very.long-role_name:`interpreted`
 """,
 """\
 <document>
     <paragraph>
-        <interpreted role="role">
-            not escaped: interpreted
+        <interpreted position="prefix" role="very.long-role_name">
+            interpreted
         </interpreted>
     </paragraph>
-    <system_warning level="1">
-        <paragraph>
-            Multiple role-separators in interpreted text at line 1.
-        </paragraph>
-    </system_warning>
 </document>
 """],
 ["""\
@@ -2476,6 +2614,44 @@ across lines`_
     </paragraph>
 </document>
 """],
+["""\
+Invalid phrase link:
+
+:role:`phrase link`_
+""",
+"""\
+<document>
+    <paragraph>
+        Invalid phrase link:
+    </paragraph>
+    <paragraph>
+        :role:`phrase link`_
+    </paragraph>
+    <system_warning level="1">
+        <paragraph>
+            Mismatch: inline interpreted text start-string and role with phrase-link end-string at line 3.
+        </paragraph>
+    </system_warning>
+</document>
+"""],
+["""\
+Invalid phrase link:
+
+`phrase link`:role:_
+""",
+"""\
+<document>
+    <paragraph>
+        Invalid phrase link:
+    </paragraph>
+    <paragraph>
+        <interpreted>
+            phrase link
+        </interpreted>
+        :role:_
+    </paragraph>
+</document>
+"""],
 ]
 
     proven['footnote_reference'] = [
@@ -2485,8 +2661,8 @@ across lines`_
 """\
 <document>
     <paragraph>
-        <footnote_reference refname="[footnote]">
-            [footnote]
+        <footnote_reference refname="footnote">
+            footnote
         </footnote_reference>
     </paragraph>
 </document>
@@ -2497,20 +2673,20 @@ across lines`_
 """\
 <document>
     <paragraph>
-        <footnote_reference refname="[footnote]">
-            [footnote]
+        <footnote_reference refname="footnote">
+            footnote
         </footnote_reference>
          and 
-        <footnote_reference refname="[foot-note]">
-            [foot-note]
+        <footnote_reference refname="foot-note">
+            foot-note
         </footnote_reference>
          and 
-        <footnote_reference refname="[foot.note]">
-            [foot.note]
+        <footnote_reference refname="foot.note">
+            foot.note
         </footnote_reference>
          and 
-        <footnote_reference refname="[1]">
-            [1]
+        <footnote_reference refname="1">
+            1
         </footnote_reference>
          but not [foot note]_
     </paragraph>
@@ -4333,17 +4509,77 @@ Long options:
 </document>
 """],
 ["""\
-Mixed short and long options:
+VMS/DOS-style options:
 
--a           option a
---bbbb=file  option bbbb
---cccc name  option cccc
--d string    option d
+/A        option A
+/B file   option B
+/Cstring  option C
 """,
 """\
 <document>
     <paragraph>
-        Mixed short and long options:
+        VMS/DOS-style options:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <vms_option>
+                    /A
+                </vms_option>
+            </option>
+            <description>
+                <paragraph>
+                    option A
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <vms_option>
+                    /B
+                </vms_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option B
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <vms_option>
+                    /C
+                </vms_option>
+                <option_argument>
+                    string
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option C
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Mixed short, long, and VMS/DOS options:
+
+-a           option a
+--bbbb=file  option bbbb
+/C           option C
+--dddd name  option dddd
+-e string    option e
+/F file      option F
+""",
+"""\
+<document>
+    <paragraph>
+        Mixed short, long, and VMS/DOS options:
     </paragraph>
     <option_list>
         <option_list_item>
@@ -4375,8 +4611,20 @@ Mixed short and long options:
         </option_list_item>
         <option_list_item>
             <option>
+                <vms_option>
+                    /C
+                </vms_option>
+            </option>
+            <description>
+                <paragraph>
+                    option C
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
                 <long_option>
-                    --cccc
+                    --dddd
                 </long_option>
                 <option_argument>
                     name
@@ -4384,14 +4632,14 @@ Mixed short and long options:
             </option>
             <description>
                 <paragraph>
-                    option cccc
+                    option dddd
                 </paragraph>
             </description>
         </option_list_item>
         <option_list_item>
             <option>
                 <short_option>
-                    -d
+                    -e
                 </short_option>
                 <option_argument>
                     string
@@ -4399,7 +4647,22 @@ Mixed short and long options:
             </option>
             <description>
                 <paragraph>
-                    option d
+                    option e
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <vms_option>
+                    /F
+                </vms_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option F
                 </paragraph>
             </description>
         </option_list_item>
@@ -4409,8 +4672,8 @@ Mixed short and long options:
 ["""\
 Aliased options:
 
--a, --aaaa            option aaaa
--b file, --bbbb=file  option bbbb
+-a, --aaaa, /A                 option a, aaaa, A
+-b file, --bbbb=file, /B file  option b, bbbb, B
 """,
 """\
 <document>
@@ -4429,9 +4692,14 @@ Aliased options:
                     --aaaa
                 </long_option>
             </option>
+            <option>
+                <vms_option>
+                    /A
+                </vms_option>
+            </option>
             <description>
                 <paragraph>
-                    option aaaa
+                    option a, aaaa, A
                 </paragraph>
             </description>
         </option_list_item>
@@ -4452,9 +4720,17 @@ Aliased options:
                     file
                 </option_argument>
             </option>
+            <option>
+                <vms_option>
+                    /B
+                </vms_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
             <description>
                 <paragraph>
-                    option bbbb
+                    option b, bbbb, B
                 </paragraph>
             </description>
         </option_list_item>
@@ -4663,7 +4939,11 @@ Some edge cases:
 
 -aletter arg      too many arguments (-a letter)
 
+/Aletter arg      too many arguments (/A letter)
+
 -a=b              can't use = for short arguments
+
+/A=b              can't use = for DOS/VMS arguments?
 
 --option=         argument missing
 
@@ -4688,7 +4968,13 @@ Some edge cases:
         -aletter arg      too many arguments (-a letter)
     </paragraph>
     <paragraph>
+        /Aletter arg      too many arguments (/A letter)
+    </paragraph>
+    <paragraph>
         -a=b              can't use = for short arguments
+    </paragraph>
+    <paragraph>
+        /A=b              can't use = for DOS/VMS arguments?
     </paragraph>
     <paragraph>
         --option=         argument missing
