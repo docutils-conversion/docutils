@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/03/11 03:25:46 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/03/13 02:39:54 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Footnotes.
@@ -441,13 +441,13 @@ u"""\
             \u2660
          \n\
         <footnote_reference auto="*" refid="id8">
-            \u2663
-         \n\
-        <footnote_reference auto="*" refid="id9">
             \u2665
          \n\
-        <footnote_reference auto="*" refid="id10">
+        <footnote_reference auto="*" refid="id9">
             \u2666
+         \n\
+        <footnote_reference auto="*" refid="id10">
+            \u2663
          \n\
         <footnote_reference auto="*" refid="id11">
             **
@@ -492,17 +492,17 @@ u"""\
             Auto-symbol footnote 7.
     <footnote auto="*" id="id8">
         <label>
-            \u2663
+            \u2665
         <paragraph>
             Auto-symbol footnote 8.
     <footnote auto="*" id="id9">
         <label>
-            \u2665
+            \u2666
         <paragraph>
             Auto-symbol footnote 9.
     <footnote auto="*" id="id10">
         <label>
-            \u2666
+            \u2663
         <paragraph>
             Auto-symbol footnote 10.
     <footnote auto="*" id="id11">

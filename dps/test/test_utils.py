@@ -3,15 +3,15 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/03/11 03:26:25 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/13 02:40:04 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for utils.py.
 """
 
 import unittest, StringIO, sys
-from DPSTestSupport import utils
+from DPSTestSupport import utils, nodes
 try:
     import mypdb as pdb
 except:
@@ -210,52 +210,60 @@ Reporter "lemon.curry": SEVERE (4) a severe error
 """)
 
 
-class AttributeParserTests(unittest.TestCase):
+class NameValueTests(unittest.TestCase):
 
-    def test_extractattributes(self):
-        self.assertRaises(utils.BadAttributeLineError,
-                          utils.extractattributes, ['hello'])
-        self.assertRaises(utils.BadAttributeDataError,
-                          utils.extractattributes, ['[hello]'])
-        self.assertRaises(utils.BadAttributeDataError,
-                          utils.extractattributes, ['[=hello]'])
-        self.assertRaises(utils.BadAttributeDataError,
-                          utils.extractattributes, ['[hello=]'])
-        self.assertRaises(utils.BadAttributeDataError,
-                          utils.extractattributes, ['[hello="]'])
-        self.assertRaises(utils.BadAttributeDataError,
-                          utils.extractattributes, ['[hello="something]'])
-        self.assertRaises(utils.BadAttributeDataError,
-                          utils.extractattributes,
-                          ['[hello="something"else]'])
-        output = utils.extractattributes("""\
-[att1=val1 att2=val2 att3="value number '3'"]
-[att4=val4]""".splitlines())
+    def test_extract_name_value(self):
+        self.assertRaises(utils.NameValueError, utils.extract_name_value,
+                          'hello')
+        self.assertRaises(utils.NameValueError, utils.extract_name_value,
+                          'hello')
+        self.assertRaises(utils.NameValueError, utils.extract_name_value,
+                          '=hello')
+        self.assertRaises(utils.NameValueError, utils.extract_name_value,
+                          'hello=')
+        self.assertRaises(utils.NameValueError, utils.extract_name_value,
+                          'hello="')
+        self.assertRaises(utils.NameValueError, utils.extract_name_value,
+                          'hello="something')
+        self.assertRaises(utils.NameValueError, utils.extract_name_value,
+                          'hello="something"else')
+        output = utils.extract_name_value(
+              """att1=val1 att2=val2 att3="value number '3'" att4=val4""")
         self.assertEquals(output, [('att1', 'val1'), ('att2', 'val2'),
                                    ('att3', "value number '3'"),
                                    ('att4', 'val4')])
 
+
+class ExtensionAttributeTests(unittest.TestCase):
+
     attributespec = {'a': int, 'bbb': float, 'cdef': lambda x: x}
 
-    def test_assembleattributes(self):
-        input = utils.extractattributes(['[a=1 bbb=2.0 cdef=hol%s]'
-                                              % chr(224)])
+    def test_assemble_attribute_dict(self):
+        input = utils.extract_name_value('a=1 bbb=2.0 cdef=hol%s' % chr(224))
         self.assertEquals(
-              utils.assembleattributes(input, self.attributespec),
+              utils.assemble_attribute_dict(input, self.attributespec),
               {'a': 1, 'bbb': 2.0, 'cdef': ('hol%s' % chr(224))})
-        input = utils.extractattributes(['[a=1 b=2.0 c=hol%s]'
-                                              % chr(224)])
-        self.assertRaises(KeyError, utils.assembleattributes,
+        input = utils.extract_name_value('a=1 b=2.0 c=hol%s' % chr(224))
+        self.assertRaises(KeyError, utils.assemble_attribute_dict,
                           input, self.attributespec)
-        input = utils.extractattributes(['[a=1 bbb=two cdef=hol%s]'
-                                              % chr(224)])
-        self.assertRaises(ValueError, utils.assembleattributes,
+        input = utils.extract_name_value('a=1 bbb=two cdef=hol%s' % chr(224))
+        self.assertRaises(ValueError, utils.assemble_attribute_dict,
                           input, self.attributespec)
 
-    def test_parseattributes(self):
-        input = ['[a=1 bbb=2.0 cdef=hol%s]' % chr(224)]
+    def test_extract_extension_attributes(self):
+        field_list = nodes.field_list()
+        field_list += nodes.field(
+              '', nodes.field_name('', 'a'),
+              nodes.field_body('', nodes.paragraph('', '1')))
+        field_list += nodes.field(
+              '', nodes.field_name('', 'bbb'),
+              nodes.field_body('', nodes.paragraph('', '2.0')))
+        field_list += nodes.field(
+              '', nodes.field_name('', 'cdef'),
+              nodes.field_body('', nodes.paragraph('', 'hol%s' % chr(224))))
         self.assertEquals(
-              utils.parseattributes(input, self.attributespec),
+              utils.extract_extension_attributes(field_list,
+                                                 self.attributespec),
               {'a': 1, 'bbb': 2.0, 'cdef': ('hol%s' % chr(224))})
 
 
