@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2001/10/31 05:55:26 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2001/11/06 02:09:44 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -14,10 +14,14 @@ import xml.dom.minidom
 from types import IntType, SliceType, StringType, TupleType
 from UserString import MutableString
 
-class _Node:
+# ==============================
+#  Functional Node Base Classes
+# ==============================
+
+class Node:
 
     def __nonzero__(self):
-        """_Node instances are always true."""
+        """Node instances are always true."""
         return 1
 
     def asdom(self, dom=xml.dom.minidom):
@@ -36,7 +40,7 @@ class _Node:
         pass
 
 
-class Text(_Node, MutableString):
+class Text(Node, MutableString):
 
     tagname = '#text'
 
@@ -63,10 +67,10 @@ class Text(_Node, MutableString):
         return ''.join(result)
 
 
-class _Element(_Node):
+class Element(Node):
 
     """
-    `_Element` is the superclass to all specific elements.
+    `Element` is the superclass to all specific elements.
 
     Elements contain attributes and child nodes. Elements emulate dictionaries
     for attributes, indexing by attribute name (a string). To set the
@@ -203,7 +207,7 @@ class _Element(_Node):
 
     def __iadd__(self, other):
         """Append a node or a list of nodes to `self.children`."""
-        if isinstance(other, _Node):
+        if isinstance(other, Node):
             self.children.append(other)
         elif other is not None:
             self.children.extend(other)
@@ -227,21 +231,21 @@ class _Element(_Node):
     has_key = hasattr
 
     def append(self, item):
-        assert isinstance(item, _Node)
+        assert isinstance(item, Node)
         self.children.append(item)
 
     def extend(self, item):
         self.children.extend(item)
 
     def insert(self, i, item):
-        assert isinstance(item, _Node)
+        assert isinstance(item, Node)
         self.children.insert(i, item)
 
     def pop(self, i=-1):
         return self.children.pop(i)
 
     def remove(self, item):
-        assert isinstance(item, _Node)
+        assert isinstance(item, Node)
         self.children.remove(item)
 
     def findclass(self, childclass, start=0, end=sys.maxint):
@@ -283,12 +287,12 @@ class _Element(_Node):
                             for child in self.children])
 
 
-class _TextElement(_Element):
+class TextElement(Element):
 
     """
     An element which directly contains text.
 
-    Its children are all Text or _TextElement nodes.
+    Its children are all Text or TextElement nodes.
     """
 
     childtextsep = ''
@@ -297,25 +301,54 @@ class _TextElement(_Element):
     def __init__(self, rawsource='', text='', *children, **attributes):
         if text != '':
             textnode = Text(text)
-            _Element.__init__(self, rawsource, textnode, *children,
+            Element.__init__(self, rawsource, textnode, *children,
                               **attributes)
         else:
-            _Element.__init__(self, rawsource, *children, **attributes)
+            Element.__init__(self, rawsource, *children, **attributes)
+
+
+# ====================
+#  Element Categories
+# ====================
+
+class Root: pass
+
+class Title: pass
+
+class Bibliographic: pass
+
+class Structural: pass
+
+class Body: pass
+
+class General(Body): pass
+
+class List(Body): pass
+
+class Admonition(Body): pass
+
+class Special(Body): pass
+
+class Component: pass
+
+class Inline: pass
 
 
 # ==============
 #  Root Element
 # ==============
 
-class document(_Element):
+class document(Root, Element):
 
     def __init__(self, errorhandler, *args, **kwargs):
-        _Element.__init__(self, *args, **kwargs)
+        Element.__init__(self, *args, **kwargs)
         self.explicittargets = {}
         self.implicittargets = {}
         self.externaltargets = {}
         self.indirecttargets = {}
+        self.substitutions = {}
         self.refnames = {}
+        self.substitutionrefs = {}
         self.anonymoustargets = []
         self.anonymousrefs = []
         self.autofootnotes = []
@@ -324,7 +357,7 @@ class document(_Element):
 
     def asdom(self, dom=xml.dom.minidom):
         domroot = dom.Document()
-        domroot.appendChild(_Element._rooted_dom_node(self, domroot))
+        domroot.appendChild(Element._rooted_dom_node(self, domroot))
         return domroot
 
     def addimplicittarget(self, name, targetnode, innode=None):
@@ -333,8 +366,8 @@ class document(_Element):
         if self.explicittargets.has_key(name) \
               or self.externaltargets.has_key(name) \
               or self.implicittargets.has_key(name):
-            sw = self.errorhandler.system_warning(
-                  0, 'Duplicate implicit target name: "%s"' % name)
+            sw = self.errorhandler.information(
+                  'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.implicittargets)
             targetnode['dupname'] = name
@@ -347,8 +380,8 @@ class document(_Element):
         if innode == None:
             innode = targetnode
         if self.explicittargets.has_key(name):
-            sw = self.errorhandler.system_warning(
-                  1, 'Duplicate explicit target name: "%s"' % name)
+            sw = self.errorhandler.warning(
+                  'Duplicate explicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.explicittargets,
                                   self.implicittargets, self.externaltargets)
@@ -356,8 +389,8 @@ class document(_Element):
             self.explicittargets.setdefault(name, []).append(targetnode)
             return
         elif self.implicittargets.has_key(name):
-            sw = self.errorhandler.system_warning(
-                  0, 'Duplicate implicit target name: "%s"' % name)
+            sw = self.errorhandler.information(
+                  'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.implicittargets)
         self.explicittargets[name] = [targetnode]
@@ -387,8 +420,8 @@ class document(_Element):
                                   self.externaltargets, self.implicittargets)
         elif self.implicittargets.has_key(name):
             print >>sys.stderr, "already has explicit target"
-            sw = self.errorhandler.system_warning(
-                  0, 'Duplicate implicit target name: "%s"' % name)
+            sw = self.errorhandler.information(
+                  'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.implicittargets)
         self.externaltargets.setdefault(name, []).append(targetnode)
@@ -416,106 +449,129 @@ class document(_Element):
         refnode['auto'] = 1
         self.autofootnoterefs.append((refname, refnode))
 
+    def addsubstitution(self, name, substitutionnode, innode):
+        if self.substitutions.has_key(name):
+            sw = self.errorhandler.error(
+                  'Duplicate substitution name: "%s"' % name)
+            innode += sw
+        self.substitutions[name] = substitutionnode
+        substitutionnode['name'] = name
+
+    def addsubstitutionref(self, refname, subrefnode):
+        subrefnode['refname'] = refname
+        self.substitutionrefs.setdefault(refname, []).append(subrefnode)
+
 
 # ================
 #  Title Elements
 # ================
 
-class title(_TextElement): pass
-class subtitle(_TextElement): pass
+class title(Title, TextElement): pass
+class subtitle(Title, TextElement): pass
 
 
 # ========================
 #  Bibliographic Elements
 # ========================
 
-class docinfo(_Element): pass
-class author(_TextElement): pass
-class authors(_Element): pass
-class organization(_TextElement): pass
-class contact(_TextElement): pass
-class version(_TextElement): pass
-class revision(_TextElement): pass
-class status(_TextElement): pass
-class date(_TextElement): pass
-class copyright(_TextElement): pass
-class abstract(_Element): pass
+class docinfo(Bibliographic, Element): pass
+class author(Bibliographic, TextElement): pass
+class authors(Bibliographic, Element): pass
+class organization(Bibliographic, TextElement): pass
+class contact(Bibliographic, TextElement): pass
+class version(Bibliographic, TextElement): pass
+class revision(Bibliographic, TextElement): pass
+class status(Bibliographic, TextElement): pass
+class date(Bibliographic, TextElement): pass
+class copyright(Bibliographic, TextElement): pass
+class abstract(Bibliographic, Element): pass
 
 
 # =====================
 #  Structural Elements
 # =====================
 
-class section(_Element): pass
-class transition(_Element): pass
+class section(Structural, Element): pass
+class transition(Structural, Element): pass
 
-class package_section(_Element): pass
-class module_section(_Element): pass
-class class_section(_Element): pass
-class method_section(_Element): pass
-class function_section(_Element): pass
-class module_attribute_section(_Element): pass
-class class_attribute_section(_Element): pass
-class instance_attribute_section(_Element): pass
+class package_section(Structural, Element): pass
+class module_section(Structural, Element): pass
+class class_section(Structural, Element): pass
+class method_section(Structural, Element): pass
+class function_section(Structural, Element): pass
+class module_attribute_section(Structural, Element): pass
+class class_attribute_section(Structural, Element): pass
+class instance_attribute_section(Structural, Element): pass
 
 # Structural Support Elements
 # ---------------------------
 
-class inheritance_list(_Element): pass
-class parameter_list(_Element): pass
-class parameter_item(_Element): pass
-class optional_parameters(_Element): pass
-class parameter_tuple(_Element): pass
-class parameter_default(_TextElement): pass
-class initial_value(_TextElement): pass
+class inheritance_list(Component, Element): pass
+class parameter_list(Component, Element): pass
+class parameter_item(Component, Element): pass
+class optional_parameters(Component, Element): pass
+class parameter_tuple(Component, Element): pass
+class parameter_default(Component, TextElement): pass
+class initial_value(Component, TextElement): pass
 
 
 # ===============
 #  Body Elements
 # ===============
 
-class paragraph(_TextElement): pass
-class bullet_list(_Element): pass
-class enumerated_list(_Element): pass
-class list_item(_Element): pass
-class definition_list(_Element): pass
-class definition_list_item(_Element): pass
-class term(_TextElement): pass
-class classifier(_TextElement): pass
-class definition(_Element): pass
-class field_list(_Element): pass
-class field(_Element): pass
-class field_name(_TextElement): pass
-class field_argument(_TextElement): pass
-class field_body(_Element): pass
-class literal_block(_TextElement): pass
-class block_quote(_Element): pass
-class attention(_Element): pass
-class caution(_Element): pass
-class danger(_Element): pass
-class error(_Element): pass
-class important(_Element): pass
-class note(_Element): pass
-class tip(_Element): pass
-class warning(_Element): pass
-class comment(_TextElement): pass
-class directive(_Element): pass
-class target(_TextElement): pass
-class footnote(_Element): pass
-class label(_TextElement): pass
-class figure(_Element): pass
-class caption(_TextElement): pass
-class legend(_Element): pass
-class table(_Element): pass
-class tgroup(_Element): pass
-class colspec(_Element): pass
-class thead(_Element): pass
-class tbody(_Element): pass
-class row(_Element): pass
-class entry(_Element): pass
+class paragraph(General, TextElement): pass
+class bullet_list(List, Element): pass
+class enumerated_list(List, Element): pass
+class list_item(Component, Element): pass
+class definition_list(List, Element): pass
+class definition_list_item(Component, Element): pass
+class term(Component, TextElement): pass
+class classifier(Component, TextElement): pass
+class definition(Component, Element): pass
+class field_list(List, Element): pass
+class field(Component, Element): pass
+class field_name(Component, TextElement): pass
+class field_argument(Component, TextElement): pass
+class field_body(Component, Element): pass
+class option_list(List, Element): pass
+class option_list_item(Component, Element): pass
+class option(Component, Element): pass
+class short_option(Component, TextElement): pass
+class long_option(Component, TextElement): pass
+class vms_option(Component, TextElement): pass
+class option_argument(Component, TextElement): pass
+class description(Component, Element): pass
+class literal_block(General, TextElement): pass
+class block_quote(General, Element): pass
+class doctest_block(General, TextElement): pass
+class attention(Admonition, Element): pass
+class caution(Admonition, Element): pass
+class danger(Admonition, Element): pass
+class error(Admonition, Element): pass
+class important(Admonition, Element): pass
+class note(Admonition, Element): pass
+class tip(Admonition, Element): pass
+class hint(Admonition, Element): pass
+class warning(Admonition, Element): pass
+class comment(Special, TextElement): pass
+class directive(Special, Element): pass
+class substitution(Special, TextElement): pass
+class target(Special, Inline, TextElement): pass
+class footnote(General, Element): pass
+class label(Component, TextElement): pass
+class figure(General, Element): pass
+class caption(Component, TextElement): pass
+class legend(Component, Element): pass
+class table(General, Element): pass
+class tgroup(Component, Element): pass
+class colspec(Component, Element): pass
+class thead(Component, Element): pass
+class tbody(Component, Element): pass
+class row(Component, Element): pass
+class entry(Component, Element): pass
 
 
-class system_warning(_Element):
+class system_warning(Special, Element):
 
     def __init__(self, comment=None, *children, **attributes):
         #print ('nodes.system_warning.__init__: comment=%r, children=%r, '
@@ -523,51 +579,41 @@ class system_warning(_Element):
         if comment:
             p = paragraph('', comment)
             children = (p,) + children
-        _Element.__init__(self, '', *children, **attributes)
+        Element.__init__(self, '', *children, **attributes)
 
     def astext(self):
-        return '[level %s] ' % self['level'] + _Element.astext(self)
-
-
-class option_list(_Element): pass
-class option_list_item(_Element): pass
-class option(_Element): pass
-class short_option(_TextElement): pass
-class long_option(_TextElement): pass
-class vms_option(_TextElement): pass
-class option_argument(_TextElement): pass
-class description(_Element): pass
-class doctest_block(_TextElement): pass
+        return '[level %s] ' % self['level'] + Element.astext(self)
 
 
 # =================
 #  Inline Elements
 # =================
 
-class emphasis(_TextElement): pass
-class strong(_TextElement): pass
-class interpreted(_TextElement): pass
-class literal(_TextElement): pass
-class reference(_TextElement): pass
-class footnote_reference(_TextElement): pass
-class image(_TextElement): pass
+class emphasis(Inline, TextElement): pass
+class strong(Inline, TextElement): pass
+class interpreted(Inline, TextElement): pass
+class literal(Inline, TextElement): pass
+class reference(Inline, TextElement): pass
+class footnote_reference(Inline, TextElement): pass
+class substitution_reference(Inline, TextElement): pass
+class image(General, Inline, TextElement): pass
 
-class package(_TextElement): pass
-class module(_TextElement): pass
+class package(Component, Inline, TextElement): pass
+class module(Component, Inline, TextElement): pass
 
 
-class inline_class(_TextElement):
+class inline_class(Component, Inline, TextElement):
 
     tagname = 'class'
 
 
-class method(_TextElement): pass
-class function(_TextElement): pass
-class variable(_TextElement): pass
-class parameter(_TextElement): pass
-class type(_TextElement): pass
-class class_attribute(_TextElement): pass
-class module_attribute(_TextElement): pass
-class instance_attribute(_TextElement): pass
-class exception_class(_TextElement): pass
-class warning_class(_TextElement): pass
+class method(Component, Inline, TextElement): pass
+class function(Component, Inline, TextElement): pass
+class variable(Inline, TextElement): pass
+class parameter(Component, Inline, TextElement): pass
+class type(Inline, TextElement): pass
+class class_attribute(Component, Inline, TextElement): pass
+class module_attribute(Component, Inline, TextElement): pass
+class instance_attribute(Component, Inline, TextElement): pass
+class exception_class(Inline, TextElement): pass
+class warning_class(Inline, TextElement): pass
