@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/19 04:07:29 $
+:Date: $Date: 2001/11/22 04:18:23 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -79,7 +79,8 @@ Changed contact email addresses.
 
   - Fixed bugs in StateMachineWS.getknownindented().
   - Added trimming of blank first lines to
-    StateMachineWS.getfirstknownindented().
+    StateMachineWS.getindented(), .getknownindented(), and
+    .getfirstknownindented().
   - Cleaned up & updated.
   - Fixed bug in StateMachine.getunindented().
   - Added form feed & vertical tab conversion to string2lines.
@@ -87,7 +88,8 @@ Changed contact email addresses.
   - Added 'nestedSM' and 'nestedSMkwargs' to State.
   - Added 'uptoblank' and 'stripindent' optional arguments to
     'getindented', 'getknownindented', and 'getfirstknownindented'
-    methods of StateWS, and to 'extractindented' function.
+    methods of StateMachineWS, and to 'extractindented' function.
+  - Added 'atbof' and 'ateof' methods to StateMachine.
 
 * dps/urischemes.py: Known URI schemes; added to project.
 
@@ -97,6 +99,7 @@ Changed contact email addresses.
   - Added named methods (aliases to numbered system_warning calls) to
     Reporter.
   - Removed Reporter.strong_system_warning (not needed).
+  - Improved error stream handling.
   - Added some docstrings.
   - Added 'parseattributes()', associated functions and exceptions.
 
