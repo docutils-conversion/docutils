@@ -3,8 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.7 $
-Date: $Date: 2001/08/11 02:10:07 $
+Revision: $Revision: 1.8 $
+Date: $Date: 2001/08/11 23:20:05 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -563,9 +563,9 @@ alternatives:
        Version:: 1
 
    Advantages: unambiguous, obvious? (*almost* RFC822-compliant),
-   flexible, syntax already used for directives. Disadvantage: no
-   precedent, not quite RFC822-compliant, syntax already used for
-   directives.
+   flexible, similar to syntax already used for literal blocks and
+   directives. Disadvantage: no precedent, not quite RFC822-compliant,
+   similar to syntax already used for literal blocks and directives.
 
 One special context is defined for field lists [2]_. A field list as
 the very first non-comment block, or the second non-comment block
