@@ -4,8 +4,8 @@
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
 Version: 1.2
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/22 22:36:03 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/08/11 01:58:15 $
 Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -724,7 +724,10 @@ class StateMachineWS(StateMachine):
         Parameter `indent`: the number of indent columns/characters.
         """
         offset = self.abslineoffset()
-        indented = [self.line[indent:]]
+        if self.line[indent:]:
+            indented = [self.line[indent:]]
+        else:
+            indented = []
         for line in self.inputlines[self.lineoffset + 1:]:
             if line[:indent].strip():
                 blankfinish = len(indented) and not indented[-1].strip()
@@ -732,7 +735,8 @@ class StateMachineWS(StateMachine):
             indented.append(line[indent:])
         else:
             blankfinish = 1
-        self.nextline(len(indented) - 1)  # advance to last indented line
+        if indented:
+            self.nextline(len(indented) - 1) # advance to last indented line
         while indented and not indented[-1].strip():
             indented.pop()
         return indented, offset, blankfinish
