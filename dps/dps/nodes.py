@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.36 $
-:Date: $Date: 2002/03/11 03:43:26 $
+:Revision: $Revision: 1.37 $
+:Date: $Date: 2002/03/16 06:07:41 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -17,10 +17,13 @@ element generic identifiers in the DTD_.
 .. _DTD: http://docstring.sourceforge.net/spec/gpdi.dtd
 """
 
-import sys
+import sys, os
 import xml.dom.minidom
 from types import IntType, SliceType, StringType, TupleType
 from UserString import MutableString
+from dps import utils
+import dps
+
 
 # ==============================
 #  Functional Node Base Classes
@@ -38,7 +41,12 @@ class Node:
         return 1
 
     def asdom(self, dom=xml.dom.minidom):
+        """Return a DOM representation of this Node."""
         return self._dom_node(dom)
+
+    def pformat(self, indent='    ', level=0):
+        """Return an indented pseudo-XML representation, for test purposes."""
+        raise NotImplementedError
 
     def walk(self, visitor):
         """
@@ -478,7 +486,7 @@ class Referential(ToBeResolved):
 #  Root Element
 # ==============
 
-class document(Root, Element):
+class document(Root, Structural, Element):
 
     def __init__(self, reporter, languagecode, *args, **kwargs):
         Element.__init__(self, *args, **kwargs)
@@ -542,6 +550,9 @@ class document(Root, Element):
         self.symbol_footnote_refs = []
         """List of symbol footnote_reference nodes."""
 
+        self.pending = []
+        """List of pending elements @@@."""
+
         self.anonymous_start = 1
         """Initial anonymous hyperlink number."""
 
@@ -571,11 +582,13 @@ class document(Root, Element):
                 msg = self.reporter.error('Duplicate ID: "%s"' % id)
                 msgnode += msg
         else:
-            while 1:
+            if node.has_key('name'):
+                id = utils.id(node['name'])
+            else:
+                id = ''
+            while not id or self.ids.has_key(id):
                 id = 'id%s' % self.id_start
                 self.id_start += 1
-                if not self.ids.has_key(id):
-                    break
             node['id'] = id
         self.ids[id] = node
         if node.has_key('name'):
@@ -695,6 +708,9 @@ class document(Root, Element):
     def note_substitution_ref(self, subrefnode):
         self.substitution_refs.setdefault(
               subrefnode['refname'], []).append(subrefnode)
+
+    def note_pending(self, pendingnode):
+        self.pending.append(pendingnode)
 
 
 # ================
@@ -838,30 +854,63 @@ class system_message(Special, PreBibliographic, Element):
 class pending(Special, PreBibliographic, Element):
 
     """
-    The "pending" element is used to encapsulate a pending transform: the
-    transform, the point at which to apply it, and any data it requires.
-    
+
+    The "pending" element is used to encapsulate a pending operation: the
+    operation, the point at which to apply it, and any data it requires.  Only
+    the pending operation's location within the document is stored in the
+    public document tree; the operation itself and its data are stored in
+    internal instance attributes.
+
     For example, say you want a table of contents in your reStructuredText
-    document. The easiest way to specify where to put it is from within the
+    document.  The easiest way to specify where to put it is from within the
     document, with a directive::
 
         .. contents::
-    
+
     But the "contents" directive can't do its work until the entire document
-    has been parsed (and possibly transformed to some extent). So the
+    has been parsed (and possibly transformed to some extent).  So the
     directive code leaves a placeholder behind that will trigger the second
     phase of the its processing, something like this::
 
-        <pending directive="contents" ...other attributes...>
-            ...any directive data...
+        <pending ...public attributes...> + internal attributes
 
     The "pending" node is also appended to `document.pending`, so that a later
     stage of processing can easily run all pending transforms.
     """
 
-    def __init__(self, transform, *children, **attributes):
+    def __init__(self, transform, stage, details,
+                 rawsource='', *children, **attributes):
+        Element.__init__(self, rawsource, *children, **attributes)
+
         self.transform = transform
-        """Contains the transform class..."""
+        """The `dps.transforms.Transform` class implementing the pending
+        operation."""
+
+        self.stage = stage
+        """The stage of processing when the function will be called."""
+
+        self.details = details
+        """Detail data required by the pending operation."""
+
+    def pformat(self, indent='    ', level=0):
+        internals = [
+              '.. internal attributes:',
+              '     pending.transform: %s.%s' % (self.transform.__module__,
+                                                 self.transform.__name__),
+              '     pending.stage: %r' % self.stage,
+              '     pending.details:']
+        details = self.details.items()
+        details.sort()
+        for key, value in details:
+            if isinstance(value, Node):
+                internals.append('%7s%s:' % ('', key))
+                internals.extend(['%9s%s' % ('', line)
+                                  for line in value.pformat().splitlines()])
+            else:
+                internals.append('%7s%s: %r' % ('', key, value))
+        return (Element.pformat(self, indent, level)
+                + ''.join([('    %s%s\n' % (indent * level, line))
+                           for line in internals]))
 
 
 class raw(Special, Inline, PreBibliographic, TextElement):
