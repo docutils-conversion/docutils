@@ -2,8 +2,8 @@
 """
 :Authors:  David Goodger; Garth Kidd
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/06 03:10:12 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/22 01:57:00 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -31,6 +31,7 @@ sys.path.insert(0, os.pardir)           # running in test framework dir?
 import dps                              # or restructuredtext on path?
 
 from dps import statemachine, nodes, urischemes, utils, transforms
+from dps.transforms import universal
 
 import unittest, difflib, inspect, os, sys
 
@@ -225,7 +226,7 @@ class TransformTestCase(CustomTestCase):
         doctree = utils.newdocument(warninglevel=5, errorlevel=5,
                                     debug=UnitTestFolder.debug)
         self.parser.parse(self.input, doctree)
-        for transformClass in self.transforms:
+        for transformClass in (self.transforms + universal.test_transforms):
             transformClass().transform(doctree)
         output = doctree.pformat()
         self.compareOutput(self.input, output, self.expected)
