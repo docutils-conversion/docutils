@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.34 $
-:Date: $Date: 2002/02/07 01:53:41 $
+:Revision: $Revision: 1.35 $
+:Date: $Date: 2002/02/12 02:24:53 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -733,6 +733,13 @@ of the field body. For example::
        with the first line, but they must be indented relative to the
        field name marker, and they must line up with each other.
     :Parameter i: integer
+
+Field arguments are separated from the field name and each other by
+whitespace, and may not contain colons (":").  The interpretation of
+field arguments is up to the application.  For example::
+
+    :name1 word number=1: 
+        Both "word" and "number=1" are single words.
 
 Applications of reStructuredText may recognize field names and
 transform fields or field bodies in certain contexts. See
@@ -1492,7 +1499,7 @@ Directives normally do not survive as "directive" elements past the
 parsing stage; they are a *parser construct* only, and have no
 intrinsic meaning outside of reStructuredText. Instead, the parser
 will transform recognized directives into (possibly specialized)
-document elements. Unknown directives will trigger level-2 (error)
+document elements. Unknown directives will trigger level-3 (error)
 system warnings.
 
 Syntax diagram::
@@ -1735,18 +1742,18 @@ explicit reference names are avoided by following this procedure:
 
 1. `Explicit hyperlink targets`_ override any implicit targets having
    the same reference name. The implicit hyperlink targets are
-   removed, and level-0 system warnings are inserted.
+   removed, and level-1 (info) system warnings are inserted.
 
-2. Duplicate implicit hyperlink targets are removed, and level-0
-   system warnings inserted. For example, if two or more sections have
-   the same title (such as "Introduction" subsections of a
-   rigidly-structured document), there will be duplicate implicit
+2. Duplicate implicit hyperlink targets are removed, and level-1
+   (info) system warnings inserted. For example, if two or more
+   sections have the same title (such as "Introduction" subsections of
+   a rigidly-structured document), there will be duplicate implicit
    hyperlink targets.
 
-3. Duplicate explicit hyperlink targets are removed, and level-1
-   system warnings are inserted. Exception: duplicate `external
-   hyperlink targets`_ (identical hyperlink names and referenced URIs)
-   do not conflict, and are not removed.
+3. Duplicate explicit hyperlink targets are removed, and level-2
+   (warning) system warnings are inserted. Exception: duplicate
+   `external hyperlink targets`_ (identical hyperlink names and
+   referenced URIs) do not conflict, and are not removed.
 
 System warnings are inserted where target links have been removed. See
 "Error Handling" in `PEP 258`_.
