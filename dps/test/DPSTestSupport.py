@@ -2,8 +2,8 @@
 """
 :Authors:  David Goodger; Garth Kidd
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/08 04:30:36 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/16 06:11:58 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -224,7 +224,7 @@ class TransformTestCase(CustomTestCase):
                                     debug=UnitTestFolder.debug)
         self.parser.parse(self.input, doctree)
         for transformClass in (self.transforms + universal.test_transforms):
-            transformClass().transform(doctree)
+            transformClass(doctree).transform()
         output = doctree.pformat()
         self.compareOutput(self.input, output, self.expected)
 
@@ -240,7 +240,7 @@ class TransformTestCase(CustomTestCase):
         print '-' * 70
         print doctree.pformat()
         for transformClass in self.transforms:
-            transformClass().transform(doctree)
+            transformClass(doctree).transform()
         output = doctree.pformat()
         print '-' * 70
         print output
