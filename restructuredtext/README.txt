@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/23 04:11:47 $
+:Date: $Date: 2001/08/25 01:54:52 $
 :Web-site: http://structuredtext.sourceforge.net/
 
 Thank you for downloading the reStructuredText project archive. As
@@ -120,8 +120,9 @@ can run it instead of the above. The distutils options windown will
 not appear.
 
 
-Local Variables:
-mode: indented-text
-indent-tabs-mode: nil
-fill-column: 70
-End:
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   fill-column: 70
+   End:
