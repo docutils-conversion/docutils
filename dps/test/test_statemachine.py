@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/11/23 03:19:43 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/01/26 00:07:36 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for statemachine.py.
@@ -286,7 +286,7 @@ class MiscTests(unittest.TestCase):
 
     def test_extractindented(self):
         block = statemachine.string2lines(self.indented_string)
-        self.assertEquals(statemachine.extractindented(block), 
+        self.assertEquals(statemachine.extractindented(block),
                           ([s[6:] for s in block], 6, 1))
         self.assertEquals(statemachine.extractindented(self.s2l_expected),
                           ([], 0, 0))

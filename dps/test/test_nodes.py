@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/11/13 03:08:07 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/01/26 00:07:30 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for nodes.py.
@@ -58,13 +58,13 @@ class ElementTests(unittest.TestCase):
 
     def test_withtext(self):
         element = nodes.Element('text\nmore', nodes.Text('text\nmore'))
-        self.assertEquals(repr(element), r"<Element: <#text...>>")
+        self.assertEquals(repr(element), r"<Element: <#text: 'text\nmore'>>")
         self.assertEquals(str(element), '<Element>text\nmore</Element>')
         dom = element.asdom()
         self.assertEquals(dom.toxml(), '<Element>text\nmore</Element>')
         dom.unlink()
         element['attr'] = '1'
-        self.assertEquals(repr(element), r"<Element: <#text...>>")
+        self.assertEquals(repr(element), r"<Element: <#text: 'text\nmore'>>")
         self.assertEquals(str(element),
                           '<Element attr="1">text\nmore</Element>')
         dom = element.asdom()
