@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.15 $
-:Date: $Date: 2002/03/28 04:41:03 $
+:Revision: $Revision: 1.16 $
+:Date: $Date: 2002/03/28 05:09:04 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -18,6 +18,7 @@ __docformat__ = 'reStructuredText'
 
 
 import time
+from types import ListType
 from dps import writers, nodes, languages
 
 
@@ -160,10 +161,12 @@ class HTMLTranslator(nodes.NodeVisitor):
                          '</TBODY>\n</TABLE>\n')
 
     def visit_citation_reference(self, node):
-        #href = ''
-        #if node.has_key('refname'):
-        #    href = '#' + self.doctree.nameids[node['refname']]
-        self.body.append(self.starttag(node, 'a', '[', href=node['refid'],
+        href = ''
+        if node.has_key('refid'):
+            href = '#' + node['refid']
+        elif node.has_key('refname'):
+            href = '#' + self.doctree.nameids[node['refname']]
+        self.body.append(self.starttag(node, 'a', '[', href=href, #node['refid'],
                                        CLASS='citation-reference'))
 
     def depart_citation_reference(self, node):
@@ -387,12 +390,12 @@ class HTMLTranslator(nodes.NodeVisitor):
                          '</TBODY>\n</TABLE>\n')
 
     def visit_footnote_reference(self, node):
-        #href = ''
-        #if node.has_key('refid'):
-        #    href = '#' + node['refid']
-        #elif node.has_key('refname'):
-        #    href = '#' + self.doctree.nameids[node['refname']]
-        self.body.append(self.starttag(node, 'a', '', href=node['refid'],
+        href = ''
+        if node.has_key('refid'):
+            href = '#' + node['refid']
+        elif node.has_key('refname'):
+            href = '#' + self.doctree.nameids[node['refname']]
+        self.body.append(self.starttag(node, 'a', '', href=href, #node['refid'],
                                        CLASS='footnote-reference'))
 
     def depart_footnote_reference(self, node):
@@ -712,8 +715,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_topic(self, node):
         self.body.append(self.starttag(node, 'div', CLASS='topic'))
-        if node.hasattr('class'):
-            self.topic_class = topic['class']
+        self.topic_class = node.get('class')
 
     def depart_topic(self, node):
         self.body.append('</DIV>\n')
