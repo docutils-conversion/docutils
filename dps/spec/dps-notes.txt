@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/11 01:53:29 $
-Revision: $Revision: 1.5 $
+Date: $Date: 2001/08/15 03:23:44 $
+Revision: $Revision: 1.6 $
 
 
 To Do
@@ -92,6 +92,9 @@ following objects:
 
 In order to evaluate interpreted text cross-references, namespaces for
 each of the above will also be required.
+
+See python-dev/docstring-develp thread "AST mining", started on
+2001-08-14.
 
 
 Local Variables:
