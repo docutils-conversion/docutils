@@ -2,7 +2,7 @@ A ReStructuredText Primer
 =========================
 
 :Author: Richard Jones
-:Version: $Revision: 1.6 $
+:Version: $Revision: 1.7 $
 
 Structure
 ---------
@@ -49,7 +49,7 @@ the double back-quotes - so asterisks "``*``" etc. are left alone.
 If you find that you want to use one of the "special" characters in text, it
 will generally be OK - ReST is pretty smart. For example, this * asterisk is
 handled just fine. If you actually want text \*surrounded by asterisks* to
-**not** be italicised, then you need to indicated that the asterisk is not
+**not** be italicised, then you need to indicate that the asterisk is not
 special. You do this by placing a backslash just before it, like so "``\*``".
 
 
@@ -83,7 +83,7 @@ blank line.
 
     I. upper-case roman numerals
 
-    i. lower-caseroman numerals
+    i. lower-case roman numerals
 
     (1) numbers again
 
@@ -106,7 +106,7 @@ blank line.
 
   I. upper-case roman numerals
 
-  i. lower-caseroman numerals
+  i. lower-case roman numerals
 
   (1) numbers again
 
@@ -162,19 +162,25 @@ Preformatting (code samples)
 To just include a chunk of preformatted, never-to-be-fiddled-with
 text, finish the prior paragraph with "``::``". The preformatted block is
 finished when the text falls back to the same indentation level as a
-paragraph prior to the preformatted block.
+paragraph prior to the preformatted block. For example::
 
-An example::
+ An example::
 
-  Whitespace, newlines, blank lines, and all kinds of markup (like
-     *this* or \this) is preserved by literal blocks.
- Lookie here, I've dropped an indentation level (but not far enough)
+   Whitespace, newlines, blank lines, and all kinds of markup (like
+      *this* or \this) is preserved by literal blocks.
+  Lookie here, I've dropped an indentation level (but not far enough)
 
-Results in::
+ no more example
 
-  Whitespace, newlines, blank lines, and all kinds of markup (like
-     *this* or \this) is preserved by literal blocks.
- Lookie here, I've dropped an indentation level (but not far enough)
+Results in:
+
+ An example::
+
+   Whitespace, newlines, blank lines, and all kinds of markup (like
+      *this* or \this) is preserved by literal blocks.
+  Lookie here, I've dropped an indentation level (but not far enough)
+
+ no more example
 
 Note that if a paragraph consists only of "``::``", then it's removed
 from the output::
