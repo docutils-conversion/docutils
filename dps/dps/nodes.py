@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.30 $
-:Date: $Date: 2002/02/20 04:17:36 $
+:Revision: $Revision: 1.31 $
+:Date: $Date: 2002/02/21 03:44:53 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -53,8 +53,9 @@ class Node:
         Parameter `visitor`: A `NodeVisitor` object, containing a
         ``visit_...`` method for each `Node` subclass encountered.
         """
-        method = getattr(visitor, 'visit_' + self.__class__.__name__,
-                         visitor.unknown_visit)
+        name = 'visit_' + self.__class__.__name__
+        method = getattr(visitor, name, visitor.unknown_visit)
+        visitor.doctree.reporter.debug(name, category='nodes.Node.walk')
         try:
             method(self)
             children = self.getchildren()
@@ -76,8 +77,9 @@ class Node:
         Parameter `visitor`: A `NodeVisitor` object, containing ``visit_...``
         and ``depart_...`` methods for each `Node` subclass encountered.
         """
-        method = getattr(visitor, 'visit_' + self.__class__.__name__,
-                         visitor.unknown_visit)
+        name = 'visit_' + self.__class__.__name__
+        method = getattr(visitor, name, visitor.unknown_visit)
+        visitor.doctree.reporter.debug(name, category='nodes.Node.walkabout')
         try:
             method(self)
             children = self.getchildren()
@@ -90,8 +92,9 @@ class Node:
             pass
         except SkipDeparture:
             return
-        method = getattr(visitor, 'depart_' + self.__class__.__name__,
-                         visitor.unknown_departure)
+        name = 'depart_' + self.__class__.__name__
+        method = getattr(visitor, name, visitor.unknown_departure)
+        visitor.doctree.reporter.debug(name, category='nodes.Node.walkabout')
         method(self)
 
 
@@ -762,8 +765,8 @@ class system_message(Special, PreBibliographic, Element):
         Element.__init__(self, '', *children, **attributes)
 
     def astext(self):
-        return '%s [level %s] %s' % (self['type'], self['level'],
-                                     Element.astext(self))
+        return '%s (%s) %s' % (self['type'], self['level'],
+                               Element.astext(self))
 
 
 # =================
