@@ -1,0 +1,149 @@
+=============================
+ DPS Document Tree Structure
+=============================
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.1 $
+:Date: $Date: 2001/10/20 03:04:37 $
+
+This document describes the internal data structure representing
+document trees in the Python Docstring Processing System. The data
+structure is defined by classes in the ``dps.nodes`` module. It is
+also formally described by the `Generic Plaintext Document Interface
+DTD`_ XML document type definition, gpdi.dtd_, which is the definitive
+source for element hierarchy details.
+
+Below is a simplified diagram of the hierarchy of element types in the
+DPS document tree structure. An element may contain any other elements
+immediately below it in the diagram. Note text is in square brackets.
+Element types in parentheses indicate recursive or one-to-many
+relationships; sections may contain (sub)sections, tables contain
+further body elements, etc. ::
+
+  +--------------------------------------------------------------------+
+  | document  [may begin with a title, subtitle, docinfo]              |
+  |                             +--------------------------------------+
+  |                             | sections  [each begins with a title] |
+  +-----------------------------+-------------------------+------------+
+  | divisions                                             | (sections) |
+  +-------------------------------------------------------+------------+
+  | [body elements:]                                      |
+  |         | - literal | - lists  |       | - hyperlink  |
+  |         |   blocks  | - tables |       |   targets    |
+  | para-   | - doctest | - block  | foot- | - directives |
+  | graphs  |   blocks  |   quotes | notes | - comments   |
+  +---------+-----------+----------+-------+--------------+
+  | [text]+ | [text]    | (body elements)  | [text]       |
+  | (inline +-----------+------------------+--------------+
+  | markup) |
+  +---------+
+
+
+Representation of Horizontal Rules
+==================================
+
+Having added the "horizontal rule" construct to the reStructuredText_
+spec, a decision had to be made as to how to reflect the construct in
+the implementation of the document tree. Given this source::
+
+    Document
+    ========
+
+    Paragraph
+
+    --------
+
+    Paragraph
+
+The horizontal rule indicates a "transition" (in prose terms) or the
+start of a new "division". Before implementation, the parsed document
+tree would be::
+
+    <document>
+        <section name="document">
+            <title>
+                Document
+            <paragraph>
+                Paragraph
+            --------               <--- error here
+            <paragraph>
+                Paragraph
+
+There are several possibilities for the implementation. Solution #2
+was chosen.
+
+1. Implement horizontal rules as "divisions" or segments. A "division"
+   is a title-less, non-hierarchical section. The first try at an
+   implementation looked like this::
+
+       <document>
+           <section name="document">
+               <title>
+                   Document
+               <paragraph>
+                   Paragraph
+               <division>
+                   <paragraph>
+                       Paragraph
+
+   But the two paragraphs are really at the same level; they shouldn't
+   appear to be at different levels. There's really an invisible
+   "first division". The horizontal rule splits the document body into
+   two segments, which should be treated uniformly.
+   
+2. Treating "divisions" uniformly brings us to the second
+   possibility::
+
+       <document>
+           <section name="document">
+               <title>
+                   Document
+               <division>
+                   <paragraph>
+                       Paragraph
+               <division>
+                   <paragraph>
+                       Paragraph
+
+   With this change, documents and sections will directly contain
+   divisions and sections, but not body elements. Only divisions will
+   directly contain body elements. Even without a horizontal rule
+   anywhere, the body elements of a document or section would be
+   contained within a division element. This makes the document tree
+   deeper. This is similar to the way HTML treats document contents:
+   grouped within a <BODY> element.
+   
+   This solution has been chosen.
+
+3. Implement them as "transitions", empty elements::
+
+       <document>
+           <section name="document">
+               <title>
+                   Document
+               <paragraph>
+                   Paragraph
+               <transition>
+               <paragraph>
+                   Paragraph
+
+   A transition would be a "point element", not containing anything,
+   only identifying a point within the document structure. This keeps
+   the document tree flatter, but the idea of a "point element" like
+   "transition" smells bad. A transition isn't a thing itself, it's
+   the space between two divisions.
+   
+
+.. _Generic Plaintext Document Interface DTD:
+.. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
+.. _reStructuredText:
+    http://structuredtext.sourceforge.net/spec/reStructuredText.txt
+
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:
