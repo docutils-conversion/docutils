@@ -1,3 +1,27 @@
 #! /usr/bin/env python
-# $Id: __init__.py,v 1.1 2001/07/22 22:35:42 goodger Exp $
-# by David Goodger (dgoodger@bigfoot.com)
+
+"""
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/01/30 04:49:53 $
+:Copyright: This module has been placed in the public domain.
+"""
+
+__docformat__ = 'reStructuredText'
+
+
+class Parser:
+
+    def __init__(self, debug=0):
+        """Initialize the Parser instance."""
+        self.debug = debug
+
+    def parse(self, inputstring, docroot):
+        """Override to parse `inputstring` into document tree `docroot`."""
+        raise NotImplementedError('subclass must override this method')
+
+    def setup_parse(self, inputstring, docroot):
+        """Initial setup, used by `parse()`."""
+        self.inputstring = inputstring
+        self.docroot = docroot
