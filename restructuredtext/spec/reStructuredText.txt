@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.37 $
-:Date: $Date: 2002/02/21 03:35:10 $
+:Revision: $Revision: 1.38 $
+:Date: $Date: 2002/02/22 01:41:20 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -157,7 +157,7 @@ Here are examples of `body elements`_:
 
 - Directives_::
 
-      .. graphic:: mylogo.png
+      .. image:: mylogo.png
 
 - Substitution definitions_::
 
@@ -768,7 +768,7 @@ bibliographic data corresponds to the front matter of a book, such as
 the title page and copyright page.
 
 Certain field names (listed below) are recognized and transformed to
-the corresponding DTD elements, becoming child elements of the
+the corresponding DTD elements, most becoming child elements of the
 "docinfo" element. No ordering is required of these fields, although
 they may be rearranged to fit the document structure, as noted. Unless
 otherwise indicated in the list below, each of the bibliographic
@@ -789,9 +789,9 @@ elements are as follows:
 - "Status": status.
 - "Date": date.
 - "Copyright": copyright.
-- "Abstract": abstract. May contain arbitrary body elements. The
-  abstract always becomes the last child of the docinfo element. Only
-  one abstract is allowed.
+- "Abstract": abstract. May contain arbitrary body elements. Only one
+  abstract is allowed. The abstract becomes a section-equivalent
+  immediately following the docinfo element.
 
 This field-name-to-element mapping can be extended, or replaced for
 other languages. See the `DocInfo transform`_ implementation
