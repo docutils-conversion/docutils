@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/06 02:33:58 $
+:Date: $Date: 2002/02/07 01:55:41 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -166,7 +166,9 @@ Changed contact email addresses.
   - Added 'unknown directive' tests.
   - Added tests for admonitions and image/figure directives.
 
-* tools: Subdirectory added; contains quicktest.py by Garth Kidd.
+* tools: Subdirectory added. Contains quicktest.py by Garth Kidd, a
+  a front-end to the reStructuredText parser; and publish.py, a
+  minimal front-end to the Docutils Publisher.
 
 * sandbox: Subdirectory added; for playing around. It's OK to make
   a mess!
