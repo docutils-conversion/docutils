@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.33 $
-:Date: $Date: 2002/02/22 01:53:48 $
+:Revision: $Revision: 1.34 $
+:Date: $Date: 2002/02/23 16:49:54 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -113,8 +113,8 @@ resolve to either an internal or external reference.
     | figure | image | footnote 
     | bullet_list | enumerated_list | definition_list | field_list
     | option_list
-    | note | tip | hint | warning | error | caution | danger
-    | important
+    | note | tip | hint | warning | error | attention | caution
+    | danger | important
     | target | substitution_definition | comment | system_message
     %additional.body.elements; ">
 
@@ -297,8 +297,18 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT field_body (%body.elements;)+>
 <!ATTLIST field_body %basic.atts;>
 
+<!--
+`optarg_delimiter` contains the delimiter (either " " or "=")
+consistently used by `long_option` and/or `vms_option` elements with
+option arguments, or "mixed" if delimiter usage is mixed (both " " and
+"=" used). If no such options exist, no `optarg_delimiter` attribute
+will be present. `short_option` elements may only use spaces as
+opt/arg delimiters; they don't affect the attribute.
+-->
 <!ELEMENT option_list (option_list_item+)>
-<!ATTLIST option_list %basic.atts;>
+<!ATTLIST option_list
+    %basic.atts;
+    optarg_delimiter  CDATA  #IMPLIED>
 
 <!ELEMENT option_list_item (option+, description)>
 <!ATTLIST option_list_item %basic.atts;>
