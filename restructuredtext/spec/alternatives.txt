@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/10/18 03:49:26 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/10/19 03:06:28 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -162,7 +162,7 @@ Interpreted text is enclosed in single backquotes (`).
    - There could be ambiguity with interpreted text containing colons.
      For example, an index entry of "Mission: Impossible" would
      require a backslash-escaped colon.
-   
+
    - The explicit role is descriptive markup, not content, and will
      not be visible in the processed output. Putting it inside the
      backquotes doesn't feel right; the *role* isn't being quoted.
@@ -253,6 +253,165 @@ empty comment does **not** swallow up indented blocks following it,
 so block quotes are safe. "A tiny but practical wart." Accepted.
 
 
+Reworking Explicit Markup
+=========================
+
+Alan Jaffray came up with the idea of anonymous hyperlinks, added to
+reStructuredText. Subsequently it was asserted that hyperlinks
+(especially anonymous hyperlinks) would play an increasingly important
+role in reStructuredText documents, and therefore they require a
+simpler and more concise syntax. This prompted a review of the current
+and proposed explicit markup syntaxes with regards to improving
+usability.
+
+1. Original syntax::
+
+       .. _blah:                     internal hyperlink target
+       .. _blah: http://somewhere    external hyperlink target
+       .. _blah: blahblah_           indirect hyperlink target
+       .. __: http://somewhere       anonymous external target
+       .. __: blahblah_              anonymous indirect target
+       .. [blah] http://somewhere    footnote
+       .. blah:: http://somewhere    directive
+       .. blah: http://somewhere     comment
+
+   Notes on the examples:
+
+   * Anonymous internal targets are also possible, but probably not
+     useful, so they're not included. 
+   * The comment text was intentionally made to look like a hyperlink
+     target.
+
+   Origins:
+
+   * Except for the colon (a delimiter necessary to allow for
+     phrase-links), hyperlink target ``.. _blah:" comes from Setext.
+   * Comment syntax from Setext.
+   * Footnote syntax from StructuredText ("named links").
+   * Directives and anonymous hyperlinks original to reStructuredText.
+
+   Advantages:
+
+   + Consistent explicit markup indicator: "..".
+   + Consistent hyperlink syntax: ".. _" & ":".
+
+   Disadvantages:
+
+   - Anonymous target markup is awkward: ".. __:".
+   - The explicit markup indicator ("..") is excessively overloaded?
+   - Comment text is limited (can't look like a footnote, hyperlink,
+     or directive). But this is probably not important.
+
+2. Alan Jaffray's proposed syntax #1::
+
+       __ _blah                      internal hyperlink target
+       __ blah: http://somewhere     external hyperlink target
+       __ blah: blahblah_            indirect hyperlink target
+       __ http://somewhere           anonymous external target
+       __ blahblah_                  anonymous indirect target
+       __ [blah] http://somewhere    footnote
+       .. blah:: http://somewhere    directive
+       .. blah: http://somewhere     comment
+
+   The hyperlink-connoted underscores have become first-level syntax.
+
+   Advantages:
+
+   + Anonymous targets are simpler.
+   + All hyperlink targets are one character shorter.
+
+   Disadvantages:
+
+   - Inconsistent internal hyperlink targets. Unlike all other named
+     hyperlink targets, there's no colon. There's an extra leading
+     underscore, but we can't drop it because without it, "blah" looks
+     like a relative URI. Unless we restore the colon::
+
+         __ blah:                      internal hyperlink target
+
+   - Obtrusive markup?
+
+3. Alan Jaffray's proposed syntax #2::
+
+       .. _blah                      internal hyperlink target
+       .. blah: http://somewhere     external hyperlink target
+       .. blah: blahblah_            indirect hyperlink target
+       .. http://somewhere           anonymous external target
+       .. blahblah_                  anonymous indirect target
+       .. [blah] http://somewhere    footnote
+       !! blah: http://somewhere     directive
+       ## blah: http://somewhere     comment
+
+   Leading underscores have been (almost) replaced by "..", while
+   comments and directives have gained their own syntax.
+
+   Advantages:
+
+   + Anonymous hyperlinks are simpler.
+   + Unique syntax for comments. Connotation of "comment" from
+     some programming languages (including our favorite).
+   + Unique syntax for directives. Connotation of "action!".
+
+   Disadvantages:
+
+   - Inconsistent internal hyperlink targets. Again, unlike all other
+     named hyperlink targets, there's no colon. There's a leading
+     underscore, matching the trailing underscores of references,
+     which no other hyperlink targets have. We can't drop that one
+     leading underscore though: without it, "blah" looks like a
+     relative URI. Again, unless we restore the colon::
+
+         .. blah:                      internal hyperlink target
+
+   - All (except for internal) hyperlink targets lack their leading
+     underscores, losing the "hyperlink" connotation.
+
+   - Obtrusive syntax for comments. Alternatives::
+
+         ;; blah: http://somewhere
+            (also comment syntax in Lisp & others)
+         ,, blah: http://somewhere
+            ("comma comma": sounds like "comment"!)
+
+   - Iffy syntax for directives. Alternatives?
+
+4. Tony Ibbs' proposed syntax::
+
+       .. _blah:                     internal hyperlink target
+       .. _blah: http://somewhere    external hyperlink target
+       .. _blah: blahblah_           indirect hyperlink target
+       .. http://somewhere           anonymous external target
+       .. blahblah_                  anonymous indirect target
+       .. [blah] http://somewhere    footnote
+       .. blah:: http://somewhere    directive
+       .. blah: http://somewhere     comment
+
+   This is the same as the current syntax, except for anonymous
+   targets which drop their "__: ".
+
+   Advantage:
+
+   + Anonymous targets are simpler.
+
+   Disadvantages:
+
+   - Anonymous targets lack their leading underscores, losing the
+     "hyperlink" connotation.
+   - Anonymous targets are almost indistinguishable from comments.
+     (Better to know "up front".)
+
+5. David Goodger's proposed syntax: Perhaps going back to one of
+   Alan's earlier suggestions might be the best solution. How about
+   simply adding "__ " as a synonym for ".. __: "? These would become
+   equivalent::
+
+       .. __: http://somewhere
+
+       __ http://somewhere
+
+   Would that be sufficient, with no other syntax changes?
+
+
 Backquotes in Phrase-Links
 ==========================
 
@@ -310,8 +469,8 @@ Anonymous Hyperlinks
 Alan Jaffray came up with this idea, along with the following syntax::
 
     Search the `Python DOC-SIG mailing list archives`{}_.
-   
-    .. _: http://mail.python.org/pipermail/doc-sig/    
+
+    .. _: http://mail.python.org/pipermail/doc-sig/
 
 The idea is sound and useful. I suggested a "double underscore"
 syntax::
