@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 """
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.2 $
-Date: $Date: 2001/08/01 02:54:37 $
-Copyright: This module has been placed in the public domain.
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/08/22 03:16:46 $
+:Copyright: This module has been placed in the public domain.
 
 This is ``the dps.parsers.restructuredtext`` package. It exports a single
 class, `Parser`.
