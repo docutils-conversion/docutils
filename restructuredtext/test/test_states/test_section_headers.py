@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/01/25 23:43:41 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/02/06 02:18:42 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -77,7 +77,7 @@ Test unexpected section title.
     <paragraph>
         Test unexpected section title.
     <block_quote>
-        <system_warning level="3">
+        <system_warning level="4" type="SEVERE">
             <paragraph>
                 Unexpected section title at line 4.
         <paragraph>
@@ -91,7 +91,7 @@ Test short underline.
 """,
 """\
 <document>
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Title underline too short at line 2.
     <section name="title">
@@ -136,7 +136,7 @@ Test overline title with inset.
 """,
 """\
 <document>
-    <system_warning level="3">
+    <system_warning level="4" type="SEVERE">
         <paragraph>
             Incomplete section title at line 1.
 """],
@@ -147,7 +147,7 @@ Test overline title with inset.
 """,
 """\
 <document>
-    <system_warning level="3">
+    <system_warning level="4" type="SEVERE">
         <paragraph>
             Missing underline for overline at line 1.
 """],
@@ -159,7 +159,7 @@ Test missing underline, with paragraph.
 """,
 """\
 <document>
-    <system_warning level="3">
+    <system_warning level="4" type="SEVERE">
         <paragraph>
             Missing underline for overline at line 1.
     <paragraph>
@@ -174,7 +174,7 @@ Test long title and space normalization.
 """,
 """\
 <document>
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Title overline too short at line 1.
     <section name="long title">
@@ -192,7 +192,7 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="3">
+    <system_warning level="4" type="SEVERE">
         <paragraph>
             Title overline & underline mismatch at line 1.
     <paragraph>
@@ -211,14 +211,14 @@ Test missing titles; blank line in-between.
 """,
 """\
 <document>
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Document or section may not begin with a transition (line 1).
     <transition>
     <paragraph>
         Test missing titles; blank line in-between.
     <transition>
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Document or section may not end with a transition (line 9).
 """],
@@ -233,12 +233,12 @@ Test missing titles; nothing in-between.
 """,
 """\
 <document>
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Invalid section title or transition marker at line 1.
     <paragraph>
         Test missing titles; nothing in-between.
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Invalid section title or transition marker at line 6.
 """],
@@ -416,7 +416,7 @@ Paragraph 4.
             Title 3
         <paragraph>
             Paragraph 3.
-        <system_warning level="3">
+        <system_warning level="4" type="SEVERE">
             <paragraph>
                 Title level inconsistent at line 15:
             <literal_block>
@@ -467,7 +467,7 @@ Paragraph 4.
             Title 3
         <paragraph>
             Paragraph 3.
-        <system_warning level="3">
+        <system_warning level="4" type="SEVERE">
             <paragraph>
                 Title level inconsistent at line 19:
             <literal_block>

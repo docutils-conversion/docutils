@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/13 02:39:18 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/06 02:17:39 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -70,7 +70,7 @@ empty item above, no blank line
 <document>
     <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
         <list_item>
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 2.
     <paragraph>
@@ -87,24 +87,24 @@ Scrambled:
 <document>
     <paragraph>
         Scrambled:
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 3: '3' (ordinal 3)
     <enumerated_list enumtype="arabic" prefix="" start="3" suffix=".">
         <list_item>
             <paragraph>
                 Item three.
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 4: '2' (ordinal 2)
     <enumerated_list enumtype="arabic" prefix="" start="2" suffix=".">
         <list_item>
             <paragraph>
                 Item two.
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 5.
     <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
@@ -130,10 +130,10 @@ Skipping item 3:
         <list_item>
             <paragraph>
                 Item 2.
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 5: '4' (ordinal 4)
     <enumerated_list enumtype="arabic" prefix="" start="4" suffix=".">
@@ -158,7 +158,7 @@ And again:
 <document>
     <paragraph>
         Start with non-ordinal-1:
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 3: '0' (ordinal 0)
     <enumerated_list enumtype="arabic" prefix="" start="0" suffix=".">
@@ -176,7 +176,7 @@ And again:
                 Item three.
     <paragraph>
         And again:
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 10: '2' (ordinal 2)
     <enumerated_list enumtype="arabic" prefix="" start="2" suffix=".">
@@ -318,10 +318,10 @@ iiii. iiii
         <list_item>
             <paragraph>
                 iii
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Enumerated list start value invalid at line 6: 'iiii' (sequence 'lowerroman')
     <block_quote>
@@ -331,10 +331,10 @@ iiii. iiii
         <list_item>
             <paragraph>
                 I
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 9.
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Enumerated list start value invalid at line 9: 'IVXLCDM' (sequence 'upperroman')
     <block_quote>
@@ -468,10 +468,10 @@ iii. Item iii.
         <list_item>
             <paragraph>
                 Item I.
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 12: 'II' (ordinal 2)
     <enumerated_list enumtype="upperroman" prefix="" start="II" suffix=".">
@@ -509,10 +509,10 @@ iii. Item iii.
         <list_item>
             <paragraph>
                 Item i.
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 16.
-    <system_warning level="0">
+    <system_warning level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 24: 'ii' (ordinal 2)
     <enumerated_list enumtype="lowerroman" prefix="" start="ii" suffix=".">

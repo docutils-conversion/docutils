@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/01/30 05:01:37 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/02/06 02:19:04 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -211,13 +211,14 @@ class ParserTestCase(CustomTestCase):
     cases that have nothing to do with the input and output of the parser.
     """
 
-    parser = restructuredtext.Parser(debug=UnitTestFolder.debug)
+    parser = restructuredtext.Parser()
     """restructuredtext.Parser shared by all ParserTestCases."""
 
     def test_parser(self):
         if self.runInDebugger:
             pdb.set_trace()
-        document = dps.utils.newdocument(warninglevel=4, errorlevel=4)
+        document = dps.utils.newdocument(warninglevel=5, errorlevel=5,
+                                         debug=UnitTestFolder.debug)
         self.parser.parse(self.input, document)
         output = document.pformat()
         self.compareOutput(self.input, output, self.expected)

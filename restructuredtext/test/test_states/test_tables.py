@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/09/13 22:34:09 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/02/06 02:19:03 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -61,7 +61,7 @@ totest['tables'] = [
 """,
 """\
 <document>
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Malformed table at line 1; formatting as a literal block.
     <literal_block>
@@ -439,7 +439,7 @@ No blank line after table.
                     <entry>
                         <paragraph>
                             cell 4
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Blank line required after table at line 6.
     <paragraph>
@@ -474,10 +474,10 @@ No blank line after table.
                     <entry>
                         <paragraph>
                             cell 4
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Unexpected indentation at line 6.
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Blank line required after table at line 6.
     <block_quote>
@@ -493,7 +493,7 @@ No blank line after table.
 """,
 """\
 <document>
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Malformed table at line 1; formatting as a literal block.
             Malformed table; parse incomplete.

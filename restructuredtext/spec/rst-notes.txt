@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/01/25 23:44:50 $
-:Revision: $Revision: 1.29 $
+:Date: $Date: 2002/02/06 02:20:17 $
+:Revision: $Revision: 1.30 $
 
 
 To Do
@@ -68,11 +68,13 @@ To Do
 
 - Put verbose name into system warnings (not just level).
 
-- Add support for meta tags for web pages. A directive or a
+- Add support for meta tags for web pages: a directive or a
   bibliographic field. A directive would probably be better, since the
   meta data won't show up in the visible document.
 
 - Allow directives to be added at run-time.
+
+- Allow syntax constructs to be added or disabled at run-time.
 
 
 Or Not To Do?
@@ -169,7 +171,7 @@ Lazy Indentation of List Items
 ------------------------------
 
 Another approach: Going back to the first draft of reStructuredText
-(2000-11-27 post to Doc-SIG):
+(2000-11-27 post to Doc-SIG)::
 
     - This is the fourth item of the main list (no blank line above).
     The second line of this item is not indented relative to the

@@ -3,8 +3,8 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2002/01/30 05:01:55 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/02/06 02:18:27 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -174,9 +174,9 @@ In the following window, please:
 
 def main():
     inputFile, outputFormat, optargs = getArgs() # process cmdline arguments
-    parser = Parser(debug=optargs['debug'])
+    parser = Parser()
     input = inputFile.read()
-    document = dps.utils.newdocument()
+    document = dps.utils.newdocument(debug=optargs['debug'])
     parser.parse(input, document)
     output = format(outputFormat, input, document, optargs)
     print output,

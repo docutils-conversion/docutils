@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/01/25 23:43:15 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/06 02:18:21 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -31,6 +31,33 @@ A paragraph::
         A paragraph:
     <literal_block>
         A literal block.
+"""],
+["""\
+A paragraph::
+
+    A literal block.
+
+Another paragraph::
+
+    Another literal block.
+    With two blank lines following.
+
+
+A final paragraph.
+""",
+"""\
+<document>
+    <paragraph>
+        A paragraph:
+    <literal_block>
+        A literal block.
+    <paragraph>
+        Another paragraph:
+    <literal_block>
+        Another literal block.
+        With two blank lines following.
+    <paragraph>
+        A final paragraph.
 """],
 ["""\
 A paragraph
@@ -61,7 +88,7 @@ one line::
         A paragraph
         on more than
         one line:
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Unexpected indentation at line 4.
     <literal_block>
@@ -80,7 +107,7 @@ no blank line
         A paragraph:
     <literal_block>
         A literal block.
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
     <paragraph>
@@ -121,7 +148,7 @@ Not a literal block.
 <document>
     <paragraph>
         A paragraph:
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Literal block expected at line 2; none found.
     <paragraph>
@@ -152,7 +179,7 @@ EOF, even though a literal block is indicated::
 <document>
     <paragraph>
         EOF, even though a literal block is indicated:
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Literal block expected at line 2; none found.
 """],

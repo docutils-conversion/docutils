@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/10/30 05:05:00 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/02/06 02:19:22 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for reStructuredText.
@@ -87,7 +87,7 @@ may not end with a transition.
 """,
 """\
 <document>
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Document or section may not begin with a transition (line 1).
     <paragraph>
@@ -95,17 +95,17 @@ may not end with a transition.
     <paragraph>
         The DTD specifies that two transitions may not
         be adjacent:
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             At least one body element must separate transitions; adjacent transitions at line 10.
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             At least one body element must separate transitions; adjacent transitions at line 12.
     <transition>
     <paragraph>
         The DTD also specifies that a section or document
         may not end with a transition.
-    <system_warning level="2">
+    <system_warning level="3" type="ERROR">
         <paragraph>
             Document or section may not end with a transition (line 17).
 """],

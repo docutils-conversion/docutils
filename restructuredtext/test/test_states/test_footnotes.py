@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/01/29 02:15:13 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/02/06 02:17:56 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -102,7 +102,7 @@ No blank line.
     <footnote name="footnote">
         <label>
             footnote
-    <system_warning level="1">
+    <system_warning level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 2.
     <paragraph>
@@ -248,7 +248,7 @@ Mixed anonymous and labelled auto-numbered footnotes:
         <paragraph>
             Auto-numbered footnote 5.
     <footnote auto="1" dupname="five">
-        <system_warning level="1">
+        <system_warning level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "five"
         <paragraph>
