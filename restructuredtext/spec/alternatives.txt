@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2001/11/15 03:04:19 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2001/11/15 23:36:00 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -597,11 +597,22 @@ Syntax alternatives for the inline part:
        (b) @name@
        (c) /name/
        (d) |name|
+       (e) <<name>>
+       (f) //name//
+       (g) ||name||
+       (h) ^name^
+       (i) [[name]]
+       (j) ~name~
+       (k) !name!
+       (l) =name=
+       (m) ?name?
+       (n) >name<
 
-   "#" and "@" are obtrusive.  "/" without backquotes looks just like
-   a POSIX path; it is likely for such usage to appear in text.
+   "#" (a) and "@" (b) are obtrusive.  "/" (c) without backquotes
+   looks just like a POSIX path; it is likely for such usage to appear
+   in text.
 
-   "|" is feasible.
+   "|" (d) and "^" (h) are feasible.
 
 5. Redefine the trailing underscore syntax. See substitution syntax
    alternative 4, below.
@@ -719,8 +730,8 @@ allows us to click on an image-link::
 
 This syntax has been incorporated into the spec and parser.
 
-As for naming, the following have been suggested for the substitution
-reference construct:
+As for naming, here are candidates for the substitution reference
+construct:
 
 (a) substitution references
 (b) tagging references
@@ -728,9 +739,10 @@ reference construct:
 (d) directive references
 (e) indirect inline directive references
 (f) inline directive placeholders
+(g) inline directive insertion references
+(h) directive insertion references
 
-The following names have been suggested for the substitution
-construct:
+The following are candidates for naming the substitution construct:
 
 (a) substitutions
 (b) substitution directives
@@ -738,16 +750,15 @@ construct:
 (d) tagged directives
 (e) directive targets
 (f) inline directives
-(g) inline directive targets
-(h) inline directive definitions
-(i) inline directive declarations
-(j) referenced directives
-(k) indirect directives
-(l) indirect directive definitions
-(m) indirect directive declarations
-(n) directive definitions
-(o) indirect inline directives
-(p) named directive declarations
+(g) inline directive targets/definitions/declarations
+(h) referenced directives
+(i) indirect directives
+(j) indirect directive definitions/declarations
+(k) directive definitions
+(l) indirect inline directives
+(m) named directive declarations
+(n) inline directive insertion definitions/declarations
+(o) directive insertion definitions/declarations
 
 
 ..
