@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/10/31 05:48:24 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/11/19 04:33:50 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -19,6 +19,7 @@ def suite():
 
 totest = {}
 
+# @@@test for multi-line target names
 totest['targets'] = [
 ["""\
 .. _target:
@@ -99,6 +100,17 @@ Indirect hyperlink targets:
     <target name="a long target name">
     <target name="a target name: including a colon (quoted)">
     <target name="a target name: including a colon (escaped)">
+"""],
+["""\
+.. _a very long target name,
+   split across lines:
+.. _`and another,
+   with backquotes`:
+""",
+"""\
+<document>
+    <target name="a very long target name, split across lines">
+    <target name="and another, with backquotes">
 """],
 ["""\
 External hyperlink:

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/11/13 03:17:16 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/11/19 04:33:36 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -19,74 +19,96 @@ def suite():
 
 totest = {}
 
-totest['substitutions'] = [
+totest['substitution_definitions'] = [
 ["""\
-Here's an image substitution:
+Here's an image substitution definition:
 
-.. /symbol/ image:: symbol.png
+.. |symbol| image:: symbol.png
 """,
 """\
 <document>
     <paragraph>
-        Here's an image substitution:
-    <substitution name="symbol">
-        <image uri="symbol.png">
+        Here's an image substitution definition:
+    <substitution_definition name="symbol">
+        <image alt="symbol" uri="symbol.png">
 """],
 ["""\
-Here's a series of substitutions:
+Embedded directive starts on the next line:
 
-.. /symbol1/ image:: symbol1.png
-.. /symbol2/ image:: symbol2.png
+.. |symbol|
+   image:: symbol.png
+""",
+"""\
+<document>
+    <paragraph>
+        Embedded directive starts on the next line:
+    <substitution_definition name="symbol">
+        <image alt="symbol" uri="symbol.png">
+"""],
+["""\
+Here's a series of substitution definitions:
+
+.. |symbol 1| image:: symbol1.png
+.. |SYMBOL 2| image:: symbol2.png
    [height=50 width=100]
-.. /symbol3/ image:: symbol3.png
+.. |symbol 3| image:: symbol3.png
 """,
 """\
 <document>
     <paragraph>
-        Here's a series of substitutions:
-    <substitution name="symbol1">
-        <image uri="symbol1.png">
-    <substitution name="symbol2">
-        <image height="50" uri="symbol2.png" width="100">
-    <substitution name="symbol3">
-        <image uri="symbol3.png">
+        Here's a series of substitution definitions:
+    <substitution_definition name="symbol 1">
+        <image alt="symbol 1" uri="symbol1.png">
+    <substitution_definition name="symbol 2">
+        <image alt="SYMBOL 2" height="50" uri="symbol2.png" width="100">
+    <substitution_definition name="symbol 3">
+        <image alt="symbol 3" uri="symbol3.png">
 """],
 ["""\
-Here are some duplicate substitutions:
+.. |very long substitution text,
+   split across lines| image:: symbol.png
+""",
+"""\
+<document>
+    <substitution_definition name="very long substitution text, split across lines">
+        <image alt="very long substitution text, split across lines" uri="symbol.png">
+"""],
+["""\
+Here are some duplicate substitution definitions:
 
-.. /symbol/ image:: symbol.png
-.. /symbol/ image:: symbol.png
+.. |symbol| image:: symbol.png
+.. |symbol| image:: symbol.png
 """,
 """\
 <document>
     <paragraph>
-        Here are some duplicate substitutions:
-    <substitution name="symbol">
-        <image uri="symbol.png">
+        Here are some duplicate substitution definitions:
+    <substitution_definition dupname="symbol">
+        <image alt="symbol" uri="symbol.png">
     <system_warning level="2">
         <paragraph>
-            Duplicate substitution name: "symbol"
-    <substitution name="symbol">
-        <image uri="symbol.png">
+            Duplicate substitution definition name: "symbol"
+    <substitution_definition name="symbol">
+        <image alt="symbol" uri="symbol.png">
 """],
 ["""\
 Here are some bad cases:
 
-.. /symbol/ image:: symbol.png
+.. |symbol| image:: symbol.png
 No blank line after.
 
-.. /empty/
+.. |empty|
 
-.. /unknown/ directive:: symbol.png
+.. |unknown| directive:: symbol.png
 
-.. /invalid/ there's no directive here
+.. |invalid| there's no directive here
 """,
 """\
 <document>
     <paragraph>
         Here are some bad cases:
-    <substitution name="symbol">
-        <image uri="symbol.png">
+    <substitution_definition name="symbol">
+        <image alt="symbol" uri="symbol.png">
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 4.
@@ -94,7 +116,7 @@ No blank line after.
         No blank line after.
     <system_warning level="1">
         <paragraph>
-            Substitution "empty" missing contents at line 6.
+            Substitution definition "empty" missing contents at line 6.
     <system_warning level="2">
         <paragraph>
             Unknown directive type "directive" at line 8.
@@ -103,10 +125,10 @@ No blank line after.
         directive:: symbol.png
     <system_warning level="1">
         <paragraph>
-            Substitution "unknown" empty or invalid at line 8.
+            Substitution definition "unknown" empty or invalid at line 8.
     <system_warning level="1">
         <paragraph>
-            Substitution "invalid" empty or invalid at line 10.
+            Substitution definition "invalid" empty or invalid at line 10.
 """],
 ]
 
