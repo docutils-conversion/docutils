@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/09/17 03:56:25 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2001/11/13 03:07:09 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -721,22 +721,25 @@ class StateMachineWS(StateMachine):
         else:
             return context, '', []      # neither blank line nor indented
 
-    def getindented(self, uptoblank=0):
+    def getindented(self, uptoblank=0, stripindent=1):
         """
         Return a indented lines of text and info.
 
         Extract an indented block where the indent is unknown for all lines.
-        Stop extracting at the first blank line If `uptoblank` is set to
-        true (1). Return:
 
-        - the indented block (a list of lines of text),
-        - its indent,
-        - its first line offset from BOF, and
-        - whether or not it finished with a blank line.
+        :Parameters:
+            - `uptoblank`: Stop collecting at the first blank line if true (1).
+            - `stripindent`: Strip common leading indent if true (1, default).
+
+        :Return:
+            - the indented block (a list of lines of text),
+            - its indent,
+            - its first line offset from BOF, and
+            - whether or not it finished with a blank line.
         """
         offset = self.abslineoffset()
         indented, indent, blankfinish = extractindented(
-              self.inputlines[self.lineoffset:], uptoblank)
+              self.inputlines[self.lineoffset:], uptoblank, stripindent)
         if indented:
             self.nextline(len(indented) - 1) # advance to last indented line
         while indented and not indented[-1].strip():
@@ -746,23 +749,25 @@ class StateMachineWS(StateMachine):
             offset += 1
         return indented, indent, offset, blankfinish
 
-    def getknownindented(self, indent, uptoblank=0):
+    def getknownindented(self, indent, uptoblank=0, stripindent=1):
         """
         Return an indented block and info.
 
         Extract an indented block where the indent is known for all lines.
-        Stop extracting at the first blank line If `uptoblank` is set to
-        true (1). Return:
-
-        - the indented block,
-        - its first line offset from BOF, and
-        - whether or not it finished with a blank line.
-
         Starting with the current line, extract the entire text block with at
-        least `indent` indentation. Strip off `indent` indentation (which must
-        be whitespace, except for the first line) from each line.
+        least `indent` indentation (which must be whitespace, except for the
+        first line).
 
-        Parameter `indent`: the number of indent columns/characters.
+        :Parameters:
+            - `indent`: The number of indent columns/characters.
+            - `uptoblank`: Stop collecting at the first blank line if true (1).
+            - `stripindent`: Strip `indent` characters of indentation if true
+              (1, default).
+
+        :Return:
+            - the indented block,
+            - its first line offset from BOF, and
+            - whether or not it finished with a blank line.
         """
         offset = self.abslineoffset()
         indented = [self.line[indent:]]
@@ -773,7 +778,10 @@ class StateMachineWS(StateMachine):
             if uptoblank and line.strip():
                 blankfinish = 1
                 break
-            indented.append(line[indent:])
+            if stripindent:
+                indented.append(line[indent:])
+            else:
+                indented.append(line)
         else:
             blankfinish = 1
         if indented:
@@ -785,25 +793,29 @@ class StateMachineWS(StateMachine):
             offset += 1
         return indented, offset, blankfinish
 
-    def getfirstknownindented(self, indent, uptoblank=0):
+    def getfirstknownindented(self, indent, uptoblank=0, stripindent=1):
         """
         Return an indented block and info.
 
         Extract an indented block where the indent is known for the first line
-        and unknown for all other lines. Stop extracting at the first blank
-        line If `uptoblank` is set to true (1). Return:
+        and unknown for all other lines.
 
-        - the indented block,
-        - its indent,
-        - its first line offset from BOF, and
-        - whether or not it finished with a blank line.
+        :Parameters:
+            - `indent`: The first line's indent (# of columns/characters).
+            - `uptoblank`: Stop collecting at the first blank line if true (1).
+            - `stripindent`: Strip `indent` characters of indentation if true
+              (1, default).
 
-        Parameter `indent`: the first line's indent (# of columns/characters).
+        :Return:
+            - the indented block,
+            - its indent,
+            - its first line offset from BOF, and
+            - whether or not it finished with a blank line.
         """
         offset = self.abslineoffset()
         indented = [self.line[indent:]]
         indented[1:], indent, blankfinish = extractindented(
-              self.inputlines[self.lineoffset + 1:], uptoblank)
+              self.inputlines[self.lineoffset + 1:], uptoblank, stripindent)
         self.nextline(len(indented) - 1)  # advance to last indented line
         while indented and not indented[-1].strip():
             indented.pop()
@@ -989,26 +1001,25 @@ def string2lines(astring, tabwidth=8, convertwhitespace=0):
         astring = astring.translate(_whitespace_conversion_table)
     return [s.expandtabs(tabwidth) for s in astring.splitlines()]
 
-def extractindented(lines, uptoblank=0):
+def extractindented(lines, uptoblank=0, stripindent=1):
     """
     Extract and return a list of indented lines of text.
 
-    Given a list of one-line strings without newlines (`lines`), collect all
-    lines with indentation, determine the minimum indentation, remove the
-    minimum indentation from all indented lines, and return them. All lines up
-    to but not including the first unindented line will be returned. Stop
-    collecting at the first blank line If `uptoblank` is set to true (1)
+    Collect all lines with indentation, determine the minimum indentation,
+    remove the minimum indentation from all indented lines (unless
+    `stripindent` is false), and return them. All lines up to but not
+    including the first unindented line will be returned.
 
     :Parameters:
-
-        - `lines`: .
+        - `lines`: a list of one-line strings without newlines.
+        - `uptoblank`: Stop collecting at the first blank line if true (1).
+        - `stripindent`: Strip common leading indent if true (1, default).
 
     :Return:
-
-    - a list of indented lines with mininum indent removed;
-    - the amount of the indent;
-    - whether or not the block finished with a blank line or at the end of
-      `lines`.
+        - a list of indented lines with mininum indent removed;
+        - the amount of the indent;
+        - whether or not the block finished with a blank line or at the end of
+          `lines`.
     """
     source = []
     indent = None
@@ -1032,7 +1043,9 @@ def extractindented(lines, uptoblank=0):
     else:
         blankfinish = 1                 # block ends at end of lines
     if indent:
-        return [s[indent:] for s in source], indent, blankfinish
+        if stripindent:
+            source = [s[indent:] for s in source]
+        return source, indent, blankfinish
     else:
         return [], 0, blankfinish
 
