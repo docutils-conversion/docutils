@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2002/02/07 02:00:45 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2002/02/12 02:16:27 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
@@ -198,39 +198,50 @@ def extractattributes(lines):
             raise BadAttributeLineError(
                   'input line not enclosed in "[" and "]"')
         line = line[1:-1].strip()
-        while line:
-            equals = line.find('=')
-            if equals == -1:
-                raise BadAttributeDataError('missing "="')
-            elif equals == 0:
+        attlist += extract_name_value(line)
+    return attlist
+
+def extract_name_value(line):
+    """
+    Return a list of (name, value) from a line of the form "name=value ...".
+
+    :Raises: `BadAttributeDataError` for invalid attribute data (missing name,
+             missing data, bad quotes, etc.).
+    """
+    attlist = []
+    while line:
+        equals = line.find('=')
+        if equals == -1:
+            raise BadAttributeDataError('missing "="')
+        attname = line[:equals].strip()
+        if equals == 0 or not attname:
+            raise BadAttributeDataError(
+                  'missing attribute name before "="')
+        line = line[equals+1:].lstrip()
+        if not line:
+            raise BadAttributeDataError(
+                  'missing value after "%s="' % attname)
+        if line[0] in '\'"':
+            endquote = line.find(line[0], 1)
+            if endquote == -1:
                 raise BadAttributeDataError(
-                      'missing attribute name before "="')
-            attname = line[:equals]
-            line = line[equals+1:]
-            if not line:
+                      'attribute "%s" missing end quote (%s)'
+                      % (attname, line[0]))
+            if len(line) > endquote + 1 and line[endquote + 1].strip():
                 raise BadAttributeDataError(
-                      'missing value after "%s="' % attname)
-            if line[0] in '\'"':
-                endquote = line.find(line[0], 1)
-                if endquote == -1:
-                    raise BadAttributeDataError(
-                          'attribute "%s" missing end quote (%s)'
-                          % (attname, line[0]))
-                if len(line) > endquote + 1 and line[endquote + 1].strip():
-                    raise BadAttributeDataError(
-                          'attribute "%s" end quote (%s) not followed by '
-                          'whitespace' % (attname, line[0]))
-                data = line[1:endquote]
-                line = line[endquote+1:].lstrip()
+                      'attribute "%s" end quote (%s) not followed by '
+                      'whitespace' % (attname, line[0]))
+            data = line[1:endquote]
+            line = line[endquote+1:].lstrip()
+        else:
+            space = line.find(' ')
+            if space == -1:
+                data = line
+                line = ''
             else:
-                space = line.find(' ')
-                if space == -1:
-                    data = line
-                    line = ''
-                else:
-                    data = line[:space]
-                    line = line[space+1:].lstrip()
-            attlist.append((attname.lower(), data))
+                data = line[:space]
+                line = line[space+1:].lstrip()
+        attlist.append((attname.lower(), data))
     return attlist
 
 def assembleattributes(attlist, attributespec):
