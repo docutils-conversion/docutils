@@ -3,27 +3,59 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/21 22:14:04 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/08/01 02:54:37 $
 Copyright: This module has been placed in the public domain.
 
+This is ``the dps.parsers.restructuredtext`` package. It exports a single
+class, `Parser`.
+
+Usage
+=====
+
+1. Create a parser::
+
+       parser = dps.parsers.restructuredtext.Parser()
+
+   Several optional arguments may be passed to modify the parser's behavior.
+   Please see `dps.parsers.model.Parser` for details.
+
+2. Gather input (a multi-line string), by reading a file or the standard
+   input::
+
+       input = sys.stdin.read()
+
+3. Run the parser, generating a `dps.nodes.document` tree::
+
+       document = parser.parse(input)
+
+Parser Overview
+===============
+
+The reStructuredText parser is implemented as a state machine, examining its
+input one line at a time. To understand how the parser works, please first
+become familiar with the `dps.statemachine` module, then see the
+`states` module.
 """
 
-from dps.parsers import model
-from dps.statemachine import string2lines
+import dps.parsers.model
+import dps.statemachine
 import states
 
 __all__ = ['Parser']
 
 
-class Parser(model.Parser):
+class Parser(dps.parsers.model.Parser):
+
+    """The reStructuredText parser."""
 
     def parse(self, inputstring):
-        model.Parser.parse(self, inputstring)
+        """Parse `inputstring` and return a `dps.nodes.document` tree."""
+        self.setup_parse(inputstring)
         sm = states.RSTStateMachine(stateclasses=states.stateclasses,
                                     initialstate='Body')
-        inputlines = string2lines(self.inputstring)
-        sm.run(inputlines, warninglevel=self.warninglevel,
-               errorlevel=self.errorlevel)
+        inputlines = dps.statemachine.string2lines(self.inputstring)
+        document = sm.run(inputlines, warninglevel=self.warninglevel,
+                          errorlevel=self.errorlevel)
         sm.unlink()
-        return sm.memo.document
+        return document
