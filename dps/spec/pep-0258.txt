@@ -1,7 +1,7 @@
 PEP: 258
 Title: Docutils Design Specification
-Version: $Revision: 1.7 $
-Last-Modified: $Date: 2002/03/28 04:36:53 $
+Version: $Revision: 1.8 $
+Last-Modified: $Date: 2002/04/04 05:52:44 $
 Author: goodger@users.sourceforge.net (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
@@ -614,13 +614,13 @@ Specification
 References and Footnotes
 
     [1] PEP 256, Docstring Processing System Framework, Goodger
-       http://www.python.org/peps/pep-0256.html
+        http://www.python.org/peps/pep-0256.html
 
     [2] PEP 224, Attribute Docstrings, Lemburg
-       http://www.python.org/peps/pep-0224.html
+        http://www.python.org/peps/pep-0224.html
 
     [3] PEP 216, Docstring Format, Zadka
-       http://www.python.org/peps/pep-0216.html
+        http://www.python.org/peps/pep-0216.html
 
     [4] http://www.rfc-editor.org/rfc/rfc1766.txt
 
