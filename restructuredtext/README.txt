@@ -4,20 +4,20 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/16 05:42:50 $
+:Date: $Date: 2002/04/18 02:49:03 $
 :Web-site: http://structuredtext.sourceforge.net/
 
-Thank you for downloading the reStructuredText project archive. As
+Thank you for downloading the reStructuredText project archive.  As
 this is a work in progress, please check the project web site for
-updated working files. The latest release archive is available at
+updated working files.  The latest release archive is available at
 http://sourceforge.net/project/showfiles.php?group_id=7050.
 
 reStructuredText is an input parser component of the `Python Docstring
 Processing System`_, and is installed as
 "dps.parsers.restructuredtext".
 
-To run the code, Python 2.0 or later must already be installed. You
-can get Python from http://www.python.org/. You will also need the
+To run the code, Python 2.0 or later must already be installed.  You
+can get Python from http://www.python.org/.  You will also need the
 latest DPS package, available from http://docstring.sourceforge.net/.
 
 .. _Python Docstring Processing System:
@@ -32,16 +32,16 @@ Project Files & Directories
 * HISTORY.txt: Release notes for the current and previous project
   releases.
 
-* setup.py: Installation script. See "Installation" below.
+* setup.py: Installation script.  See "Installation" below.
 
 * install.py: Quick & dirty installation script.
 
 * restructuredtext: The project source directory, installed as Python
   package ``dps.parsers.restructuredtext``.
 
-* test: The unit test directory (currently experimental). Not required
-  to use the software, but very useful if you're planning to modify
-  it.
+* test: The unit test directory (currently experimental).  Not
+  required to use the software, but very useful if you're planning to
+  modify it.
 
 * tools: Directory for standalone scripts that use reStructuredText.
 
@@ -54,18 +54,18 @@ Project Files & Directories
   - html.py: Read standalone reStructuredText documents and write
     HTML4/CSS1.  Uses the default.css stylesheet.
 
-* spec: The project specification directory. Contains the markup
+* spec: The project specification directory.  Contains the markup
   syntax spec and implementation notes.
 
-* docs: The project documentation directory.
+* docs: The project user documentation directory.
 
 
 Installation
 ============
 
-The first step is to expand the .tar.gz archive. It contains a
-distutils setup file "setup.py". OS-specific installation instructions
-follow.
+The first step is to expand the .tar.gz archive.  It contains a
+distutils setup file "setup.py".  OS-specific installation
+instructions follow.
 
 Linux, Unix, MacOS X
 --------------------
@@ -81,10 +81,10 @@ Linux, Unix, MacOS X
        python setup.py install
 
    If the python executable isn't on your path, you'll have to specify
-   the complete path, such as /usr/local/bin/python. You may need root
-   permissions to complete this step.
+   the complete path, such as /usr/local/bin/python.  You may need
+   root permissions to complete this step.
 
-You can also just run install.py; it does the same thing.
+   You can also just run install.py; it does the same thing.
 
 Windows
 -------
@@ -113,22 +113,33 @@ MacOS
 
    If the file isn't a "Python module", the line endings are probably
    also wrong, and you will need to set up your system to recognize
-   ".py" file extensions as Python files. See
+   ".py" file extensions as Python files.  See
    http://gotools.sourceforge.net/mac/python.html for detailed
-   instructions. Once set up, it's easiest to start over by expanding
+   instructions.  Once set up, it's easiest to start over by expanding
    the archive again.
 
-3. The distutils options window will appear. From the "Command" popup
+3. The distutils options window will appear.  From the "Command" popup
    list choose "install", click "Add", then click "OK".
 
 If install.py is a "Python module" (see step 2 above if it isn't), you
-can run it instead of the above. The distutils options windown will
-not appear.
+can run it instead of steps 2 and 3 above.  The distutils options
+windown will not appear.
+
+
+Usage
+=====
+
+After installing both the reStructuredText and DPS packages, start
+with the html.py and publish.py front-ends from the unpacked
+reStructuredText "tools" subdirectory.  Both take up to two arguments,
+the source path and destination path, with STDIN and STDOUT being the
+defaults.
 
 
 ..
    Local Variables:
    mode: indented-text
    indent-tabs-mode: nil
+   sentence-end-double-space: t
    fill-column: 70
    End:

@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/04/14 19:40:19 $
+:Date: $Date: 2002/04/18 02:48:48 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -25,17 +25,17 @@ contributions, and ideas borrowed from related projects:
     van Rossum, Barry Warsaw, Edward Welbourne, Paul Wright, Ka-Ping
     Yee, Moshe Zadka
 
-(I'm still waiting for contributions of yummy treats, computer
-equipment, and cold hard cash. :-) Hopefully I haven't forgotten
-anyone or misspelled any names; apologies (and please let me know!) if
-I have.
+(I did get some yummy treats, but I'm still waiting for contributions
+of computer equipment and cold hard cash :-).)  Hopefully I haven't
+forgotten anyone or misspelled any names; apologies (and please let me
+know!) if I have.
 
 
-Release 0.4? (pending)
+Release 0.4 (2002-04-??)
 ========================
 
-Updated docstrings for new field list syntax (bibliographic info).
-Changed contact email addresses.
+General: updated docstrings for new field list syntax (bibliographic
+info); changed contact email addresses.
 
 * install.py: Added to project.
 
@@ -126,10 +126,10 @@ Changed contact email addresses.
     links to & from system messages.
   - Added ``Body.parse_extension_attributes()``.
 
-* restructuredtest/tableparser.py: Added to project. Contains the
+* restructuredtest/tableparser.py: Added to project.  Contains the
   TableParser class.
 
-* restructuredtext/test_states.py: Refactored to test directory. This
+* restructuredtext/test_states.py: Refactored to test directory.  This
   file removed.
 
 * restructuredtext/directives/__init__.py:
@@ -137,57 +137,38 @@ Changed contact email addresses.
   - Added directive registry.
   - Added directive module & function import support.
 
-* restructuredtext/directives/misc.py: Implementation of a
-  test directive, 'restructuredtext-test-directive'. Added to project.
+* restructuredtext/directives/misc.py: Implementation of a test
+  directive, 'restructuredtext-test-directive'.  Added to project.
 
 * restructuredtext/directives/admonitions.py: Implementation of
-  admonition directives 'note', 'caution', etc. Added to project.
+  admonition directives 'note', 'caution', etc.  Added to project.
 
 * restructuredtext/directives/components.py: Implementation of
-  document components directives 'contents', 'footnotes', etc. Added
+  document components directives 'contents', 'footnotes', etc.  Added
   to project.
 
 * restructuredtext/directives/images.py: Implementation of
-  directives 'image' & 'figure'. Added to project.
+  directives 'image' & 'figure'.  Added to project.
 
 * restructuredtext/directives/html.py: Implementation of
-  HTML-specific directives 'meta' & 'imagemap'. Added to project.
+  HTML-specific directives 'meta' & 'imagemap'.  Added to project.
 
-* restructuredtext/languages: Subpackage added to project. Contains
+* restructuredtext/languages: Subpackage added to project.  Contains
   modules for language-dependent language-dependent parser features.
   Includes en.py for English.
 
-* test: Subdirectory added. The top-level consists of a modular test
+* test: Subdirectory added.  The top-level consists of a modular test
   framework begun by Garth Kidd.
 
 * test/test_states: Subdirectory added; contains test modules
-  refactored from restructuredtext/test_states.py:
+  refactored from the old restructuredtext/test_states.py.
 
-  - Added unit tests from Garth Kidd.
-  - Changed to match state.RSTStateMachine.run()'s return value.
-  - Added explanatory text to several tests (makes them
-    self-documenting: "what am I testing?").
-  - Added tests for overline-titles, duplicate link targets.
-  - Moved some tests around to where they make more sense.
-  - Added enumerated list tests.
-  - Clarified some edge-case tests.
-  - Added tests for field lists, option lists.
-  - Added tests for tables.
-  - Added tests for table parser.
-  - New tests for literal_block edge cases.
-  - Added tests for empty list items.
-  - New test for comment edge case.
-  - Added 'term : classifier' tests.
-  - Added auto-numbered footnote tests.
-  - Updated 'test directive' tests.
-  - Added 'unknown directive' tests.
-  - Added tests for admonitions and image/figure directives.
+* tools: Subdirectory added.  Contains quicktest.py by Garth Kidd, a
+  front-end to the reStructuredText parser; publish.py, a minimal
+  front-end to the Docutils Publisher producing pretty-printed
+  pseudo-XML; and html.py, a simple HTML-producing front-end.
 
-* tools: Subdirectory added. Contains quicktest.py by Garth Kidd, a
-  a front-end to the reStructuredText parser; and publish.py, a
-  minimal front-end to the Docutils Publisher.
-
-* sandbox: Subdirectory added; for playing around. It's OK to make
+* sandbox: Subdirectory added; for playing around.  It's OK to make
   a mess!
 
 * sandbox/rtxt2html: Subdirectory added, from files by Remi Bertholet.
@@ -195,6 +176,8 @@ Changed contact email addresses.
 * sandbox/paulw: Subdirectory added, from files by Paul Wright.
 
 * sandbox/alanj: Subdirectory added, from files by Alan Jaffray.
+
+* sandbox/richardj: Subdirectory added, from files by Richard Jones.
 
 * spec/alternatives.txt: Added to project.
 
@@ -214,7 +197,7 @@ Changed contact email addresses.
   - Added mention of GvR's backslash escape endorsement.
   - Removed mention of compound enumerators.
   - Updated footnotes.
-  - Removed "Parser Implementation Plan". (It's implemented!)
+  - Removed "Parser Implementation Plan".  (It's implemented!)
   - Revised.
 
 * spec/reStructuredText.txt:
@@ -291,15 +274,15 @@ spec/reStructuredText.txt).
 
 * restructuredtext/test_states.py: Added to project.
 
-* restructuredtext/ndiff.py: Added to project. This is a modified
+* restructuredtext/ndiff.py: Added to project.  This is a modified
   version of Python's Tools/scripts/ndiff.py, and is used by
-  test_states.py. I have committed to adding its functionality to
+  test_states.py.  I have committed to adding its functionality to
   Python's Lib/difflib.py.
 
 * spec/reStructuredText.txt:
 
   - Introduced implicit hyperlink targets for section titles.
-  - Changed 'comment block' to 'explicit markup block'. Rearranged &
+  - Changed 'comment block' to 'explicit markup block'.  Rearranged &
     edited the text of footnotes, hyperlink targets, directives, &
     comments.
   - Clarified the syntax of interpreted text roles.
@@ -317,7 +300,7 @@ Release 0.2 (2001-06-18)
 
 * spec/reStructuredText.txt:
 
-  - Added workable indented section syntax, then removed it. See
+  - Added workable indented section syntax, then removed it.  See
     spec/indentedsections.txt (included in this release only).
   - Added details of whitespace preservation in inline literals.
 
@@ -352,7 +335,7 @@ Posted all but dps-notes.txt to the Doc-SIG 2001-06-03.
     their construct.
   - Tightened up syntax specifications.
   - Changed "descriptive lists" to "definition lists", changed syntax.
-  - Added field lists. Syntax not settled yet.
+  - Added field lists.  Syntax not settled yet.
   - Added header row separator ('=') to tables.
   - Allowed comment blocks (comments, directives, hyperlink targets,
     footnotes) to occur in nested blocks.
@@ -370,7 +353,7 @@ Posted all but dps-notes.txt to the Doc-SIG 2001-06-03.
 
   - Added sections: "Blank Lines in Lists", "Definition List Markup",
     "Underlining".
-  - General editing & cleanup. Tightened up analyses, added
+  - General editing & cleanup.  Tightened up analyses, added
     alternatives.
 
 * spec/rst-notes.txt: Added to project.
@@ -392,8 +375,10 @@ First posted to the Python Documentation Special Interests Group
   http://mail.python.org/pipermail/doc-sig/2000-November/001241.html
 
 
-.. Local Variables:
-.. mode: indented-text
-.. indent-tabs-mode: nil
-.. fill-column: 70
-.. End:
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:
