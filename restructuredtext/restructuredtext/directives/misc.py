@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/03/07 03:29:08 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/03/11 03:21:44 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous directives.
@@ -34,7 +34,7 @@ def directive_test_function(match, typename, data, state, statemachine,
     if text:
         info = statemachine.memo.reporter.info(
               'Directive processed. Type="%s", data="%s", directive block:'
-              % (typename, data), [nodes.literal_block(text, text)])
+              % (typename, data), '', nodes.literal_block(text, text))
     else:
         info = statemachine.memo.reporter.info(
               'Directive processed. Type="%s", data="%s", directive block: None'

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/03/07 02:07:46 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/11 03:21:35 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for figures and simple images.
@@ -34,8 +34,8 @@ def image(match, typename, data, state, statemachine, attributes):
           statemachine.getfirstknownindented(match.end(), uptoblank=1)
     if not datablock:
         error = statemachine.memo.reporter.error(
-              'Missing image URI argument at line %s.' % lineno,
-              [nodes.literal_block(match.string, match.string)])
+              'Missing image URI argument at line %s.' % lineno, '',
+              nodes.literal_block(match.string, match.string))
         return [error], blankfinish
     blocktext = '\n'.join(statemachine.inputlines[lineoffset:
                                                   lineoffset+len(datablock)])
@@ -49,27 +49,27 @@ def image(match, typename, data, state, statemachine, attributes):
     reference = ''.join([line.strip() for line in datablock])
     if reference.find(' ') != -1:
         error = statemachine.memo.reporter.error(
-              'Image URI at line %s contains whitespace.' % lineno)
-        error += nodes.literal_block(blocktext, blocktext)
+              'Image URI at line %s contains whitespace.' % lineno, '',
+              nodes.literal_block(blocktext, blocktext))
         return [error], blankfinish
     try:
         attributes.update(utils.parseattributes(attlines, imageattributes))
     except KeyError, detail:
         error = statemachine.memo.reporter.error(
-              'Unknown image attribute at line %s: "%s".' % (lineno, detail))
-        error += nodes.literal_block(blocktext, blocktext)
+              'Unknown image attribute at line %s: "%s".' % (lineno, detail),
+              '', nodes.literal_block(blocktext, blocktext))
         return [error], blankfinish
     except ValueError, detail:
         error = statemachine.memo.reporter.error(
               'Invalid image attribute value at line %s: %s.'
-              % (lineno, detail))
-        error += nodes.literal_block(blocktext, blocktext)
+              % (lineno, detail), '',
+              nodes.literal_block(blocktext, blocktext))
         return [error], blankfinish
     except utils.AttributeParsingError, detail:
         error = statemachine.memo.reporter.error(
               'Invalid image attribute data at line %s: %s.'
-              % (lineno, detail))
-        error += nodes.literal_block(blocktext, blocktext)
+              % (lineno, detail), '',
+              nodes.literal_block(blocktext, blocktext))
         return [error], blankfinish
     attributes['uri'] = reference
     imagenode = nodes.image(blocktext, **attributes)
