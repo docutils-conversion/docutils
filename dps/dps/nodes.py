@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/09/12 03:47:12 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/09/13 02:12:55 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -278,13 +278,9 @@ class _Element(_Node):
         return None
 
     def pformat(self, indent='    ', level=0):
-        if self.children:
-            return ''.join(['%s%s\n' % (indent * level, self.starttag())] +
+        return ''.join(['%s%s\n' % (indent * level, self.starttag())] +
                            [child.pformat(indent, level+1)
-                            for child in self.children]
-                           + ['%s%s\n' % (indent * level, self.endtag())])
-        else:
-            return '%s%s\n' % (indent * level, self.emptytag())
+                            for child in self.children])
 
 
 class _TextElement(_Element):
@@ -470,13 +466,14 @@ class field_argument(_TextElement): pass
 class field_body(_Element): pass
 class literal_block(_TextElement): pass
 class block_quote(_Element): pass
+class attention(_Element): pass
+class caution(_Element): pass
+class danger(_Element): pass
+class error(_Element): pass
+class important(_Element): pass
 class note(_Element): pass
 class tip(_Element): pass
 class warning(_Element): pass
-class error(_Element): pass
-class caution(_Element): pass
-class danger(_Element): pass
-class important(_Element): pass
 class comment(_TextElement): pass
 class directive(_Element): pass
 class target(_TextElement): pass
