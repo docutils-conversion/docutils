@@ -3,8 +3,8 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/09/10 04:25:59 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/09/21 03:53:44 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -32,9 +32,10 @@ Options:
 options = [#(long option, short option, description)
            ('pretty', 'p',
             'output pretty pseudo-xml: no "&abc;" entities (default)'),
-           ('rawxml', 'r', 'output raw xml'),
            ('test', 't', 'output parser test data (input & expected output)'),
-           ('xml', 'x', 'output pretty xml (indented)'),
+           ('rawxml', 'r', 'output raw XML'),
+           ('styledxml', 's', 'output XML with XSL style sheet reference'),
+           ('xml', 'x', 'output pretty XML (indented)'),
            ('help', 'h', 'show help text')]
 
 def usage():
@@ -50,6 +51,13 @@ def _pretty(input, document):
 
 def _rawxml(input, document):
     return document.asdom().toprettyxml('', '\n')
+
+def _styledxml(input, document):
+    docnode = document.asdom().childNodes[0]
+    return '%s\n%s\n%s' % (
+          '<?xml version="1.0" encoding="ISO-8859-1"?>',
+          '<?xml-stylesheet type="text/xsl" href="rtxt2html.xsl"?>',
+          docnode.toprettyxml('', '\n'))
 
 def _prettyxml(input, document):
     return document.asdom().toprettyxml('    ', '\n')
@@ -76,6 +84,7 @@ def escape(text):
 
 _outputFormatters = {
     'rawxml': _rawxml,
+    'styledxml': _styledxml,
     'xml': _prettyxml,
     'pretty' : _pretty,
     'test': _test
@@ -92,7 +101,6 @@ def getArgs():
         return posixGetArgs(sys.argv[1:])
 
 def posixGetArgs(argv):
-    print 'posixGetArgs: argv=%r' % (argv,)
     outputFormat = 'pretty'
     shortopts = ''.join([option[1] for option in options])
     longopts = [option[0] for option in options]
@@ -107,6 +115,8 @@ def posixGetArgs(argv):
             sys.exit()
         elif o in ['-r', '--rawxml']:
             outputFormat = 'rawxml'
+        elif o in ['-s', '--styledxml']:
+            outputFormat = 'styledxml'
         elif o in ['-x', '--xml']:
             outputFormat = 'xml'
         elif o in ['-p', '--pretty']:
@@ -145,7 +155,9 @@ def main():
     parser = Parser()                   # create a parser
     input = inputFile.read()            # gather input
     document = parser.parse(input)      # parse the input
-    print format(outputFormat, input, document), # format & print
+    output = format(outputFormat, input, document)
+    print output,
+
 
 if __name__ == '__main__':
     main()
