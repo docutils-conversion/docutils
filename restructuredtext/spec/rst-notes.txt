@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/07 03:45:08 $
-:Revision: $Revision: 1.36 $
+:Date: $Date: 2002/03/11 03:18:15 $
+:Revision: $Revision: 1.37 $
 
 
 To Do
@@ -52,7 +52,9 @@ To Do
     character-level inline markup?
   - Others?
 
-  How to represent character entities in the text though? Unicode?
+  How to represent character entities in the text though? Probably as
+  Unicode.
+  
   Which component is responsible for this, the parser, the reader, or
   the writer?
 
@@ -109,8 +111,6 @@ To Do
 
 - Add literal blocks to system messages whenever the erroneous source
   text is omitted.
-
-- Link system messages back to their sources?
 
 - Implement the HTML "imagemap" directive.
 
