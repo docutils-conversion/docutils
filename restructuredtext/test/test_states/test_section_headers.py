@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/10/20 02:49:41 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/10/27 05:22:09 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -424,6 +424,25 @@ Paragraph 4.
                 ```````
         <paragraph>
             Paragraph 4.
+"""],
+["""\
+Title containing *inline* ``markup``
+====================================
+
+Paragraph.
+""",
+"""\
+<document>
+    <section name="title containing inline markup">
+        <title>
+            Title containing 
+            <emphasis>
+                inline
+             
+            <literal>
+                markup
+        <paragraph>
+            Paragraph.
 """],
 ]
 
