@@ -3,8 +3,8 @@
 =====================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/21 22:14:16 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/08/04 15:21:00 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system. It is useful for in-line
@@ -23,13 +23,14 @@ It is also written with the reStructuredText markup, therefore serves
 as an example of its use. Please also see an analysis of the problems
 of StructuredText, and the reStructuredText markup specification
 itself (general and Python extensions), all on the project's web site,
-http://structuredtext.sf.net/.
+http://structuredtext.sourceforge.net/.
 
-.. _reStructuredText: http://structuredtext.sf.net
+.. _reStructuredText: http://structuredtext.sourceforge.net
 .. _StructuredText:
     http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
 .. _Setext: http://www.bsdi.com/setext
-.. _Python Docstring Processing System: http://docstring.sf.net
+.. _Python Docstring Processing System:
+    http://docstring.sourceforge.net
 
 
 Goals
@@ -47,7 +48,7 @@ a standard for Python inline documentation (possibly one of several
 standards, to account for taste).
 
 .. _[1] Python's creator and "Benevolent Dictator For Life",
-   Guido van Rossum.
+    Guido van Rossum.
 
 To clarify the primary goal, here are specific design goals, in order,
 beginning with the most important:
@@ -223,8 +224,9 @@ file, HISTORY.txt_.
     http://mail.python.org/pipermail/doc-sig/2000-November/001240.html
 .. _[reStructuredText: Revised Structured Text Specification]:
     http://mail.python.org/pipermail/doc-sig/2000-November/001241.html
-.. _Docstring Processing System: http://docstring.sf.net
-.. _HISTORY.txt: http://structuredtext.sf.net/spec/HISTORY.txt
+.. _Docstring Processing System: http://docstring.sourceforge.net
+.. _HISTORY.txt:
+    http://structuredtext.sourceforge.net/spec/HISTORY.txt
 
 
 Parser Implementation Plan
@@ -298,8 +300,9 @@ constructs:
    + inline markup
 
      - interpreted text (Python interpretation thereof)
+       [No: this is a job for the DPS itself]
 
-.. _project web site: http://structuredtest.sf.net/
+.. _project web site: http://structuredtest.sourceforge.net/
 
 
 Local Variables:
