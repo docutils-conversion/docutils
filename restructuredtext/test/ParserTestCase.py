@@ -3,12 +3,14 @@
 """
 Author: Garth Kidd 
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.2 $
-Date: $Date: 2001/07/29 22:34:52 $
+Revision: $Revision: 1.1.2.3 $
+Date: $Date: 2001/07/31 14:46:24 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
 """
+
+__all__ = [ 'ParserTestCaseFactory' ]
 
 from TestFramework import *  # states, main, debug, verbose
 import sys, unittest, re, difflib, types
@@ -42,77 +44,190 @@ that issue later, too.
 .. _metaclasses: http://www.python.org/doc/essays/metaclasses/
 """
 
+def makeStateMachine():
+    """Make an RSTStateMachine for a ParserTestCaseFactory or a lone
+    ParserTestCase."""
+    return states.RSTStateMachine(stateclasses=states.stateclasses,
+                                  initialstate='Body', debug=debug)
 
-"""
-David's old code follows:
-"""
+def makeDiffer():
+    """Make a Differ for a ParserTestCaseFactory or a lone
+    ParserTestCase."""
+    return difflib.Differ()
+
+class ParserTestCaseFactory(unittest.TestSuite):
+    """A collection of ParserTestCases.
+    
+    A ParserTestCaseFactory instance manufactures ParserTestCases,
+    keeps track of them, and provides a shared test fixture (a-la
+    setUp and tearDown).
+
+    """
+
+    sharedStateMachine = None
+
+    """states.RSTStateMachine shared during tests by ParserTestCases
+    created by the factory."""
+
+    differ = None
+
+    """difflib.Differ shared during tests by ParserTestCases created
+    by the factory."""
+    
+    id = "AnonymousCoward"
+    
+    """Identifier for the ParserTestCaseFactory. Prepended to the
+    ParserTestCase identifiers to make identification easier."""
+    
+    nextParserTestCaseId = 0
+    
+    """The next identifier to use for non-identified test cases."""
+    
+    def __init__(self, id=None, tests=()):
+        """Initialise the ParserTestCaseFactory.
+        
+        Arguments:
+        
+        id -- identifier for the factory, prepended to test cases.
+        
+        """
+        unittest.TestSuite.__init__(self, tests)
+        if id is not None:
+            self.id = id
+        
+    def addParserTestCase(self, input, expected,
+                          id=None, 
+                          runInDebugger=0,
+                          shortDescription=None):
+        """Create a ParserTestCase in the ParserTestCaseFactory.
+        Also returns it, just in case.
+
+        Arguments:
+
+        id -- unique test identifier, used by the test framework.
+        input -- input to the parser.
+        expected -- expected output from the parser.
+        runInDebugger -- if true, run this test under the pdb debugger.
+        shortDescription -- override to default test description.
+        """
+        # generate id if required
+        if id is None:
+            id = self.nextParserTestCaseId
+            self.nextParserTestCaseId = self.nextParserTestCaseId+1
+            
+        # test identifier will become factoryid.testid
+        ptcid = "%s.%s" % (self.id, id)
+        
+        # generate and add test case
+        ptc = ParserTestCase(input, expected, ptcid, 
+                             runInDebugger=runInDebugger,
+                             shortDescription=shortDescription,
+                             factory=self)
+        self.addTest(ptc)
+        return ptc
+    
+    def stockFactory(self, oldStyleTestDictionary):
+        """Stock the factory using an old-style test dictionary."""
+        for name, cases in oldStyleTestDictionary.items():
+            for case in cases:
+                runInDebugger = 0
+                if len(case)==3 and case[2]:
+                    runInDebugger = 1
+                self.addParserTestCase(case[0], case[1], 
+                                       runInDebugger=runInDebugger)
+
+    def getStateMachine(self):
+        """Return a shared RSTStateMachine."""
+        if self.sharedStateMachine is None:
+            self.sharedStateMachine = makeStateMachine()
+        return self.sharedStateMachine
+    
+    def getCompareFunction(self):
+        """Return a shared compare function."""
+        if self.differ is None: 
+            self.differ = makeDiffer()
+        return self.differ.compare
 
 class ParserTestCase(unittest.TestCase):
-
+    """Output checker for the parser.
+    
+    Should probably be called ParserOutputChecker, but I can deal with
+    that later when/if someone comes up with a category of parser test
+    cases that have nothing to do with the input and output of the parser.
+    
     """
-    Test data marked with 'XXX' denotes areas where further error checking
-    needs to be done.
-    """
-
-    diff = difflib.Differ().compare
-
-    def setUp(self):
-        self.sm = states.RSTStateMachine(stateclasses=states.stateclasses,
-                                         initialstate='Body', debug=debug)
-
-    def trytest(self, name, index):
-        input, expected = self.totest[name][index]
-        self.sm.run(string2lines(input), warninglevel=4,
-                    errorlevel=4)
-        output = self.sm.memo.document.pprint()
+    
+    def __init__(self, input, expected, id, 
+                 runInDebugger=0,
+                 shortDescription=None,
+                 factory=None):
+        """Initialise the ParserTestCase.
+        
+        Arguments:
+        
+        id -- unique test identifier, used by the test framework.
+        input -- input to the parser.
+        expected -- expected output from the parser.
+        runInDebugger -- if true, run this test under the pdb debugger.
+        shortDescription -- override to default test description.
+        factory -- ParserTestCaseFactory() from which to get shared state. 
+        """
+        
+        # Set ParserTestCase attributes
+        self.id = id
+        self.input = input
+        self.expected = expected
+        self.runInDebugger = runInDebugger
+        self.factory = factory
+                
+        # Ring your mother.
+        unittest.TestCase.__init__(self, methodName = 'compareOutput')
+        
+        # Cheat on the method documentation. Oh, the shame!
+        if shortDescription is not None:
+            self.__testMethodDoc = shortDescription
+            
+    def id(self):
+        """Return identifier.
+        Overridden to give test id, not method name."""
+        return "%s.%s" % (self.__class__, self.id)
+    
+    def __str__(self):
+        """Return string conversion.
+        Overridden to give test id, not method name."""
+        return "%s (%s)" % (self.id, self.__class__)
+        
+    # Is it worth over-riding id()? 
+    
+    def compareOutput(self):
+        sm = self.getStateMachine()
+        compare = self.getCompareFunction()
+        if self.runInDebugger:
+            pdb.set_trace()
+        sm.run(string2lines(self.input), warninglevel=4, errorlevel=4)
+        output = sm.memo.document.pprint()
+        
         try:
-            self.assertEquals('\n' + output, '\n' + expected)
+            self.assertEquals('\n' + output, '\n' + self.expected)
         except AssertionError:
             print
             print 'input:'
             print input
             print '-: expected'
             print '+: output'
-            print ''.join(self.diff(expected.splitlines(1),
+            print ''.join(compare(self.expected.splitlines(1),
                                     output.splitlines(1)))
             raise
-
-    totest = {}
-
-    """Tests to be run. Each key (test type name) maps to a list of tests.
-    Each test is a list: input, expected output, optional modifier. The
-    optional third entry, a behavior modifier, can be 0 (temporarily disable
-    this test) or 1 (run this test under the pdb debugger)."""
-
-    proven = {}
-    """tests that have proven successful"""
-
-    notyet = {}
-    """tests we *don't* want to run"""
-
-    ## uncomment to run previously successful tests also
-    totest.update(proven)
-
-    ## uncomment to run previously successful tests *only*
-    #totest = proven
-
-    ## uncomment to run experimental, expected-to-fail tests also
-    #totest.update(notyet)
-
-    ## uncomment to run experimental, expected-to-fail tests *only*
-    #totest = notyet
-
-    for name, cases in totest.items():
-        numcases = len(cases)
-        casenumlen = len('%s' % (numcases - 1))
-        for i in range(numcases):
-            trace = ''
-            if len(cases[i]) == 3:      # optional modifier
-                if cases[i][-1] == 1:   # 1 => run under debugger
-                    del cases[i][0]
-                    trace = 'pdb.set_trace();'
-                else:                   # 0 => disable
-                    continue
-            exec ('def test_%s_%0*i(self): %s self.trytest("%s", %i)'
-                  % (name, casenumlen, i, trace, name, i))
-
+            
+        
+    def getStateMachine(self):
+        """Return the RSTStateMachine from the factory, or a new one."""
+        if self.factory is not None:
+            return self.factory.getStateMachine()
+        return makeStateMachine()
+    
+    def getCompareFunction(self):
+        """Return the compare function from the factory, or a new one."""
+        if self.factory is not None:
+            return self.factory.getCompareFunction()
+        return makeDiffer().compare

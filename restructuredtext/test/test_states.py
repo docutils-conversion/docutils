@@ -3,74 +3,20 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1.2.1 $
-Date: $Date: 2001/07/29 12:21:09 $
+Revision: $Revision: 1.1.2.2 $
+Date: $Date: 2001/07/31 14:46:24 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
 """
 
-import sys
+from TestFramework import *
+import ParserTestCase
 
-class Tee:
-
-    """Write to a file and a stream (default: stdout) simulteaneously."""
-
-    def __init__(self, filename, stream=sys.__stdout__):
-        self.file = open(filename, 'w')
-        self.stream = stream
-
-    def write(self, string):
-        self.stream.write(string)
-        self.file.write(string)
-
-# redirect output to a common stream & a file
-sys.stderr = sys.stdout = Tee('test_states.out')
-
-
-import unittest, re, difflib
-import states
-from dps.statemachine import string2lines
-try:
-    import mypdb as pdb
-except:
-    import pdb
-
-debug = 0
-
-
-class DataTests(unittest.TestCase):
-
-    """
-    Test data marked with 'XXX' denotes areas where further error checking
-    needs to be done.
-    """
-
-    diff = difflib.Differ().compare
-
-    def setUp(self):
-        self.sm = states.RSTStateMachine(stateclasses=states.stateclasses,
-                                         initialstate='Body', debug=debug)
-
-    def trytest(self, name, index):
-        input, expected = self.totest[name][index]
-        self.sm.run(string2lines(input), warninglevel=4,
-                    errorlevel=4)
-        output = self.sm.memo.document.pprint()
-        try:
-            self.assertEquals('\n' + output, '\n' + expected)
-        except AssertionError:
-            print
-            print 'input:'
-            print input
-            print '-: expected'
-            print '+: output'
-            print ''.join(self.diff(expected.splitlines(1),
-                                    output.splitlines(1)))
-            raise
-
-    totest = {}
-
+def suite(): 
+    provenFactory = ParserTestCase.ParserTestCaseFactory(id='proven')
+    totestFactory = ParserTestCase.ParserTestCaseFactory(id='totest')
+    
     """Tests to be run. Each key (test type name) maps to a list of tests.
     Each test is a list: input, expected output, optional modifier. The
     optional third entry, a behavior modifier, can be 0 (temporarily disable
@@ -79,9 +25,9 @@ class DataTests(unittest.TestCase):
     proven = {}
     """tests that have proven successful"""
 
-    notyet = {}
-    """tests we *don't* want to run"""
-
+    totest = {}
+    """tests that haven't"""
+    
     proven['paragraph'] = [
 ["""\
 A paragraph.
@@ -2384,131 +2330,11 @@ ftp://ends.with.a.period.
 </document>
 """],
 ]
+    
+    provenFactory.stockFactory(proven)
+    totestFactory.stockFactory(totest)
 
-    totest['outdenting'] = [
-["""\
-Anywhere a paragraph would have an effect on the current
-indentation level, a comment or list item should also.
-
-+ bullet
-
-paragraph used to end a bullet before a blockquote
-
-  blockquote
-""",
-"""\
-<document>
-    <paragraph>
-        Anywhere a paragraph would have an effect on the current
-        indentation level, a comment or list item should also.
-    </paragraph>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet
-            </paragraph>
-        </list_item>
-    </bullet_list>
-    <paragraph>
-        paragraph used to end a bullet before a blockquote
-    </paragraph>
-    <block_quote>
-        <paragraph>
-            blockquote
-        </paragraph>
-    </block_quote>
-</document>
-"""],
-["""\
-+ bullet
-
-.. a comment used to end a bullet before a blockquote
-   (if you can't think of what to write in the paragraph)
-
-  blockquote
-""",
-"""\
-<document>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet
-            </paragraph>
-        </list_item>
-    </bullet_list>
-    <comment>
-        a comment used to end a bullet before a blockquote
-        (if you can't think of what to write in the paragraph)
-    </comment>
-    <block_quote>
-        <paragraph>
-            blockquote
-        </paragraph>
-    </block_quote>
-</document>
-"""],
-]
-
-    ''' # copy this for new entries:
-    totest[''] = [
-["""\
-""",
-"""\
-"""],
-]
-    '''
-
-    ## uncomment to run previously successful tests also
-    totest.update(proven)
-
-    ## uncomment to run previously successful tests *only*
-    #totest = proven
-
-    ## uncomment to run experimental, expected-to-fail tests also
-    #totest.update(notyet)
-
-    ## uncomment to run experimental, expected-to-fail tests *only*
-    #totest = notyet
-
-    for name, cases in totest.items():
-        numcases = len(cases)
-        casenumlen = len('%s' % (numcases - 1))
-        for i in range(numcases):
-            trace = ''
-            if len(cases[i]) == 3:      # optional modifier
-                if cases[i][-1] == 1:   # 1 => run under debugger
-                    del cases[i][0]
-                    trace = 'pdb.set_trace();'
-                else:                   # 0 => disable
-                    continue
-            exec ('def test_%s_%0*i(self): %s self.trytest("%s", %i)'
-                  % (name, casenumlen, i, trace, name, i))
-
-
-class FuctionTests(unittest.TestCase):
-
-    escaped = r'escapes: \*one, \\*two, \\\*three'
-    nulled = 'escapes: \x00*one, \x00\\*two, \x00\\\x00*three'
-    unescaped = r'escapes: *one, \*two, \*three'
-
-    def test_escape2null(self):
-        nulled = states.escape2null(self.escaped)
-        self.assertEquals(nulled, self.nulled)
-        nulled = states.escape2null(self.escaped + '\\')
-        self.assertEquals(nulled, self.nulled + '\x00')
-
-    def test_unescape(self):
-        unescaped = states.unescape(self.nulled)
-        self.assertEquals(unescaped, self.unescaped)
-        restored = states.unescape(self.nulled, 1)
-        self.assertEquals(restored, self.escaped)
-
+    return provenFactory # ignore totest until I can concatenate suites                 
 
 if __name__ == '__main__':
-#    sys.argv.extend(['-v'])             # uncomment for verbose output
-#    sys.argv.extend(['-v', '-d'])       # uncomment for verbose debug output
-    if sys.argv[-1] == '-d':
-        debug = 1
-        del sys.argv[-1]
-    # When this module is executed from the command-line, run all its tests
-    unittest.main()
+    main(suite=suite())

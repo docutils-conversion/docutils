@@ -3,8 +3,8 @@
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.3 $
-Date: $Date: 2001/07/29 22:34:52 $
+Revision: $Revision: 1.1.2.4 $
+Date: $Date: 2001/07/31 14:46:24 $
 Copyright: This module has been placed in the public domain.
 """
 
@@ -15,11 +15,11 @@ Copyright: This module has been placed in the public domain.
 debug = 0
 verbosity = 1
 
-__all__ = ( 'debug', 'verbosity', 'states' )
+__all__ = ( 'debug', 'verbosity', 'states', 'main', 'unittest' )
 
 # Imports
 
-import sys, os, getopt
+import sys, os, getopt, types, unittest, re
 
 # Import `states`, prepending to `sys.path` if necessary. 
 
@@ -41,83 +41,9 @@ class Tee:
         self.stream.write(string)
         self.file.write(string)
 
-import unittest, re
-# import ndiff
-# import states
-#from dps.statemachine import string2lines
-#try:
-#    import mypdb as pdb
-#except:
-#    import pdb
-
-class DataTests(unittest.TestCase):
-
-    """
-    Test data marked with 'XXX' denotes areas where further error checking
-    needs to be done.
-    """
-
-    def setUp(self):
-        self.sm = states.RSTStateMachine(stateclasses=states.stateclasses,
-                                         initialstate='Body', debug=debug)
-
-    def trytest(self, name, index):
-        input, expected = self.totest[name][index]
-        self.sm.run(string2lines(input), warninglevel=4,
-                    errorlevel=4)
-        output = self.sm.memo.document.pprint()
-        try:
-            self.assertEquals('\n' + output, '\n' + expected)
-        except AssertionError:
-            print
-            print 'input:'
-            print input
-            print '-: output'
-            print '+: expected'
-            ndiff.lcompare(output.splitlines(1), expected.splitlines(1))
-            raise
-
-    totest = {}
-
-    """Tests to be run. Each key (test type name) maps to a list of tests.
-    Each test is a list: input, expected output, optional modifier. The
-    optional third entry, a behavior modifier, can be 0 (temporarily disable
-    this test) or 1 (run this test under the pdb debugger)."""
-    
-    proven = {}
-    """tests that have proven successful"""
-
-    notyet = {}
-    """tests we *don't* want to run"""
-
-    ## uncomment to run previously successful tests also
-    totest.update(proven)
-
-    ## uncomment to run previously successful tests *only*
-    #totest = proven
-
-    ## uncomment to run experimental, expected-to-fail tests also
-    #totest.update(notyet)
-
-    ## uncomment to run experimental, expected-to-fail tests *only*
-    #totest = notyet
-
-    for name, cases in totest.items():
-        numcases = len(cases)
-        casenumlen = len('%s' % (numcases - 1))
-        for i in range(numcases):
-            trace = ''
-            if len(cases[i]) == 3:      # optional modifier
-                if cases[i][-1] == 1:   # 1 => run under debugger
-                    del cases[i][0]
-                    trace = 'pdb.set_trace();'
-                else:                   # 0 => disable
-                    continue
-            exec ('def test_%s_%0*i(self): %s self.trytest("%s", %i)'
-                  % (name, casenumlen, i, trace, name, i))
 
 USAGE = """\
-Usage: %(progName)s [options]
+Usage: test_whatever [options]
 
 Options:
   -h, --help       Show this message
@@ -126,11 +52,11 @@ Options:
   -d, --debug      Debug mode
 """
 
-def usageExit(self, msg=None):
+def usageExit(msg=None):
     """Print usage and exit."""
     if msg:
         print msg
-    print self.USAGE % self.__dict__
+    print USAGE
     sys.exit(2)
 
 def parseArgs(argv=sys.argv):
@@ -160,7 +86,7 @@ def parseArgs(argv=sys.argv):
     except getopt.error, msg:
         self.usageExit(msg)
 
-def loadTestsFromModule(self, module, exceptThese=[]):
+def loadTestsFromModule(module, exceptThese=[]):
     """Return a suite of all tests cases contained in the given module"""
     tests = []
     module = __import__('__main__')
@@ -168,8 +94,8 @@ def loadTestsFromModule(self, module, exceptThese=[]):
         if name in exceptThese:
             continue
         obj = getattr(module, name)
-        if type(obj) == types.ClassType and issubclass(obj, TestCase):
-            tests.append(self.loadTestsFromTestCase(obj))
+        if type(obj) == types.ClassType and issubclass(obj, unittest.TestCase):
+            tests.append(unittest.defaultTestLoader.loadTestsFromTestCase(obj))
     return self.suiteClass(tests)
 
 def main(suite=None):
@@ -184,7 +110,7 @@ def main(suite=None):
     if suite is None:
         # Load any globally defined tests.
         # WARNING: picks up DataTests above. Oops. 
-        suite = loadTestsFromModule(module)
+        suite = unittest.defaultTestLoader.loadTestsFromModule(__import__('__main__'))
     if debug:
         print "Debug: Suite=%s" % suite
     testRunner = unittest.TextTestRunner(verbosity=verbosity)
