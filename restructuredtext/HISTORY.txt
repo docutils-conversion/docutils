@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/21 03:54:19 $
+:Date: $Date: 2001/09/26 03:45:26 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -91,8 +91,6 @@ Changed contact email addresses.
     (entry point).
   - Changed indentSM to nestedSM where appropriate.
   - Added language module support.
-  - Added 1-section -> document promotion transformation.
-  - Added bibliographic field list transformations.
   - Changed numbered reporter.system_warning calls to named methods.
   - Name changes (lowercased, updated, improved).
   - Integer attributes on elements as appropriate.
@@ -101,7 +99,6 @@ Changed contact email addresses.
     code to methods.
   - Removed debug code.
   - Updated: 'errorist' -> 'reporter'.
-  - Added RCS keyword filtering to bibliographic field lists.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
@@ -186,6 +183,8 @@ Changed contact email addresses.
   - Changed interpreted text roles to ":role:" syntax.
   - Settled on field list syntax, updated definition.
   - Added 'abstract' to list of bibliographic elements.
+  - Removed 'title' and 'subtitle' from the list of bibliographic
+    elements.
   - Expanded bibliographic field list handling description.
   - Updated comments, indent/dedent.
   - Added definition of empty comments.
@@ -215,6 +214,11 @@ Changed contact email addresses.
   - Reworked literal block section in a more logical and
     easy-to-remember way.
   - Converted footnotes to auto-numbered.
+  - Added section explaining the top-level document element.
+  - Standardized on double-quotes (").
+  - Added section on 'Post-Parse Transformations'
+  - Moved explanation of bibliographic field lists to transformations
+    section.
 
 * spec/pyextensions.txt:
 
