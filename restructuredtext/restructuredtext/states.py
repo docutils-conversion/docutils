@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.31 $
-:Date: $Date: 2001/11/01 04:08:18 $
+:Revision: $Revision: 1.32 $
+:Date: $Date: 2001/11/06 00:51:33 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -377,34 +377,40 @@ class RSTState(StateWS):
                                )
                                %s             # no whitespace after
                              |              # *OR*
-                               ((?::%s:)?)    # optional role (group 3)
-                               (              # start-string (group 4)
-                                 `              # interpreted or phrase link
-                                 (?!`)          # but not literal
-                               )
-                               %s             # no whitespace after
-                             |              # *OR*
-                               (              # whole constructs (group 5):
-                                   (%s)         # reference name (6)
-                                   (__?)        # end-string (7)
+                               (              # whole constructs (group 3):
+                                   (%s)         # reference name (4)
+                                   (__?)        # end-string (5)
                                  |
                                    \[           # footnote_reference start,
-                                   (            # footnote label (group 8):
+                                   (            # footnote label (group 6):
                                        \#         # anonymous auto-numbered
                                      |          # *OR*
                                        \#?%s      # (auto-numbered?) label
                                    )
-                                   (\]_)        # end-string (group 9)
+                                   (\]_)        # end-string (group 7)
+                                 |
+                                   `/           # substitution_reference start
+                                   (%s)         # substitution name (8)
+                                   (/`)         # end-string (group 9)
+                                   (__?)?       # optional reference (10)
                                )
                                %s             # end-string suffix
+                             |              # *OR*
+                               ((?::%s:)?)    # optional role (group 11)
+                               (              # start-string (group 12)
+                                 `              # interpreted or phrase link
+                                 (?![`/])       # but not literal/substitution
+                               )
+                               %s             # no whitespace after
                              )
                              """ % (inline.start_string_prefix,
                                     inline.non_whitespace_after,
                                     inline.simplename,
-                                    inline.non_whitespace_after,
                                     inline.simplename,
                                     inline.simplename,
-                                    inline.end_string_suffix),
+                                    inline.end_string_suffix,
+                                    inline.simplename,
+                                    inline.non_whitespace_after,),
                              re.VERBOSE),
           emphasis=re.compile(inline.non_whitespace_escape_before
                               + r'(\*)' + inline.end_string_suffix),
@@ -461,9 +467,10 @@ class RSTState(StateWS):
                        inline.urilast,
                        inline.end_string_suffix,),
                 re.VERBOSE))
-    inline.groups = Stuff(initial=Stuff(start=2, role=3, backquote=4, whole=5,
-                                        refname=6, refend=7, footnotelabel=8,
-                                        fnend=9),
+    inline.groups = Stuff(initial=Stuff(start=2, whole=3, refname=4, refend=5,
+                                        footnotelabel=6, fnend=7, subname=8,
+                                        subend=9, subref=10, role=11,
+                                        backquote=12),
                           interpreted_or_phrase_link=Stuff(suffix=2),
                           uri=Stuff(whole=1, absolute=2, scheme=3, email=4))
 
@@ -556,12 +563,13 @@ class RSTState(StateWS):
 
     def phrase_link(self, before, after, text, rawsource):
         refname = normname(text)
-        attributes = {'refname': refname}
+        reference = nodes.reference(rawsource, text)
         if rawsource[-2:] == '__':
-            attributes['anonymous'] = 1
-        inlineobj = nodes.reference(rawsource, text, **attributes)
-        self.statemachine.memo.document.addrefname(refname, inlineobj)
-        return (before, [inlineobj], after, [])
+            self.statemachine.memo.document.addanonymousref(reference)
+        else:
+            reference['refname'] = refname
+        self.statemachine.memo.document.addrefname(refname, reference)
+        return (before, [reference], after, [])
 
     def interpreted(self, before, after, endmatch, role, position, lineno,
                     escaped, rawsource, text,
@@ -596,6 +604,27 @@ class RSTState(StateWS):
                   name, target, self.statemachine.node)
         return before, inlines, remaining, syswarnings
 
+    def substitution_reference(self, match, lineno):
+        subname = match.group(self.inline.groups.initial.subname)
+        refname = normname(subname)
+        subrefnode = nodes.substitution_reference('`/%s/`' % subname, subname)
+        self.statemachine.memo.document.addsubstitutionref(refname, subrefnode)
+        inlineobj = subrefnode
+        subref = match.group(self.inline.groups.initial.subref)
+        if subref:
+            referencenode = nodes.reference('`/%s/`%s' % (subname, subref), '')
+            self.statemachine.memo.document.addrefname(refname, referencenode)
+            if subref == '__':
+                self.statemachine.memo.document.addanonymousref(referencenode)
+            else:
+                referencenode['refname'] = refname
+            referencenode += subrefnode
+            inlineobj = referencenode
+        string = match.string
+        matchstart = match.start(self.inline.groups.initial.whole)
+        matchend = match.end(self.inline.groups.initial.whole)
+        return (string[:matchstart], [inlineobj], string[matchend:], [])
+
     def footnote_reference(self, match, lineno):
         fnname = match.group(self.inline.groups.initial.footnotelabel)
         refname = normname(fnname)
@@ -618,13 +647,14 @@ class RSTState(StateWS):
     def reference(self, match, lineno, anonymous=None):
         referencename = match.group(self.inline.groups.initial.refname)
         refname = normname(referencename)
-        attributes = {'refname': refname}
         referencenode = nodes.reference(
               referencename + match.group(self.inline.groups.initial.refend),
-              referencename, refname=refname)
+              referencename)
         self.statemachine.memo.document.addrefname(refname, referencenode)
         if anonymous:
             self.statemachine.memo.document.addanonymousref(referencenode)
+        else:
+            referencenode['refname'] = refname
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
@@ -674,6 +704,7 @@ class RSTState(StateWS):
                        '``': literal,
                        '_`': inline_target,
                        ']_': footnote_reference,
+                       '/`': substitution_reference,
                        '_': reference,
                        '__': anonymous_reference}
 
@@ -697,6 +728,7 @@ class RSTState(StateWS):
         backquote = self.inline.groups.initial.backquote - 1
         refend = self.inline.groups.initial.refend - 1
         fnend = self.inline.groups.initial.fnend - 1
+        subend = self.inline.groups.initial.subend - 1
         remaining = escape2null(text)
         processed = []
         unprocessed = []
@@ -707,8 +739,8 @@ class RSTState(StateWS):
                 groups = match.groups()
                 before, inlines, remaining, syswarnings = \
                       dispatch[groups[start] or groups[backquote]
-                               or groups[refend]
-                               or groups[fnend]](self, match, lineno)
+                               or groups[refend] or groups[fnend]
+                               or groups[subend]](self, match, lineno)
                 unprocessed.append(before)
                 warnings += syswarnings
                 if inlines:
@@ -1287,6 +1319,42 @@ class Body(RSTState):
             if reference:
                 target['refuri'] = reference
 
+    def substitution(self, match):
+        indented, indent, offset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end(), uptoblank=1)
+        subname = match.group(1)
+        name = normname(subname)
+        substitutionnode = nodes.substitution('\n'.join(indented))
+        self.statemachine.memo.document.addsubstitution(name, substitutionnode,
+                                                        self.statemachine.node)
+        if indented:
+            self.nestedparse(indented, inputoffset=offset, node=substitutionnode,
+                             statemachinekwargs={'stateclasses': stateclasses,
+                                                 'initialstate': 'Substitution'})
+            if len(substitutionnode) == 0:
+                sw = self.statemachine.memo.reporter.warning(
+                      'Substitution contents empty at line %s'
+                      % self.statemachine.abslineno())
+                self.statemachine.node += sw
+            elif len(substitutionnode) == 1 \
+                  and isinstance(substitutionnode[0], nodes.paragraph):
+                substitutionnode[:] = substitutionnode[0][:]
+            else:
+                i = 0
+                for node in substitutionnode[:]:
+                    if not (isinstance(node, nodes.Inline) or
+                            isinstance(node, nodes.Text)):
+                        self.statemachine.node += substitutionnode[i]
+                        del substitutionnode[i]
+                    else:
+                        i += 1
+        else:
+            sw = self.statemachine.memo.reporter.warning(
+                  'Substitution missing contents at line %s'
+                  % self.statemachine.abslineno())
+            self.statemachine.node += sw
+        return [substitutionnode], blankfinish
+
     def directive(self, match):
         typename = match.group(1)
         directivefunction = directives.directive(
@@ -1341,6 +1409,14 @@ class Body(RSTState):
                       \.\.[ ]+          # explicit markup start
                       _                 # target indicator
                       """, re.VERBOSE)),
+          (substitution,
+           re.compile(r"""
+                      \.\.[ ]+          # explicit markup start
+                      /
+                      (%s)              # substitution name
+                      /
+                      (?:[ ]+|$)        # whitespace or end of line
+                      """ % RSTState.inline.simplename, re.VERBOSE)),
           (directive,
            re.compile(r"""
                       \.\.[ ]+          # explicit markup start
@@ -1830,8 +1906,26 @@ class Line(SpecializedText):
         return [], 'Body', []
 
 
+class Substitution(Body):
+
+    """
+    Parser for the contents of a substitution element.
+    """
+
+    patterns = {
+          'inline_directive': r'(%s)::( +|$)' % RSTState.inline.simplename,
+          'text': r''}
+    initialtransitions = ['inline_directive', 'text']
+
+    def inline_directive(self, match, context, nextstate):
+        nodelist, blankfinish = self.directive(match)
+        self.statemachine.node += nodelist
+        return [], nextstate, []
+
+
 stateclasses = [Body, BulletList, DefinitionList, EnumeratedList, FieldList,
-                OptionList, RFC822List, Explicit, Text, Definition, Line]
+                OptionList, RFC822List, Explicit, Text, Definition, Line,
+                Substitution]
 """Standard set of State classes used to start `RSTStateMachine`."""
 
 

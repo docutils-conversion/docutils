@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.24 $
-:Date: $Date: 2001/11/01 04:08:29 $
+:Revision: $Revision: 1.25 $
+:Date: $Date: 2001/11/06 00:48:50 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -37,12 +37,15 @@ markup.
  Quick Syntax Overview
 -----------------------
 
-A reStructuredText document is made up of body elements, and may be
-structured into sections. `Section Structure`_ is indicated through
-title style (underlines & optional overlines). Sections contain body
-elements and/or subsections.
+A reStructuredText document is made up of body or block-level
+elements, and may be structured into sections.  Sections_ are
+indicated through title style (underlines & optional overlines).
+Sections contain body elements and/or subsections.  Some body elements
+contain further elements, such as lists containing list items, which
+in turn may contain paragraphs and other body elemens.  Others, such
+as paragraphs, contain text and `inline markup`_ elements.
 
-Here are examples of body elements:
+Here are examples of `body elements`_:
 
 - Paragraphs_ (and `inline markup`_)::
 
@@ -50,8 +53,8 @@ Here are examples of body elements:
       *emphasis*, **strong emphasis**, `interpreted text`, ``inline
       literals``, standalone hyperlinks (http://www.python.org),
       external hyperlinks (Python_), internal cross-references
-      (example_), footnote references ([1]_), and _`inline hyperlink
-      targets`.
+      (example_), footnote references ([1]_), subsitution
+      references (`/symbol/`), and _`inline hyperlink targets`.
 
       Paragraphs are separated by blank lines and are left-aligned.
 
@@ -154,11 +157,16 @@ Here are examples of body elements:
 
       .. graphic:: mylogo.png
 
+- Substitutions_::
+
+      .. /text/ This is substitution text.
+      .. /symbol/ image:: symbol.png
+
 - Comments_::
 
       .. Comments begin with two dots and a space. Anything may
          follow, except for the syntax of footnotes, hyperlink
-         targets, and directives, described above.
+         targets, directives, or substitutions.
 
 
 ----------------
@@ -1320,7 +1328,7 @@ Syntax diagram::
 
     +-------+----------------------+
     | ".. " | "_" name ":" link    |
-    +-------+              block   |
+    +-------+ block                |
             |                      |
             +----------------------+
 
@@ -1431,9 +1439,54 @@ Syntax diagram::
 
     +-------+----------------------+
     | ".. " | type "::" directive  |
-    +-------+           block      |
+    +-------+ block                |
             |                      |
             +----------------------+
+
+
+Substitutions
+=============
+
+DTD element: substitution.
+
+Substitutions are indicated by an explicit markup start (".. ")
+followed by a slash, the substitution name, another slash, whitespace,
+and the substitution block.  Substitution names are simple `reference
+names`_ (case-insensitive single words consisting of alphanumerics
+plus internal hyphens, underscores, and periods; no whitespace).
+
+`Substitution References`_ are replaced in-line by the contents of the
+corresponding substitution block.  Substitutions allow the power and
+flexibility of directives to be shared by inline text.  They are a way
+to include boilerplate text and arbitrarily complex inline objects
+within text, while keeping the details out of the flow of text.  They
+are the equivalent of SGML/XML's named entities.
+
+A substitution block may contain either replacement text (from a
+single word to an entire paragraph) or a nested inline-compatible
+directive (without the ".. "), such as an image.  For example::
+
+    Here is some `/boilerplate/`.
+
+    .. /boilerplate/
+       replacement text to be *inserted* at the point of the
+       substitution reference
+
+    The `/biohazard/` symbol must be used on containers used to
+    dispose of medical waste.
+
+    .. /biohazard/ image:: biohazard.png
+
+It is an error for a substitution block to directly or indirectly
+contain a circular substitution reference. 
+
+Syntax diagram::
+
+    +-------+---------------------------+
+    | ".. " | "/" name "/" substitution |
+    +-------+ block                     |
+            |                           |
+            +---------------------------+
 
 
 Comments
@@ -1458,8 +1511,8 @@ construct, insert an unindented empty comment in-between.
 Syntax diagram::
 
     +-------+----------------------+
-    | ".. " | comment block        |
-    +-------+                      |
+    | ".. " | comment              |
+    +-------+ block                |
             |                      |
             +----------------------+
 
@@ -1503,13 +1556,13 @@ Inline Markup
 Inline markup is the markup of words or phrases within a text block.
 Inline markup cannot be nested.
 
-There are eight inline markup constructs. Four of the constructs
+There are nine inline markup constructs. Four of the constructs
 (emphasis_, `strong emphasis`_, `interpreted text`_, and `inline
 literals`_) use identical start-strings and end-strings to indicate
-the markup. The `inline hyperlink targets`_, `footnote references`_
-and `hyperlink references`_ use different start-strings and
-end-strings.  `Standalone hyperlinks`_ are recognized implicitly, and
-use no extra markup.
+the markup.  `Inline hyperlink targets`_, `footnote references`_,
+`hyperlink references`_, and `substitution references`_ use different
+start-strings and end-strings.  `Standalone hyperlinks`_ are
+recognized implicitly, and use no extra markup.
 
 The inline markup start-string and end-string recognition rules are as
 follows:
@@ -1724,6 +1777,35 @@ For example::
     Please refer to the fine manual [GVR2001]_.
 
 See Footnotes_ for the footnote itself.
+
+
+Substitution References
+-----------------------
+
+DTD element: substitution_reference, reference.
+
+Start-string = "`/", end-string = "/`" (optionally followed by "_" or
+"__").
+
+Substitution references use a variant of the `interpreted text`_
+syntax, with a backquote, a forward slash, the substitution name (a
+simple reference name; see `Reference Names`_), a forward slash, and a
+backquote.  A substitution may also be a reference by appending a "_"
+(named) or "__" (anonymous) suffix; the substitution name is used for
+the reference name in the named case.
+
+The processing system replaces substitution references with the
+contents of the corresponding substitutions_.  Substitutions may be
+replacement text or inline-compatible elements.
+
+Examples::
+
+    This is a simple `/substitution/`.  It will be replaced by the
+    processing system.
+
+    This is a combination `/substitution-and-reference/`_.  In
+    addition to being replaced, the replacement text or element will
+    refer to the "substitution-and-reference" target.
 
 
 Standalone Hyperlinks
