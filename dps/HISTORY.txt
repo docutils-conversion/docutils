@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/06 03:11:28 $
+:Date: $Date: 2002/02/13 02:29:39 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -77,7 +77,7 @@ Changed contact email addresses.
   - Removed generic 'directive'.
   - 'errorhandler' -> 'reporter'. ``dps.utils.Reporter`` reform.
   - Added document.languagecode.
-  - Added Visitor classes & Node.walk().
+  - Added Visitor classes, ``Node.walk()`` & ``Node.walkabout()``.
   - Improved ``__repr__()``.
   - Improved some names.
   - Removed Python-specific element classes.

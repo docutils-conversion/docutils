@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/02/07 02:03:30 $
-:Revision: $Revision: 1.24 $
+:Date: $Date: 2002/02/13 02:25:29 $
+:Revision: $Revision: 1.25 $
 
 
 To Do
@@ -437,36 +437,6 @@ Examples:
 - Single file
 - Multiple files & directories
 - Objects in memory
-
-
-Visitors
-========
-
-To nodes.py, add ``Node.walkabout()``, ``Visitor.leave_*()``, and
-``GenericVisitor.default_leave()`` methods to catch elements on the
-way out? Here's ``Node.walkabout()``::
-
-    def walkabout(self, visitor, ancestry=()):
-        """
-        Traverse a tree of `Node` objects. Call `visitor`'s
-        ``visit_...`` method (upon initial entry) **and** its
-        ``leave_...`` method (before exiting).
-
-        Parameters:
-
-        - `visitor`: A `Visitor` object, containing a ``visit_...``
-          and ``leave_...`` method for each `Node` subclass
-          encountered.
-        - `ancestry`: A list of (parent, index) pairs. `self`'s parent
-          is the last entry.
-        """
-        method = getattr(visitor, 'visit_' + self.__class__.__name__)
-        method(self, ancestry)
-        children = self.getchildren()
-        for i in range(len(children)):
-            children[i].walkabout(visitor, ancestry + ((self, i),))
-        method = getattr(visitor, 'leave_' + self.__class__.__name__)
-        method(self, ancestry)
 
 
 Mixing Automatic and Manual Footnote Numbering
