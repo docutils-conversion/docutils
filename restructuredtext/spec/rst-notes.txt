@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/02/13 02:22:10 $
-:Revision: $Revision: 1.32 $
+:Date: $Date: 2002/02/22 01:41:29 $
+:Revision: $Revision: 1.33 $
 
 
 To Do
@@ -35,8 +35,9 @@ To Do
 
 - Allow hyperlink references to targets in other documents? Not in an
   HTML-centric way, though (it's trivial to say
-  http://www.whatever.com/doc#name, and useless in non-HTML contexts).
-  XLink/XPointer? ``.. baseref::``? See Doc-SIG 2001-08-10.
+  ``http://www.whatever.com/doc#name``, and useless in non-HTML
+  contexts).  XLink/XPointer? ``.. baseref::``? See Doc-SIG
+  2001-08-10.
 
 - Interpret backslash-escaped spaces as non-breaking spaces? Escaped
   newlines as forced-breaks? Escaped period or quote as a disappearing
@@ -63,8 +64,10 @@ To Do
   definition in the spec. (Explicit markup blocks should be strict or
   forgiving?)
 
-- Add literal blocks to more system warnings whenever the erroneous
-  source text is omitted.
+- Add literal blocks to system messages whenever the erroneous source
+  text is omitted.
+
+- Link system messages back to their sources?
 
 - Implement the HTML "imagemap" directive.
 
