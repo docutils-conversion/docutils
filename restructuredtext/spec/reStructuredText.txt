@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2001/08/23 04:10:15 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2001/08/25 02:20:27 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -104,7 +104,7 @@ Here are examples of body elements:
 - `Literal blocks`_::
 
       Literal blocks are indented, and indicated with a double-colon
-      ('::') at the end of the preceding paragraph::
+      ('::') at the end of the preceding paragraph (right here -->)::
 
           if literal_block:
               text = 'is left as-is'
@@ -212,8 +212,9 @@ indicating:
 
 - multiple body elements within a list item (including nested lists),
 - the definition part of a definition list item,
-- block quotes, and
-- the extent of literal blocks.
+- block quotes,
+- the extent of literal blocks, and
+- the extent of explicit markup blocks.
 
 Any text whose indentation is less than that of the current level
 (i.e., unindented text or "dedents") ends the current level of
@@ -221,6 +222,9 @@ indentation.
 
 Spaces are recommended for indentation, but tabs may also be used.
 Tabs will be converted to spaces. Tab stops are at every 8th column.
+
+Other whitespace characters (form feeds [chr(12)] and vertical tabs
+[chr(11)]) are converted to single spaces before processing.
 
 
 Escaping Mechanism
@@ -248,10 +252,11 @@ literal blocks and inline literals. In these contexts, a single
 backslash represents a literal backslash.
 
 Please note that the reStructuredText specification and parser do not
-address the issue of the representation or extraction of text input.
+address the issue of the representation or extraction of text input
+(how and in what form the text actually *reaches* the parser).
 Backslashes and other characters may serve a character-escaping
 purpose in certain contexts and must be dealt with appropriately. For
-example, Python  uses backslashes in strings to escape certain
+example, Python uses backslashes in strings to escape certain
 characters, but not others. The simplest solution when backslashes
 appear in Python docstrings is to use raw docstrings::
 
@@ -479,15 +484,18 @@ Example syntax diagram::
 Definition Lists
 ----------------
 
-DTD elements: definition_list, definition_list_item, term, definition.
+DTD elements: definition_list, definition_list_item, term, classifier,
+definition.
 
 Each definition list item contains a term and a definition. A term is
-a simple one-line paragraph. A definition is a block indented relative
-to the term, and may contain multiple paragraphs and other body
-elements. There may be no blank line between a term and a definition
-(this distinguishes definition lists from `block quotes`_). Blank
-lines are required before the first and after the last definition list
-item, but are optional in-between. For example::
+a simple one-line word or phrase. An optional classifier may follow
+the term on the same line, after ' : ' (space, colon, space). A
+definition is a block indented relative to the term, and may contain
+multiple paragraphs and other body elements. There may be no blank
+line between a term and a definition (this distinguishes definition
+lists from `block quotes`_). Blank lines are required before the first
+and after the last definition list item, but are optional in-between.
+For example::
 
     term 1
         Definition 1.
@@ -497,11 +505,14 @@ item, but are optional in-between. For example::
 
         Definition 2, paragraph 2.
 
+    term 3 : classifier
+        Definition 3.
+
 Syntax diagram::
 
-    +------+
-    | term |
-    +--+---+-----------------------+
+    +---------------------------+
+    | term [ ' : ' classifier ] |
+    +--+------------------------+--+
        | defninition               |
        | (body elements)+          |
        +---------------------------+
@@ -616,12 +627,14 @@ Literal Blocks
 
 DTD element: literal_block.
 
-Two colons ('::') at the end of a paragraph signifies that all
+A paragraph consisting of two colons ('::') signifies that all
 following **indented** text blocks comprise a literal block. No markup
 processing is done within a literal block. It is left as-is, and is
 typically rendered in a monospaced typeface::
 
-    This is a typical paragraph. A literal block follows::
+    This is a typical paragraph. A literal block follows.
+
+    ::
 
         for a in [5,4,3,2,1]:   # this is program code, shown as-is
             print a
@@ -632,31 +645,36 @@ typically rendered in a monospaced typeface::
     is outside of the literal block, and therefore treated as an
     ordinary paragraph.
 
-When '::' is immediately preceded by whitespace, both colons will be
-removed from the output. When text immediately precedes the '::',
-*one* colon will be removed from the output, leaving only one (i.e.,
-'::' will be replaced by ':'). When '::' is alone on a line, it will
-be completely removed from the output; no empty paragraph will remain.
+The paragraph containing only '::' will be completely removed from the
+output; no empty paragraph will remain.
 
-In other words, these are all equivalent:
+As a convenience, the '::' is recognized at the end of any paragraph.
+If immediately preceded by whitespace, both colons will be removed
+from the output (this is the "partly minimized" form). When text
+immediately precedes the '::', *one* colon will be removed from the
+output, leaving only one (i.e., '::' will be replaced by ':'; the
+"fully minimized" form).
 
-1. Minimized::
+In other words, these are all equivalent (please pay attention to the
+colons after "Paragraph"):
 
-      Paragraph::
+1. Expanded form::
+
+      Paragraph:
+
+      ::
 
           Literal block
 
-2. Partly expanded::
+2. Partly minimized form::
 
       Paragraph: ::
 
           Literal block
 
-3. Fully expanded::
+3. Fully minimized form::
 
-      Paragraph:
-
-      ::
+      Paragraph::
 
           Literal block
 
