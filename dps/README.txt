@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/23 03:53:45 $
+:Date: $Date: 2002/04/14 19:40:54 $
 :Web-site: http://docstring.sourceforge.net/
 
 Thank you for downloading the Python Docstring Processing System
@@ -97,7 +97,7 @@ MacOS
    list choose "install", click "Add", then click "OK".
 
 If install.py is a "Python module" (see step 2 above if it isn't), you
-can run it instead of the above. The distutils options windown will
+can run it instead of the above. The distutils options window will
 not appear.
 
 
