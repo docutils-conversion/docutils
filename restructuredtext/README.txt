@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/25 01:54:52 $
+:Date: $Date: 2002/03/16 05:42:50 $
 :Web-site: http://structuredtext.sourceforge.net/
 
 Thank you for downloading the reStructuredText project archive. As
@@ -46,7 +46,13 @@ Project Files & Directories
 * tools: Directory for standalone scripts that use reStructuredText.
 
   - quicktest.py: Input reStructuredText, output pretty-printed
-    pseudo-XML.
+    pseudo-XML and various other forms.
+
+  - publish.py: A minimal example of a complete Docutils system, using
+    the "standalone" reader and "pformat" writer.
+
+  - html.py: Read standalone reStructuredText documents and write
+    HTML4/CSS1.  Uses the default.css stylesheet.
 
 * spec: The project specification directory. Contains the markup
   syntax spec and implementation notes.

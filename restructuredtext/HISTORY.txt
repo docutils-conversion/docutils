@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/16 05:42:39 $
+:Date: $Date: 2002/03/16 05:45:11 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -141,6 +141,10 @@ Changed contact email addresses.
 
 * restructuredtext/directives/admonitions.py: Implementation of
   admonition directives 'note', 'caution', etc. Added to project.
+
+* restructuredtext/directives/components.py: Implementation of
+  document components directives 'contents', 'footnotes', etc. Added
+  to project.
 
 * restructuredtext/directives/images.py: Implementation of
   directives 'image' & 'figure'. Added to project.
