@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.18 $
-:Date: $Date: 2001/10/20 03:02:05 $
+:Revision: $Revision: 1.19 $
+:Date: $Date: 2001/10/27 05:36:17 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -78,6 +78,10 @@ Attributes shared by all elements in this DTD:
 <!ENTITY % anonymous.att
   " anonymous %yesorno; #IMPLIED ">
 
+<!-- Auto-numbered footnote. -->
+<!ENTITY % auto.att
+  " auto      %yesorno; #IMPLIED ">
+
 <!-- XML standard attribute for whitespace-preserving elements. -->
 <!ENTITY % fixedspace.att
   " xml:space (default | preserve) #FIXED 'preserve' ">
@@ -102,7 +106,8 @@ Attributes shared by all elements in this DTD:
   " paragraph
     | bullet_list | enumerated_list | definition_list | field_list
     | option_list
-    | literal_block | block_quote | doctest_block | table | figure
+    | literal_block | block_quote | doctest_block | table
+    | figure | image
     | note | tip | warning | error | caution | danger | important
     | footnote | target | directive | comment
     | system_warning
@@ -111,14 +116,14 @@ Attributes shared by all elements in this DTD:
 <!ENTITY % additional.inline.elements "">
 <!ENTITY % inline.elements
   " emphasis | strong | interpreted | literal
-    | link | footnote_reference | image
+    | link | target | footnote_reference | image
     %additional.inline.elements; ">
 
 <!-- Element Content Models
 ================================================================== -->
 
 <!ENTITY % structure.model
-  " ( (division+, (%structural.elements;)*)
+  " ( ((%body.elements; | transition)+, (%structural.elements;)*)
     | (%structural.elements;)+ ) ">
 
 <!ENTITY % text.model
@@ -162,7 +167,7 @@ http://www.oasis-open.org/html/tm9901.htm).
 
 <!--
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Bibliographic Elements
+    Title Elements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -->
 
@@ -172,6 +177,13 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT subtitle %text.model;>
 <!ATTLIST subtitle %basic.atts;>
 
+
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Bibliographic Elements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+
 <!-- Container for bibliographic elements. May not be empty. -->
 <!ELEMENT docinfo
     (((%bibliographic.elements;)+, abstract?) | abstract)>
@@ -180,7 +192,7 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT author %text.model;>
 <!ATTLIST author %basic.atts;>
 
-<!ELEMENT authors (author+)>
+<!ELEMENT authors ((author, organization?, contact?)+)>
 <!ATTLIST authors %basic.atts;>
 
 <!ELEMENT organization %text.model;>
@@ -217,8 +229,8 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT section (title, %structure.model;)>
 <!ATTLIST section %basic.atts;>
 
-<!ELEMENT division (%body.elements;)+>
-<!ATTLIST division %basic.atts;>
+<!ELEMENT transition EMPTY>
+<!ATTLIST transition %basic.atts;>
 
 
 <!--
@@ -341,11 +353,12 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT footnote (label?, (%body.elements;)+)>
 <!ATTLIST footnote
     %basic.atts;
-    auto      %yesorno; #IMPLIED>
+    %auto.att;>
 
 <!ELEMENT label (#PCDATA)>
 <!ATTLIST label %basic.atts;>
 
+<!-- Also an inline element. -->
 <!ELEMENT target (#PCDATA)>
 <!ATTLIST target
     %basic.atts;
@@ -363,8 +376,17 @@ http://www.oasis-open.org/html/tm9901.htm).
     %basic.atts;
     %fixedspace.att;>
 
-<!ELEMENT figure (image, caption?, legend?)>
+<!ELEMENT figure (image, ((caption, legend?) | legend) >
 <!ATTLIST figure %basic.atts;>
+
+<!-- Also an inline element. -->
+<!ELEMENT image EMPTY>
+<!ATTLIST image
+    %basic.atts;
+    uri       CDATA     #REQUIRED
+    height    NMTOKEN   #IMPLIED
+    width     NMTOKEN   #IMPLIED
+    scale     NMTOKEN   #IMPLIED>
 
 <!ELEMENT caption %text.model;>
 <!ATTLIST caption %basic.atts;>
@@ -417,16 +439,7 @@ Inline elements occur within the PCDATA of body elements.
 <!ATTLIST footnote_reference
     %basic.atts;
     %link.atts;
-    auto      %yesorno; #IMPLIED>
-
-<!-- Also used in `figure`. -->
-<!ELEMENT image EMPTY>
-<!ATTLIST image
-    %basic.atts;
-    uri       CDATA     #REQUIRED
-    height    NMTOKEN   #IMPLIED
-    width     NMTOKEN   #IMPLIED
-    scale     NMTOKEN   #IMPLIED>
+    %auto.att;>
 
 <!--
 Local Variables:
