@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/08/23 03:55:34 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/07 02:05:22 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for nodes.py.
@@ -35,8 +35,8 @@ class TextTests(unittest.TestCase):
     def test_astext(self):
         self.assertEquals(self.text.astext(), 'Line 1.\nLine 2.')
 
-    def test_pprint(self):
-        self.assertEquals(self.text.pprint(), 'Line 1.\nLine 2.\n')
+    def test_pformat(self):
+        self.assertEquals(self.text.pformat(), 'Line 1.\nLine 2.\n')
 
 
 class ElementTests(unittest.TestCase):
@@ -54,7 +54,7 @@ class ElementTests(unittest.TestCase):
         dom = element.asdom()
         self.assertEquals(dom.toxml(), '<_Element attr="1"/>')
         dom.unlink()
-        self.assertEquals(element.pprint(), '<_Element attr="1"/>\n')
+        self.assertEquals(element.pformat(), '<_Element attr="1"/>\n')
 
     def test_withtext(self):
         element = nodes._Element('text\nmore', nodes.Text('text\nmore'))
@@ -71,7 +71,7 @@ class ElementTests(unittest.TestCase):
         self.assertEquals(dom.toxml(),
                           '<_Element attr="1">text\nmore</_Element>')
         dom.unlink()
-        self.assertEquals(element.pprint(),
+        self.assertEquals(element.pformat(),
 """\
 <_Element attr="1">
     text
