@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/12 04:02:18 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/09/13 02:20:34 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains directive implementation modules.
@@ -19,13 +19,14 @@ _directive_registry = {
                                           'directive_test_function'),
       'image': ('images', 'image'),
       'figure': ('images', 'figure'),
-      'note': ('admonitions', 'note'),
-      'tip': ('admonitions', 'tip'),
-      'warning': ('admonitions', 'warning'),
-      'error': ('admonitions', 'error'),
+      'attention': ('admonitions', 'attention'),
       'caution': ('admonitions', 'caution'),
       'danger': ('admonitions', 'danger'),
-      'important': ('admonitions', 'important'),}
+      'error': ('admonitions', 'error'),
+      'important': ('admonitions', 'important'),
+      'note': ('admonitions', 'note'),
+      'tip': ('admonitions', 'tip'),
+      'warning': ('admonitions', 'warning'),}
 """Mapping of directive name to (module name, function name). The directive
 'name' is canonical & must be lowercase; language-dependent names are defined
 in the language package."""

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/12 03:57:04 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 02:21:13 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of
@@ -43,12 +43,13 @@ directives = {
       'restructuredtext-test-directive': 'restructuredtext-test-directive',
       'image': 'image',
       'figure': 'figure',
-      'note': 'note',
-      'tip': 'tip',
-      'warning': 'warning',
-      'error': 'error',
+      'attention': 'attention',
       'caution': 'caution',
       'danger': 'danger',
-      'important': 'important',}
+      'error': 'error',
+      'important': 'important',
+      'note': 'note',
+      'tip': 'tip',
+      'warning': 'warning',}
 """English name to registered (in directives/__init__.py) directive name
 mapping."""
