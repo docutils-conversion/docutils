@@ -1,8 +1,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/21 22:14:09 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/07/28 05:16:59 $
 Copyright: This module has been placed in the public domain.
 
 
@@ -15,7 +15,7 @@ from dps.statemachine import StateMachineWS, StateWS
 __all__ = ['RSTStateMachine']
 
 
-class MarkupError: pass
+class MarkupError(Exception): pass
 
 
 class Stuff:
@@ -177,13 +177,14 @@ class RSTState(StateWS):
 
     inline.openers = '\'"([{<'
     inline.closers = '\'")]}>'
-    inline.start_string_prefix = r'(?:^|[ \n])[%s]*' % re.escape(inline.openers)
-    inline.end_string_suffix = r'[.,:;!?%s-]*(?:[ \n]|$)' % re.escape(inline.closers)
+    inline.start_string_prefix = r'(?:^|[ \n%s])' % re.escape(inline.openers)
+    inline.end_string_suffix = r'(?:$|[- \n.,:;!?%s])' % re.escape(inline.closers)
     inline.non_whitespace_before = r'(?<![ \n])'
     inline.non_whitespace_escape_before = r'(?<![ \n\x00])'
     inline.non_whitespace_after = r'(?![ \n])'
     inline.simplename = r'[a-zA-Z0-9](?:[-_.a-zA-Z0-9]*[a-zA-Z0-9])?'
     inline.uric = r"""[-_.!~*'();/:@&=+$,%a-zA-Z0-9]"""
+    inline.urilast = r"""[_~/a-zA-Z0-9]"""
     inline.emailc = r"""[-_!~*'{|}/#%?^`&=+$a-zA-Z0-9]"""
     inline.identity = string.maketrans('', '')
     inline.null2backslash = string.maketrans('\x00', '\\')
@@ -242,16 +243,19 @@ class RSTState(StateWS):
                     (?:
                       (?:                         # either:
                         //                          # hierarchical URI
-                        %s+?                        # URI characters
+                        %s*                         # URI characters
+                        %s                          # final URI char
                       |                           # OR
                         %s+(?:\.%s+)*               # opaque URI
-                        @%s+(?:\.%s+)*              # (email only?)
+                        @%s+(?:\.%s+)*%s            # (email only?)
                       )
                       (?:                         # optional query
-                        \?%s*?
+                        \?%s*                       # URI characters
+                        %s                          # final URI char
                       )?
                       (?:                         # optional fragment
-                        \#%s*?
+                        \#%s*                       # URI characters
+                        %s                          # final URI char
                       )?
                     )
                   )
@@ -259,15 +263,17 @@ class RSTState(StateWS):
                   (                           # email address (group 3)
                     %s+(?:\.%s+)*               # name
                     @                           # at
-                    %s+?(?:\.%s+?)*             # host
+                    %s+(?:\.%s*)*              # host
+                    %s                          # final URI char
                   )
                 )
                 %s                          # end-string suffix
-                """ % ((inline.start_string_prefix, inline.uric)
+                """ % ((inline.start_string_prefix, inline.uric, inline.urilast)
                        + (inline.emailc,) * 4
-                       + (inline.uric, inline.uric)
+                       + (inline.urilast, inline.uric, inline.urilast,
+                          inline.uric, inline.urilast)
                        + (inline.emailc,) * 4
-                       + (inline.end_string_suffix,)),
+                       + (inline.urilast, inline.end_string_suffix,)),
                 re.VERBOSE))
     inline.groups = Stuff(initial=Stuff(start=2, whole=3, linkname=4, linkend=5,
                                         footnotelabel=6, fnend=7),
@@ -627,7 +633,8 @@ class Body(RSTState):
         escaped = escape2null(match.string)
         targetmatch = pattern.match(escaped[match.end():])
         if not targetmatch:
-            raise MarkupError('not a hyperlink target')
+            raise MarkupError('malformed hyperlink target at line %s.'
+                              % self.statemachine.abslineno())
         name = normname(unescape(targetmatch.group(namegroup)))
         block = self.statemachine.gettextblock()
         block[0] = unescape(targetmatch.string[targetmatch.end():], 1)
@@ -669,8 +676,8 @@ class Body(RSTState):
         return [nodes.directive(text, *children, **atts)], blankfinish
 
     def comment(self, match):
-        indented, indent, offset, blankfinish = \
-              self.statemachine.getfirstknownindented(match.end())
+        indented, offset, blankfinish = \
+              self.statemachine.getknownindented(match.end())
         text = '\n'.join(indented)
         return [nodes.comment(text, text)], blankfinish
 
@@ -704,14 +711,19 @@ class Body(RSTState):
     def explicit_construct(self, match,
                            constructs=explicit.constructs):
         """Determine which explicit construct this is, parse & return it."""
+        errors = []
         for pattern, method in constructs:
             expmatch = pattern.match(match.string)
             if expmatch:
                 try:
                     return method(self, expmatch)
-                except MarkupError:
+                except MarkupError, detail:
+                    errors.append(
+                          self.statemachine.memo.errorist.system_warning(
+                          1, detail.__class__.__name__ + ': ' + str(detail)))
                     break
-        return self.comment(match)
+        nodelist, blankfinish = self.comment(match)
+        return nodelist + errors, blankfinish
 
     def overline(self, match, context, nextstate):
         """Section title."""
