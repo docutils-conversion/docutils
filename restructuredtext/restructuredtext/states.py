@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.20 $
-:Date: $Date: 2001/09/17 04:24:20 $
+:Revision: $Revision: 1.21 $
+:Date: $Date: 2001/09/18 04:37:36 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -223,16 +223,21 @@ class RSTStateMachine(StateMachineWS):
                 if issubclass(biblioclass, nodes._TextElement):
                     if self.checkcompoundbibliofield(field, name):
                         raise TransformationError
-                    if biblioclass is nodes.title:
+                    if issubclass(biblioclass, nodes.title):
                         self.extracttitle(field, name, title, nodelist)
                         title = 1
+                    # XXX handle subtitle too
+                    # XXX extractrcskeywords for title (& subtitle) too?
                     else:
-                        nodelist.append(biblioclass('', '',
-                                                    *field[1][0].children))
-                else:
-                    if biblioclass is nodes.authors:
+                        contents = field[1][0].children
+                        if len(contents) == 1 and isinstance(contents[0],
+                                                             nodes.Text):
+                            contents = [self.extractrcskeywords(contents[0])]
+                        nodelist.append(biblioclass('', '', *contents))
+                else:                   # multiple body elements possible
+                    if issubclass(biblioclass, nodes.authors):
                         self.extractauthors(field, name, nodelist)
-                    elif biblioclass is nodes.abstract:
+                    elif issubclass(biblioclass, nodes.abstract):
                         if abstract:
                             field[-1] += self.memo.reporter.error(
                                   'There can only be one abstract.')
@@ -279,6 +284,21 @@ class RSTStateMachine(StateMachineWS):
                   % name)
             raise TransformationError
         nodelist.insert(0, nodes.title('', '', *field[1][0].children))
+
+    rcskeywordsubstitutions = [
+          (re.compile(r'^\$Date: 2001/09/18 04:37:36 $$',
+                      re.IGNORECASE), r'\1-\2-\3'),
+          (re.compile(r'^\$RCSfile: states.py,v $$',
+                      re.IGNORECASE), r'\1'),
+          (re.compile(r'^\$[a-zA-Z]+: (.+) \$$'), r'\1'),]
+
+    def extractrcskeywords(self, textnode):
+        for pattern, substitution in self.rcskeywordsubstitutions:
+            match = pattern.match(textnode.data)
+            if match:
+                textnode.data = pattern.sub(substitution, textnode.data)
+                break
+        return textnode
 
     def extractauthors(self, field, name, nodelist):
         try:
@@ -454,9 +474,7 @@ class RSTState(StateWS):
                 titlestyles.append(style)
                 return 1
             else:                       # not at lowest level
-                sw = memo.reporter.severe(
-                      'Title level inconsistent at line %s:' % lineno, source)
-                self.statemachine.node += sw
+                self.statemachine.node += self.titleinconsistent(source, lineno)
                 return None
         if level <= mylevel:            # sibling or supersection
             memo.sectionlevel = level   # bubble up to parent section
@@ -466,10 +484,15 @@ class RSTState(StateWS):
         if level == mylevel + 1:        # immediate subsection
             return 1
         else:                           # invalid subsection
-            sw = memo.reporter.severe(
-                  'Title level inconsistent at line %s:' % lineno, source)
-            self.statemachine.node += sw
+            self.statemachine.node += self.titleinconsistent(source, lineno)
             return None
+
+    def titleinconsistent(self, sourcetext, lineno):
+        literalblock = nodes.literal_block('', sourcetext)
+        error = self.statemachine.memo.reporter.severe(
+              'Title level inconsistent at line %s:' % lineno,
+              children=[literalblock])
+        return error
 
     def newsubsection(self, title, lineno):
         """Append new subsection to document tree. On return, check level."""
