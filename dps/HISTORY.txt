@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/28 03:28:39 $
+:Date: $Date: 2001/09/01 15:03:07 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -47,6 +47,7 @@ Changed contact email addresses.
   - Added docstrings to _Element.
   - Extended _Element.__iadd__ (``+=``) to lists of nodes.
   - Duplicate hyperlink names -> dupname attribute.
+  - Allow any DOM implementation from ``asdom()`` method. (I think.)
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -91,6 +92,8 @@ Changed contact email addresses.
   - Added classifier element to definition_list_item.
   - Added dupname attribute to %basic.atts; for duplicate names.
   - Added support for auto-numbered footnotes.
+  - Added 'morecols' attribute to table entries (<entry>), for simpler
+    column span indication.
 
 * spec/pdpi.dtd:
 
