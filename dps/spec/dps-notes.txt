@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/02/20 04:42:14 $
-:Revision: $Revision: 1.27 $
+:Date: $Date: 2002/03/01 03:15:42 $
+:Revision: $Revision: 1.28 $
 
 
 To Do
@@ -63,6 +63,10 @@ To Do
 
 - Merge reStructuredText into DPS and rename it to "docutils".
   (SourceForge project registered & waiting.)
+
+  - Merge test directories.
+  - Remove complex import code.
+  - Rename gpdi.dtd to docutils.dtd.
 
 - Provide a mechanism to pass options to Readers, Writers, and Parsers
   through dps.core.convert/Publisher? Or create custom

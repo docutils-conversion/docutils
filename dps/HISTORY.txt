@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/23 16:54:23 $
+:Date: $Date: 2002/03/01 03:19:41 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -91,6 +91,7 @@ Changed contact email addresses.
   - Changed "system_warning" to "system_message".
   - Modified post-parse system message storage.
   - Added 'id' attribute support to ``document``.
+  - Reworked option lists.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -190,8 +191,6 @@ Changed contact email addresses.
   - Added 'class' to %basic.atts for style sheets.
   - Changed field_argument's model to PCDATA.
   - Added option_list and doctest_block from ppdi.dtd.
-  - Added vms_option element to option.
-  - Added support for 'option_list' attribute 'optarg_delimiter'.
   - Added classifier element to definition_list_item.
   - Added dupname attribute to %basic.atts; for duplicate names.
   - Added support for auto-numbered footnotes.
@@ -222,6 +221,7 @@ Changed contact email addresses.
   - Added 'problematic', inline relative of 'system_warning'.
   - Added 'type' attribute to 'system_warning', removed 'warning'.
   - Changed "system_warning" to "system_message".
+  - Reworked option lists.
 
 * spec/pdpi.dtd:
 
