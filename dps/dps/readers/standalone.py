@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/12 02:19:43 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/04/13 17:06:49 $
 :Copyright: This module has been placed in the public domain.
 
 Standalone file Reader for the reStructuredText markup syntax.
@@ -29,11 +29,11 @@ class Reader(readers.Reader):
     document = None
     """A single document tree."""
 
-    transforms = (frontmatter.DocTitle,
+    transforms = (references.Substitutions,
+                  frontmatter.DocTitle,
                   frontmatter.DocInfo,
-                  references.Hyperlinks,
                   references.Footnotes,
-                  references.Substitutions,)
+                  references.Hyperlinks,)
 
     def scan(self):
         self.input = self.scanfile(self.source)
