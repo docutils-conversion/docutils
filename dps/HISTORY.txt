@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/01/29 02:24:40 $
+:Date: $Date: 2002/01/30 04:56:45 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -20,8 +20,8 @@ contributions, and related projects:
     Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel Larsson, Marc-Andre
     Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Paul Moore,
     Michel Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim, Tavis
-    Rudd, Bob Tolbert, Laurence Tratt, Guido van Rossum, Barry Warsaw,
-    Edward Welbourne, Ka-Ping Yee, Moshe Zadka
+    Rudd, Ueli Schlaepfer, Bob Tolbert, Laurence Tratt, Guido van
+    Rossum, Barry Warsaw, Edward Welbourne, Ka-Ping Yee, Moshe Zadka
 
 (I'm still waiting for contributions of tasty snacks, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten
@@ -84,6 +84,7 @@ Changed contact email addresses.
   - Added 'problematic', inline relative of 'system_warning'.
   - Added ``Node.parent`` back-reference for transforms.
   - Added ``Element.index()`` and ``Element.replace()`` methods.
+  - Simplified target record keeping.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -116,6 +117,7 @@ Changed contact email addresses.
   - Added some docstrings.
   - Added 'parseattributes()', associated functions and exceptions.
   - Moved 'normname()' from restructuredtext.states.
+  - Added ``newdocument()``: document Node creation.
 
 * dps/test_*.py: Moved to new test/ directory.
 
@@ -123,6 +125,8 @@ Changed contact email addresses.
 
   - Added setup_parse() so unoverridden parse() could raise a
     NotImplementedError.
+  - Moved Parser class to __init__.py, with updates. Module removed
+    from project.
 
 * dps/languages/__init__.py:
 
@@ -137,7 +141,11 @@ Changed contact email addresses.
     support).
   - Removed Python-specific interpreted text mapping.
 
-* dps/transforms: Subpackage added.
+* dps/transforms: Subpackage added. Thanks to Ueli Schlaepfer for the
+  initial work.
+
+* dps/formatters: Removed subpackage from project. To be replaced by
+  "writers" or "builders" subpackage.
 
 * test: Subdirectory added. The top-level consists of a modular test
   framework begun by Garth Kidd.
