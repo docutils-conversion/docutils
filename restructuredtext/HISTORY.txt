@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/01 15:54:35 $
+:Date: $Date: 2001/09/01 17:13:57 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -47,7 +47,7 @@ Changed contact email addresses.
   - Modified Parser.parse() for updated RSTStateMachine and
     dps.parsers.model.
   - Added form feed & vertical tab conversion to spaces.
-  - Added a shared ``Parser.statemachine`` class attribute. 
+  - Added a shared ``Parser.statemachine`` class attribute.
 
 * restructuredtext/states.py:
 
@@ -83,11 +83,17 @@ Changed contact email addresses.
   - Changed ``element.extend(nodelist)`` to ``element += nodelist``.
   - Began work on table support (class TableParser).
 
-* restructuredtext/test_states.py:
+* restructuredtext/test_states.py: Refactored to test directory. This
+  file removed.
+
+* test: Subdirectory added. The top-level consists of a modular test
+  framework begun by Garth Kidd.
+
+* test/test_states: Subdirectory added; contains test modules
+  refactored from restructuredtext/test_states.py:
 
   - Added unit tests from Garth Kidd.
   - Changed to match state.RSTStateMachine.run()'s return value.
-  - Added a bit more explanation to DataTests.totest etc.
   - Added explanatory text to several tests (makes them
     self-documenting: "what am I testing?").
   - Added tests for overline-titles, duplicate link targets.
@@ -95,17 +101,13 @@ Changed contact email addresses.
   - Added enumerated list tests.
   - Clarified some edge-case tests.
   - Added tests for field lists, option lists.
-  - Added temporary test for tables.
+  - Added temporary tests for tables.
+  - Added tests for table parser.
   - New tests for literal_block edge cases.
   - Added tests for empty list items.
   - New test for comment edge case.
   - Added 'term : classifier' tests.
   - Added auto-numbered footnote tests.
-
-* restructuredtext/difflib.py: Added to project. Modified version of
-  standard library module, contributed back to Python.
-
-* test: Subdirectory added by Garth Kidd for unit test refactoring.
 
 * tools: Subdirectory added; contains quicktest.py by Garth Kidd.
 
@@ -177,7 +179,7 @@ spec/reStructuredText.txt).
 * restructuredtext/test_states.py: Added to project.
 
 * restructuredtext/ndiff.py: Added to project. This is a modified
-  version of Python's Tools/scripts/ndiff.py, and is used by 
+  version of Python's Tools/scripts/ndiff.py, and is used by
   test_states.py. I have committed to adding its functionality to
   Python's Lib/difflib.py.
 
