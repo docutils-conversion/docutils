@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/15 22:58:17 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/01 03:00:09 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -29,7 +29,7 @@ totest['enumerated_lists'] = [
 """,
 """\
 <document>
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item one.
@@ -51,7 +51,7 @@ No blank lines betwen items:
 <document>
     <paragraph>
         No blank lines betwen items:
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item one.
@@ -68,7 +68,7 @@ empty item above, no blank line
 """,
 """\
 <document>
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
     <system_message level="2" type="WARNING">
         <paragraph>
@@ -107,7 +107,7 @@ Scrambled:
     <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 5.
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item one.
@@ -123,7 +123,7 @@ Skipping item 3:
 <document>
     <paragraph>
         Skipping item 3:
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item 1.
@@ -199,7 +199,7 @@ And again:
 """,
 """\
 <document>
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item one: line 1,
@@ -242,7 +242,7 @@ iii. Item iii.
 <document>
     <paragraph>
         Different enumeration sequences:
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item 1.
@@ -252,7 +252,7 @@ iii. Item iii.
         <list_item>
             <paragraph>
                 Item 3.
-    <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=".">
+    <enumerated_list enumtype="upperalpha" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item A.
@@ -262,7 +262,7 @@ iii. Item iii.
         <list_item>
             <paragraph>
                 Item C.
-    <enumerated_list enumtype="loweralpha" prefix="" start="a" suffix=".">
+    <enumerated_list enumtype="loweralpha" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item a.
@@ -272,7 +272,7 @@ iii. Item iii.
         <list_item>
             <paragraph>
                 Item c.
-    <enumerated_list enumtype="upperroman" prefix="" start="I" suffix=".">
+    <enumerated_list enumtype="upperroman" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item I.
@@ -282,7 +282,7 @@ iii. Item iii.
         <list_item>
             <paragraph>
                 Item III.
-    <enumerated_list enumtype="lowerroman" prefix="" start="i" suffix=".">
+    <enumerated_list enumtype="lowerroman" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item i.
@@ -308,7 +308,7 @@ iiii. iiii
 <document>
     <paragraph>
         Bad Roman numerals:
-    <enumerated_list enumtype="lowerroman" prefix="" start="i" suffix=".">
+    <enumerated_list enumtype="lowerroman" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 i
@@ -327,7 +327,7 @@ iiii. iiii
     <block_quote>
         <paragraph>
             iiii
-    <enumerated_list enumtype="upperroman" prefix="(" start="I" suffix=")">
+    <enumerated_list enumtype="upperroman" prefix="(" suffix=")">
         <list_item>
             <paragraph>
                 I
@@ -366,7 +366,7 @@ Phew! Safe!
 <document>
     <paragraph>
         Potentially ambiguous cases:
-    <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=".">
+    <enumerated_list enumtype="upperalpha" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item A.
@@ -376,7 +376,7 @@ Phew! Safe!
         <list_item>
             <paragraph>
                 Item C.
-    <enumerated_list enumtype="upperroman" prefix="" start="I" suffix=".">
+    <enumerated_list enumtype="upperroman" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item I.
@@ -386,7 +386,7 @@ Phew! Safe!
         <list_item>
             <paragraph>
                 Item III.
-    <enumerated_list enumtype="loweralpha" prefix="" start="a" suffix=".">
+    <enumerated_list enumtype="loweralpha" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item a.
@@ -396,7 +396,7 @@ Phew! Safe!
         <list_item>
             <paragraph>
                 Item c.
-    <enumerated_list enumtype="lowerroman" prefix="" start="i" suffix=".">
+    <enumerated_list enumtype="lowerroman" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item i.
@@ -440,7 +440,7 @@ iii. Item iii.
 <document>
     <paragraph>
         Definitely ambiguous:
-    <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=".">
+    <enumerated_list enumtype="upperalpha" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item A.
@@ -474,14 +474,14 @@ iii. Item iii.
     <system_message level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 12: 'II' (ordinal 2)
-    <enumerated_list enumtype="upperroman" prefix="" start="II" suffix=".">
+    <enumerated_list enumtype="upperroman" prefix="" start="2" suffix=".">
         <list_item>
             <paragraph>
                 Item II.
         <list_item>
             <paragraph>
                 Item III.
-    <enumerated_list enumtype="loweralpha" prefix="" start="a" suffix=".">
+    <enumerated_list enumtype="loweralpha" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item a.
@@ -515,7 +515,7 @@ iii. Item iii.
     <system_message level="1" type="INFO">
         <paragraph>
             Enumerated list start value not ordinal-1 at line 24: 'ii' (ordinal 2)
-    <enumerated_list enumtype="lowerroman" prefix="" start="ii" suffix=".">
+    <enumerated_list enumtype="lowerroman" prefix="" start="2" suffix=".">
         <list_item>
             <paragraph>
                 Item ii.
@@ -542,7 +542,7 @@ Different enumeration formats:
 <document>
     <paragraph>
         Different enumeration formats:
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item 1.
@@ -552,7 +552,7 @@ Different enumeration formats:
         <list_item>
             <paragraph>
                 Item 3.
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=")">
+    <enumerated_list enumtype="arabic" prefix="" suffix=")">
         <list_item>
             <paragraph>
                 Item 1).
@@ -562,7 +562,7 @@ Different enumeration formats:
         <list_item>
             <paragraph>
                 Item 3).
-    <enumerated_list enumtype="arabic" prefix="(" start="1" suffix=")">
+    <enumerated_list enumtype="arabic" prefix="(" suffix=")">
         <list_item>
             <paragraph>
                 Item (1).
@@ -604,11 +604,11 @@ Nested enumerated lists:
 <document>
     <paragraph>
         Nested enumerated lists:
-    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+    <enumerated_list enumtype="arabic" prefix="" suffix=".">
         <list_item>
             <paragraph>
                 Item 1.
-            <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=")">
+            <enumerated_list enumtype="upperalpha" prefix="" suffix=")">
                 <list_item>
                     <paragraph>
                         Item A).
@@ -621,11 +621,11 @@ Nested enumerated lists:
         <list_item>
             <paragraph>
                 Item 2.
-            <enumerated_list enumtype="loweralpha" prefix="(" start="a" suffix=")">
+            <enumerated_list enumtype="loweralpha" prefix="(" suffix=")">
                 <list_item>
                     <paragraph>
                         Item (a).
-                    <enumerated_list enumtype="upperroman" prefix="" start="I" suffix=")">
+                    <enumerated_list enumtype="upperroman" prefix="" suffix=")">
                         <list_item>
                             <paragraph>
                                 Item I).
@@ -641,7 +641,7 @@ Nested enumerated lists:
                 <list_item>
                     <paragraph>
                         Item (c).
-                    <enumerated_list enumtype="lowerroman" prefix="(" start="i" suffix=")">
+                    <enumerated_list enumtype="lowerroman" prefix="(" suffix=")">
                         <list_item>
                             <paragraph>
                                 Item (i).

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/02/23 16:46:33 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/01 03:00:21 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -23,11 +23,11 @@ totest['option_lists'] = [
 ["""\
 Short options:
 
--a       option a
+-a       option -a
 
--b file  option b
+-b file  option -b
 
--c name  option c
+-c name  option -c
 """,
 """\
 <document>
@@ -35,257 +35,321 @@ Short options:
         Short options:
     <option_list>
         <option_list_item>
-            <option>
-                <short_option>
-                    a
+            <option_group>
+                <option>
+                    <option_string>
+                        -a
             <description>
                 <paragraph>
-                    option a
+                    option -a
         <option_list_item>
-            <option>
-                <short_option>
-                    b
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        -b
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option b
+                    option -b
         <option_list_item>
-            <option>
-                <short_option>
-                    c
-                <option_argument>
-                    name
+            <option_group>
+                <option>
+                    <option_string>
+                        -c
+                    <option_argument delimiter=" ">
+                        name
             <description>
                 <paragraph>
-                    option c
+                    option -c
 """],
 ["""\
 Long options:
 
---aaaa       option aaaa
---bbbb=file  option bbbb
---cccc name  option cccc
---d-e-f-g    option d-e-f-g
---h_i_j_k    option h_i_j_k
+--aaaa       option --aaaa
+--bbbb=file  option --bbbb
+--cccc name  option --cccc
+--d-e-f-g    option --d-e-f-g
+--h_i_j_k    option --h_i_j_k
 """,
 """\
 <document>
     <paragraph>
         Long options:
-    <option_list optarg_delimiter="mixed">
+    <option_list>
         <option_list_item>
-            <option>
-                <long_option>
-                    aaaa
+            <option_group>
+                <option>
+                    <option_string>
+                        --aaaa
             <description>
                 <paragraph>
-                    option aaaa
+                    option --aaaa
         <option_list_item>
-            <option>
-                <long_option>
-                    bbbb
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        --bbbb
+                    <option_argument delimiter="=">
+                        file
             <description>
                 <paragraph>
-                    option bbbb
+                    option --bbbb
         <option_list_item>
-            <option>
-                <long_option>
-                    cccc
-                <option_argument>
-                    name
+            <option_group>
+                <option>
+                    <option_string>
+                        --cccc
+                    <option_argument delimiter=" ">
+                        name
             <description>
                 <paragraph>
-                    option cccc
+                    option --cccc
         <option_list_item>
-            <option>
-                <long_option>
-                    d-e-f-g
+            <option_group>
+                <option>
+                    <option_string>
+                        --d-e-f-g
             <description>
                 <paragraph>
-                    option d-e-f-g
+                    option --d-e-f-g
         <option_list_item>
-            <option>
-                <long_option>
-                    h_i_j_k
+            <option_group>
+                <option>
+                    <option_string>
+                        --h_i_j_k
             <description>
                 <paragraph>
-                    option h_i_j_k
+                    option --h_i_j_k
+"""],
+["""\
+Old GNU-style options:
+
++a       option +a
+
++b file  option +b
+
++c name  option +c
+""",
+"""\
+<document>
+    <paragraph>
+        Old GNU-style options:
+    <option_list>
+        <option_list_item>
+            <option_group>
+                <option>
+                    <option_string>
+                        +a
+            <description>
+                <paragraph>
+                    option +a
+        <option_list_item>
+            <option_group>
+                <option>
+                    <option_string>
+                        +b
+                    <option_argument delimiter=" ">
+                        file
+            <description>
+                <paragraph>
+                    option +b
+        <option_list_item>
+            <option_group>
+                <option>
+                    <option_string>
+                        +c
+                    <option_argument delimiter=" ">
+                        name
+            <description>
+                <paragraph>
+                    option +c
 """],
 ["""\
 VMS/DOS-style options:
 
-/A        option A
-/B file   option B
-/CCC      option CCC
-/DDD string  option DDD
-/EEE=int  option EEE
+/A        option /A
+/B file   option /B
+/CCC      option /CCC
+/DDD string  option /DDD
+/EEE=int  option /EEE
 """,
 """\
 <document>
     <paragraph>
         VMS/DOS-style options:
-    <option_list optarg_delimiter="mixed">
+    <option_list>
         <option_list_item>
-            <option>
-                <vms_option>
-                    A
+            <option_group>
+                <option>
+                    <option_string>
+                        /A
             <description>
                 <paragraph>
-                    option A
+                    option /A
         <option_list_item>
-            <option>
-                <vms_option>
-                    B
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        /B
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option B
+                    option /B
         <option_list_item>
-            <option>
-                <vms_option>
-                    CCC
+            <option_group>
+                <option>
+                    <option_string>
+                        /CCC
             <description>
                 <paragraph>
-                    option CCC
+                    option /CCC
         <option_list_item>
-            <option>
-                <vms_option>
-                    DDD
-                <option_argument>
-                    string
+            <option_group>
+                <option>
+                    <option_string>
+                        /DDD
+                    <option_argument delimiter=" ">
+                        string
             <description>
                 <paragraph>
-                    option DDD
+                    option /DDD
         <option_list_item>
-            <option>
-                <vms_option>
-                    EEE
-                <option_argument>
-                    int
+            <option_group>
+                <option>
+                    <option_string>
+                        /EEE
+                    <option_argument delimiter="=">
+                        int
             <description>
                 <paragraph>
-                    option EEE
+                    option /EEE
 """],
 ["""\
 Mixed short, long, and VMS/DOS options:
 
--a           option a
---bbbb=file  option bbbb
-/C           option C
---dddd name  option dddd
--e string    option e
-/F file      option F
+-a           option -a
+--bbbb=file  option -bbbb
+/C           option /C
+--dddd name  option --dddd
+-e string    option -e
+/F file      option /F
 """,
 """\
 <document>
     <paragraph>
         Mixed short, long, and VMS/DOS options:
-    <option_list optarg_delimiter="mixed">
+    <option_list>
         <option_list_item>
-            <option>
-                <short_option>
-                    a
+            <option_group>
+                <option>
+                    <option_string>
+                        -a
             <description>
                 <paragraph>
-                    option a
+                    option -a
         <option_list_item>
-            <option>
-                <long_option>
-                    bbbb
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        --bbbb
+                    <option_argument delimiter="=">
+                        file
             <description>
                 <paragraph>
-                    option bbbb
+                    option -bbbb
         <option_list_item>
-            <option>
-                <vms_option>
-                    C
+            <option_group>
+                <option>
+                    <option_string>
+                        /C
             <description>
                 <paragraph>
-                    option C
+                    option /C
         <option_list_item>
-            <option>
-                <long_option>
-                    dddd
-                <option_argument>
-                    name
+            <option_group>
+                <option>
+                    <option_string>
+                        --dddd
+                    <option_argument delimiter=" ">
+                        name
             <description>
                 <paragraph>
-                    option dddd
+                    option --dddd
         <option_list_item>
-            <option>
-                <short_option>
-                    e
-                <option_argument>
-                    string
+            <option_group>
+                <option>
+                    <option_string>
+                        -e
+                    <option_argument delimiter=" ">
+                        string
             <description>
                 <paragraph>
-                    option e
+                    option -e
         <option_list_item>
-            <option>
-                <vms_option>
-                    F
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        /F
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option F
+                    option /F
 """],
 ["""\
 Aliased options:
 
--a, --aaaa, /A                 option a, aaaa, A
--b file, --bbbb=file, /B file  option b, bbbb, B
+-a, --aaaa, /A                 option -a, --aaaa, /A
+-b file, --bbbb=file, /B file  option -b, --bbbb, /B
 """,
 """\
 <document>
     <paragraph>
         Aliased options:
-    <option_list optarg_delimiter="mixed">
+    <option_list>
         <option_list_item>
-            <option>
-                <short_option>
-                    a
-            <option>
-                <long_option>
-                    aaaa
-            <option>
-                <vms_option>
-                    A
+            <option_group>
+                <option>
+                    <option_string>
+                        -a
+                <option>
+                    <option_string>
+                        --aaaa
+                <option>
+                    <option_string>
+                        /A
             <description>
                 <paragraph>
-                    option a, aaaa, A
+                    option -a, --aaaa, /A
         <option_list_item>
-            <option>
-                <short_option>
-                    b
-                <option_argument>
-                    file
-            <option>
-                <long_option>
-                    bbbb
-                <option_argument>
-                    file
-            <option>
-                <vms_option>
-                    B
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        -b
+                    <option_argument delimiter=" ">
+                        file
+                <option>
+                    <option_string>
+                        --bbbb
+                    <option_argument delimiter="=">
+                        file
+                <option>
+                    <option_string>
+                        /B
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option b, bbbb, B
+                    option -b, --bbbb, /B
 """],
 ["""\
 Multiple lines in descriptions, aligned:
 
--a       option a, line 1
+-a       option -a, line 1
          line 2
--b file  option b, line 1
+-b file  option -b, line 1
          line 2
 """,
 """\
@@ -294,30 +358,32 @@ Multiple lines in descriptions, aligned:
         Multiple lines in descriptions, aligned:
     <option_list>
         <option_list_item>
-            <option>
-                <short_option>
-                    a
+            <option_group>
+                <option>
+                    <option_string>
+                        -a
             <description>
                 <paragraph>
-                    option a, line 1
+                    option -a, line 1
                     line 2
         <option_list_item>
-            <option>
-                <short_option>
-                    b
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        -b
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option b, line 1
+                    option -b, line 1
                     line 2
 """],
 ["""\
 Multiple lines in descriptions, not aligned:
 
--a  option a, line 1
+-a  option -a, line 1
     line 2
--b file  option b, line 1
+-b file  option -b, line 1
     line 2
 """,
 """\
@@ -326,32 +392,34 @@ Multiple lines in descriptions, not aligned:
         Multiple lines in descriptions, not aligned:
     <option_list>
         <option_list_item>
-            <option>
-                <short_option>
-                    a
+            <option_group>
+                <option>
+                    <option_string>
+                        -a
             <description>
                 <paragraph>
-                    option a, line 1
+                    option -a, line 1
                     line 2
         <option_list_item>
-            <option>
-                <short_option>
-                    b
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        -b
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option b, line 1
+                    option -b, line 1
                     line 2
 """],
 ["""\
 Descriptions begin on next line:
 
 -a
-    option a, line 1
+    option -a, line 1
     line 2
 -b file
-    option b, line 1
+    option -b, line 1
     line 2
 """,
 """\
@@ -360,32 +428,34 @@ Descriptions begin on next line:
         Descriptions begin on next line:
     <option_list>
         <option_list_item>
-            <option>
-                <short_option>
-                    a
+            <option_group>
+                <option>
+                    <option_string>
+                        -a
             <description>
                 <paragraph>
-                    option a, line 1
+                    option -a, line 1
                     line 2
         <option_list_item>
-            <option>
-                <short_option>
-                    b
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        -b
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option b, line 1
+                    option -b, line 1
                     line 2
 """],
 ["""\
 Multiple body elements in descriptions:
 
--a  option a, para 1
+-a  option -a, para 1
 
     para 2
 -b file
-    option b, para 1
+    option -b, para 1
 
     para 2
 """,
@@ -395,23 +465,25 @@ Multiple body elements in descriptions:
         Multiple body elements in descriptions:
     <option_list>
         <option_list_item>
-            <option>
-                <short_option>
-                    a
+            <option_group>
+                <option>
+                    <option_string>
+                        -a
             <description>
                 <paragraph>
-                    option a, para 1
+                    option -a, para 1
                 <paragraph>
                     para 2
         <option_list_item>
-            <option>
-                <short_option>
-                    b
-                <option_argument>
-                    file
+            <option_group>
+                <option>
+                    <option_string>
+                        -b
+                    <option_argument delimiter=" ">
+                        file
             <description>
                 <paragraph>
-                    option b, para 1
+                    option -b, para 1
                 <paragraph>
                     para 2
 """],
@@ -423,9 +495,10 @@ empty item above, no blank line
 <document>
     <option_list>
         <option_list_item>
-            <option>
-                <long_option>
-                    option
+            <option_group>
+                <option>
+                    <option_string>
+                        --option
             <description>
     <system_message level="2" type="WARNING">
         <paragraph>
@@ -457,81 +530,88 @@ An option list using mixed delimiters in one line:
 <document>
     <paragraph>
         An option list using equals:
-    <option_list optarg_delimiter="=">
+    <option_list>
         <option_list_item>
-            <option>
-                <long_option>
-                    long1
-                <option_argument>
-                    arg1
+            <option_group>
+                <option>
+                    <option_string>
+                        --long1
+                    <option_argument delimiter="=">
+                        arg1
             <description>
                 <paragraph>
                     Description 1
         <option_list_item>
-            <option>
-                <long_option>
-                    long2
-                <option_argument>
-                    arg2
+            <option_group>
+                <option>
+                    <option_string>
+                        --long2
+                    <option_argument delimiter="=">
+                        arg2
             <description>
                 <paragraph>
                     Description 2
     <paragraph>
         An option list using spaces:
-    <option_list optarg_delimiter=" ">
+    <option_list>
         <option_list_item>
-            <option>
-                <long_option>
-                    long1
-                <option_argument>
-                    arg1
+            <option_group>
+                <option>
+                    <option_string>
+                        --long1
+                    <option_argument delimiter=" ">
+                        arg1
             <description>
                 <paragraph>
                     Description 1
         <option_list_item>
-            <option>
-                <long_option>
-                    long2
-                <option_argument>
-                    arg2
+            <option_group>
+                <option>
+                    <option_string>
+                        --long2
+                    <option_argument delimiter=" ">
+                        arg2
             <description>
                 <paragraph>
                     Description 2
     <paragraph>
         An option list using mixed delimiters:
-    <option_list optarg_delimiter="mixed">
+    <option_list>
         <option_list_item>
-            <option>
-                <long_option>
-                    long1
-                <option_argument>
-                    arg1
+            <option_group>
+                <option>
+                    <option_string>
+                        --long1
+                    <option_argument delimiter="=">
+                        arg1
             <description>
                 <paragraph>
                     Description 1
         <option_list_item>
-            <option>
-                <long_option>
-                    long2
-                <option_argument>
-                    arg2
+            <option_group>
+                <option>
+                    <option_string>
+                        --long2
+                    <option_argument delimiter=" ">
+                        arg2
             <description>
                 <paragraph>
                     Description 2
     <paragraph>
         An option list using mixed delimiters in one line:
-    <option_list optarg_delimiter="mixed">
+    <option_list>
         <option_list_item>
-            <option>
-                <long_option>
-                    long1
-                <option_argument>
-                    arg1
-            <option>
-                <long_option>
-                    long2
-                <option_argument>
-                    arg2
+            <option_group>
+                <option>
+                    <option_string>
+                        --long1
+                    <option_argument delimiter="=">
+                        arg1
+                <option>
+                    <option_string>
+                        --long2
+                    <option_argument delimiter=" ">
+                        arg2
             <description>
                 <paragraph>
                     Description
@@ -539,9 +619,9 @@ An option list using mixed delimiters in one line:
 ["""\
 Some edge cases:
 
--longname         long option with only one hyphen
-
 --option=arg arg  too many arguments
+
+--option=arg,arg  not supported (yet?)
 
 --option=arg=arg  too many arguments
 
@@ -550,8 +630,6 @@ Some edge cases:
 -a letter arg2    too many arguments
 
 /A letter arg2    too many arguments
-
--a=b              can't use = for short arguments
 
 --option=         argument missing
 
@@ -566,9 +644,9 @@ Some edge cases:
     <paragraph>
         Some edge cases:
     <paragraph>
-        -longname         long option with only one hyphen
-    <paragraph>
         --option=arg arg  too many arguments
+    <paragraph>
+        --option=arg,arg  not supported (yet?)
     <paragraph>
         --option=arg=arg  too many arguments
     <paragraph>
@@ -577,8 +655,6 @@ Some edge cases:
         -a letter arg2    too many arguments
     <paragraph>
         /A letter arg2    too many arguments
-    <paragraph>
-        -a=b              can't use = for short arguments
     <paragraph>
         --option=         argument missing
     <paragraph>
