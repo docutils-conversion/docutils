@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/03/07 03:45:42 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/03/07 04:12:20 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -30,6 +30,17 @@ totest['citations'] = [
             citation
         <paragraph>
             This is a citation.
+"""],
+["""\
+.. [citation1234] This is a citation with year.
+""",
+"""\
+<document>
+    <citation id="id1" name="citation1234">
+        <label>
+            citation1234
+        <paragraph>
+            This is a citation with year.
 """],
 ["""\
 .. [citation] This is a citation
