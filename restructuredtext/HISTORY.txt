@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/13 03:43:30 $
+:Date: $Date: 2001/09/13 22:34:54 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -97,6 +97,9 @@ Changed contact email addresses.
   - Name changes (lowercased, updated, improved).
   - Integer attributes on elements as appropriate.
   - Added directive functionality.
+  - Mild refactoring: meaningful variable names, extracted common
+    code to methods.
+  - Removed debug code.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
