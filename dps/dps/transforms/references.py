@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/06 02:50:31 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/20 04:14:15 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -40,26 +40,28 @@ class Hyperlinks(Transform):
            <paragraph>
                <reference refname="_:1:_">
                    text
-           <target name="_:1:_">
+           <target id="id1" name="_:1:_">
 
     2. Chained targets::
 
-           <target name="chained">
-           <target name="external hyperlink" refuri="http://uri">
+           <target id="id1" name="chained">
+           <target id="id2" name="external hyperlink" refuri="http://uri">
 
        Attributes "refuri" and "refname" are migrated from the final concrete
        target up the chain of contiguous adjacent internal targets::
 
-           <target name="chained" refuri="http://uri">
-           <target name="external hyperlink" refuri="http://uri">
+           <target id="id1" name="chained" refuri="http://uri">
+           <target id="id2" name="external hyperlink" refuri="http://uri">
 
     3. a) Indirect targets::
 
               <paragraph>
                   <reference refname="indirect external">
                       indirect external
-              <target name="direct external" refuri="http://indirect">
-              <target name="indirect external" refname="direct external">
+              <target id="id1" name="direct external"
+                  refuri="http://indirect">
+              <target id="id2" name="indirect external"
+                  refname="direct external">
 
           Attributes "refuri" and "refname" are migrated back to all indirect
           targets from the final concrete target (i.e. not referring to
@@ -68,8 +70,10 @@ class Hyperlinks(Transform):
               <paragraph>
                   <reference refname="indirect external">
                       indirect external
-              <target name="direct external" refuri="http://indirect">
-              <target name="indirect external" refuri="http://indirect">
+              <target id="id1" name="direct external"
+                  refuri="http://indirect">
+              <target id="id2" name="indirect external"
+                  refuri="http://indirect">
 
           If the "refuri" attribute is migrated, the preexisting "refname"
           attribute is dropped. This turns indirect external references into
@@ -77,38 +81,42 @@ class Hyperlinks(Transform):
 
        b) Indirect internal references::
 
-              <target name="final target">
+              <target id="id1" name="final target">
               <paragraph>
                   <reference refname="indirect internal">
                       indirect internal
-              <target name="indirect internal 2" refname="final target">
-              <target name="indirect internal" refname="indirect internal 2">
+              <target id="id2" name="indirect internal 2"
+                  refname="final target">
+              <target id="id3" name="indirect internal"
+                  refname="indirect internal 2">
 
           Targets which indirectly refer to an internal target become one-hop
           indirect (their "refname" attributes are directly set to the
           internal target's "name"). References which indirectly refer to an
           internal target become direct internal references::
 
-              <target name="final target">
+              <target id="id1" name="final target">
               <paragraph>
                   <reference refname="final target">
                       indirect internal
-              <target name="indirect internal 2" refname="final target">
-              <target name="indirect internal" refname="final target">
+              <target id="id2" name="indirect internal 2"
+                  refname="final target">
+              <target id="id3" name="indirect internal"
+                  refname="final target">
 
     4. External references::
 
            <paragraph>
                <reference refname="direct external">
                    direct external
-           <target name="direct external" refuri="http://direct">
+           <target id="id1" name="direct external" refuri="http://direct">
 
        The "refname" attribute is replaced by the direct "refuri" attribute::
 
            <paragraph>
                <reference refuri="http://direct">
                    direct external
-           <target name="direct external" refuri="http://direct">
+           <target id="id1" name="direct external" refuri="http://direct">
     """
 
     def transform(self, doctree):
@@ -265,6 +273,9 @@ class ChainedTargetResolver(nodes.NodeVisitor):
             <target name="f" refname="d">
             <target name="g" refname="d">
     """
+
+    def unknown_visit(self, node):
+        pass
 
     def visit_target(self, node):
         if node.hasattr('refuri'):
