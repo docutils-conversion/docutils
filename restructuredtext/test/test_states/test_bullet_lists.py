@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:01:21 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 02:38:02 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -29,10 +29,6 @@ totest['bullet_lists'] = [
         <list_item>
             <paragraph>
                 item
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
 """],
 ["""\
 * item 1
@@ -45,15 +41,9 @@ totest['bullet_lists'] = [
         <list_item>
             <paragraph>
                 item 1
-            </paragraph>
-        </list_item>
         <list_item>
             <paragraph>
                 item 2
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
 """],
 ["""\
 No blank line between:
@@ -65,20 +55,13 @@ No blank line between:
 <document>
     <paragraph>
         No blank line between:
-    </paragraph>
     <bullet_list bullet="+">
         <list_item>
             <paragraph>
                 item 1
-            </paragraph>
-        </list_item>
         <list_item>
             <paragraph>
                 item 2
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
 """],
 ["""\
 - item 1, para 1.
@@ -93,18 +76,11 @@ No blank line between:
         <list_item>
             <paragraph>
                 item 1, para 1.
-            </paragraph>
             <paragraph>
                 item 1, para 2.
-            </paragraph>
-        </list_item>
         <list_item>
             <paragraph>
                 item 2
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
 """],
 ["""\
 - item 1, line 1
@@ -118,15 +94,9 @@ No blank line between:
             <paragraph>
                 item 1, line 1
                 item 1, line 2
-            </paragraph>
-        </list_item>
         <list_item>
             <paragraph>
                 item 2
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
 """],
 ["""\
 Different bullets:
@@ -142,41 +112,25 @@ Different bullets:
 <document>
     <paragraph>
         Different bullets:
-    </paragraph>
     <bullet_list bullet="-">
         <list_item>
             <paragraph>
                 item 1
-            </paragraph>
-        </list_item>
-    </bullet_list>
     <bullet_list bullet="+">
         <list_item>
             <paragraph>
                 item 2
-            </paragraph>
-        </list_item>
-    </bullet_list>
     <bullet_list bullet="*">
         <list_item>
             <paragraph>
                 item 3
-            </paragraph>
-        </list_item>
-    </bullet_list>
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 8.
-        </paragraph>
-    </system_warning>
     <bullet_list bullet="-">
         <list_item>
             <paragraph>
                 item 4
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
 """],
 ["""\
 - item
@@ -188,18 +142,11 @@ no blank line
         <list_item>
             <paragraph>
                 item
-            </paragraph>
-        </list_item>
-    </bullet_list>
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 2.
-        </paragraph>
-    </system_warning>
     <paragraph>
         no blank line
-    </paragraph>
-</document>
 """],
 ["""\
 -
@@ -209,12 +156,9 @@ empty item above
 """\
 <document>
     <bullet_list bullet="-">
-        <list_item/>
-    </bullet_list>
+        <list_item>
     <paragraph>
         empty item above
-    </paragraph>
-</document>
 """],
 ["""\
 -
@@ -223,17 +167,12 @@ empty item above, no blank line
 """\
 <document>
     <bullet_list bullet="-">
-        <list_item/>
-    </bullet_list>
+        <list_item>
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 2.
-        </paragraph>
-    </system_warning>
     <paragraph>
         empty item above, no blank line
-    </paragraph>
-</document>
 """],
 ]
 

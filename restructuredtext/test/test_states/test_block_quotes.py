@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:00:50 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 02:37:53 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -31,13 +31,9 @@ Line 2.
     <paragraph>
         Line 1.
         Line 2.
-    </paragraph>
     <block_quote>
         <paragraph>
             Indented.
-        </paragraph>
-    </block_quote>
-</document>
 """],
 ["""\
 Line 1.
@@ -52,18 +48,12 @@ Line 2.
     <paragraph>
         Line 1.
         Line 2.
-    </paragraph>
     <block_quote>
         <paragraph>
             Indented 1.
-        </paragraph>
         <block_quote>
             <paragraph>
                 Indented 2.
-            </paragraph>
-        </block_quote>
-    </block_quote>
-</document>
 """],
 ["""\
 Line 1.
@@ -75,18 +65,12 @@ Line 2.
     <paragraph>
         Line 1.
         Line 2.
-    </paragraph>
     <system_warning level="2">
         <paragraph>
             Unexpected indentation at line 3.
-        </paragraph>
-    </system_warning>
     <block_quote>
         <paragraph>
             Unexpectedly indented.
-        </paragraph>
-    </block_quote>
-</document>
 """],
 ["""\
 Line 1.
@@ -100,21 +84,14 @@ no blank line
     <paragraph>
         Line 1.
         Line 2.
-    </paragraph>
     <block_quote>
         <paragraph>
             Indented.
-        </paragraph>
-    </block_quote>
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 5.
-        </paragraph>
-    </system_warning>
     <paragraph>
         no blank line
-    </paragraph>
-</document>
 """],
 ["""\
 Here is a paragraph.
@@ -130,22 +107,15 @@ Yes, it is correct, no warning necessary.
 <document>
     <paragraph>
         Here is a paragraph.
-    </paragraph>
     <block_quote>
         <block_quote>
             <paragraph>
                 Indent 8 spaces.
-            </paragraph>
-        </block_quote>
         <paragraph>
             Indent 4 spaces.
-        </paragraph>
-    </block_quote>
     <paragraph>
         Is this correct? Should it generate a warning?
         Yes, it is correct, no warning necessary.
-    </paragraph>
-</document>
 """],
 ]
 

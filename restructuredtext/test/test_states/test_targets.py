@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:07:43 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 02:41:53 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -27,11 +27,9 @@ totest['targets'] = [
 """,
 """\
 <document>
-    <target name="target"/>
+    <target name="target">
     <paragraph>
         (internal hyperlink)
-    </paragraph>
-</document>
 """],
 ["""\
 .. _one-liner: http://structuredtext.sourceforge.net
@@ -48,14 +46,10 @@ totest['targets'] = [
 <document>
     <target name="one-liner">
         http://structuredtext.sourceforge.net
-    </target>
     <target name="starts-on-this-line">
         http://structuredtext.sourceforge.net
-    </target>
     <target name="entirely-below">
         http://structuredtext.sourceforge.net
-    </target>
-</document>
 """],
 ["""\
 .. _target: Not a proper hyperlink target
@@ -65,12 +59,8 @@ totest['targets'] = [
     <system_warning level="1">
         <paragraph>
             Hyperlink target at line 1 contains whitespace. Perhaps a footnote was intended?
-        </paragraph>
         <literal_block>
             .. _target: Not a proper hyperlink target
-        </literal_block>
-    </system_warning>
-</document>
 """],
 ["""\
 .. _a long target name:
@@ -81,10 +71,9 @@ totest['targets'] = [
 """,
 """\
 <document>
-    <target name="a long target name"/>
-    <target name="a target name: including a colon (quoted)"/>
-    <target name="a target name: including a colon (escaped)"/>
-</document>
+    <target name="a long target name">
+    <target name="a target name: including a colon (quoted)">
+    <target name="a target name: including a colon (escaped)">
 """],
 ["""\
 .. _target: http://www.python.org/
@@ -95,11 +84,8 @@ totest['targets'] = [
 <document>
     <target name="target">
         http://www.python.org/
-    </target>
     <paragraph>
         (indirect external hyperlink)
-    </paragraph>
-</document>
 """],
 ["""\
 Duplicate indirect links (different URIs):
@@ -112,19 +98,13 @@ Duplicate indirect links (different URIs):
 <document>
     <paragraph>
         Duplicate indirect links (different URIs):
-    </paragraph>
     <target dupname="target">
         first
-    </target>
     <system_warning level="1">
         <paragraph>
             Duplicate indirect link name: "target"
-        </paragraph>
-    </system_warning>
     <target name="target">
         second
-    </target>
-</document>
 """],
 ["""\
 Duplicate indirect links (same URIs):
@@ -137,19 +117,13 @@ Duplicate indirect links (same URIs):
 <document>
     <paragraph>
         Duplicate indirect links (same URIs):
-    </paragraph>
     <target dupname="target">
         first
-    </target>
     <system_warning level="0">
         <paragraph>
             Duplicate indirect link name: "target"
-        </paragraph>
-    </system_warning>
     <target name="target">
         first
-    </target>
-</document>
 """],
 ["""\
 Duplicate implicit links.
@@ -168,29 +142,19 @@ Paragraph.
 <document>
     <paragraph>
         Duplicate implicit links.
-    </paragraph>
     <section dupname="title">
         <title>
             Title
-        </title>
         <paragraph>
             Paragraph.
-        </paragraph>
-    </section>
     <section dupname="title">
         <title>
             Title
-        </title>
         <system_warning level="0">
             <paragraph>
                 Duplicate implicit link name: "title"
-            </paragraph>
-        </system_warning>
         <paragraph>
             Paragraph.
-        </paragraph>
-    </section>
-</document>
 """],
 ["""\
 Duplicate implicit/explicit links.
@@ -206,22 +170,15 @@ Paragraph.
 <document>
     <paragraph>
         Duplicate implicit/explicit links.
-    </paragraph>
     <section dupname="title">
         <title>
             Title
-        </title>
         <system_warning level="0">
             <paragraph>
                 Duplicate implicit link name: "title"
-            </paragraph>
-        </system_warning>
-        <target name="title"/>
+        <target name="title">
         <paragraph>
             Paragraph.
-        </paragraph>
-    </section>
-</document>
 """],
 ["""\
 Duplicate explicit links.
@@ -242,30 +199,21 @@ Third.
 <document>
     <paragraph>
         Duplicate explicit links.
-    </paragraph>
-    <target dupname="title"/>
+    <target dupname="title">
     <paragraph>
         First.
-    </paragraph>
     <system_warning level="1">
         <paragraph>
             Duplicate explicit link name: "title"
-        </paragraph>
-    </system_warning>
-    <target dupname="title"/>
+    <target dupname="title">
     <paragraph>
         Second.
-    </paragraph>
     <system_warning level="1">
         <paragraph>
             Duplicate explicit link name: "title"
-        </paragraph>
-    </system_warning>
-    <target dupname="title"/>
+    <target dupname="title">
     <paragraph>
         Third.
-    </paragraph>
-</document>
 """],
 ["""\
 Duplicate targets:
@@ -287,46 +235,30 @@ Explicit internal target.
 <document>
     <paragraph>
         Duplicate targets:
-    </paragraph>
     <section dupname="target">
         <title>
             Target
-        </title>
         <paragraph>
             Implicit section header target.
-        </paragraph>
         <footnote dupname="target">
             <label>
                 target
-            </label>
             <system_warning level="0">
                 <paragraph>
                     Duplicate implicit link name: "target"
-                </paragraph>
-            </system_warning>
             <paragraph>
                 Implicit footnote target.
-            </paragraph>
-        </footnote>
         <system_warning level="0">
             <paragraph>
                 Duplicate implicit link name: "target"
-            </paragraph>
-        </system_warning>
-        <target dupname="target"/>
+        <target dupname="target">
         <paragraph>
             Explicit internal target.
-        </paragraph>
         <system_warning level="1">
             <paragraph>
                 Duplicate indirect link name: "target"
-            </paragraph>
-        </system_warning>
         <target name="target">
             Explicit_indirect_target.
-        </target>
-    </section>
-</document>
 """],
 ]
 

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:06:19 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 02:41:00 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -35,23 +35,15 @@ This paragraph ends the bullet list item before a block quote.
     <paragraph>
         Anywhere a paragraph would have an effect on the current
         indentation level, a comment or list item should also.
-    </paragraph>
     <bullet_list bullet="+">
         <list_item>
             <paragraph>
                 bullet
-            </paragraph>
-        </list_item>
-    </bullet_list>
     <paragraph>
         This paragraph ends the bullet list item before a block quote.
-    </paragraph>
     <block_quote>
         <paragraph>
             Block quote.
-        </paragraph>
-    </block_quote>
-</document>
 """],
 ["""\
 + bullet
@@ -75,32 +67,21 @@ This paragraph ends the bullet list item before a block quote.
         <list_item>
             <paragraph>
                 bullet
-            </paragraph>
-        </list_item>
-    </bullet_list>
     <comment>
         Comments swallow up all indented text following.
         
         (Therefore this is not a) block quote.
-    </comment>
     <bullet_list bullet="-">
         <list_item>
             <paragraph>
                 bullet
-            </paragraph>
             <paragraph>
                 If we want a block quote after this bullet list item,
                 we need to use an empty comment:
-            </paragraph>
-        </list_item>
-    </bullet_list>
-    <comment/>
+    <comment>
     <block_quote>
         <paragraph>
             Block quote.
-        </paragraph>
-    </block_quote>
-</document>
 """],
 ]
 

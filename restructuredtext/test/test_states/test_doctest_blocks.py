@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:02:53 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 02:38:59 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -32,15 +32,11 @@ Paragraph.
 <document>
     <paragraph>
         Paragraph.
-    </paragraph>
     <doctest_block>
         >>> print "Doctest block."
         Doctest block.
-    </doctest_block>
     <paragraph>
         Paragraph.
-    </paragraph>
-</document>
 """],
 ["""\
 Paragraph.
@@ -52,12 +48,9 @@ Paragraph.
 <document>
     <paragraph>
         Paragraph.
-    </paragraph>
     <doctest_block>
         >>> print "    Indented output."
             Indented output.
-    </doctest_block>
-</document>
 """],
 ["""\
 Paragraph.
@@ -69,14 +62,10 @@ Paragraph.
 <document>
     <paragraph>
         Paragraph.
-    </paragraph>
     <block_quote>
         <doctest_block>
             >>> print "    Indented block & output."
                 Indented block & output.
-        </doctest_block>
-    </block_quote>
-</document>
 """],
 ]
 

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:05:23 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/13 02:40:31 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -29,11 +29,8 @@ A paragraph::
 <document>
     <paragraph>
         A paragraph:
-    </paragraph>
     <literal_block>
         A literal block.
-    </literal_block>
-</document>
 """],
 ["""\
 A paragraph
@@ -48,11 +45,8 @@ one line::
         A paragraph
         on more than
         one line:
-    </paragraph>
     <literal_block>
         A literal block.
-    </literal_block>
-</document>
 """],
 ["""\
 A paragraph
@@ -67,17 +61,12 @@ one line::
         A paragraph
         on more than
         one line:
-    </paragraph>
     <system_warning level="2">
         <paragraph>
             Unexpected indentation at line 4.
-        </paragraph>
-    </system_warning>
     <literal_block>
         A literal block
         with no blank line above.
-    </literal_block>
-</document>
 """],
 ["""\
 A paragraph::
@@ -89,19 +78,13 @@ no blank line
 <document>
     <paragraph>
         A paragraph:
-    </paragraph>
     <literal_block>
         A literal block.
-    </literal_block>
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 4.
-        </paragraph>
-    </system_warning>
     <paragraph>
         no blank line
-    </paragraph>
-</document>
 """],
 ["""\
 A paragraph: ::
@@ -112,11 +95,8 @@ A paragraph: ::
 <document>
     <paragraph>
         A paragraph:
-    </paragraph>
     <literal_block>
         A literal block.
-    </literal_block>
-</document>
 """],
 ["""\
 A paragraph:
@@ -129,11 +109,8 @@ A paragraph:
 <document>
     <paragraph>
         A paragraph:
-    </paragraph>
     <literal_block>
         A literal block.
-    </literal_block>
-</document>
 """],
 ["""\
 A paragraph::
@@ -144,16 +121,11 @@ Not a literal block.
 <document>
     <paragraph>
         A paragraph:
-    </paragraph>
     <system_warning level="1">
         <paragraph>
             Literal block expected at line 2; none found.
-        </paragraph>
-    </system_warning>
     <paragraph>
         Not a literal block.
-    </paragraph>
-</document>
 """],
 ["""\
 A paragraph::
@@ -167,14 +139,11 @@ A paragraph::
 <document>
     <paragraph>
         A paragraph:
-    </paragraph>
     <literal_block>
           A wonky literal block.
         Literal line 2.
         
           Literal line 3.
-    </literal_block>
-</document>
 """],
 ["""\
 EOF, even though a literal block is indicated::
@@ -183,13 +152,9 @@ EOF, even though a literal block is indicated::
 <document>
     <paragraph>
         EOF, even though a literal block is indicated:
-    </paragraph>
     <system_warning level="1">
         <paragraph>
             Literal block expected at line 2; none found.
-        </paragraph>
-    </system_warning>
-</document>
 """],
 ]
 
