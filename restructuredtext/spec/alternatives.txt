@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2002/03/01 03:02:46 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2002/03/07 03:44:32 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -872,14 +872,14 @@ Syntax proposals:
                  like list markers.
 
     Footnotes could be rendered something like this in HTML
-    
+
         | 1. This is a footnote.  The brackets could be dropped
         |    from the label, and a vertical bar could set them
         |    off from the rest of the document in the HTML.
-  
+
     Two-way hyperlinks on the footnote marker ("1." above) would also
     help to differentiate footnotes from enumerated lists.
-  
+
     If converted to endnotes (by a directive/transform), a horizontal
     half-line might be used instead.  Page-oriented output formats
     would typically use the horizontal line for true footnotes.
@@ -906,7 +906,7 @@ Syntax proposals:
 
   - Current syntax (footnote syntax)::
 
-        .. _[GVR2001] Python Documentation; van Rossum, Drake, et al.;
+        .. [GVR2001] Python Documentation; van Rossum, Drake, et al.;
            http://www.python.org/doc/
 
   - Possible new syntax::
@@ -915,20 +915,142 @@ Syntax proposals:
                    http://www.python.org/doc/
 
         _[DJG2002]
-            Docutils: Python Documentation Utilities project; Goodger et
-            al.; http://docutils.sourceforge.net/
+            Docutils: Python Documentation Utilities project; Goodger
+            et al.; http://docutils.sourceforge.net/
 
     Without the ".. " marker, subsequent lines would either have to
-    align as in one of the above, or we'd have to allow loose alignment
-    (I'd rather not)::
+    align as in one of the above, or we'd have to allow loose
+    alignment (I'd rather not)::
 
         _[GVR2001] Python Documentation; van Rossum, Drake, et al.;
             http://www.python.org/doc/
 
-I propose adopting the "minimal" syntax for footnotes and footnote
+I proposed adopting the "minimal" syntax for footnotes and footnote
 references, and adding citations and citation references to
 reStructuredText's repertoire. The current footnote syntax for
 citations is better than the alternatives given.
+
+From a reply by Tony Ibbs on 2002-03-01:
+
+    However, I think easier with examples, so let's create one::
+
+        Fans of Terry Pratchett are perhaps more likely to use
+        footnotes [1]_ in their own writings than other people
+        [2]_. Of course, in *general*, one only sees footnotes
+        in academic or technical writing - it's use in fiction
+        and letter writing is not normally considered good
+        style [4]_, particularly in emails (not a medium that
+        lends itself to footnotes).
+
+        .. [1] That is, little bits of referenced text at the
+           bottom of the page.
+        .. [2] Because Terry himself does, of course [3]_.
+        .. [3] Although he has the distinction of being
+           *funny* when he does it, and his fans don't always
+           achieve that aim.
+        .. [4] Presumably because it detracts from linear
+           reading of the text - this is, of course, the point.
+
+    and look at it with the second syntax proposal::
+
+        Fans of Terry Pratchett are perhaps more likely to use
+        footnotes [1]_ in their own writings than other people
+        [2]_. Of course, in *general*, one only sees footnotes
+        in academic or technical writing - it's use in fiction
+        and letter writing is not normally considered good
+        style [4]_, particularly in emails (not a medium that
+        lends itself to footnotes).
+
+        _[1] That is, little bits of referenced text at the
+             bottom of the page.
+        _[2] Because Terry himself does, of course [3]_.
+        _[3] Although he has the distinction of being
+             *funny* when he does it, and his fans don't always
+             achieve that aim.
+        _[4] Presumably because it detracts from linear
+             reading of the text - this is, of course, the point.
+
+    (I note here that if I have gotten the indentation of the
+    footnotes themselves correct, this is clearly not as nice. And if
+    the indentation should be to the left margin instead, I like that
+    even less).
+
+    and the third (new) proposal::
+
+        Fans of Terry Pratchett are perhaps more likely to use
+        footnotes 1_ in their own writings than other people
+        2_. Of course, in *general*, one only sees footnotes
+        in academic or technical writing - it's use in fiction
+        and letter writing is not normally considered good
+        style 4_, particularly in emails (not a medium that
+        lends itself to footnotes).
+
+        _1. That is, little bits of referenced text at the
+            bottom of the page.
+        _2. Because Terry himself does, of course 3_.
+        _3. Although he has the distinction of being
+            *funny* when he does it, and his fans don't always
+            achieve that aim.
+        _4. Presumably because it detracts from linear
+            reading of the text - this is, of course, the point.
+
+    I think I don't, in practice, mind the targets too much (the use
+    of a dot after the number helps a lot here), but I do have a
+    problem with the body text, in that I don't naturally separate out
+    the footnotes as different than the rest of the text - instead I
+    keep wondering why there are numbers interspered in the text. The
+    use of brackets around the numbers ([ and ]) made me somehow parse
+    the footnote references as "odd" - i.e., not part of the body text
+    - and thus both easier to skip, and also (paradoxically) easier to
+    pick out so that I could follow them.
+
+    Thus, for the moment (and as always susceptable to argument), I'd
+    say -1 on the new form of footnote reference (i.e., I much prefer
+    the existing ``[1]_`` over the proposed ``1_``), and ambivalent
+    over the proposed target change.
+
+    That leaves David's problem of wanting to distinguish footnotes
+    and citations - and the only thing I can propose there is that
+    footnotes are numeric or # and citations are not (which, as a
+    human being, I can probably cope with!).
+
+From a reply by Paul Moore on 2002-03-01:
+
+    I think the current footnote syntax ``[1]_`` is *exactly* the
+    right balance of distinctness vs unobtrusiveness. I very
+    definitely don't think this should change.
+
+    On the target change, it doesn't matter much to me.
+
+From a further reply by Tony Ibbs on 2002-03-01, referring to the
+"[1]" form and actual usage in email:
+
+    Clearly this is a form people are used to, and thus we should
+    consider it strongly (in the same way that the usage of ``*..*``
+    to mean emphasis was taken partly from email practise).
+
+    Equally clearly, there is something "magical" for people in the
+    use of a similar form (i.e., ``[1]``) for both footnote reference
+    and footnote target - it seems natural to keep them similar.
+
+    ...
+
+    I think that this established plaintext usage leads me to strongly
+    believe we should retain square brackets at both ends of a
+    footnote. The markup of the reference end (a single trailing
+    underscore) seems about as minimal as we can get away with. The
+    markup of the target end depends on how one envisages the thing -
+    if ".." means "I am a target" (as I tend to see it), then that's
+    good, but one can also argue that the "_[1]" syntax has a neat
+    symmetry with the footnote reference itself, if one wishes (in
+    which case ".." presumably means "hidden/special" as David seems
+    to think, which is why one needs a ".." *and* a leading underline
+    for hyperlink targets.
+
+Given the persuading arguments voiced, we'll leave footnote & footnote
+reference syntax alone.  Except that these discussions gave rise to
+the "auto-symbol footnote" concept, which has been added.  Citations
+and citation references have also been added.
 
 
 ..
