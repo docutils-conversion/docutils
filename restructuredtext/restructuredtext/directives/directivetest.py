@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/12 04:04:11 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/11/09 23:18:25 $
 :Copyright: This module has been placed in the public domain.
 
 Test directive implementation.
@@ -30,7 +30,5 @@ def directive_test_function(match, typename, data, state, statemachine):
     except IndexError:
         text = ''
         blankfinish = 1
-    directivenode = nodes.directive(text, **atts)
-    if text:
-        state.nestedparse(indented, offset, directivenode)
+    directivenode = nodes.directive(text, text, **atts)
     return [directivenode], blankfinish

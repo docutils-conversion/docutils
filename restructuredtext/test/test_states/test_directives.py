@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/11/06 00:45:47 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/11/09 23:14:28 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -52,8 +52,7 @@ Paragraph.
 """\
 <document>
     <directive type="reStructuredText-test-directive">
-        <paragraph>
-            Directive block contains one paragraph, with a blank line before.
+        Directive block contains one paragraph, with a blank line before.
     <paragraph>
         Paragraph.
 """],
@@ -66,8 +65,7 @@ Paragraph.
 """\
 <document>
     <directive type="reStructuredText-test-directive">
-        <paragraph>
-            Directive block contains one paragraph, no blank line before.
+        Directive block contains one paragraph, no blank line before.
     <paragraph>
         Paragraph.
 """],
@@ -81,8 +79,7 @@ Paragraph.
 """\
 <document>
     <directive type="reStructuredText-test-directive">
-        <paragraph>
-            block
+        block
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 3.
