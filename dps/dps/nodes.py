@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.20 $
-:Date: $Date: 2001/11/22 04:11:44 $
+:Revision: $Revision: 1.21 $
+:Date: $Date: 2002/01/16 02:47:59 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -340,8 +340,10 @@ class Inline: pass
 
 class document(Root, Element):
 
-    def __init__(self, errorhandler, *args, **kwargs):
+    def __init__(self, reporter, languagecode, *args, **kwargs):
         Element.__init__(self, *args, **kwargs)
+        self.reporter = reporter
+        self.languagecode = languagecode
         self.explicittargets = {}
         self.implicittargets = {}
         self.externaltargets = {}
@@ -353,7 +355,6 @@ class document(Root, Element):
         self.anonymousrefs = []
         self.autofootnotes = []
         self.autofootnoterefs = []
-        self.errorhandler = errorhandler
 
     def asdom(self, dom=xml.dom.minidom):
         domroot = dom.Document()
@@ -366,7 +367,7 @@ class document(Root, Element):
         if self.explicittargets.has_key(name) \
               or self.externaltargets.has_key(name) \
               or self.implicittargets.has_key(name):
-            sw = self.errorhandler.information(
+            sw = self.reporter.information(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.implicittargets)
@@ -380,7 +381,7 @@ class document(Root, Element):
         if innode == None:
             innode = targetnode
         if self.explicittargets.has_key(name):
-            sw = self.errorhandler.warning(
+            sw = self.reporter.warning(
                   'Duplicate explicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.explicittargets,
@@ -389,7 +390,7 @@ class document(Root, Element):
             self.explicittargets.setdefault(name, []).append(targetnode)
             return
         elif self.implicittargets.has_key(name):
-            sw = self.errorhandler.information(
+            sw = self.reporter.information(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.implicittargets)
@@ -413,13 +414,13 @@ class document(Root, Element):
                 if not t.has_key('refuri') or t['refuri'] != reference:
                     level = 1
                     break
-            sw = self.errorhandler.system_warning(
+            sw = self.reporter.system_warning(
                   level, 'Duplicate external target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.explicittargets,
                                   self.externaltargets, self.implicittargets)
         elif self.implicittargets.has_key(name):
-            sw = self.errorhandler.information(
+            sw = self.reporter.information(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
             self.cleartargetnames(name, self.implicittargets)
@@ -450,7 +451,7 @@ class document(Root, Element):
 
     def addsubstitutiondef(self, name, substitutiondefnode, innode):
         if self.substitutiondefs.has_key(name):
-            sw = self.errorhandler.error(
+            sw = self.reporter.error(
                   'Duplicate substitution definition name: "%s"' % name)
             innode += sw
             oldnode = self.substitutiondefs[name]
