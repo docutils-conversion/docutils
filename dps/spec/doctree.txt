@@ -3,15 +3,15 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/10/31 05:55:39 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/11/06 01:07:59 $
 
 This document describes the internal data structure representing
 document trees in the Python Docstring Processing System. The data
-structure is defined by classes in the ``dps.nodes`` module. It is
-also formally described by the `Generic Plaintext Document Interface
-DTD`_ XML document type definition, gpdi.dtd_, which is the definitive
-source for element hierarchy details.
+structure is defined by the hierarchy of classes in the ``dps.nodes``
+module. It is also formally described by the `Generic Plaintext
+Document Interface DTD`_ XML document type definition, gpdi.dtd_,
+which is the definitive source for element hierarchy details.
 
 Below is a simplified diagram of the hierarchy of element types in the
 DPS document tree structure. An element may contain any other elements
@@ -38,8 +38,13 @@ further body elements, etc. ::
 
 
 -------------------
- Element Reference
+ Element Hierarchy
 -------------------
+
+A class hierarchy has been implemented in nodes.py where the position
+of the element (the level at which it can occur) is significant. E.G.,
+Root, Structural, Body, Inline classes etc. Certain transformations
+will be easier because we can use isinstance() on them.
 
 The elements making up DPS document trees can be categorized into the
 following groups:
@@ -65,12 +70,33 @@ following groups:
   - _`Admonitions`: note_, tip_, warning_, error_, caution_, danger_,
     important_
 
-  - _`Special body elements`: target_, directive_, comment_,
-    system_warning_
+  - _`Special body elements`: target_, directive_, substitution_
+    comment_, system_warning_
 
 - _`Inline elements`: emphasis_, strong_, interpreted_, literal_,
-  reference_, target_, footnote_reference_, image_
+  reference_, target_, footnote_reference_, substitution_reference_,
+  image_
 
+
+``Node``
+========
+
+
+``Text``
+========
+
+
+``Element``
+===========
+
+
+``TextElement``
+===============
+
+
+-------------------
+ Element Reference
+-------------------
 
 ``document``
 ============
@@ -236,7 +262,7 @@ tree would be::
             <paragraph>
                 Paragraph
 
-There are several possibilities for the implementation. Solution #2
+There are several possibilities for the implementation. Solution 3
 was chosen.
 
 1. Implement horizontal rules as "divisions" or segments. A "division"
@@ -280,8 +306,6 @@ was chosen.
    deeper. This is similar to the way HTML treats document contents:
    grouped within a <BODY> element.
 
-   This solution has been chosen.
-
 3. Implement them as "transitions", empty elements::
 
        <document>
@@ -299,6 +323,9 @@ was chosen.
    the document tree flatter, but the idea of a "point element" like
    "transition" smells bad. A transition isn't a thing itself, it's
    the space between two divisions.
+
+   This solution has been chosen for incorporation into the document
+   tree.
 
 
 .. _Generic Plaintext Document Interface DTD:
