@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/09/17 04:28:26 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/11/15 03:08:10 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -40,6 +40,8 @@ except ImportError:                     # try to run installed code
 
 from restructuredtext import states
 from restructuredtext import tableparser
+from restructuredtext import directives
+from restructuredtext import languages
 from dps.statemachine import string2lines
 
 try:
