@@ -5,8 +5,8 @@
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
 Version: 0.2
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/22 22:36:13 $
+Revision: $Revision: 1.2 $
+Date: $Date: 2001/07/26 06:05:34 $
 Copyright: This DTD has been placed in the public domain.
 Filename: gpdi.dtd
 
@@ -67,7 +67,7 @@ Hyperlink attributes.
 
 <!-- XML standard attribute for whitespace-preserving elements. -->
 <!ENTITY % fixedspace.att
-  " xml:space (default | preserve) #FIXED preserve ">
+  " xml:space (default | preserve) #FIXED 'preserve' ">
 
 <!-- Boolean: no if zero(s), yes if any other value. -->
 <!ENTITY % yesorno 'NMTOKEN'>
@@ -210,12 +210,12 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT paragraph %text.model;>
 <!ATTLIST paragraph %basic.atts;>
 
-<!ELEMENT bullet_list (listitem+)>
+<!ELEMENT bullet_list (list_item+)>
 <!ATTLIST bullet_list
     %basic.atts;
     bullet    CDATA     #IMPLIED>
 
-<!ELEMENT enumerated_list (listitem+)>
+<!ELEMENT enumerated_list (list_item+)>
 <!ATTLIST enumerated_list
     %basic.atts;
     enumtype  (arabic | loweralpha | upperalpha
@@ -228,7 +228,7 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT list_item (%body.elements;)+>
 <!ATTLIST list_item %basic.atts;>
 
-<!ELEMENT definition_list (definitionlistitem+)>
+<!ELEMENT definition_list (definition_list_item+)>
 <!ATTLIST definition_list %basic.atts;>
 
 <!ELEMENT definition_list_item (term, definition)>
@@ -253,7 +253,7 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT field_argument %text.model;>
 <!ATTLIST field_argument %basic.atts;>
 
-<!ELEMENT field_body (&body.elements;)+>
+<!ELEMENT field_body (%body.elements;)+>
 <!ATTLIST field_body %basic.atts;>
 
 <!ELEMENT literal_block (#PCDATA)>
