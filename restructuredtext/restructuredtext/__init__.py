@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/09/10 04:42:28 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/01/16 06:19:04 $
 :Copyright: This module has been placed in the public domain.
 
 This is ``the dps.parsers.restructuredtext`` package. It exports a single
@@ -40,7 +40,7 @@ become familiar with the `dps.statemachine` module, then see the
 
 import dps.parsers.model
 import dps.statemachine
-import states, languages
+import states
 
 __all__ = ['Parser']
 
@@ -51,10 +51,9 @@ class Parser(dps.parsers.model.Parser):
 
     def __init__(self, *args, **keywordargs):
         dps.parsers.model.Parser.__init__(self, *args, **keywordargs)
-        self.language = languages.language(self.languagecode)
         self.statemachine = states.RSTStateMachine(
               stateclasses=states.stateclasses, initialstate='Body',
-              language=self.language, debug=self.debug)
+              languagecode=self.languagecode, debug=self.debug)
 
     def parse(self, inputstring):
         """Parse `inputstring` and return a `dps.nodes.document` tree."""
