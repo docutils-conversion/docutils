@@ -3,8 +3,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.2 $
-Date: $Date: 2001/07/28 05:17:44 $
+Revision: $Revision: 1.3 $
+Date: $Date: 2001/08/02 02:20:13 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -54,9 +54,9 @@ class DataTests(unittest.TestCase):
 
     def trytest(self, name, index):
         input, expected = self.totest[name][index]
-        self.sm.run(string2lines(input), warninglevel=4,
-                    errorlevel=4)
-        output = self.sm.memo.document.pprint()
+        document = self.sm.run(string2lines(input), warninglevel=4,
+                               errorlevel=4)
+        output = document.pprint()
         try:
             self.assertEquals('\n' + output, '\n' + expected)
         except AssertionError:
@@ -70,17 +70,18 @@ class DataTests(unittest.TestCase):
             raise
 
     totest = {}
-
     """Tests to be run. Each key (test type name) maps to a list of tests.
     Each test is a list: input, expected output, optional modifier. The
     optional third entry, a behavior modifier, can be 0 (temporarily disable
-    this test) or 1 (run this test under the pdb debugger)."""
+    this test) or 1 (run this test under the pdb debugger). Tests should be
+    self-documenting and not require external comments."""
 
     proven = {}
-    """tests that have proven successful"""
+    """Tests that have already proven successful."""
 
     notyet = {}
-    """tests we *don't* want to run"""
+    """Experimental, expected-to-fail tests that we *don't* want to run
+    (they don't work yet)."""
 
     proven['paragraph'] = [
 ["""\
@@ -196,7 +197,7 @@ Line 2.
 ["""\
 Line 1.
 Line 2.
-   Indented.
+   Unexpectedly indented.
 """,
 """\
 <document>
@@ -211,7 +212,7 @@ Line 2.
     </system_warning>
     <block_quote>
         <paragraph>
-            Indented.
+            Unexpectedly indented.
         </paragraph>
     </block_quote>
 </document>
@@ -366,7 +367,7 @@ Not a literal block.
 ["""\
 A paragraph::
 
-    A literal block.
+    A wonky literal block.
   Literal line 2.
 
     Literal line 3.
@@ -377,7 +378,7 @@ A paragraph::
         A paragraph:
     </paragraph>
     <literal_block>
-          A literal block.
+          A wonky literal block.
         Literal line 2.
         
           Literal line 3.
@@ -423,11 +424,16 @@ A paragraph::
 </document>
 """],
 ["""\
+No blank line between:
+
 + item 1
 + item 2
 """,
 """\
 <document>
+    <paragraph>
+        No blank line between:
+    </paragraph>
     <bullet_list bullet="+">
         <list_item>
             <paragraph>
@@ -491,6 +497,8 @@ A paragraph::
 </document>
 """],
 ["""\
+Different bullets:
+
 - item 1
 
 + item 2
@@ -500,6 +508,9 @@ A paragraph::
 """,
 """\
 <document>
+    <paragraph>
+        Different bullets:
+    </paragraph>
     <bullet_list bullet="-">
         <list_item>
             <paragraph>
@@ -523,7 +534,7 @@ A paragraph::
     </bullet_list>
     <system_warning level="1">
         <paragraph>
-            Unindent without blank line at line 6.
+            Unindent without blank line at line 8.
         </paragraph>
     </system_warning>
     <bullet_list bullet="-">
@@ -561,7 +572,7 @@ no blank line
 ["""\
 - 
 
-empty item
+empty item (space after hyphen)
 """,
 """\
 <document>
@@ -569,7 +580,7 @@ empty item
         <list_item/>
     </bullet_list>
     <paragraph>
-        empty item
+        empty item (space after hyphen)
     </paragraph>
 </document>
 """],
@@ -861,7 +872,47 @@ Paragraph.
 </document>
 """],
 ["""\
+Title
+=====
+Paragraph (no blank line).
+""",
+"""\
+<document>
+    <section name="title">
+        <title>
+            Title
+        </title>
+        <paragraph>
+            Paragraph (no blank line).
+        </paragraph>
+    </section>
+</document>
+"""],
+["""\
 Paragraph.
+
+Title
+=====
+
+Paragraph.
+""",
+"""\
+<document>
+    <paragraph>
+        Paragraph.
+    </paragraph>
+    <section name="title">
+        <title>
+            Title
+        </title>
+        <paragraph>
+            Paragraph.
+        </paragraph>
+    </section>
+</document>
+"""],
+["""\
+Test unexpected section title.
 
     Title
     =====
@@ -870,7 +921,7 @@ Paragraph.
 """\
 <document>
     <paragraph>
-        Paragraph.
+        Test unexpected section title.
     </paragraph>
     <block_quote>
         <system_warning level="3">
@@ -888,7 +939,7 @@ Paragraph.
 Title
 ====
 
-Paragraph.
+Test short underline.
 """,
 """\
 <document>
@@ -902,7 +953,7 @@ Paragraph.
             Title
         </title>
         <paragraph>
-            Paragraph.
+            Test short underline.
         </paragraph>
     </section>
 </document>
@@ -912,7 +963,7 @@ Paragraph.
 Title
 =====
 
-Paragraph.
+Test overline title.
 """,
 """\
 <document>
@@ -921,7 +972,7 @@ Paragraph.
             Title
         </title>
         <paragraph>
-            Paragraph.
+            Test overline title.
         </paragraph>
     </section>
 </document>
@@ -931,7 +982,7 @@ Paragraph.
  Title
 =======
 
-Paragraph.
+Test overline title with inset.
 """,
 """\
 <document>
@@ -940,14 +991,14 @@ Paragraph.
             Title
         </title>
         <paragraph>
-            Paragraph.
+            Test overline title with inset.
         </paragraph>
     </section>
 </document>
 """],
 ["""\
-=======
- Title
+========================
+ Test Missing Underline
 """,
 """\
 <document>
@@ -967,7 +1018,7 @@ Paragraph.
 =======
  Title
 
-Paragraph
+Test missing underline, with paragraph.
 """,
 """\
 <document>
@@ -977,7 +1028,7 @@ Paragraph
         </paragraph>
     </system_warning>
     <paragraph>
-        Paragraph
+        Test missing underline, with paragraph.
     </paragraph>
 </document>
 """],
@@ -986,7 +1037,7 @@ Paragraph
  Long    Title
 =======
 
-Paragraph.
+Test long title and space normalization.
 """,
 """\
 <document>
@@ -1000,7 +1051,7 @@ Paragraph.
             Long    Title
         </title>
         <paragraph>
-            Paragraph.
+            Test long title and space normalization.
         </paragraph>
     </section>
 </document>
@@ -1025,82 +1076,42 @@ Paragraph.
 </document>
 """],
 ["""\
-Title
-=====
-Paragraph.
-""",
-"""\
-<document>
-    <section name="title">
-        <title>
-            Title
-        </title>
-        <paragraph>
-            Paragraph.
-        </paragraph>
-    </section>
-</document>
-"""],
-["""\
-Paragraph.
-
-Title
-=====
-
-Paragraph.
-""",
-"""\
-<document>
-    <paragraph>
-        Paragraph.
-    </paragraph>
-    <section name="title">
-        <title>
-            Title
-        </title>
-        <paragraph>
-            Paragraph.
-        </paragraph>
-    </section>
-</document>
-"""],
-["""\
-Paragraph 1.
+Test return to existing, highest-level section (Title 3).
 
 Title 1
 =======
-Paragraph 2.
+Paragraph 1.
 
 Title 2
 -------
-Paragraph 3.
+Paragraph 2.
 
 Title 3
 =======
-Paragraph 4.
+Paragraph 3.
 
 Title 4
 -------
-Paragraph 5.
+Paragraph 4.
 """,
 """\
 <document>
     <paragraph>
-        Paragraph 1.
+        Test return to existing, highest-level section (Title 3).
     </paragraph>
     <section name="title 1">
         <title>
             Title 1
         </title>
         <paragraph>
-            Paragraph 2.
+            Paragraph 1.
         </paragraph>
         <section name="title 2">
             <title>
                 Title 2
             </title>
             <paragraph>
-                Paragraph 3.
+                Paragraph 2.
             </paragraph>
         </section>
     </section>
@@ -1109,63 +1120,125 @@ Paragraph 5.
             Title 3
         </title>
         <paragraph>
-            Paragraph 4.
+            Paragraph 3.
         </paragraph>
         <section name="title 4">
             <title>
                 Title 4
             </title>
             <paragraph>
-                Paragraph 5.
+                Paragraph 4.
             </paragraph>
         </section>
     </section>
 </document>
 """],
 ["""\
-Paragraph 1.
+Test return to existing, highest-level section (Title 3, with overlines).
 
+=======
 Title 1
 =======
-Paragraph 2.
+Paragraph 1.
 
+-------
 Title 2
 -------
+Paragraph 2.
+
+=======
+Title 3
+=======
 Paragraph 3.
 
-Title 3
-```````
-Paragraph 4.
-
+-------
 Title 4
 -------
-Paragraph 5.
+Paragraph 4.
 """,
 """\
 <document>
     <paragraph>
-        Paragraph 1.
+        Test return to existing, highest-level section (Title 3, with overlines).
     </paragraph>
     <section name="title 1">
         <title>
             Title 1
         </title>
         <paragraph>
-            Paragraph 2.
+            Paragraph 1.
         </paragraph>
         <section name="title 2">
             <title>
                 Title 2
             </title>
             <paragraph>
-                Paragraph 3.
+                Paragraph 2.
+            </paragraph>
+        </section>
+    </section>
+    <section name="title 3">
+        <title>
+            Title 3
+        </title>
+        <paragraph>
+            Paragraph 3.
+        </paragraph>
+        <section name="title 4">
+            <title>
+                Title 4
+            </title>
+            <paragraph>
+                Paragraph 4.
+            </paragraph>
+        </section>
+    </section>
+</document>
+"""],
+["""\
+Test return to existing, higher-level section (Title 4).
+
+Title 1
+=======
+Paragraph 1.
+
+Title 2
+-------
+Paragraph 2.
+
+Title 3
+```````
+Paragraph 3.
+
+Title 4
+-------
+Paragraph 4.
+""",
+"""\
+<document>
+    <paragraph>
+        Test return to existing, higher-level section (Title 4).
+    </paragraph>
+    <section name="title 1">
+        <title>
+            Title 1
+        </title>
+        <paragraph>
+            Paragraph 1.
+        </paragraph>
+        <section name="title 2">
+            <title>
+                Title 2
+            </title>
+            <paragraph>
+                Paragraph 2.
             </paragraph>
             <section name="title 3">
                 <title>
                     Title 3
                 </title>
                 <paragraph>
-                    Paragraph 4.
+                    Paragraph 3.
                 </paragraph>
             </section>
         </section>
@@ -1174,49 +1247,49 @@ Paragraph 5.
                 Title 4
             </title>
             <paragraph>
-                Paragraph 5.
+                Paragraph 4.
             </paragraph>
         </section>
     </section>
 </document>
 """],
 ["""\
-Paragraph 1.
+Test bad subsection order (Title 4).
 
 Title 1
 =======
-Paragraph 2.
+Paragraph 1.
 
 Title 2
 -------
-Paragraph 3.
+Paragraph 2.
 
 Title 3
 =======
-Paragraph 4.
+Paragraph 3.
 
 Title 4
-~~~~~~~
-Paragraph 5.
+```````
+Paragraph 4.
 """,
 """\
 <document>
     <paragraph>
-        Paragraph 1.
+        Test bad subsection order (Title 4).
     </paragraph>
     <section name="title 1">
         <title>
             Title 1
         </title>
         <paragraph>
-            Paragraph 2.
+            Paragraph 1.
         </paragraph>
         <section name="title 2">
             <title>
                 Title 2
             </title>
             <paragraph>
-                Paragraph 3.
+                Paragraph 2.
             </paragraph>
         </section>
     </section>
@@ -1225,7 +1298,7 @@ Paragraph 5.
             Title 3
         </title>
         <paragraph>
-            Paragraph 4.
+            Paragraph 3.
         </paragraph>
         <system_warning level="3">
             <paragraph>
@@ -1236,47 +1309,81 @@ Paragraph 5.
             </paragraph>
             <literal_block>
                 Title 4
-                ~~~~~~~
+                ```````
             </literal_block>
         </system_warning>
         <paragraph>
-            Paragraph 5.
+            Paragraph 4.
         </paragraph>
     </section>
 </document>
 """],
 ["""\
-Title
-=====
+Test bad subsection order (Title 4, with overlines).
 
-Paragraph.
+=======
+Title 1
+=======
+Paragraph 1.
 
-Title
-=====
+-------
+Title 2
+-------
+Paragraph 2.
 
-Paragraph.
+=======
+Title 3
+=======
+Paragraph 3.
+
+```````
+Title 4
+```````
+Paragraph 4.
 """,
 """\
 <document>
-    <section>
+    <paragraph>
+        Test bad subsection order (Title 4, with overlines).
+    </paragraph>
+    <section name="title 1">
         <title>
-            Title
+            Title 1
         </title>
         <paragraph>
-            Paragraph.
+            Paragraph 1.
         </paragraph>
-    </section>
-    <section>
-        <title>
-            Title
-        </title>
-        <system_warning level="0">
+        <section name="title 2">
+            <title>
+                Title 2
+            </title>
             <paragraph>
-                duplicate implicit link name: "title"
+                Paragraph 2.
             </paragraph>
+        </section>
+    </section>
+    <section name="title 3">
+        <title>
+            Title 3
+        </title>
+        <paragraph>
+            Paragraph 3.
+        </paragraph>
+        <system_warning level="3">
+            <paragraph>
+                <strong>
+                    ABORT
+                </strong>
+                : Title level inconsistent at line 19:
+            </paragraph>
+            <literal_block>
+                ```````
+                Title 4
+                ```````
+            </literal_block>
         </system_warning>
         <paragraph>
-            Paragraph.
+            Paragraph 4.
         </paragraph>
     </section>
 </document>
@@ -1765,12 +1872,17 @@ No blank line.
 </document>
 """],
 ["""\
+Duplicate indirect links:
+
 .. _target: first
 
 .. _target: second
 """,
 """\
 <document>
+    <paragraph>
+        Duplicate indirect links:
+    </paragraph>
     <target name="target">
         first
     </target>
@@ -1782,6 +1894,122 @@ No blank line.
     <target name="target">
         second
     </target>
+</document>
+"""],
+["""\
+Duplicate implicit links.
+
+Title
+=====
+
+Paragraph.
+
+Title
+=====
+
+Paragraph.
+""",
+"""\
+<document>
+    <paragraph>
+        Duplicate implicit links.
+    </paragraph>
+    <section>
+        <title>
+            Title
+        </title>
+        <paragraph>
+            Paragraph.
+        </paragraph>
+    </section>
+    <section>
+        <title>
+            Title
+        </title>
+        <system_warning level="0">
+            <paragraph>
+                duplicate implicit link name: "title"
+            </paragraph>
+        </system_warning>
+        <paragraph>
+            Paragraph.
+        </paragraph>
+    </section>
+</document>
+"""],
+["""\
+Duplicate implicit/explicit links.
+
+Title
+=====
+
+.. _title:
+
+Paragraph.
+""",
+"""\
+<document>
+    <paragraph>
+        Duplicate implicit/explicit links.
+    </paragraph>
+    <section>
+        <title>
+            Title
+        </title>
+        <system_warning level="0">
+            <paragraph>
+                duplicate implicit link name: "title"
+            </paragraph>
+        </system_warning>
+        <target name="title"/>
+        <paragraph>
+            Paragraph.
+        </paragraph>
+    </section>
+</document>
+"""],
+["""\
+Duplicate explicit links.
+
+.. _title:
+
+First.
+
+.. _title:
+
+Second.
+
+.. _title:
+
+Third.
+""",
+"""\
+<document>
+    <paragraph>
+        Duplicate explicit links.
+    </paragraph>
+    <target/>
+    <paragraph>
+        First.
+    </paragraph>
+    <system_warning level="1">
+        <paragraph>
+            duplicate explicit link name: "title"
+        </paragraph>
+    </system_warning>
+    <target/>
+    <paragraph>
+        Second.
+    </paragraph>
+    <system_warning level="1">
+        <paragraph>
+            duplicate explicit link name: "title"
+        </paragraph>
+    </system_warning>
+    <target/>
+    <paragraph>
+        Third.
+    </paragraph>
 </document>
 """],
 ]
@@ -2310,7 +2538,7 @@ ftp://ends.with.a.period.
 """],
 ]
 
-    totest['comments_in_bullets'] = [
+    proven['comments_in_bullets'] = [
 ["""\
 + bullet paragraph 1
 
@@ -2385,7 +2613,7 @@ ftp://ends.with.a.period.
 """],
 ]
 
-    totest['outdenting'] = [
+    proven['outdenting'] = [
 ["""\
 Anywhere a paragraph would have an effect on the current
 indentation level, a comment or list item should also.
@@ -2458,16 +2686,17 @@ paragraph used to end a bullet before a blockquote
 ]
     '''
 
-    ## uncomment to run previously successful tests also
+    ## Uncomment to run previously successful tests also.
+    ## Uncommented by default.
     totest.update(proven)
 
-    ## uncomment to run previously successful tests *only*
+    ## Uncomment to run previously successful tests *only*.
     #totest = proven
 
-    ## uncomment to run experimental, expected-to-fail tests also
+    ## Uncomment to run experimental, expected-to-fail tests also.
     #totest.update(notyet)
 
-    ## uncomment to run experimental, expected-to-fail tests *only*
+    ## Uncomment to run experimental, expected-to-fail tests *only*.
     #totest = notyet
 
     for name, cases in totest.items():
