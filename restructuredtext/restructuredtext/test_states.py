@@ -3,8 +3,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.4 $
-Date: $Date: 2001/08/04 15:13:54 $
+Revision: $Revision: 1.5 $
+Date: $Date: 2001/08/11 02:08:02 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -599,9 +599,9 @@ no blank line
 </document>
 """],
 ["""\
-- 
+-
 
-empty item (space after hyphen)
+empty item above
 """,
 """\
 <document>
@@ -609,24 +609,26 @@ empty item (space after hyphen)
         <list_item/>
     </bullet_list>
     <paragraph>
-        empty item (space after hyphen)
+        empty item above
     </paragraph>
 </document>
 """],
 ["""\
 -
-empty item, no blank line, but no space after hyphen
-
-XXX Is this correct behavior?
+empty item above, no blank line
 """,
 """\
 <document>
+    <bullet_list bullet="-">
+        <list_item/>
+    </bullet_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 2.
+        </paragraph>
+    </system_warning>
     <paragraph>
-        -
-        empty item, no blank line, but no space after hyphen
-    </paragraph>
-    <paragraph>
-        XXX Is this correct behavior?
+        empty item above, no blank line
     </paragraph>
 </document>
 """],
@@ -1802,14 +1804,14 @@ No blank line.
 </document>
 """],
 ["""\
-.. _[foot label with spaces] text 
+.. _[foot label with spaces] text
 
-.. _[*footlabelwithmarkup*] text 
+.. _[*footlabelwithmarkup*] text
 """,
 """\
 <document>
     <comment>
-        _[foot label with spaces] text 
+        _[foot label with spaces] text
     </comment>
     <system_warning level="1">
         <paragraph>
@@ -1817,7 +1819,7 @@ No blank line.
         </paragraph>
     </system_warning>
     <comment>
-        _[*footlabelwithmarkup*] text 
+        _[*footlabelwithmarkup*] text
     </comment>
     <system_warning level="1">
         <paragraph>
@@ -2518,7 +2520,11 @@ across lines`_
 ["""\
 http://www.standalone.hyperlink.com
 
+one-slash-only:/absolute.path
+
 mailto:someone@somewhere.com
+
+news:comp.lang.python
 
 An email address in a sentence: someone@somewhere.com.
 
@@ -2534,8 +2540,18 @@ ftp://ends.with.a.period.
         </link>
     </paragraph>
     <paragraph>
+        <link refuri="one-slash-only:/absolute.path">
+            one-slash-only:/absolute.path
+        </link>
+    </paragraph>
+    <paragraph>
         <link refuri="mailto:someone@somewhere.com">
             mailto:someone@somewhere.com
+        </link>
+    </paragraph>
+    <paragraph>
+        <link refuri="news:comp.lang.python">
+            news:comp.lang.python
         </link>
     </paragraph>
     <paragraph>
@@ -2706,7 +2722,7 @@ XXX Is this correct? Perhaps comments should be one-liners only.
 """],
 ]
 
-    notyet['enumerated_list'] = [
+    proven['enumerated_list'] = [
 ["""\
 1. Item one.
 
@@ -2715,6 +2731,25 @@ XXX Is this correct? Perhaps comments should be one-liners only.
 3. Item three.
 """,
 """\
+<document>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item one.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item two.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item three.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ["""\
 No blank lines betwen items:
@@ -2724,6 +2759,28 @@ No blank lines betwen items:
 3. Item three.
 """,
 """\
+<document>
+    <paragraph>
+        No blank lines betwen items:
+    </paragraph>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item one.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item two.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item three.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ["""\
 Scrambled:
@@ -2733,15 +2790,95 @@ Scrambled:
 1. Item one.
 """,
 """\
+<document>
+    <paragraph>
+        Scrambled:
+    </paragraph>
+    <system_warning level="0">
+        <paragraph>
+            Enumerated list start value not ordinal-1 at line 3: '3' (ordinal 3)
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="arabic" prefix="" start="3" suffix=".">
+        <list_item>
+            <paragraph>
+                Item three.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 4.
+        </paragraph>
+    </system_warning>
+    <system_warning level="0">
+        <paragraph>
+            Enumerated list start value not ordinal-1 at line 4: '2' (ordinal 2)
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="arabic" prefix="" start="2" suffix=".">
+        <list_item>
+            <paragraph>
+                Item two.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 5.
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item one.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ["""\
 Skipping item 3:
 
-1. Item three.
-2. Item two.
-4. Item four.
+1. Item 1.
+2. Item 2.
+4. Item 4.
 """,
 """\
+<document>
+    <paragraph>
+        Skipping item 3:
+    </paragraph>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item 1.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 2.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 4.
+        </paragraph>
+    </system_warning>
+    <system_warning level="0">
+        <paragraph>
+            Enumerated list start value not ordinal-1 at line 5: '4' (ordinal 4)
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="arabic" prefix="" start="4" suffix=".">
+        <list_item>
+            <paragraph>
+                Item 4.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ["""\
 Start with non-ordinal-1:
@@ -2757,6 +2894,58 @@ And again:
 3. Item three.
 """,
 """\
+<document>
+    <paragraph>
+        Start with non-ordinal-1:
+    </paragraph>
+    <system_warning level="0">
+        <paragraph>
+            Enumerated list start value not ordinal-1 at line 3: '0' (ordinal 0)
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="arabic" prefix="" start="0" suffix=".">
+        <list_item>
+            <paragraph>
+                Item zero.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item one.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item two.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item three.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <paragraph>
+        And again:
+    </paragraph>
+    <system_warning level="0">
+        <paragraph>
+            Enumerated list start value not ordinal-1 at line 10: '2' (ordinal 2)
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="arabic" prefix="" start="2" suffix=".">
+        <list_item>
+            <paragraph>
+                Item two.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item three.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ["""\
 1. Item one: line 1,
@@ -2769,98 +2958,681 @@ And again:
    Paragraph 2.
 """,
 """\
+<document>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item one: line 1,
+                line 2.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item two: line 1,
+                line 2.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item three: paragraph 1, line 1,
+                line 2.
+            </paragraph>
+            <paragraph>
+                Paragraph 2.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ["""\
 Different enumeration sequences:
 
-1. First item.
-2. Second item.
-3. Third item.
+1. Item 1.
+2. Item 2.
+3. Item 3.
 
-A. First item.
-B. Second item.
-C. Third item.
+A. Item A.
+B. Item B.
+C. Item C.
 
-a. First item.
-b. Second item.
-c. Third item.
+a. Item a.
+b. Item b.
+c. Item c.
 
-I. First item.
-II. Second item.
-III. Third item.
+I. Item I.
+II. Item II.
+III. Item III.
 
-i. First item.
-ii. Second item.
-iii. Third item.
+i. Item i.
+ii. Item ii.
+iii. Item iii.
 """,
 """\
+<document>
+    <paragraph>
+        Different enumeration sequences:
+    </paragraph>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item 1.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 2.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 3.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=".">
+        <list_item>
+            <paragraph>
+                Item A.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item B.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item C.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="loweralpha" prefix="" start="a" suffix=".">
+        <list_item>
+            <paragraph>
+                Item a.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item b.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item c.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="upperroman" prefix="" start="I" suffix=".">
+        <list_item>
+            <paragraph>
+                Item I.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item II.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item III.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="lowerroman" prefix="" start="i" suffix=".">
+        <list_item>
+            <paragraph>
+                Item i.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item ii.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item iii.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
+"""],
+["""\
+Bad Roman numerals:
+
+i. i
+ii. ii
+iii. iii
+iiii. iiii
+
+(I) I
+(IVXLCDM) IVXLCDM
+""",
+"""\
+<document>
+    <paragraph>
+        Bad Roman numerals:
+    </paragraph>
+    <enumerated_list enumtype="lowerroman" prefix="" start="i" suffix=".">
+        <list_item>
+            <paragraph>
+                i
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                ii
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                iii
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 4.
+        </paragraph>
+    </system_warning>
+    <system_warning level="2">
+        <paragraph>
+            Enumerated list start value invalid at line 6: 'iiii' (sequence 'lowerroman')
+        </paragraph>
+    </system_warning>
+    <block_quote>
+        <paragraph>
+            iiii
+        </paragraph>
+    </block_quote>
+    <enumerated_list enumtype="upperroman" prefix="(" start="I" suffix=")">
+        <list_item>
+            <paragraph>
+                I
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 9.
+        </paragraph>
+    </system_warning>
+    <system_warning level="2">
+        <paragraph>
+            Enumerated list start value invalid at line 9: 'IVXLCDM' (sequence 'upperroman')
+        </paragraph>
+    </system_warning>
+    <block_quote>
+        <paragraph>
+            IVXLCDM
+        </paragraph>
+    </block_quote>
+</document>
 """],
 ["""\
 Potentially ambiguous cases:
 
-A. First item.
-B. Second item.
-C. Third item.
+A. Item A.
+B. Item B.
+C. Item C.
 
-I. First item.
-II. Second item.
-III. Third item.
+I. Item I.
+II. Item II.
+III. Item III.
 
-a. First item.
-b. Second item.
-c. Third item.
+a. Item a.
+b. Item b.
+c. Item c.
 
-i. First item.
-ii. Second item.
-iii. Third item.
+i. Item i.
+ii. Item ii.
+iii. Item iii.
+
+Phew! Safe!
 """,
 """\
+<document>
+    <paragraph>
+        Potentially ambiguous cases:
+    </paragraph>
+    <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=".">
+        <list_item>
+            <paragraph>
+                Item A.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item B.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item C.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="upperroman" prefix="" start="I" suffix=".">
+        <list_item>
+            <paragraph>
+                Item I.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item II.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item III.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="loweralpha" prefix="" start="a" suffix=".">
+        <list_item>
+            <paragraph>
+                Item a.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item b.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item c.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="lowerroman" prefix="" start="i" suffix=".">
+        <list_item>
+            <paragraph>
+                Item i.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item ii.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item iii.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <paragraph>
+        Phew! Safe!
+    </paragraph>
+</document>
 """],
 ["""\
 Definitely ambiguous:
 
-A. First item.
-B. Second item.
-C. Third item.
-D. Fourth item.
-E. Fifth item.
-F. Sixth item.
-G. Seventh item.
-H. Eighth item.
-I. First item.
-II. Second item.
-III. Third item.
+A. Item A.
+B. Item B.
+C. Item C.
+D. Item D.
+E. Item E.
+F. Item F.
+G. Item G.
+H. Item H.
+I. Item I.
+II. Item II.
+III. Item III.
 
-a. First item.
-b. Second item.
-c. Third item.
-d. Fourth item.
-e. Fifth item.
-f. Sixth item.
-g. Seventh item.
-h. Eighth item.
-i. First item.
-ii. Second item.
-iii. Third item.
+a. Item a.
+b. Item b.
+c. Item c.
+d. Item d.
+e. Item e.
+f. Item f.
+g. Item g.
+h. Item h.
+i. Item i.
+ii. Item ii.
+iii. Item iii.
 """,
 """\
+<document>
+    <paragraph>
+        Definitely ambiguous:
+    </paragraph>
+    <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=".">
+        <list_item>
+            <paragraph>
+                Item A.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item B.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item C.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item D.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item E.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item F.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item G.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item H.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item I.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 4.
+        </paragraph>
+    </system_warning>
+    <system_warning level="0">
+        <paragraph>
+            Enumerated list start value not ordinal-1 at line 12: 'II' (ordinal 2)
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="upperroman" prefix="" start="II" suffix=".">
+        <list_item>
+            <paragraph>
+                Item II.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item III.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="loweralpha" prefix="" start="a" suffix=".">
+        <list_item>
+            <paragraph>
+                Item a.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item b.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item c.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item d.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item e.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item f.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item g.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item h.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item i.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 16.
+        </paragraph>
+    </system_warning>
+    <system_warning level="0">
+        <paragraph>
+            Enumerated list start value not ordinal-1 at line 24: 'ii' (ordinal 2)
+        </paragraph>
+    </system_warning>
+    <enumerated_list enumtype="lowerroman" prefix="" start="ii" suffix=".">
+        <list_item>
+            <paragraph>
+                Item ii.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item iii.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ["""\
 Different enumeration formats:
 
-1. First item.
-2. Second item.
-3. Third item.
+1. Item 1.
+2. Item 2.
+3. Item 3.
 
-1) First item.
-2) Second item.
-3) Third item.
+1) Item 1).
+2) Item 2).
+3) Item 3).
 
-(1) First item.
-(2) Second item.
-(3) Third item.
+(1) Item (1).
+(2) Item (2).
+(3) Item (3).
 """,
 """\
+<document>
+    <paragraph>
+        Different enumeration formats:
+    </paragraph>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item 1.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 2.
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 3.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=")">
+        <list_item>
+            <paragraph>
+                Item 1).
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 2).
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 3).
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+    <enumerated_list enumtype="arabic" prefix="(" start="1" suffix=")">
+        <list_item>
+            <paragraph>
+                Item (1).
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item (2).
+            </paragraph>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item (3).
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
+"""],
+["""\
+Nested enumerated lists:
+
+1. Item 1.
+
+   A) Item A).
+   B) Item B).
+   C) Item C).
+
+2. Item 2.
+
+   (a) Item (a).
+
+       I) Item I).
+       II) Item II).
+       III) Item III).
+
+   (b) Item (b).
+   
+   (c) Item (c).
+
+       (i) Item (i).
+       (ii) Item (ii).
+       (iii) Item (iii).
+
+3. Item 3.
+""",
+"""\
+<document>
+    <paragraph>
+        Nested enumerated lists:
+    </paragraph>
+    <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+        <list_item>
+            <paragraph>
+                Item 1.
+            </paragraph>
+            <enumerated_list enumtype="upperalpha" prefix="" start="A" suffix=")">
+                <list_item>
+                    <paragraph>
+                        Item A).
+                    </paragraph>
+                </list_item>
+                <list_item>
+                    <paragraph>
+                        Item B).
+                    </paragraph>
+                </list_item>
+                <list_item>
+                    <paragraph>
+                        Item C).
+                    </paragraph>
+                </list_item>
+            </enumerated_list>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 2.
+            </paragraph>
+            <enumerated_list enumtype="loweralpha" prefix="(" start="a" suffix=")">
+                <list_item>
+                    <paragraph>
+                        Item (a).
+                    </paragraph>
+                    <enumerated_list enumtype="upperroman" prefix="" start="I" suffix=")">
+                        <list_item>
+                            <paragraph>
+                                Item I).
+                            </paragraph>
+                        </list_item>
+                        <list_item>
+                            <paragraph>
+                                Item II).
+                            </paragraph>
+                        </list_item>
+                        <list_item>
+                            <paragraph>
+                                Item III).
+                            </paragraph>
+                        </list_item>
+                    </enumerated_list>
+                </list_item>
+                <list_item>
+                    <paragraph>
+                        Item (b).
+                    </paragraph>
+                </list_item>
+                <list_item>
+                    <paragraph>
+                        Item (c).
+                    </paragraph>
+                    <enumerated_list enumtype="lowerroman" prefix="(" start="i" suffix=")">
+                        <list_item>
+                            <paragraph>
+                                Item (i).
+                            </paragraph>
+                        </list_item>
+                        <list_item>
+                            <paragraph>
+                                Item (ii).
+                            </paragraph>
+                        </list_item>
+                        <list_item>
+                            <paragraph>
+                                Item (iii).
+                            </paragraph>
+                        </list_item>
+                    </enumerated_list>
+                </list_item>
+            </enumerated_list>
+        </list_item>
+        <list_item>
+            <paragraph>
+                Item 3.
+            </paragraph>
+        </list_item>
+    </enumerated_list>
+</document>
 """],
 ]
 
