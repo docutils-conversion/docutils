@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.45 $
-:Date: $Date: 2002/03/01 03:10:23 $
+:Revision: $Revision: 1.46 $
+:Date: $Date: 2002/03/07 03:24:43 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -379,18 +379,23 @@ class RSTState(StateWS):
                                    (%s)         # reference name (4)
                                    (__?)        # end-string (5)
                                  |
-                                   \[           # footnote_reference start,
-                                   (            # footnote label (group 6):
-                                       \#         # anonymous auto-numbered
+                                   \[           # footnote_reference or
+                                                # citation_reference start
+                                   (            # label (group 6):
+                                       [0-9]+     # manually numbered
                                      |          # *OR*
-                                       \#?%s      # (auto-numbered?) label
+                                       \#(?:%s)?  # auto-numbered (w/ label?)
+                                     |          # *OR*
+                                       \*         # auto-symbol
+                                     |          # *OR*
+                                       (%s)       # citation reference (group 7)
                                    )
-                                   (\]_)        # end-string (group 7)
+                                   (\]_)        # end-string (group 8)
                                )
                                %s             # end-string suffix
                              |              # *OR*
-                               ((?::%s:)?)    # optional role (group 8)
-                               (              # start-string (group 9)
+                               ((?::%s:)?)    # optional role (group 9)
+                               (              # start-string (group 10)
                                  `              # interpreted text
                                                 # or phrase reference
                                  (?!`)          # but not literal
@@ -399,6 +404,7 @@ class RSTState(StateWS):
                              )
                              """ % (inline.start_string_prefix,
                                     inline.non_whitespace_after,
+                                    inline.simplename,
                                     inline.simplename,
                                     inline.simplename,
                                     inline.end_string_suffix,
@@ -464,8 +470,8 @@ class RSTState(StateWS):
                        inline.end_string_suffix,),
                 re.VERBOSE))
     inline.groups = Stuff(initial=Stuff(start=2, whole=3, refname=4, refend=5,
-                                        footnotelabel=6, fnend=7, role=8,
-                                        backquote=9),
+                                        footnotelabel=6, citationlabel=7,
+                                        fnend=8, role=9, backquote=10),
                           interpreted_or_phrase_ref=Stuff(suffix=2),
                           uri=Stuff(whole=1, absolute=2, scheme=3, email=4))
 
@@ -631,23 +637,36 @@ class RSTState(StateWS):
         return before, inlines, remaining, sysmessages
 
     def footnote_reference(self, match, lineno):
-        fnname = match.group(self.inline.groups.initial.footnotelabel)
-        refname = normname(fnname)
-        fnrefnode = nodes.footnote_reference('[%s]_' % fnname)
-        if refname[0] == '#':
-            refname = refname[1:]
-            fnname = fnname[1:]
-            fnrefnode['auto'] = 1
-            self.statemachine.memo.document.note_autofootnote_ref(fnrefnode)
+        """
+        Handles `nodes.footnote_reference` and `nodes.citation_reference`
+        elements.
+        """
+        label = match.group(self.inline.groups.initial.footnotelabel)
+        refname = normname(label)
+        if match.group(self.inline.groups.initial.citationlabel):
+            refnode = nodes.citation_reference('[%s]_' % label, refname=refname)
+            refnode += nodes.Text(label)
+            self.statemachine.memo.document.note_citation_ref(refnode)
         else:
-            fnrefnode += nodes.Text(fnname)
-        if refname:
-            fnrefnode['refname'] = refname
-            self.statemachine.memo.document.note_footnote_ref(fnrefnode)
+            refnode = nodes.footnote_reference('[%s]_' % label)
+            if refname[0] == '#':
+                refname = refname[1:]
+                refnode['auto'] = 1
+                self.statemachine.memo.document.note_autofootnote_ref(refnode)
+            elif refname == '*':
+                refname = ''
+                refnode['auto'] = '*'
+                self.statemachine.memo.document.note_symbol_footnote_ref(
+                      refnode)
+            else:
+                refnode += nodes.Text(label)
+            if refname:
+                refnode['refname'] = refname
+                self.statemachine.memo.document.note_footnote_ref(refnode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
-        return (string[:matchstart], [fnrefnode], string[matchend:], [])
+        return (string[:matchstart], [refnode], string[matchend:], [])
 
     def reference(self, match, lineno, anonymous=None):
         referencename = match.group(self.inline.groups.initial.refname)
@@ -714,13 +733,7 @@ class RSTState(StateWS):
                        '_': reference,
                        '__': anonymous_reference}
 
-    def inline_text(self, text, lineno,
-                    pattern=inline.patterns.initial,
-                    dispatch=inline.dispatch,
-                    start=inline.groups.initial.start-1,
-                    backquote=inline.groups.initial.backquote-1,
-                    refend=inline.groups.initial.refend-1,
-                    fnend=inline.groups.initial.fnend-1):
+    def inline_text(self, text, lineno):
         """
         Return 2 lists: nodes (text and inline elements), and system_messages.
 
@@ -733,6 +746,12 @@ class RSTState(StateWS):
         found or invalid, generate a warning and ignore the start-string.
         Standalone hyperlinks are found last.
         """
+        pattern = self.inline.patterns.initial
+        dispatch = self.inline.dispatch
+        start = self.inline.groups.initial.start - 1
+        backquote = self.inline.groups.initial.backquote - 1
+        refend = self.inline.groups.initial.refend - 1
+        fnend = self.inline.groups.initial.fnend - 1
         remaining = escape2null(text)
         processed = []
         unprocessed = []
@@ -1276,6 +1295,43 @@ class Body(RSTState):
             self.nestedparse(indented, inputoffset=offset, node=footnotenode)
         return [footnotenode], blankfinish
 
+    def footnote(self, match):
+        indented, indent, offset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end())
+        label = match.group(1)
+        name = normname(label)
+        footnote = nodes.footnote('\n'.join(indented))
+        if name[0] == '#':              # auto-numbered
+            name = name[1:]             # autonumber label
+            footnote['auto'] = 1
+            self.statemachine.memo.document.note_autofootnote(footnote)
+        elif name == '*':               # auto-symbol
+            name = ''
+            footnote['auto'] = '*'
+            self.statemachine.memo.document.note_symbol_footnote(footnote)
+        else:                           # manually numbered
+            footnote += nodes.label('', label)
+        if name:
+            footnote['name'] = name
+            self.statemachine.memo.document.note_explicit_target(footnote,
+                                                                 footnote)
+        if indented:
+            self.nestedparse(indented, inputoffset=offset, node=footnote)
+        return [footnote], blankfinish
+
+    def citation(self, match):
+        indented, indent, offset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end())
+        label = match.group(1)
+        name = normname(label)
+        citation = nodes.citation('\n'.join(indented))
+        citation += nodes.label('', label)
+        citation['name'] = name
+        self.statemachine.memo.document.note_explicit_target(citation, citation)
+        if indented:
+            self.nestedparse(indented, inputoffset=offset, node=citation)
+        return [citation], blankfinish
+
     def hyperlink_target(self, match,
                          pattern=explicit.patterns.target,
                          namegroup=explicit.groups.target.name):
@@ -1448,12 +1504,22 @@ class Body(RSTState):
            re.compile(r"""
                       \.\.[ ]+          # explicit markup start
                       \[
-                      (                 # footnote identifier:
-                          \#              # anonymous auto-numbered reference
+                      (                 # footnote label:
+                          [0-9]+          # manually numbered footnote
                         |               # *OR*
-                          \#?%s           # (auto-numbered?) footnote label
+                          \#              # anonymous auto-numbered footnote
+                        |               # *OR*
+                          \#%s            # auto-number ed?) footnote label
+                        |               # *OR*
+                          \*              # auto-symbol footnote
                       )
                       \]
+                      (?:[ ]+|$)        # whitespace or end of line
+                      """ % RSTState.inline.simplename, re.VERBOSE)),
+          (citation,
+           re.compile(r"""
+                      \.\.[ ]+          # explicit markup start
+                      \[(%s)\]          # citation label
                       (?:[ ]+|$)        # whitespace or end of line
                       """ % RSTState.inline.simplename, re.VERBOSE)),
           (hyperlink_target,
