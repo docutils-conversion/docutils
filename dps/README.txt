@@ -2,15 +2,16 @@
  README: Python Docstring Processing System
 ============================================
 
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/07/29 15:55:58 $
-Web-site: http://docstring.sourceforge.net/
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Date: $Date: 2001/08/23 03:53:45 $
+:Web-site: http://docstring.sourceforge.net/
 
 Thank you for downloading the Python Docstring Processing System
 project arhive. As this is a work in progress, please check the
 project web site for updated working files. The latest release archive
-is available at http://sf.net/project/showfiles.php?group_id=26626.
+is available at
+http://sourceforge.net/project/showfiles.php?group_id=26626.
 
 To run the code, Python 2.0 or later must already be installed. You
 can get Python from http://www.python.org/.

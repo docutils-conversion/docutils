@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.2 2001/07/28 04:48:21 goodger Exp $
+# $Id: setup.py,v 1.3 2001/08/23 03:53:54 goodger Exp $
 
 from distutils.core import setup
 
@@ -10,7 +10,7 @@ def do_setup():
           url = 'http://docstring.sourceforge.net/',
           version = '0.4',
           author = 'David Goodger',
-          author_email = 'dgoodger@bigfoot.com',
+          author_email = 'goodger@users.sourceforge.net',
           license = 'public domain',
           packages = ['dps', 'dps.parsers', 'dps.formatters',
                       'dps.languages'])
