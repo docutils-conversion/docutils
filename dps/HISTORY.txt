@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/07 02:13:11 $
+:Date: $Date: 2001/09/10 04:22:57 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -53,6 +53,12 @@ Changed contact email addresses.
   - Added slice support to elements.
   - Added .findclass() & .findnonclass() methods.
   - Added support for auto-numbered footnotes.
+  - Changed 'tagName' to 'tagname'.
+  - Improved auto-tagname generation.
+  - Added string-conversion to attribute values in DOM-conversion.
+  - Changed footnote/footnote_reference 'auto' attribute to integer.
+  - Moved 'abstract' into bibliographic elements section.
+  - Changed 'graphic' to 'image'.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -70,18 +76,21 @@ Changed contact email addresses.
 
   - Added named methods (aliases to numbered system_warning calls) to
     Errorist.
-  - Added language module support.
 
 * dps/parsers/model.py:
 
   - Added setup_parse() so unoverridden parse() could raise a
     NotImplementedError.
-  - Added language module support.
 
-* dps/languages/en.py: Now in use.
+* dps/languages/__init__.py:
+
+  - Added language module import function.
+
+* dps/languages/en.py:
 
   - Fixed ``__all__``.
   - Changed node class names to node classes.
+  - Removed parser-specific data.
 
 * spec/pep-0256.txt:
 
@@ -111,6 +120,7 @@ Changed contact email addresses.
     column span indication.
   - Made document subtitle dependent on the existence of a title.
   - Moved 'abstract' into the bibliographic elements section.
+  - Changed 'graphic' to 'image'.
 
 * spec/pdpi.dtd:
 
