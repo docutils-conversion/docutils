@@ -3,32 +3,29 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/09/13 02:29:39 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/09/17 04:28:26 $
 :Copyright: This module has been placed in the public domain.
 
-All of my previous ramblings about metaclasses_ are fatigue-deranged.
-The primary benefit of basing tests as ``test*`` methods in a very
-large TestCase is that they can share `setUp()` and `tearDown()`. If
-it's too hard to use the method method <ahem>, the appropriate recourse
-is to *find another way of providing shared fixtures*. So, here's the
-design I'm going to pursue when I can next sit down and hack code:
+Exports the following:
 
-`ParserTestSuite` instances will provide shared test fixtures (`sm`, an
-instance of `states.RSTStateMachine`) and methods (`matchOutput()` et
-al) and will crank out internally any `ParserTest`s required.
+:Modules:
+    Try to import modules from the current working copy of restructuredtext
+    first, or from the installed version. In test modules, import these modules
+    from here:
 
-I'll decide on whether it should subclass `unittest.Suite` or just
-return one from a `suite()` method when I get back to the code.
+    - `states` is 'restructuredtext.states'
+    - `tableparser` is 'restructuredtext.tableparser'
 
-Finally; now that I've decided on which class I'm going to expose, the
-filename of this module is looking like a silly choice. I'll ponder
-that issue later, too.
-
-.. _metaclasses: http://www.python.org/doc/essays/metaclasses/
+:Classes:
+    - `CustomTestSuite`
+    - `CustomTestCase`
+    - `ParserTestSuite`
+    - `ParserTestCase`
+    - `TableParserTestSuite`
+    - `TableParserTestCase`
 """
-
-__all__ = [ 'ParserTestSuite', 'TableParserTestSuite' ]
+__docformat__ = 'reStructuredText'
 
 import UnitTestFolder
 import sys, os, unittest, re, difflib, types, inspect
