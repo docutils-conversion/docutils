@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.39 $
-:Date: $Date: 2002/03/01 03:01:30 $
+:Revision: $Revision: 1.40 $
+:Date: $Date: 2002/03/04 04:37:18 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -769,7 +769,7 @@ Bibliographic Fields
 ````````````````````
 
 DTD elements: docinfo, author, authors, organization, contact,
-version, status, date, copyright, abstract.
+version, status, date, copyright, topic.
 
 When a field list is the first non-comment element in a document
 (after the document title, if there is one), it may have certain
@@ -801,9 +801,10 @@ elements are as follows:
 - "Status": status.
 - "Date": date.
 - "Copyright": copyright.
-- "Abstract": abstract. May contain arbitrary body elements. Only one
-  abstract is allowed. The abstract becomes a section-equivalent
-  immediately following the docinfo element.
+- "Abstract": topic. May contain arbitrary body elements. Only one
+  abstract is allowed. The abstract becomes a topic element with title
+  "Abstract" (or language equivalent) immediately following the
+  docinfo element.
 
 This field-name-to-element mapping can be extended, or replaced for
 other languages. See the `DocInfo transform`_ implementation
@@ -839,7 +840,7 @@ hold:
 2. The field name is a recognized bibliographic field name.
 
 3. The sole contents of the field is an expanded RCS keyword, of the
-   form '$Keyword: data $'.
+   form "$Keyword: data $".
 
 
 Option Lists
@@ -1457,9 +1458,7 @@ anonymous targets.
 Directives
 ``````````
 
-.. No DTD element at present.
-
-   DTD element: directive.
+DTD elements: depend on the directive.
 
 Directives are indicated by an explicit markup start (".. ") followed
 by the directive type, two colons, and whitespace. Directive types are
