@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.25 $
-:Date: $Date: 2001/10/18 03:53:42 $
+:Revision: $Revision: 1.26 $
+:Date: $Date: 2001/10/20 02:52:35 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -532,9 +532,6 @@ class RSTState(StateWS):
                           'and role with phrase-link end-string at line %s.'
                           % lineno)
                     return (string[:matchend], [], string[matchend:], [sw])
-                if rawsource[-2:] == '__':
-                    # @@@
-                    pass
                 return self.phrase_link(
                       string[:matchstart], string[matchend:][endmatch.end():],
                       text, rawsource)
@@ -550,7 +547,10 @@ class RSTState(StateWS):
 
     def phrase_link(self, before, after, text, rawsource):
         refname = normname(text)
-        inlineobj = nodes.link(rawsource, text, refname=normname(text))
+        attributes = {'refname': refname}
+        if rawsource[-2:] == '__':
+            attributes['anonymous'] = 1
+        inlineobj = nodes.link(rawsource, text, **attributes)
         self.statemachine.memo.document.addrefname(refname, inlineobj)
         return (before, [inlineobj], after, [])
 
@@ -594,10 +594,14 @@ class RSTState(StateWS):
         matchend = match.end(self.inline.groups.initial.whole)
         return (string[:matchstart], [fnrefnode], string[matchend:], [])
 
-    def link(self, match, lineno, pattern=None):
+    def link(self, match, lineno, pattern=None, attributes=None):
+        attributes = attributes or {}   # initialize if None
         linkname = match.group(self.inline.groups.initial.linkname)
         refname = normname(linkname)
-        linknode = nodes.link(linkname + '_', linkname, refname=refname)
+        attributes['refname'] = refname
+        linknode = nodes.link(
+              linkname + match.group(self.inline.groups.initial.linkend),
+              linkname, **attributes)
         self.statemachine.memo.document.addrefname(refname, linknode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
@@ -605,15 +609,7 @@ class RSTState(StateWS):
         return (string[:matchstart], [linknode], string[matchend:], [])
 
     def anonymous_link(self, match, lineno, pattern=None):
-        # @@@
-        linkname = match.group(self.inline.groups.initial.linkname)
-        refname = normname(linkname)
-        linknode = nodes.link(linkname + '_', linkname, refname=refname)
-        self.statemachine.memo.document.addrefname(refname, linknode)
-        string = match.string
-        matchstart = match.start(self.inline.groups.initial.whole)
-        matchend = match.end(self.inline.groups.initial.whole)
-        return (string[:matchstart], [linknode], string[matchend:], [])
+        return self.link(match, lineno, pattern, {'anonymous': 1})
 
     def standalone_uri(self, text, lineno, pattern=inline.patterns.uri,
                        whole=inline.groups.uri.whole,
@@ -1204,7 +1200,7 @@ class Body(RSTState):
         else:
             target = nodes.target(blocktext, reference)
             if reference:
-                self.statemachine.memo.document.addindirectlink(
+                self.statemachine.memo.document.addexternallink(
                       name, reference, target, self.statemachine.node)
             else:
                 self.statemachine.memo.document.addexplicitlink(
@@ -1307,12 +1303,12 @@ class Body(RSTState):
         return nodelist + errors, blankfinish
 
     def overline(self, match, context, nextstate):
-        """Section title."""
+        """Section title or division marker."""
         makesection = 1
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
             sw = self.statemachine.memo.reporter.severe(
-                  'Unexpected section title at line %s.' % lineno)
+                  'Unexpected section title or division at line %s.' % lineno)
             self.statemachine.node += sw
             return [], nextstate, []
         title = underline = ''
@@ -1321,7 +1317,8 @@ class Body(RSTState):
             underline = self.statemachine.nextline()
         except IndexError:
             sw = self.statemachine.memo.reporter.severe(
-                  'Incomplete section title at line %s.' % lineno)
+                  'Incomplete section title or empty division at line %s.'
+                  % lineno)
             self.statemachine.node += sw
             makesection = 0
         source = '%s\n%s\n%s' % (match.string, title, underline)
