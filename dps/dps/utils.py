@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2002/02/06 02:53:53 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/02/07 02:00:45 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous utilities for the documentation utilities.
@@ -23,9 +23,31 @@ class SystemWarning(Exception):
 class Reporter:
 
     """
-    The concept of "categories" was inspired by the log4j__ project.
+    Info/warning/error reporter and ``system_warning`` element generator.
 
-    __ http://jakarta.apache.org/log4j/
+    Five levels of system warnings are defined, along with corresponding
+    methods: `debug()`, `info()`, `warning()`, `error()`, and `severe()`.
+
+    There is typically one Reporter object per process. A Reporter object is
+    instantiated with thresholds for generating warnings and errors (raising
+    exceptions), a switch to turn debug output on or off, and a I/O stream for
+    warnings. These are stored in the default reporting category, ''.
+
+    Multiple reporting categories [#]_ may be set, each with its own warning
+    and error thresholds, debugging switch, and warning stream. Categories are
+    hierarchically-named strings that look like attribute references: 'spam',
+    'spam.eggs', 'neeeow.wum.ping'. The 'spam' category is the ancestor of
+    'spam.bacon.eggs'. Unset categories inherit stored values from their
+    closest ancestor category that has been set.
+
+    When a system warning is generated, the stored values from its category
+    (or ancestor if unset) are retrieved. The system warning level is compared
+    to the thresholds stored in the category, and a warning or error is
+    generated as appropriate. Debug warnings are produced iff the stored debug
+    switch is on. Warning output is sent to the stored warning stream.
+
+    .. [#]_ The concept of "categories" was inspired by the log4j project:
+       http://jakarta.apache.org/log4j/.
     """
 
     levels = 'DEBUG INFO WARNING ERROR SEVERE'.split()
@@ -34,9 +56,9 @@ class Reporter:
     def __init__(self, warninglevel, errorlevel, warningstream=None, debug=0):
         """
         Initialize the `Reporter`'s default logging category.
-        
+
         Parameters:
-        
+
         - `warninglevel`: The level at or above which warning output will be
           sent to `warningstream`.
         - `errorlevel`: The level at or above which `SystemWarning` exceptions
@@ -48,9 +70,9 @@ class Reporter:
 
         if warningstream is None:
             warningstream = sys.stderr
- 
+
         self.categories = {'': (debug, warninglevel, errorlevel, warningstream)}
-        """Mapping of category names to levels. Default is ''."""
+        """Mapping of category names to levels. Default category is ''."""
 
     def setcategory(self, category, warninglevel, errorlevel,
                     warningstream=None, debug=0):
@@ -87,18 +109,40 @@ class Reporter:
         return sw
 
     def debug(self, comment=None, children=[], category=''):
+        """
+        Level-0, "DEBUG": an internal reporting issue. Typically, there is no
+        effect on the processing. Level-0 system warnings are handled
+        separately from the others.
+        """
         return self.system_warning(0, comment, children, category)
 
     def info(self, comment=None, children=[], category=''):
+        """
+        Level-1, "INFO": a minor issue that can be ignored. Typically there is
+        no effect on processing, and level-1 system warnings are not reported.
+        """
         return self.system_warning(1, comment, children, category)
 
     def warning(self, comment=None, children=[], category=''):
+        """
+        Level-2, "WARNING": an issue that should be addressed. If ignored,
+        there may be unpredictable problems with the output.
+        """
         return self.system_warning(2, comment, children, category)
 
     def error(self, comment=None, children=[], category=''):
+        """
+        Level-3, "ERROR": an error that should be addressed. If ignored, the
+        output will contain errors.
+        """
         return self.system_warning(3, comment, children, category)
 
     def severe(self, comment=None, children=[], category=''):
+        """
+        Level-4, "SEVERE": a severe error that must be addressed. If ignored,
+        the output will contain severe errors. Typically level-4 system
+        warnings are turned into exceptions which halt processing.
+        """
         return self.system_warning(4, comment, children, category)
 
 
@@ -114,7 +158,7 @@ def parseattributes(lines, attributespec):
 
     :Parameters:
         - `lines`: List of one-line strings of the form::
-          
+
             ['[name1=value1 name2=value2]', '[name3="value 3"]']
 
         - `attributespec`: Dictionary mapping known attribute names to a
