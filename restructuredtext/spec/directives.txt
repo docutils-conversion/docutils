@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/13 03:42:19 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/09/18 04:39:25 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -18,10 +18,10 @@ DTD elements: attention, caution, danger, error, important, note, tip,
 warning.
 
 Admonitions are specially marked 'topics' that can appear anywhere an
-ordinary body element can. They contain arbitrary body elements.
+ordinary body element can.  They contain arbitrary body elements.
 Typically, an admonition is rendered as an offset block in a document,
 sometimes outlined or shaded, with a title matching the admonition
-type. For example::
+type.  For example::
 
     .. DANGER::
        Beware killer rabbits!
@@ -47,7 +47,7 @@ The following admonition directives have been implemented:
 
 Any text immediately following the directive indicator (on the same
 line and/or indented on following lines) is interpreted as a directive
-block and is parsed for normal body elements. For example, the
+block and is parsed for normal body elements.  For example, the
 following 'note' admonition directive contains one paragraph and a
 bullet list consisting of two list items::
 
@@ -63,19 +63,47 @@ bullet list consisting of two list items::
  Image Directives
 ------------------
 
-DTD elements: image, figure, caption, legend.
+There are two image directives: 'image' and 'figure'.
 
-There are two image directives: 'image' and 'figure'. An 'image' is a
-simple picture::
+
+Image
+=====
+
+DTD element: image.
+
+An 'image' is a simple picture::
 
     .. image:: picture.png
 
 The URI for the image source file is specified in the directive data.
+As with hyperlink targets, the image URI may begin on the same line as
+the explicit markup start and target name, or it may begin in an
+indented text block immediately following, with no intervening blank
+lines.  If there are multiple lines in the link block, they are
+stripped of leading and trailing whitespace and joined together.
+
+Optionally, the last line of the link block may contain an image
+attribute specification, in square brackets, as follows::
+
+    .. image:: picture.png
+               [height=100 width=200 scale=50]
+
+The attribute specification must be the only text on that line.  None,
+some, or all of the 'height', 'width', and 'scale' attributes may be
+present.  The values are all integers; 'height' and 'width' values are
+in pixels, and 'scale' is a percentage.
+
+
+Figure
+======
+
+DTD elements: figure, image, caption, legend.
 
 A 'figure' consists of an image, an optional caption (a single
 paragraph), and an optional legend (arbitrary body elements)::
 
     .. figure:: picture.png
+
        This is the caption of the figure (a simple paragraph).
 
        +-----------------------+-----------------------+
@@ -87,9 +115,10 @@ paragraph), and an optional legend (arbitrary body elements)::
        +-----------------------+-----------------------+
        | .. image:: peak.png   | Mountain              |
        +-----------------------+-----------------------+
-                             
-To specify a legend without a caption, use an empty comment ('..') in
-place of the caption.
+
+There must be a blank line before the caption paragraph.  To specify a
+legend without a caption, use an empty comment ('..') in place of the
+caption.
 
 
 --------------------------
@@ -101,7 +130,8 @@ Test Directive
 
 DTD element: directive.
 
-'Restructuredtext-test-directive' is provided for test purposes.
+'Restructuredtext-test-directive' is provided for test purposes
+(nobody is expected to type in a name *that* long!).
 
 
 ..
