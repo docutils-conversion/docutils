@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/09/26 03:46:09 $
-:Revision: $Revision: 1.19 $
+:Date: $Date: 2001/10/18 04:10:20 $
+:Revision: $Revision: 1.20 $
 
 
 To Do
@@ -37,6 +37,10 @@ To Do
 - Tony says inline markup rule 7 could do with a *little* more
   exposition in the spec, to make clear what is going on for people
   with head colds.
+
+- To avoid mistakenly marking up text like ``signal:noise`` as URIs,
+  limit standalone hyperlink URI recognition to known schemes, as per
+  http://www.w3.org/Addressing/schemes.html.
 
 
 Or Not To Do?
@@ -188,7 +192,7 @@ A more complex example shows the limitations of lazy indentation::
           Definition. The indentation of the term is
     required, as is the indentation of the definition's
     first line.
-    
+
           When the definition extends to more than
     one line, lazy indentation may occur. (This is the second
     paragraph of the definition.)
@@ -208,10 +212,10 @@ And the ambiguity remains::
 
     - Look at the hyphen at the beginning of the next line
     - is it a second list item marker, or a dash in the text?
-    
+
     Similarly, we may want to refer to numbers inside enumerated
     lists:
-    
+
     1. How many socks in a pair? There are
     2. How many pants in a pair? Exactly
     1. Go figure.
@@ -255,6 +259,32 @@ syntax.  A line of punctuation with a blank line before and after::
 
 The problem is, HRs are purely presentational.  What structural
 significance do they have?
+
+Hmm. Stories are often broken up into "segments" with vertical
+whitespace, sometimes with a horizontal line or a group of symbols
+(e.g. three widely-separated asterisks). This could be modeled by
+horizontal rules.
+
+HRs could be allowed to be indented without generating a block quote::
+
+    Para.
+
+        --------
+
+    Para.
+
+Tony Ibbs' mention of HRs on 2001-10-16 triggered an idea from the
+nether regions of my cerebrum, relating to constructs commonly seen in
+novels and short fiction.  Rummaging around in my copy of The Chicago
+Manual of Style, 14th ed., I found this confirmation (sect. 1.80):
+
+    Instead of subheads, extra space or a type ornament between
+    paragraphs may be used to mark text divisions or to signal
+    changes in subject or emphasis.
+
+In other words, "anonymous sections"! *There's* the structural
+significance. An HTML Writer could render these text divisions as
+horizontal rules if it likes.
 
 
 ..

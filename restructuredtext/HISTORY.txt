@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/26 03:45:26 $
+:Date: $Date: 2001/10/18 04:09:12 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -17,12 +17,12 @@ encouragement, suggestions, criticism, bug reports, code
 contributions, and ideas borrowed from related projects:
 
     David Ascher, Remi Bertholet, Fred Drake, Jim Fulton, Peter Funk,
-    Doug Hellmann, Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel
-    Larsson, Marc-Andre Lemburg, Wolfgang Lipp, Edward Loper, Ken
-    Manheimer, Alex Martelli, Paul Moore, Michel Pelletier, Sam
-    Penrose, Tim Peters, Mark Pilgrim, Tavis Rudd, Bob Tolbert,
-    Laurence Tratt, Guido van Rossum, Barry Warsaw, Edward Welbourne,
-    Ka-Ping Yee, Moshe Zadka
+    Doug Hellmann, Juergen Hermann, Tony (Tibs) Ibbs, Alan Jaffray,
+    Garth Kidd, Daniel Larsson, Marc-Andre Lemburg, Wolfgang Lipp,
+    Edward Loper, Ken Manheimer, Alex Martelli, Paul Moore, Michel
+    Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim, Tavis Rudd, Ueli
+    Schlaepfer, Bob Tolbert, Laurence Tratt, Guido van Rossum, Barry
+    Warsaw, Edward Welbourne, Paul Wright, Ka-Ping Yee, Moshe Zadka
 
 (I'm still waiting for contributions of yummy treats, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten
@@ -99,6 +99,7 @@ Changed contact email addresses.
     code to methods.
   - Removed debug code.
   - Updated: 'errorist' -> 'reporter'.
+  - Adding anonymous hyperlinks.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
@@ -157,6 +158,10 @@ Changed contact email addresses.
 
 * sandbox/rtxt2html: Subdirectory added, from files by Remi Bertholet.
 
+* sandbox/paulw: Subdirectory added, from files by Paul Wright.
+
+* sandbox/alanj: Subdirectory added, from files by Alan Jaffray.
+
 * spec/alternatives.txt: Added to project.
 
 * spec/directives.txt: Added to project.
@@ -214,11 +219,13 @@ Changed contact email addresses.
   - Reworked literal block section in a more logical and
     easy-to-remember way.
   - Converted footnotes to auto-numbered.
-  - Added section explaining the top-level document element.
   - Standardized on double-quotes (").
-  - Added section on 'Post-Parse Transformations'
-  - Moved explanation of bibliographic field lists to transformations
-    section.
+  - Changed "indirect hyperlinks" to "external hyperlinks".
+  - Added new "indrect hyperlinks".
+  - Added "anonymous hyperlinks".
+  - Rearranged hyperlink description.
+  - Added "Document Structure" section.
+  - Added "division" construct.
 
 * spec/pyextensions.txt:
 
