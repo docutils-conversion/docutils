@@ -3,8 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.8 $
-Date: $Date: 2001/08/11 23:20:05 $
+Revision: $Revision: 1.9 $
+Date: $Date: 2001/08/15 03:01:55 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -759,11 +759,18 @@ Footnotes
 
 DTD elements: footnote, label.
 
-Footnotes consist of an explicit markup start ('.. '), an underscore, a
-left square bracket, the footnote label, a right square bracket, and
-whitespace, followed by body elements. Footnote labels are simple
-`hyperlink names`_ (case-insensitive single words consisting of
-alphanumerics plus hyphens, underscores, and periods; no whitespace).
+Footnotes consist of an explicit markup start ('.. '), an underscore,
+a left square bracket, the footnote label, a right square bracket, and
+whitespace, followed by body elements. Footnote labels can be:
+
+- simple `hyperlink names`_ (case-insensitive single words consisting
+  of alphanumerics plus hyphens, underscores, and periods; no
+  whitespace),
+
+- a single '#' (denoting `auto-numbered footnotes`_), or
+
+- a '#' followed by a simple hyperlink name.
+
 If the first body element within a footnote is a simple paragraph, it
 may begin on the same line as the footnote label. Other elements must
 begin on a new line, consistently indented and left-aligned.
@@ -782,6 +789,12 @@ Syntax diagram::
     +-------+                         |
             | (body elements)+        |
             +-------------------------+
+
+
+Auto-Numbered Footnotes
+.......................
+
+XXX
 
 
 Hyperlink Targets
@@ -910,7 +923,8 @@ directive-dependent. No directives have been defined by the core
 reStructuredText specification. The following are only examples of
 *possible uses* of directives.
 
-Directives can be used as an extension mechanism for reStructuredText.
+Directives can be used as an extension mechanism for reStructuredText,
+a way of adding support for new constructs without adding new syntax.
 For example, here's how a graphic could be placed::
 
     .. graphic:: mylogo.png
@@ -1000,6 +1014,16 @@ follows:
 For example, none of the following are recognized as containing inline
 markup start-strings: ' * ', '"*"', "'*'", '(*)', '(* ', '[*]', '{*}',
 '\*', ' ` ', etc.
+
+The inline markup recognition rules were devised intentionally to
+allow 90% of legitimate uses of '*' and '`' *without* resorting to
+backslashes. For 9 of the remaining 10%, use inline literals or
+literal blocks::
+
+    "``\*``" -> "\*" (possibly in another font or quoted)
+
+Only those who understand the escaping and inline markup rules may
+attempt the remaining 1%. ;-)
 
 
 Emphasis
