@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2001/10/18 03:32:58 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2001/10/20 03:02:05 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -35,6 +35,9 @@ by wrapper DTDs.
 <!-- Attributes
 ================================================================== -->
 
+<!-- Boolean: no if zero(s), yes if any other value. -->
+<!ENTITY % yesorno "NMTOKEN">
+
 <!ENTITY % additional.basic.atts "">
 <!--
 Attributes shared by all elements in this DTD:
@@ -51,27 +54,33 @@ Attributes shared by all elements in this DTD:
     source    CDATA     #IMPLIED
     %additional.basic.atts; ">
 
-<!ENTITY % additional.link.atts "">
-<!--
-Hyperlink attributes.
+<!-- Reference to an external URI/URL. -->
+<!ENTITY % refuri.att
+  " refuri    CDATA     #IMPLIED ">
 
-- `refuri` is used to refer to an external URI/URL.
-- `refid` is used to refer to the `id` attribute of another element.
-- `refname` is used to refer to the `name` attribute of another
-  element.
--->
+<!-- Reference to the `id` attribute of another element. -->
+<!ENTITY % refid.att
+  " refid     IDREF     #IMPLIED ">
+
+<!-- Reference to the `name` attribute of another element. -->
+<!ENTITY % refname.att
+  " refname   CDATA     #IMPLIED ">
+
+<!ENTITY % additional.link.atts "">
+<!-- Collected hyperlink attributes. -->
 <!ENTITY % link.atts
-  " refuri    CDATA     #IMPLIED
-    refid     IDREF     #IMPLIED
-    refname   CDATA     #IMPLIED
+  " %refuri.att;
+    %refid.att;
+    %refname.att;
     %additional.link.atts; ">
+
+<!-- Unnamed hyperlink. -->
+<!ENTITY % anonymous.att
+  " anonymous %yesorno; #IMPLIED ">
 
 <!-- XML standard attribute for whitespace-preserving elements. -->
 <!ENTITY % fixedspace.att
   " xml:space (default | preserve) #FIXED 'preserve' ">
-
-<!-- Boolean: no if zero(s), yes if any other value. -->
-<!ENTITY % yesorno 'NMTOKEN'>
 
 
 <!-- Element OR-Lists
@@ -109,8 +118,7 @@ Hyperlink attributes.
 ================================================================== -->
 
 <!ENTITY % structure.model
-  " ( ((%body.elements;)+, division*, (%structural.elements;)*)
-    | (division+, (%structural.elements;)*)
+  " ( (division+, (%structural.elements;)*)
     | (%structural.elements;)+ ) ">
 
 <!ENTITY % text.model
@@ -339,7 +347,10 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ATTLIST label %basic.atts;>
 
 <!ELEMENT target (#PCDATA)>
-<!ATTLIST target %basic.atts;>
+<!ATTLIST target
+    %basic.atts;
+    %refname.att;
+    %anonymous.att;>
 
 <!ELEMENT directive (%body.elements;)*>
 <!ATTLIST directive
@@ -399,7 +410,8 @@ Inline elements occur within the PCDATA of body elements.
 <!ELEMENT link (#PCDATA)>
 <!ATTLIST link
     %basic.atts;
-    %link.atts;>
+    %link.atts;
+    %anonymous.att;>
 
 <!ELEMENT footnote_reference (#PCDATA)>
 <!ATTLIST footnote_reference
