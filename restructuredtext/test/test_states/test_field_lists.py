@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/13 02:39:39 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/09/18 04:44:19 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -689,6 +689,21 @@ Title
                 <system_warning level="2">
                     <paragraph>
                         Bibliographic field "Authors" incompatible with extraction: it must contain either a single paragraph (with authors separated by one of ";,"), multiple paragraphs (one per author), or a bullet list with one paragraph (one author) per item.
+"""],
+["""\
+.. RCS keyword extraction.
+
+:Title: Document Title
+:Status: $RCSfile: test_field_lists.py,v $
+""",
+"""\
+<document>
+    <title>
+        Document Title
+    <status>
+        test_field_lists.py,v
+    <comment>
+        RCS keyword extraction.
 """],
 ]
 
