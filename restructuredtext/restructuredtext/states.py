@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.26 $
-:Date: $Date: 2001/10/20 02:52:35 $
+:Revision: $Revision: 1.27 $
+:Date: $Date: 2001/10/23 03:36:44 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -309,7 +309,8 @@ class RSTState(StateWS):
         titlenode = nodes.title(title, '', *textnodes)
         sectionnode += titlenode
         sectionnode += warnings
-        memo.document.addimplicitlink(normname(titlenode.astext()), sectionnode)
+        memo.document.addimplicittarget(normname(titlenode.astext()),
+                                        sectionnode)
         offset = self.statemachine.lineoffset + 1
         absoffset = self.statemachine.abslineoffset() + 1
         newabsoffset = self.nestedparse(
@@ -575,7 +576,7 @@ class RSTState(StateWS):
         return self.inlineobj(match, lineno, pattern, nodes.literal,
                               restorebackslashes=1)
 
-    def footnote_reference(self, match, lineno, pattern=None):
+    def footnote_reference(self, match, lineno):
         fnname = match.group(self.inline.groups.initial.footnotelabel)
         refname = normname(fnname)
         fnrefnode = nodes.footnote_reference('[%s]_' % fnname)
@@ -594,22 +595,24 @@ class RSTState(StateWS):
         matchend = match.end(self.inline.groups.initial.whole)
         return (string[:matchstart], [fnrefnode], string[matchend:], [])
 
-    def link(self, match, lineno, pattern=None, attributes=None):
-        attributes = attributes or {}   # initialize if None
+    def link(self, match, lineno, anonymous=None):
         linkname = match.group(self.inline.groups.initial.linkname)
         refname = normname(linkname)
-        attributes['refname'] = refname
+        attributes = {'refname': refname}
         linknode = nodes.link(
               linkname + match.group(self.inline.groups.initial.linkend),
-              linkname, **attributes)
+              linkname, refname=refname)
         self.statemachine.memo.document.addrefname(refname, linknode)
+        if anonymous:
+            linknode['anonymous'] = 1
+            self.statemachine.memo.document.addanonymousref(linknode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
         return (string[:matchstart], [linknode], string[matchend:], [])
 
-    def anonymous_link(self, match, lineno, pattern=None):
-        return self.link(match, lineno, pattern, {'anonymous': 1})
+    def anonymous_link(self, match, lineno):
+        return self.link(match, lineno, anonymous=1)
 
     def standalone_uri(self, text, lineno, pattern=inline.patterns.uri,
                        whole=inline.groups.uri.whole,
@@ -1143,19 +1146,42 @@ class Body(RSTState):
 
     explicit.patterns = Stuff(
           target=re.compile(r"""
-                            (`?)        # optional open quote
-                            (?!=[ ])    # first char. not space
-                            (           # hyperlink name
-                              .+?
+                            (?:
+                              (`?)        # optional open quote
+                              (?![ `])    # first char. not space or backquote
+                              (           # hyperlink name
+                                .+?
+                              )
+                              %s          # not whitespace or escape
+                              \1          # close quote if open quote used
+                            |           # *OR*
+                              (_)         # anonymous target
                             )
                             %s          # not whitespace or escape
-                            \1          # close quote if open quote used
                             :           # end of hyperlink name
                             (?:[ ]+|$)    # followed by whitespace
-                            """ % RSTState.inline.non_whitespace_escape_before,
-                            re.VERBOSE),)
+                            """ 
+                            % (RSTState.inline.non_whitespace_escape_before,
+                               RSTState.inline.non_whitespace_escape_before),
+                            re.VERBOSE),
+          reference=re.compile(r"""
+                               (?:
+                                 (%s)_       # simple hyperlink name
+                               |           # *OR*
+                                 `           # open backquote
+                                 (?![ ])     # not space
+                                 (.+?)       # hyperlink phrase
+                                 %s          # not whitespace or escape
+                                 `_          # close backquote & reference mark
+                               )
+                               $           # end of string
+                               """ %
+                               (RSTState.inline.simplename,
+                                RSTState.inline.non_whitespace_escape_before,),
+                               re.VERBOSE))
     explicit.groups = Stuff(
-          target=Stuff(quote=1, name=2))
+          target=Stuff(quote=1, name=2, anonymous=3),
+          reference=Stuff(simple=1, phrase=2))
 
     def footnote(self, match):
         indented, indent, offset, blankfinish = \
@@ -1169,27 +1195,37 @@ class Body(RSTState):
         else:
             footnotenode += nodes.label('', label)
         if name:
-            self.statemachine.memo.document.addimplicitlink(name, footnotenode)
+            self.statemachine.memo.document.addimplicittarget(name,
+                                                              footnotenode)
         if indented:
             self.nestedparse(indented, inputoffset=offset, node=footnotenode)
         return [footnotenode], blankfinish
 
     def hyperlink_target(self, match,
                          pattern=explicit.patterns.target,
-                         namegroup=explicit.groups.target.name):
+                         namegroup=explicit.groups.target.name,
+                         anonymousgroup=explicit.groups.target.anonymous):
         escaped = escape2null(match.string)
         targetmatch = pattern.match(escaped[match.end():])
         if not targetmatch:
             raise MarkupError('malformed hyperlink target at line %s.'
                               % self.statemachine.abslineno())
         referencestart = match.end() + targetmatch.end()
-        name = normname(unescape(targetmatch.group(namegroup)))
         block, indent, offset, blankfinish \
               = self.statemachine.getfirstknownindented(referencestart,
                                                         uptoblank=1)
-        reference = ''.join([line.strip() for line in block])
         blocktext = match.string[:referencestart] + '\n'.join(block)
+        if block and block[-1].strip()[-1:] == '_': # possible indirect target
+            reference = escape2null(' '.join([line.strip() for line in block]))
+            refname = self.isreference(reference)
+            if refname:
+                target = nodes.target(blocktext, '', refname=refname)
+                self.addtarget(targetmatch.group(namegroup), '', target)
+                self.statemachine.memo.document.addindirecttarget(refname,
+                                                                  target)
+                return [target], blankfinish
         nodelist = []
+        reference = escape2null(''.join([line.strip() for line in block]))
         if reference.find(' ') != -1:
             warning = self.statemachine.memo.reporter.warning(
                   'Hyperlink target at line %s contains whitespace. '
@@ -1198,15 +1234,35 @@ class Body(RSTState):
             warning += nodes.literal_block(blocktext, blocktext)
             nodelist.append(warning)
         else:
-            target = nodes.target(blocktext, reference)
-            if reference:
-                self.statemachine.memo.document.addexternallink(
-                      name, reference, target, self.statemachine.node)
-            else:
-                self.statemachine.memo.document.addexplicitlink(
-                      name, target, self.statemachine.node)
+            unescaped = unescape(reference)
+            target = nodes.target(blocktext, unescaped)
+            self.addtarget(targetmatch.group(namegroup), unescaped, target)
             nodelist.append(target)
         return nodelist, blankfinish
+
+    def isreference(self, reference,
+                    pattern=explicit.patterns.reference,
+                    simplegroup=explicit.groups.reference.simple,
+                    phrasegroup=explicit.groups.reference.phrase):
+        match = pattern.match(reference)
+        if not match:
+            return None
+        return normname(unescape(match.group(simplegroup)
+                                 or match.group(phrasegroup)))
+
+    def addtarget(self, targetname, reference, target):
+        if targetname:
+            name = normname(unescape(targetname))
+            if reference:
+                self.statemachine.memo.document.addexternaltarget(
+                      name, reference, target, self.statemachine.node)
+            else:
+                self.statemachine.memo.document.addexplicittarget(
+                      name, target, self.statemachine.node)
+        else:                       # anonymous target
+            self.statemachine.memo.document.addanonymoustarget(
+                      target, self.statemachine.node)
+
 
     def directive(self, match):
         typename = match.group(1)
