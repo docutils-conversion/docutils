@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.38 $
-:Date: $Date: 2002/03/28 04:46:24 $
+:Revision: $Revision: 1.39 $
+:Date: $Date: 2002/04/13 17:08:10 $
 :Copyright: This module has been placed in the public domain.
 
 Docutils document tree element class library.
@@ -23,7 +23,7 @@ import sys, os
 import xml.dom.minidom
 from types import IntType, SliceType, StringType, TupleType, ListType
 from UserString import MutableString
-from dps import utils
+import utils
 import dps
 
 
@@ -243,7 +243,7 @@ class Element(Node):
 
     def starttag(self):
         parts = [self.tagname]
-        for name, value in self.attlist:
+        for name, value in self.attlist():
             if value is None:           # boolean attribute
                 parts.append(name)
             elif isinstance(value, ListType):
@@ -334,6 +334,10 @@ class Element(Node):
 
     def hasattr(self, attr):
         return self.attributes.has_key(attr)
+
+    def delattr(self, attr):
+        if self.attributes.has_key(attr):
+            del self.attributes[attr]
 
     def setdefault(self, key, failobj=None):
         return self.attributes.setdefault(key, failobj)
@@ -446,15 +450,15 @@ class TextElement(Element):
 #  Mixins
 # ========
 
-class ToBeResolved:
+class Resolvable:
 
     resolved = 0
 
 
 class BackLinkable:
 
-    def add_refid(self, refid):
-        self.setdefault('refid', []).append(refid)
+    def add_backref(self, refid):
+        self.setdefault('backrefs', []).append(refid)
 
 
 # ====================
@@ -493,11 +497,14 @@ class Component: pass
 
 class Inline: pass
 
+class Referential(Resolvable): pass
+    #refnode = None
+    #"""Resolved reference to a node."""
 
-class Referential(ToBeResolved):
 
-    refnode = None
-    """Resolved reference to a node."""
+class Targetable(Resolvable):
+
+    referenced = 0
 
 
 # ==============
@@ -522,17 +529,23 @@ class document(Root, Structural, Element):
         """Mapping of target names to implicit (internal) target
         nodes."""
 
-        self.external_targets = {}
-        """Mapping of target names to external target nodes."""
+        self.external_targets = []
+        """List of external target nodes."""
 
-        self.indirect_targets = {}
-        """Mapping of target names to indirect target nodes."""
+        self.internal_targets = []
+        """List of internal target nodes."""
+
+        self.indirect_targets = []
+        """List of indirect target nodes."""
 
         self.substitution_defs = {}
         """Mapping of substitution names to substitution_definition nodes."""
 
         self.refnames = {}
-        """Mapping of reference names to lists of reference nodes."""
+        """Mapping of names to lists of referencing nodes."""
+
+        self.refids = {}
+        """Mapping of ids to lists of referencing nodes."""
 
         self.nameids = {}
         """Mapping of names to unique id's."""
@@ -568,11 +581,14 @@ class document(Root, Structural, Element):
         self.symbol_footnote_refs = []
         """List of symbol footnote_reference nodes."""
 
+        self.footnotes = []
+        """List of manually-numbered footnote nodes."""
+
+        self.citations = []
+        """List of citation nodes."""
+
         self.pending = []
         """List of pending elements @@@."""
-
-        self.anonymous_start = 1
-        """Initial anonymous hyperlink number."""
 
         self.autofootnote_start = 1
         """Initial auto-numbered footnote number."""
@@ -597,7 +613,7 @@ class document(Root, Structural, Element):
         if node.has_key('id'):
             id = node['id']
             if self.ids.has_key(id) and self.ids[id] is not node:
-                msg = self.reporter.error('Duplicate ID: "%s".' % id)
+                msg = self.reporter.severe('Duplicate ID: "%s".' % id)
                 msgnode += msg
         else:
             if node.has_key('name'):
@@ -610,53 +626,54 @@ class document(Root, Structural, Element):
             node['id'] = id
         self.ids[id] = node
         if node.has_key('name'):
-            name = node['name']
-            self.nameids[name] = id
+            self.nameids[node['name']] = id
         return id
 
-    def note_implicit_target(self, targetnode, msgnode=None):
+    def note_implicit_target(self, target, msgnode=None):
         if msgnode == None:
             msgnode = self.messages
-        id = self.set_id(targetnode, msgnode)
-        name = targetnode['name']
+        id = self.set_id(target, msgnode)
+        name = target['name']
         if self.explicit_targets.has_key(name) \
               or self.implicit_targets.has_key(name):
             msg = self.reporter.info(
-                  'Duplicate implicit target name: "%s".' % name, refid=id)
+                  'Duplicate implicit target name: "%s".' % name, backrefs=[id])
             msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
-            del targetnode['name']
-            targetnode['dupname'] = name
-        self.implicit_targets[name] = targetnode
+            del target['name']
+            target['dupname'] = name
+            self.implicit_targets[name] = None
+        else:
+            self.implicit_targets[name] = target
 
-    def note_explicit_target(self, targetnode, msgnode=None):
+    def note_explicit_target(self, target, msgnode=None):
         if msgnode == None:
             msgnode = self.messages
-        id = self.set_id(targetnode, msgnode)
-        name = targetnode['name']
+        id = self.set_id(target, msgnode)
+        name = target['name']
         if self.explicit_targets.has_key(name):
             level = 2
-            if targetnode.has_key('refuri'): # external target, dups OK
-                refuri = targetnode['refuri']
+            if target.has_key('refuri'): # external target, dups OK
+                refuri = target['refuri']
                 t = self.explicit_targets[name]
                 if t.has_key('name') and t.has_key('refuri') \
                       and t['refuri'] == refuri:
                     level = 1           # just inform if refuri's identical
             msg = self.reporter.system_message(
                   level, 'Duplicate explicit target name: "%s".' % name,
-                  refid=id)
+                  backrefs=[id])
             msgnode += msg
             self.clear_target_names(name, self.explicit_targets,
                                     self.implicit_targets)
             if level > 1:
-                del targetnode['name']
-                targetnode['dupname'] = name
+                del target['name']
+                target['dupname'] = name
         elif self.implicit_targets.has_key(name):
             msg = self.reporter.info(
-                  'Duplicate implicit target name: "%s".' % name, refid=id)
+                  'Duplicate implicit target name: "%s".' % name, backrefs=[id])
             msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
-        self.explicit_targets[name] = targetnode
+        self.explicit_targets[name] = target
 
     def clear_target_names(self, name, *targetdicts):
         for targetdict in targetdicts:
@@ -670,41 +687,63 @@ class document(Root, Structural, Element):
     def note_refname(self, node):
         self.refnames.setdefault(node['refname'], []).append(node)
 
-    def note_external_target(self, targetnode):
-        self.external_targets[targetnode['name']] = targetnode
+    def note_refid(self, node):
+        self.refids.setdefault(node['refid'], []).append(node)
 
-    def note_indirect_target(self, targetnode):
-        self.indirect_targets[targetnode['name']] = targetnode
-        self.note_refname(targetnode)
+    def note_external_target(self, target):
+        self.external_targets.append(target)
 
-    def note_anonymous_target(self, targetnode):
-        self.anonymous_targets.append(targetnode)
+    def note_internal_target(self, target):
+        self.internal_targets.append(target)
 
-    def note_anonymous_ref(self, refnode):
-        self.anonymous_refs.append(refnode)
+    def note_indirect_target(self, target):
+        self.indirect_targets.append(target)
+        if target.has_key('name'):
+            self.note_refname(target)
+
+    def note_anonymous_target(self, target):
+        self.set_id(target)
+        self.anonymous_targets.append(target)
+
+    def note_anonymous_ref(self, ref):
+        self.anonymous_refs.append(ref)
 
     def note_autofootnote(self, footnote):
+        self.set_id(footnote)
         self.autofootnotes.append(footnote)
 
-    def note_autofootnote_ref(self, refnode):
-        self.autofootnote_refs.append(refnode)
+    def note_autofootnote_ref(self, ref):
+        self.set_id(ref)
+        self.autofootnote_refs.append(ref)
 
     def note_symbol_footnote(self, footnote):
+        self.set_id(footnote)
         self.symbol_footnotes.append(footnote)
 
-    def note_symbol_footnote_ref(self, refnode):
-        self.symbol_footnote_refs.append(refnode)
+    def note_symbol_footnote_ref(self, ref):
+        self.set_id(ref)
+        self.symbol_footnote_refs.append(ref)
 
-    def note_footnote_ref(self, refnode):
-        self.footnote_refs.setdefault(refnode['refname'], []).append(refnode)
-        self.note_refname(refnode)
+    def note_footnote(self, footnote):
+        self.set_id(footnote)
+        self.footnotes.append(footnote)
 
-    def note_citation_ref(self, refnode):
-        self.citation_refs.setdefault(refnode['refname'], []).append(refnode)
-        self.note_refname(refnode)
+    def note_footnote_ref(self, ref):
+        self.set_id(ref)
+        self.footnote_refs.setdefault(ref['refname'], []).append(ref)
+        self.note_refname(ref)
 
-    def note_substitution_def(self, substitutiondefnode, msgnode=None):
-        name = substitutiondefnode['name']
+    def note_citation(self, citation):
+        self.set_id(citation)
+        self.citations.append(citation)
+
+    def note_citation_ref(self, ref):
+        self.set_id(ref)
+        self.citation_refs.setdefault(ref['refname'], []).append(ref)
+        self.note_refname(ref)
+
+    def note_substitution_def(self, subdef, msgnode=None):
+        name = subdef['name']
         if self.substitution_defs.has_key(name):
             msg = self.reporter.error(
                   'Duplicate substitution definition name: "%s".' % name)
@@ -715,14 +754,14 @@ class document(Root, Structural, Element):
             oldnode['dupname'] = oldnode['name']
             del oldnode['name']
         # keep only the last definition
-        self.substitution_defs[name] = substitutiondefnode
+        self.substitution_defs[name] = subdef
 
-    def note_substitution_ref(self, subrefnode):
+    def note_substitution_ref(self, subref):
         self.substitution_refs.setdefault(
-              subrefnode['refname'], []).append(subrefnode)
+              subref['refname'], []).append(subref)
 
-    def note_pending(self, pendingnode):
-        self.pending.append(pendingnode)
+    def note_pending(self, pending):
+        self.pending.append(pending)
 
 
 # ================
@@ -834,7 +873,7 @@ class hint(Admonition, Element): pass
 class warning(Admonition, Element): pass
 class comment(Special, PreBibliographic, TextElement): pass
 class substitution_definition(Special, TextElement): pass
-class target(Special, Inline, TextElement, ToBeResolved): pass
+class target(Special, Inline, TextElement, Targetable): pass
 class footnote(General, Element, BackLinkable): pass
 class citation(General, Element, BackLinkable): pass
 class label(Component, TextElement): pass
@@ -906,10 +945,10 @@ class pending(Special, PreBibliographic, Element):
     def pformat(self, indent='    ', level=0):
         internals = [
               '.. internal attributes:',
-              '     pending.transform: %s.%s' % (self.transform.__module__,
+              '     .transform: %s.%s' % (self.transform.__module__,
                                                  self.transform.__name__),
-              '     pending.stage: %r' % self.stage,
-              '     pending.details:']
+              '     .stage: %r' % self.stage,
+              '     .details:']
         details = self.details.items()
         details.sort()
         for key, value in details:
@@ -944,7 +983,7 @@ class literal(Inline, TextElement): pass
 class reference(Inline, Referential, TextElement): pass
 class footnote_reference(Inline, Referential, TextElement): pass
 class citation_reference(Inline, Referential, TextElement): pass
-class substitution_reference(Inline, Referential, TextElement): pass
+class substitution_reference(Inline, TextElement): pass
 class image(General, Inline, TextElement): pass
 class problematic(Inline, TextElement): pass
 
