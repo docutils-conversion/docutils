@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/13 03:16:31 $
+:Date: $Date: 2001/11/19 04:34:52 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -106,6 +106,8 @@ Changed contact email addresses.
   - Added anonymous hyperlinks (``.. __:`` & ``__`` syntax).
   - External targets' URIs now in "refuri" attribute, not data.
   - Changed "[hyper]link" to "reference".
+  - Added substitution definitions & substitution references.
+  - Modified ``RSTState.inlineobj()`` to return end-string.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
@@ -215,7 +217,7 @@ Changed contact email addresses.
   - Added VMS/DOS-style options to option lists.
   - Converted sf->sourceforge.
   - Expanded definition of whitespace.
-  - Added Hyperlink Names section.
+  - Added Reference Names section.
   - Moved Standalone Hyperlinks section.
   - Expanded definition of standalone URIs.
   - Clarified definition of underlines/overlines.
@@ -235,8 +237,11 @@ Changed contact email addresses.
   - Added "division" construct.
   - Removed element hierarchy diagram to dps/spec/doctree.txt.
   - Added inline hyperlink targets.
-  - Changed "hyperlink names" to "reference names".
-  - Added substitutions, substitution references.
+  - Changed "hyperlink names" to "reference names", "link" to
+    "reference".
+  - Added substitution definitions, substitution references (use cases
+    contributed by Alan Jaffray).
+  - Added to table description.
 
 * spec/pyextensions.txt:
 

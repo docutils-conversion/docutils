@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/11/15 03:09:18 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/11/19 04:32:55 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -27,7 +27,9 @@ Paragraph.
 """,
 """\
 <document>
-    <directive type="reStructuredText-test-directive">
+    <system_warning level="0">
+        <paragraph>
+            Directive processed. Type="reStructuredText-test-directive", data="", directive block: None
     <paragraph>
         Paragraph.
 """],
@@ -38,7 +40,9 @@ Paragraph.
 """,
 """\
 <document>
-    <directive data="argument" type="reStructuredText-test-directive">
+    <system_warning level="0">
+        <paragraph>
+            Directive processed. Type="reStructuredText-test-directive", data="argument", directive block: None
     <paragraph>
         Paragraph.
 """],
@@ -51,8 +55,11 @@ Paragraph.
 """,
 """\
 <document>
-    <directive type="reStructuredText-test-directive">
-        Directive block contains one paragraph, with a blank line before.
+    <system_warning level="0">
+        <paragraph>
+            Directive processed. Type="reStructuredText-test-directive", data="", directive block:
+        <literal_block>
+            Directive block contains one paragraph, with a blank line before.
     <paragraph>
         Paragraph.
 """],
@@ -64,8 +71,11 @@ Paragraph.
 """,
 """\
 <document>
-    <directive type="reStructuredText-test-directive">
-        Directive block contains one paragraph, no blank line before.
+    <system_warning level="0">
+        <paragraph>
+            Directive processed. Type="reStructuredText-test-directive", data="", directive block:
+        <literal_block>
+            Directive block contains one paragraph, no blank line before.
     <paragraph>
         Paragraph.
 """],
@@ -78,8 +88,11 @@ Paragraph.
 """,
 """\
 <document>
-    <directive type="reStructuredText-test-directive">
-        block
+    <system_warning level="0">
+        <paragraph>
+            Directive processed. Type="reStructuredText-test-directive", data="", directive block:
+        <literal_block>
+            block
     <system_warning level="1">
         <paragraph>
             Unindent without blank line at line 3.

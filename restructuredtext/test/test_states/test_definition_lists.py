@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/13 02:38:26 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/11/19 04:32:39 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -243,7 +243,7 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
             <definition>
                 <system_warning level="1">
                     <paragraph>
-                        Inline interpreted text or phrase link start-string without end-string at line 1.
+                        Inline interpreted text or phrase reference start-string without end-string at line 1.
                 <system_warning level="1">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 1.
@@ -255,7 +255,7 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
                         Inline strong start-string without end-string at line 1.
                 <system_warning level="1">
                     <paragraph>
-                        Inline interpreted text or phrase link start-string without end-string at line 1.
+                        Inline interpreted text or phrase reference start-string without end-string at line 1.
                 <system_warning level="1">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 1.
@@ -266,7 +266,7 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
                     Definition `with *inline ``text **markup errors.
                 <system_warning level="1">
                     <paragraph>
-                        Inline interpreted text or phrase link start-string without end-string at line 2.
+                        Inline interpreted text or phrase reference start-string without end-string at line 2.
                 <system_warning level="1">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 2.

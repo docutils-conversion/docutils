@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/11/06 00:46:01 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/11/19 04:33:03 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -290,112 +290,112 @@ totest['interpreted'] = [
 """],
 ]
 
-totest['links'] = [
+totest['references'] = [
 ["""\
-link_
+ref_
 """,
 """\
 <document>
     <paragraph>
-        <reference refname="link">
-            link
+        <reference refname="ref">
+            ref
 """],
 ["""\
-link__
+ref__
 """,
 """\
 <document>
     <paragraph>
         <reference anonymous="1">
-            link
+            ref
 """],
 ["""\
-link_, l_, l_i-n_k_, and anonymouslink__, but not _link_ or -link_
+ref_, r_, r_e-f_, and anonymousref__, but not _ref_ or -ref_
 """,
 """\
 <document>
     <paragraph>
-        <reference refname="link">
-            link
+        <reference refname="ref">
+            ref
         , 
-        <reference refname="l">
-            l
+        <reference refname="r">
+            r
         , 
-        <reference refname="l_i-n_k">
-            l_i-n_k
+        <reference refname="r_e-f">
+            r_e-f
         , and 
         <reference anonymous="1">
-            anonymouslink
-        , but not _link_ or -link_
+            anonymousref
+        , but not _ref_ or -ref_
 """],
 ]
 
-totest['phrase_links'] = [
+totest['phrase_references'] = [
 ["""\
-`phrase link`_
+`phrase reference`_
 """,
 """\
 <document>
     <paragraph>
-        <reference refname="phrase link">
-            phrase link
+        <reference refname="phrase reference">
+            phrase reference
 """],
 ["""\
-`anonymous link`__
+`anonymous reference`__
 """,
 """\
 <document>
     <paragraph>
         <reference anonymous="1">
-            anonymous link
+            anonymous reference
 """],
 ["""\
-`phrase link
+`phrase reference
 across lines`_
 """,
 """\
 <document>
     <paragraph>
-        <reference refname="phrase link across lines">
-            phrase link
+        <reference refname="phrase reference across lines">
+            phrase reference
             across lines
 """],
 ["""\
-`phrase\`_ link`_
+`phrase\`_ reference`_
 """,
 """\
 <document>
     <paragraph>
-        <reference refname="phrase`_ link">
-            phrase`_ link
+        <reference refname="phrase`_ reference">
+            phrase`_ reference
 """],
 ["""\
-Invalid phrase link:
+Invalid phrase reference:
 
-:role:`phrase link`_
+:role:`phrase reference`_
 """,
 """\
 <document>
     <paragraph>
-        Invalid phrase link:
+        Invalid phrase reference:
     <paragraph>
-        :role:`phrase link`_
+        :role:`phrase reference`_
     <system_warning level="1">
         <paragraph>
-            Mismatch: inline interpreted text start-string and role with phrase-link end-string at line 3.
+            Mismatch: inline interpreted text start-string and role with phrase-reference end-string at line 3.
 """],
 ["""\
-Invalid phrase link:
+Invalid phrase reference:
 
-`phrase link`:role:_
+`phrase reference`:role:_
 """,
 """\
 <document>
     <paragraph>
-        Invalid phrase link:
+        Invalid phrase reference:
     <paragraph>
         <interpreted>
-            phrase link
+            phrase reference
         :role:_
 """],
 ]
@@ -473,6 +473,41 @@ totest['footnote_reference'] = [
         <footnote_reference refname="1">
             1
          but not [foot note]_
+"""],
+]
+
+totest['substitution_references'] = [
+["""\
+|subref|
+""",
+"""\
+<document>
+    <paragraph>
+        <substitution_reference refname="subref">
+            subref
+"""],
+["""\
+|subref|_ and |subref|__
+""",
+"""\
+<document>
+    <paragraph>
+        <reference refname="subref">
+            <substitution_reference refname="subref">
+                subref
+         and 
+        <reference anonymous="1">
+            <substitution_reference refname="subref">
+                subref
+"""],
+["""\
+|substitution reference|
+""",
+"""\
+<document>
+    <paragraph>
+        <substitution_reference refname="substitution reference">
+            substitution reference
 """],
 ]
 
