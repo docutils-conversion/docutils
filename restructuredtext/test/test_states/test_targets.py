@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/10/20 02:49:04 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/10/23 03:38:36 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -65,9 +65,9 @@ Indirect hyperlink targets:
 """\
 <document>
     <paragraph>
-        Indirect hyperlink target:
-    <target name="target1" refuri="reference">
-    <target name="target2" refuri="phrase-link reference">
+        Indirect hyperlink targets:
+    <target name="target1" refname="reference">
+    <target name="target2" refname="phrase-link reference">
 """],
 ["""\
 .. _target: Not a proper hyperlink target
@@ -106,7 +106,7 @@ Indirect hyperlink targets:
         (external hyperlink)
 """],
 ["""\
-Duplicate external links (different URIs):
+Duplicate external targets (different URIs):
 
 .. _target: first
 
@@ -115,17 +115,17 @@ Duplicate external links (different URIs):
 """\
 <document>
     <paragraph>
-        Duplicate external links (different URIs):
+        Duplicate external targets (different URIs):
     <target dupname="target">
         first
     <system_warning level="1">
         <paragraph>
-            Duplicate external link name: "target"
+            Duplicate external target name: "target"
     <target name="target">
         second
 """],
 ["""\
-Duplicate external links (same URIs):
+Duplicate external targets (same URIs):
 
 .. _target: first
 
@@ -134,17 +134,17 @@ Duplicate external links (same URIs):
 """\
 <document>
     <paragraph>
-        Duplicate external links (same URIs):
+        Duplicate external targets (same URIs):
     <target dupname="target">
         first
     <system_warning level="0">
         <paragraph>
-            Duplicate external link name: "target"
+            Duplicate external target name: "target"
     <target name="target">
         first
 """],
 ["""\
-Duplicate implicit links.
+Duplicate implicit targets.
 
 Title
 =====
@@ -159,7 +159,7 @@ Paragraph.
 """\
 <document>
     <paragraph>
-        Duplicate implicit links.
+        Duplicate implicit targets.
     <section dupname="title">
         <title>
             Title
@@ -170,12 +170,12 @@ Paragraph.
             Title
         <system_warning level="0">
             <paragraph>
-                Duplicate implicit link name: "title"
+                Duplicate implicit target name: "title"
         <paragraph>
             Paragraph.
 """],
 ["""\
-Duplicate implicit/explicit links.
+Duplicate implicit/explicit targets.
 
 Title
 =====
@@ -187,19 +187,19 @@ Paragraph.
 """\
 <document>
     <paragraph>
-        Duplicate implicit/explicit links.
+        Duplicate implicit/explicit targets.
     <section dupname="title">
         <title>
             Title
         <system_warning level="0">
             <paragraph>
-                Duplicate implicit link name: "title"
+                Duplicate implicit target name: "title"
         <target name="title">
         <paragraph>
             Paragraph.
 """],
 ["""\
-Duplicate explicit links.
+Duplicate explicit targets.
 
 .. _title:
 
@@ -216,19 +216,19 @@ Third.
 """\
 <document>
     <paragraph>
-        Duplicate explicit links.
+        Duplicate explicit targets.
     <target dupname="title">
     <paragraph>
         First.
     <system_warning level="1">
         <paragraph>
-            Duplicate explicit link name: "title"
+            Duplicate explicit target name: "title"
     <target dupname="title">
     <paragraph>
         Second.
     <system_warning level="1">
         <paragraph>
-            Duplicate explicit link name: "title"
+            Duplicate explicit target name: "title"
     <target dupname="title">
     <paragraph>
         Third.
@@ -263,18 +263,18 @@ Explicit internal target.
                 target
             <system_warning level="0">
                 <paragraph>
-                    Duplicate implicit link name: "target"
+                    Duplicate implicit target name: "target"
             <paragraph>
                 Implicit footnote target.
         <system_warning level="0">
             <paragraph>
-                Duplicate implicit link name: "target"
+                Duplicate implicit target name: "target"
         <target dupname="target">
         <paragraph>
             Explicit internal target.
         <system_warning level="1">
             <paragraph>
-                Duplicate external link name: "target"
+                Duplicate external target name: "target"
         <target name="target">
             Explicit_external_target.
 """],
