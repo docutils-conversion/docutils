@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2001/11/22 04:17:50 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/01/25 23:58:36 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -534,7 +534,7 @@ class State:
         """
         Add a list of transitions to the start of the transition list.
 
-        Parameter:
+        Parameters:
 
         - `names`: a list of transition names.
         - `transitions`: a mapping of names to transition tuples.
