@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.6 2002/02/06 03:04:19 goodger Exp $
+# $Id: setup.py,v 1.7 2002/04/18 02:54:05 goodger Exp $
 
 from distutils.core import setup
 
@@ -9,10 +9,10 @@ def do_setup():
           description = 'Python Docstring Processing System',
           #long_description = '',
           url = 'http://docstring.sourceforge.net/',
-          version = '0.3+',
+          version = '0.4',
           author = 'David Goodger',
           author_email = 'goodger@users.sourceforge.net',
-          license = 'public domain',
+          license = 'public domain, Python (see COPYING.txt)',
           packages = ['dps', 'dps.readers', 'dps.parsers', 'dps.writers',
                       'dps.transforms', 'dps.languages'])
     return dist
