@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/13 02:38:43 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/17 04:29:24 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -234,21 +234,44 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="2">
+    <system_warning level="1">
         <paragraph>
-            Unknown image attribute "two" at line 1.
+            Image URI at line 1 contains whitespace.
         <literal_block>
             .. image:: one two three
 """],
 ["""\
-.. image:: picture.png height=100 width=200 scale=50
+.. image:: picture.png
+   [height=100 width=200 scale=50]
 """,
 """\
 <document>
     <image height="100" scale="50" uri="picture.png" width="200">
 """],
 ["""\
+.. image::
+   picture.png
+   [height=100 width=200 scale=50]
+""",
+"""\
+<document>
+    <image height="100" scale="50" uri="picture.png" width="200">
+"""],
+["""\
+.. image:: a/very/long/path/to/
+   picture.png
+   [height=100 width=200 scale=50]
+""",
+"""\
+<document>
+    <image height="100" scale="50" uri="a/very/long/path/to/picture.png" width="200">
+"""],
+]
+
+totest['figures'] = [
+["""\
 .. figure:: picture.png
+
    A picture with a caption.
 """,
 """\
@@ -259,7 +282,9 @@ totest['images'] = [
             A picture with a caption.
 """],
 ["""\
-.. Figure:: picture.png height=100 width=200 scale=50
+.. Figure:: picture.png
+   [height=100 width=200 scale=50]
+
    A picture with image attributes and a caption.
 """,
 """\
@@ -360,20 +385,25 @@ This figure lacks a caption. It may still have a
 Testing for line-leaks:
 
 .. figure:: picture.png
+
    A picture with a caption.
 .. figure:: picture.png
+
    A picture with a caption.
 .. figure:: picture.png
+
    A picture with a caption.
 .. figure:: picture.png
 .. figure:: picture.png
 .. figure:: picture.png
 .. figure:: picture.png
+
    A picture with a caption.
 
 .. figure:: picture.png
 
 .. figure:: picture.png
+
    A picture with a caption.
 
 .. figure:: picture.png
