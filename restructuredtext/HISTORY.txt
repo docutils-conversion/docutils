@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/01/30 05:03:53 $
+:Date: $Date: 2002/02/06 02:33:58 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -86,7 +86,7 @@ Changed contact email addresses.
   - Added support for auto-numbered footnotes.
   - Dropped requirement for blank line between definition list items.
   - Added support for classifier after term in definition list items.
-  - Fixed a bug with literal blocks.
+  - Fixed bugs with literal blocks.
   - Changed ``element.extend(nodelist)`` to ``element += nodelist``.
   - Added full table support (Body.table() etc.).
   - Split off NestedStateMachine (recursive) from RSTStateMachine
@@ -103,7 +103,7 @@ Changed contact email addresses.
   - Updated: 'errorist' -> 'reporter'.
   - Added support for indirect hyperlink targets.
   - Updated for renamed ``add*link`` -> ``add*target``.
-  - Added inline literal targets.
+  - Added inline hyperlink targets.
   - Added anonymous hyperlinks (``.. __:`` & ``__`` syntax).
   - External targets' URIs now in "refuri" attribute, not data.
   - Changed "[hyper]link" to "reference".
