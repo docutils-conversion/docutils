@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.25 $
-:Date: $Date: 2001/11/06 00:48:50 $
+:Revision: $Revision: 1.26 $
+:Date: $Date: 2001/11/08 02:41:48 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -1445,7 +1445,7 @@ Syntax diagram::
 
 
 Substitutions
-=============
+`````````````
 
 DTD element: substitution.
 
@@ -1455,12 +1455,19 @@ and the substitution block.  Substitution names are simple `reference
 names`_ (case-insensitive single words consisting of alphanumerics
 plus internal hyphens, underscores, and periods; no whitespace).
 
-`Substitution References`_ are replaced in-line by the contents of the
+`Substitution references`_ are replaced in-line by the contents of the
 corresponding substitution block.  Substitutions allow the power and
 flexibility of directives to be shared by inline text.  They are a way
 to include boilerplate text and arbitrarily complex inline objects
 within text, while keeping the details out of the flow of text.  They
 are the equivalent of SGML/XML's named entities.
+
+Substitutions allow arbitrary text-level (inline) structures, the way
+directives allow arbitrary block-level structures.  Without them,
+every time someone wants a specific new inline structure, they would
+have to petition for a syntax change.  In combination with existing
+constructs, any inline structure can be coded without new syntax
+(except possibly a new directive).
 
 A substitution block may contain either replacement text (from a
 single word to an entire paragraph) or a nested inline-compatible
