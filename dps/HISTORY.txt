@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/10/31 05:56:52 $
+:Date: $Date: 2001/11/06 02:10:08 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -63,10 +63,13 @@ Changed contact email addresses.
   - Added 'docinfo', container for bibliographic elements.
   - Added 'transition'.
   - Renamed 'indirect' hyperlink targets -> 'external'.
-  - Renamed ``*links?`` -> ``*targets?``.
+  - Renamed ``.*links?`` -> ``.*targets?``.
   - Added support for indirect & anonymous targets.
   - External targets' URIs now in "refuri" attribute, not data.
   - Changed "link" to "reference".
+  - Removed leading underscores from functional node base classes.
+  - Added "hint", "substitution", "substitution_reference" classes.
+  - Added element hierarchy base classes.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -150,17 +153,20 @@ Changed contact email addresses.
   - Moved 'abstract' into the bibliographic elements section.
   - Changed 'graphic' to 'image'.
   - Moved 'caption' to after 'image' in 'figure'.
-  - Added 'error' admonishment element.
+  - Added 'error' and 'hint' admonition elements.
   - Added 'docinfo' as container for bibliographic elements.
   - Added 'transition'.
   - Changed %link.atts to %reference.atts.
   - Separated out %reference.atts into constituent parts.
   - Added all reference and "anonymous" attributes to "target".
-  - Added "anonymous" attribute to "link".
+  - Changed "link" to "reference".
+  - Added "anonymous" attribute to "reference".
+  - Changed the content model of "reference" to allow inline elements,
+    specifically images and substitution references.
   - Added 'image' as body element; 'target' as inline element.
   - Expanded 'authors' content.
   - Clarified 'figure' content.
-  - Changed "link" to "reference".
+  - Added 'substitution' and 'substitution_reference'.
 
 * spec/pdpi.dtd:
 
