@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/11/06 00:49:35 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/11/09 23:17:51 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -533,11 +533,10 @@ alternative 3, the alternatives chosen for inclusion in the spec)::
        [height=20 width=20]
 
 ```/biohazard/``` will be replaced in-line by whatever the
-``.. /biohazard`` substitution generates (in this case, an image).  A
+``.. /biohazard/`` substitution generates (in this case, an image).  A
 substitution contains the substitution name, followed by a directive
-block containing either replacement text (one paragraph) or a nested
-inline-compatible directive, such as "image".  A transform is required
-to handle the substitution itself.
+block containing a nested inline-compatible directive, such as
+"image".  A transform is required to handle the substitution itself.
 
 Syntax alternatives for the inline part:
 
@@ -574,6 +573,9 @@ Syntax alternatives for the inline part:
 
    "#" and "@" are obtrusive.  "/" without backquotes looks just like
    a POSIX path; it is likely for such usage to appear in text.
+
+5. Redefine the trailing underscore syntax. See substitution syntax
+   alternative 4, below.
 
 Syntax alternatives for the substitution part::
 
@@ -618,6 +620,51 @@ Syntax alternatives for the substitution part::
 
    There is potential conflict with short paths in comments, but
    that can be safely ignored.
+
+4. (Suggested by Alan Jaffray on Doc-SIG from 2001-11-06.)
+
+   Instead of adding new substitution syntax, redefine the trailing
+   underscore syntax to mean "directive reference" (or "substitution
+   reference" or "tagging reference") instead of "hyperlink
+   reference".  Alan's example::
+
+       I had lunch with Jonathan_ today.  We talked about Zope_.
+
+       .. _Jonathan: lj [user=jhl]
+       .. _Zope: http://www.zope.org/
+
+   A problem with the proposed syntax is that URIs which look like
+   simple reference names (alphanum plus ".", "-", "_") would be
+   indistinguishable from directive names.  A more consistent syntax
+   would be::
+
+       I had lunch with Jonathan_ today.  We talked about Zope_.
+
+       .. _Jonathan: lj:: user=jhl
+       .. _Zope: http://www.zope.org/
+
+   (``::`` after ``.. _Jonathan:``.)
+
+   The "Zope" target is a simple external hyperlink, but the
+   "Jonathan" target contains a directive.  Alan's proposition is that
+   the reference text be replaced by the product of the directive
+   referred to, the "directive target".  A directive reference becomes
+   a hyperlink reference if the contents of the directive target
+   resolve to a hyperlink.  If the directive target resolves to an
+   icon, the reference is replaced by an inline icon.
+
+   The reference text would be replaced by the result of the directive
+   target. This seems too indirect and complicated for easy
+   comprehension.
+
+   The reference in the text will sometimes become a link, sometimes
+   not.  Sometimes the reference text will remain, sometimes not.  We
+   don't know *at the reference*::
+
+       This is a `hyperlink reference`_; its text will remain.
+       This is an `inline icon`_; its text will disappear.
+
+   That's a problem.
 
 The syntax that seems most consistent and suggestive of its intended
 purpose is the combination of inline alternative 3/slashes with
