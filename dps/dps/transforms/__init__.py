@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/06 02:51:25 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/03/16 06:02:00 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains modules for standard tree transforms available
@@ -37,11 +37,26 @@ class TransformError(Exception): pass
 
 class Transform:
 
-    def transform(self, doctree):
+    """
+    Docutils transform component abstract base class.
+    """
+
+    def __init__(self, doctree, startnode=None):
+        """
+        Initial setup for in-place document transforms.
+        """
+
+        self.doctree = doctree
+        """The document tree to transform."""
+
+        self.startnode = startnode
+        """Node from which to begin the transform.  For many transforms which
+        apply to the document as a whole, `startnode` is not set (i.e. its
+        value is `None`)."""
+
+        self.language = languages.getlanguage(doctree.languagecode)
+        """Language module local to this document."""
+
+    def transform(self):
         """Override to transform the document tree."""
         raise NotImplementedError('subclass must override this method')
-
-    def setup_transform(self, doctree):
-        """Initial setup, used by `self.transform()`."""
-        self.doctree = doctree
-        self.language = languages.getlanguage(doctree.languagecode)
