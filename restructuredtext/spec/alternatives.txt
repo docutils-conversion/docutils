@@ -3,19 +3,23 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/10/26 04:33:17 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/11/01 04:10:49 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
-Setext_ or StructuredText_. See the `reStructuredText Markup
-Specification`_ for full details of the established syntax.
+Setext_ or StructuredText_. For an analysis of constructs which *did*
+originate with StructuredText or Setext, please see `Problems With
+StructuredText`_. See the `reStructuredText Markup Specification`_ for
+full details of the established syntax.
 
 .. _Setext: http://www.bsdi.com/setext
 .. _StructuredText:
-    http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
+   http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
+.. _Problems with StructuredText:
+    http://structuredtext.sourceforge.net/spec/problems.txt
 .. _reStructuredText Markup Specification:
-    http://structuredtext.sourceforge.net/spec/reStructuredText.txt
+   http://structuredtext.sourceforge.net/spec/reStructuredText.txt
 
 
 Field Lists
@@ -253,11 +257,54 @@ empty comment does **not** swallow up indented blocks following it,
 so block quotes are safe. "A tiny but practical wart." Accepted.
 
 
+Anonymous Hyperlinks
+====================
+
+Alan Jaffray came up with this idea, along with the following syntax::
+
+    Search the `Python DOC-SIG mailing list archives`{}_.
+
+    .. _: http://mail.python.org/pipermail/doc-sig/
+
+The idea is sound and useful. I suggested a "double underscore"
+syntax::
+
+    Search the `Python DOC-SIG mailing list archives`__.
+
+    .. __: http://mail.python.org/pipermail/doc-sig/
+
+But perhaps single underscores are okay? The syntax looks better, but
+the hyperlink itself doesn't explicitly say "anonymous"::
+
+    Search the `Python DOC-SIG mailing list archives`_.
+
+    .. _: http://mail.python.org/pipermail/doc-sig/
+
+Mixing anonymous and named hyperlinks becomes confusing. The order of
+targets is not significant for named hyperlinks, but it is for
+anonymous hyperlinks::
+
+    Hyperlinks: anonymous_, named_, and another anonymous_.
+
+    .. _named: named
+    .. _: anonymous1
+    .. _: anonymous2
+
+Without the extra syntax of double underscores, determining which
+hyperlink references are anonymous may be difficult. We'd have to
+check which references don't have corresponding targets, and match
+those up with anonymous targets. Keeping to a simple consistent
+ordering (as with auto-numbered footnotes) seems simplest.
+
+reStructuredText will use the explicit double-underscore syntax for
+anonymous hyperlinks.
+
+
 Reworking Explicit Markup
 =========================
 
-Alan Jaffray came up with the idea of anonymous hyperlinks, added to
-reStructuredText. Subsequently it was asserted that hyperlinks
+Alan Jaffray came up with the idea of `anonymous hyperlinks`_, added
+to reStructuredText. Subsequently it was asserted that hyperlinks
 (especially anonymous hyperlinks) would play an increasingly important
 role in reStructuredText documents, and therefore they require a
 simpler and more concise syntax. This prompted a review of the current
@@ -278,7 +325,7 @@ usability.
    Notes on the examples:
 
    * Anonymous internal targets are also possible, but probably not
-     useful, so they're not included. 
+     useful, so they're not included.
    * The comment text was intentionally made to look like a hyperlink
      target.
 
@@ -463,47 +510,139 @@ The underscores can be viewed as if they were right-pointing arrows:
 ``.. _hyperlink:`` points toward the target.
 
 
-Anonymous Hyperlinks
+Inline Substitutions
 ====================
 
-Alan Jaffray came up with this idea, along with the following syntax::
+Inline substitutions arose out of a Doc-SIG thread begun on 2001-10-28
+by Alan Jaffray, "reStructuredText inline markup".  It reminded me of
+a missing piece of the reStructuredText puzzle, first referred to in
+my contribution to "Documentation markup & processing / PEPs" (Doc-SIG
+2001-06-21).
 
-    Search the `Python DOC-SIG mailing list archives`{}_.
+Inline substitutions allow the power and flexibility of directives to
+be shared by inline text.  They are a way to allow arbitrarily complex
+inline objects, while keeping the details out of the flow of text.
+They are the equivalent of SGML/XML's named entities.  For example, an
+inline image (using inline syntax alternative 1 & substitution
+alternative 1)::
 
-    .. _: http://mail.python.org/pipermail/doc-sig/
+    The `biohazard`:sub: symbol must be used on containers used to
+    dispose of medical waste.
 
-The idea is sound and useful. I suggested a "double underscore"
-syntax::
+    .. sub:: biohazard
+       .. image:: biohazard.png
+          [height=20 width=20]
 
-    Search the `Python DOC-SIG mailing list archives`__.
+```biohazard`:sub:`` would be replaced in-line by whatever the ``sub::
+biohazard`` directive generates.  A "sub" or "substitution" directive
+would contain the substitution name as the directive's data, followed
+by a directive block containing either replacement text (one
+paragraph) or a nested inline-compatible directive, such as "image".
+A transform would be required to handle the substitution itself.
 
-    .. __: http://mail.python.org/pipermail/doc-sig/
+Syntax alternatives for the inline part:
 
-But perhaps single underscores are okay? The syntax looks better, but
-the hyperlink itself doesn't explicitly say "anonymous"::
+1. Use the existing interpreted text syntax, with a predefined role
+   such as "sub"::
 
-    Search the `Python DOC-SIG mailing list archives`_.
+       The `biohazard`:sub: symbol...
 
-    .. _: http://mail.python.org/pipermail/doc-sig/
+   Advantages: existing syntax, explicit.  Disadvantages: verbose,
+   obtrusive.
 
-Mixing anonymous and named hyperlinks becomes confusing. The order of
-targets is not significant for named hyperlinks, but it is for
-anonymous hyperlinks::
+2. Use a variant of the interpreted text syntax, with a new suffix
+   akin to the underscore in phrase-link references::
 
-    Hyperlinks: anonymous_, named_, and another anonymous_.
+       `name`@ or `name`# or `name`& or `name`/ or `name`<
 
-    .. _named: named
-    .. _: anonymous1
-    .. _: anonymous2
+   Due to incompatibility with other constructs and ordinary text
+   usage, the following are not possible::
 
-Without the extra syntax of double underscores, determining which
-hyperlink references are anonymous may be difficult. We'd have to
-check which references don't have corresponding targets, and match
-those up with anonymous targets. Keeping to a simple consistent
-ordering (as with auto-numbered footnotes) seems simplest.
+       `name`:: and `name`:
 
-reStructuredText will use the explicit double-underscore syntax for
-anonymous hyperlinks.
+3. Use interpreted text syntax with a fixed internal format::
+
+       `:name:` or `name:` or `name::` or `::name::` or `%name%` or
+       `#name#` or `/name/` or `&name&` or even `<name>` or `&name;`
+
+   (To avoid ML confusion those last two are definitely out.)
+
+   The ```/name/``` syntax is reminiscent of substitution.
+
+4. Use specialized syntax, something new::
+
+       #name# or @name@ or /name/ or...
+
+   "#" and "@" are obtrusive.  "/" without backquotes looks just like
+   a POSIX path; it is likely for such usage to appear in text.
+
+Syntax alternatives for the substitution part::
+
+1. Use the existing directive syntax, with a predefined directive
+   such as "sub".  It contains either replacement text or another
+   directive resolving to an inline-compatible object::
+
+       .. sub:: biohazard
+          .. image:: biohazard.png
+             [height=20 width=20]
+
+       .. sub:: parrot
+          That bird wouldn't *voom* if you put 10,000,000 volts
+          through it!
+
+   The advantages and disadvantages are the same as in inline
+   alternative 1.
+
+2. Use syntax as in #1, but compressed.  If the substitution contents
+   is a directive, append it to the substitution directive marker::
+
+       .. sub:: biohazard image:: biohazard.png
+          [height=20 width=20]
+
+   Replacement text could also be (optionally) compressed::
+
+       .. sub:: parrot That bird wouldn't *voom* if you put
+          10,000,000 volts through it!
+
+   This is a bit better than alternative 1, but still too much.
+
+3. Use a variant of directive syntax, incorporating the substitution
+   name, obviating the need for a directive name.  If we assume inline
+   alternative 3 (slashes), the matching substitutions would look like
+   this::
+
+       .. /biohazard/ image:: biohazard.png
+          [height=20 width=20]
+
+       .. /parrot/ That bird wouldn't *voom* if you put
+          10,000,000 volts through it!
+
+   There is potential conflict with short paths in comments, but
+   that can be safely ignored.
+
+At first blush, my favorite combination is inline alternative 3
+(slashes) with substitution alternative 3::
+
+    The `/biohazard/` symbol...
+
+    .. /biohazard/ image:: biohazard.png
+       [height=20 width=20]
+
+This syntax seems consistent and suggestive of its intended purpose.
+
+I imagine that the next question might be: can we combine inline
+substitutions with hyperlinks, so that we could click on an
+image-link? Let's try::
+
+    The `/biohazard/`_ symbol...
+
+    .. /biohazard/ image:: biohazard.png
+       [height=20 width=20]
+    .. _biohazard: http://www.cdc.gov/
+
+That seems to work well.  Anonymous hyperlinks would also work.  I
+don't know about "anonymous substitutions" though; it seems that
+substitutions ought to be fully spelled out, always.
 
 
 ..
