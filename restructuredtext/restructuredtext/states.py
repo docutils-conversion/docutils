@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.38 $
-:Date: $Date: 2002/01/28 02:12:41 $
+:Revision: $Revision: 1.39 $
+:Date: $Date: 2002/01/30 05:01:25 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -133,33 +133,25 @@ class RSTStateMachine(StateMachineWS):
     The entry point to reStructuredText parsing is the `run()` method.
     """
 
-    def __init__(self, stateclasses, initialstate, languagecode, debug=0):
-        StateMachineWS.__init__(self, stateclasses, initialstate, debug=debug)
-        self.languagecode = languagecode
-        self.language = languages.language(self.languagecode)
-
-    def run(self, inputlines, inputoffset=0, warninglevel=1, errorlevel=3,
-			matchtitles=1):
+    def run(self, inputlines, docroot, inputoffset=0, matchtitles=1):
         """
         Parse `inputlines` and return a `dps.nodes.document` instance.
 
         Extend `StateMachineWS.run()`: set up parse-global data, run the
-        StateMachine, do some final transformations, and return the resulting
+        StateMachine, and return the resulting
         document.
         """
+        self.language = languages.language(docroot.languagecode)
         self.matchtitles = matchtitles
-        reporter = utils.Reporter(warninglevel, errorlevel)
-        docroot = nodes.document(reporter, self.languagecode)
         self.memo = Stuff(document=docroot,
-                          reporter=reporter,
+                          reporter=docroot.reporter,
                           language=self.language,
                           titlestyles=[],
                           sectionlevel=0)
         self.node = docroot
         results = StateMachineWS.run(self, inputlines, inputoffset)
         assert results == [], 'RSTStateMachine.run() results should be empty.'
-        self.node = self.memo = None
-        return docroot
+        self.node = self.memo = None    # remove unneeded references
 
 
 class NestedStateMachine(StateMachineWS):

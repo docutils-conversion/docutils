@@ -3,14 +3,14 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/01/25 23:43:53 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/01/30 05:01:55 $
 :Copyright: This module has been placed in the public domain.
 """
 
 import sys, os, getopt
 from StringIO import StringIO
-
+import dps.utils
 try:
     from restructuredtext import Parser
 except ImportError:
@@ -174,9 +174,10 @@ In the following window, please:
 
 def main():
     inputFile, outputFormat, optargs = getArgs() # process cmdline arguments
-    parser = Parser(debug=optargs['debug']) # create a parser
-    input = inputFile.read()            # gather input
-    document = parser.parse(input)      # parse the input
+    parser = Parser(debug=optargs['debug'])
+    input = inputFile.read()
+    document = dps.utils.newdocument()
+    parser.parse(input, document)
     output = format(outputFormat, input, document, optargs)
     print output,
 

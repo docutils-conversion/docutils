@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2002/01/25 23:41:43 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/01/30 05:01:37 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -43,6 +43,7 @@ from restructuredtext import tableparser
 from restructuredtext import directives
 from restructuredtext import languages
 from dps.statemachine import string2lines
+import dps.utils
 
 try:
     import mypdb as pdb
@@ -210,15 +211,14 @@ class ParserTestCase(CustomTestCase):
     cases that have nothing to do with the input and output of the parser.
     """
 
-    parser = restructuredtext.Parser(warninglevel=4, errorlevel=4,
-                                     languagecode='en',
-                                     debug=UnitTestFolder.debug)
+    parser = restructuredtext.Parser(debug=UnitTestFolder.debug)
     """restructuredtext.Parser shared by all ParserTestCases."""
 
     def test_parser(self):
         if self.runInDebugger:
             pdb.set_trace()
-        document = self.parser.parse(self.input)
+        document = dps.utils.newdocument(warninglevel=4, errorlevel=4)
+        self.parser.parse(self.input, document)
         output = document.pformat()
         self.compareOutput(self.input, output, self.expected)
 
