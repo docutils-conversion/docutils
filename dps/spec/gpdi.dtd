@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.34 $
-:Date: $Date: 2002/02/23 16:49:54 $
+:Revision: $Revision: 1.35 $
+:Date: $Date: 2002/03/01 03:15:18 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -261,7 +261,7 @@ http://www.oasis-open.org/html/tm9901.htm).
                         #IMPLIED
     prefix    CDATA     #IMPLIED
     suffix    CDATA     #IMPLIED
-    start     CDATA     #IMPLIED>
+    start     NUMBER    #IMPLIED>
 
 <!ELEMENT list_item (%body.elements;)+>
 <!ATTLIST list_item %basic.atts;>
@@ -297,37 +297,31 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT field_body (%body.elements;)+>
 <!ATTLIST field_body %basic.atts;>
 
-<!--
-`optarg_delimiter` contains the delimiter (either " " or "=")
-consistently used by `long_option` and/or `vms_option` elements with
-option arguments, or "mixed" if delimiter usage is mixed (both " " and
-"=" used). If no such options exist, no `optarg_delimiter` attribute
-will be present. `short_option` elements may only use spaces as
-opt/arg delimiters; they don't affect the attribute.
--->
 <!ELEMENT option_list (option_list_item+)>
-<!ATTLIST option_list
-    %basic.atts;
-    optarg_delimiter  CDATA  #IMPLIED>
+<!ATTLIST option_list %basic.atts;>
 
-<!ELEMENT option_list_item (option+, description)>
+<!ELEMENT option_list_item (option_group, description)>
 <!ATTLIST option_list_item %basic.atts;>
 
-<!ELEMENT option
-    ((short_option | long_option | vms_option), option_argument?)>
+<!ELEMENT option_group (option+)>
+<!ATTLIST option_group %basic.atts;>
+
+<!ELEMENT option (option_string, option_argument*)>
 <!ATTLIST option %basic.atts;>
 
-<!ELEMENT short_option (#PCDATA)>
-<!ATTLIST short_option %basic.atts;>
+<!ELEMENT option_string (#PCDATA)>
+<!ATTLIST option_string %basic.atts;>
 
-<!ELEMENT long_option (#PCDATA)>
-<!ATTLIST long_option %basic.atts;>
-
-<!ELEMENT vms_option (#PCDATA)>
-<!ATTLIST vms_option %basic.atts;>
-
+<!--
+`delimiter` contains the string preceding the `option_argument`:
+either the string separating it from the `option` (typically either
+"=" or " ") or the string between option arguments (typically either
+"," or " ").
+-->
 <!ELEMENT option_argument (#PCDATA)>
-<!ATTLIST option_argument %basic.atts;>
+<!ATTLIST option_argument
+    %basic.atts;
+    delimiter  CDATA    #IMPLIED>
 
 <!ELEMENT description (%body.elements;)+>
 <!ATTLIST description %basic.atts;>

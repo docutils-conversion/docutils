@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.32 $
-:Date: $Date: 2002/02/22 02:11:14 $
+:Revision: $Revision: 1.33 $
+:Date: $Date: 2002/03/01 03:17:06 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -64,7 +64,7 @@ class Node:
                     children[i].walk(visitor)
             except SkipSiblings:
                 pass
-        except (SkipChildren, SkipDeparture):
+        except (SkipChildren, SkipNode):
             pass
 
     def walkabout(self, visitor):
@@ -90,7 +90,7 @@ class Node:
                 pass
         except SkipChildren:
             pass
-        except SkipDeparture:
+        except SkipNode:
             return
         name = 'depart_' + self.__class__.__name__
         method = getattr(visitor, name, visitor.unknown_departure)
@@ -725,13 +725,33 @@ class field(Component, Element): pass
 class field_name(Component, TextElement): pass
 class field_argument(Component, TextElement): pass
 class field_body(Component, Element): pass
+
+
+class option(Component, Element):
+
+    child_text_separator = ''
+
+
+class option_argument(Component, TextElement):
+
+    def astext(self):
+        return self.get('delimiter', ' ') + TextElement.astext(self)
+
+
+class option_group(Component, Element):
+
+    child_text_separator = ', '
+
+
 class option_list(Sequential, Element): pass
-class option_list_item(Component, Element): pass
-class option(Component, Element): pass
-class short_option(Component, TextElement): pass
-class long_option(Component, TextElement): pass
-class vms_option(Component, TextElement): pass
-class option_argument(Component, TextElement): pass
+
+
+class option_list_item(Component, Element):
+
+    child_text_separator = '  '
+
+
+class option_string(Component, TextElement): pass
 class description(Component, Element): pass
 class literal_block(General, TextElement): pass
 class block_quote(General, Element): pass
@@ -806,15 +826,16 @@ node_class_names = """
         footnote footnote_reference
     hint
     image important interpreted
-    label legend list_item literal literal_block long_option
+    label legend list_item literal literal_block
     note
-    option option_argument option_list option_list_item organization
+    option option_argument option_group option_list option_list_item
+        option_string organization
     paragraph problematic
     reference revision row
-    section short_option status strong substitution_definition
+    section status strong substitution_definition
         substitution_reference subtitle system_message
     table target tbody term tgroup thead tip title transition
-    version vms_option
+    version
     warning""".split()
 """A list of names of all concrete Node subclasses."""
 
@@ -902,4 +923,4 @@ class GenericNodeVisitor(NodeVisitor):
 class VisitorException(Exception): pass
 class SkipChildren(VisitorException): pass
 class SkipSiblings(VisitorException): pass
-class SkipDeparture(VisitorException): pass
+class SkipNode(VisitorException): pass
