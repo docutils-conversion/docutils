@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.26 $
-:Date: $Date: 2001/11/19 04:02:02 $
+:Revision: $Revision: 1.27 $
+:Date: $Date: 2001/11/19 04:04:46 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -368,8 +368,8 @@ http://www.oasis-open.org/html/tm9901.htm).
     %reference.atts;
     %anonymous.att;>
 
-<!ELEMENT substitution (%text.model;)>
-<!ATTLIST substitution %basic.atts;>
+<!ELEMENT substitution_definition (%text.model;)>
+<!ATTLIST substitution_definition %basic.atts;>
 
 <!ELEMENT comment (#PCDATA)>
 <!ATTLIST comment
