@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/12 02:13:38 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/20 04:14:52 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Writer modules.
@@ -15,6 +15,7 @@ __docformat__ = 'reStructuredText'
 __all__ = ['Writer', 'get_writer_class']
 
 
+from dps import languages
 import sys
 
 
@@ -28,6 +29,9 @@ class Writer:
 
     document = None
     """The document to write."""
+
+    language = None
+    """Language module for the document."""
 
     destination = None
     """Where to write the document."""
@@ -44,6 +48,7 @@ class Writer:
 
     def write(self, document, destination):
         self.document = document
+        self.language = languages.getlanguage(document.languagecode)
         self.destination = destination
         self.transform()
         self.translate()
