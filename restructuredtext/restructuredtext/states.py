@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.15 $
-:Date: $Date: 2001/09/07 01:35:08 $
+:Revision: $Revision: 1.16 $
+:Date: $Date: 2001/09/10 04:32:48 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -96,9 +96,13 @@ Parsing proceeds as follows:
         with step 1.
 """
 
+__docformat__ = 'reStructuredText'
+
+
 import sys, re, string
 from dps import nodes, statemachine, utils, roman
 from dps.statemachine import StateMachineWS, StateWS
+import directives
 
 
 __all__ = ['RSTStateMachine', 'MarkupError', 'ParserError',
@@ -208,7 +212,7 @@ class RSTStateMachine(StateMachineWS):
         remainder = []
         #print >>sys.stderr, 'extractbibliographic: self.language=%r' % (self.language,)
         #print >>sys.stderr, 'extractbibliographic: dir(self.language)=%r' % (dir(self.language),)
-        bibliofields = self.language.parser.bibliofields
+        bibliofields = self.language.bibliographic_fields
         abstract = None
         for field in field_list:
             try:
@@ -298,14 +302,14 @@ class RSTStateMachine(StateMachineWS):
                   'separated by one of "%s"), multiple paragraphs (one per '
                   'author), or a bullet list with one paragraph (one author) '
                   'per item.'
-                  % (name, ''.join(self.language.parser.authorseps)))
+                  % (name, ''.join(self.language.author_separators)))
             raise
 
     def authorsfrom1paragraph(self, field):
         text = field[1][0].astext().strip()
         if not text:
             raise TransformationError
-        for authorsep in self.language.parser.authorseps:
+        for authorsep in self.language.author_separators:
             authornames = text.split(authorsep)
             if len(authornames) > 1:
                 break
@@ -848,7 +852,7 @@ class TableParser:
     Parse a table structure using `parse()`
     """
 
-    headBodySeparatorPat = re.compile(r'\+=[=+]+=\+$')
+    headbodyseparatorpat = re.compile(r'\+=[=+]+=\+$')
 
     def init(self, block):
         self.block = block[:]           # make a copy; it may be modified
@@ -864,13 +868,13 @@ class TableParser:
         self.init(block)
         self.findheadbodysep()
         self.parsegrid()
-        structure = self.structureFromCells()
+        structure = self.structurefromcells()
         return structure
 
     def findheadbodysep(self):
         for i in range(len(self.block)):
             line = self.block[i]
-            if self.headBodySeparatorPat.match(line):
+            if self.headbodyseparatorpat.match(line):
                 if self.headbodysep:
                     raise MarkupError, ('Multiple head/body row separators '
                           'in table (at line offset %s and %s); only one '
@@ -890,8 +894,8 @@ class TableParser:
             if not result:
                 continue
             bottom, right, rowseps, colseps = result
-            updateDictOfLists(self.rowseps, rowseps)
-            updateDictOfLists(self.colseps, colseps)
+            update_dictoflists(self.rowseps, rowseps)
+            update_dictoflists(self.colseps, colseps)
             self.markdone(top, left, bottom, right)
             cellblock = self.getcellblock(top, left, bottom, right)
             self.cells.append((top, left, bottom, right, cellblock))
@@ -940,7 +944,7 @@ class TableParser:
                 result = self.scandown(top, left, i)
                 if result:
                     bottom, rowseps, newcolseps = result
-                    updateDictOfLists(colseps, newcolseps)
+                    update_dictoflists(colseps, newcolseps)
                     return bottom, i, rowseps, colseps
             elif line[i] != '-':
                 return None
@@ -954,7 +958,7 @@ class TableParser:
                 result = self.scanleft(top, left, i, right)
                 if result:
                     newrowseps, colseps = result
-                    updateDictOfLists(rowseps, newrowseps)
+                    update_dictoflists(rowseps, newrowseps)
                     return i, rowseps, colseps
             elif self.block[i][right] != '|':
                 return None
@@ -985,7 +989,7 @@ class TableParser:
                 return None
         return rowseps
 
-    def structureFromCells(self):
+    def structurefromcells(self):
         rowseps = self.rowseps.keys()
         rowseps.sort()
         rowindex = {}
@@ -1052,9 +1056,9 @@ class Body(RSTState):
                        lambda s: roman.fromRoman(s.upper()),
                        'upperroman': roman.fromRoman}
 
-    enum.sequenceREs = {}
+    enum.sequenceregexps = {}
     for sequence in enum.sequences:
-        enum.sequenceREs[sequence] = re.compile(enum.sequencepats[sequence]
+        enum.sequenceregexps[sequence] = re.compile(enum.sequencepats[sequence]
                                                 + '$')
 
     tabletoppat = re.compile(r'\+-[-+]+-\+ *$')
@@ -1065,7 +1069,7 @@ class Body(RSTState):
     pats = {}
     """Fragments of patterns used by transitions."""
 
-    pats['nonAlphaNum7Bit'] = '[!-/:-@[-`{-~]'
+    pats['nonalphanum7bit'] = '[!-/:-@[-`{-~]'
     pats['alphanum'] = '[a-zA-Z0-9]'
     pats['alphanumplus'] = '[a-zA-Z0-9_-]'
     pats['enum'] = ('(%(arabic)s|%(loweralpha)s|%(upperalpha)s|%(lowerroman)s'
@@ -1089,7 +1093,7 @@ class Body(RSTState):
                 'doctest': r'>>>( +|$)',
                 'tabletop': tabletoppat,
                 'explicit_markup': r'\.\.( +|$)',
-                'overline': r'(%(nonAlphaNum7Bit)s)\1\1\1+ *$' % pats,
+                'overline': r'(%(nonalphanum7bit)s)\1\1\1+ *$' % pats,
                 'rfc822': r'[!-9;-~]+:( +|$)',
                 'text': r''}
     initialtransitions = ['bullet',
@@ -1242,7 +1246,7 @@ class Body(RSTState):
                                  :self.enum.formatinfo[format].end]
         if expectedsequence:
             try:
-                if self.enum.sequenceREs[expectedsequence].match(text):
+                if self.enum.sequenceregexps[expectedsequence].match(text):
                     sequence = expectedsequence
             except KeyError:            # shouldn't happen
                 raise ParserError, 'unknown sequence: %s' % sequence
@@ -1253,7 +1257,7 @@ class Body(RSTState):
                 sequence = 'upperroman'
         if not sequence:
             for sequence in self.enum.sequences:
-                if self.enum.sequenceREs[sequence].match(text):
+                if self.enum.sequenceregexps[sequence].match(text):
                     break
             else:                       # shouldn't happen
                 raise ParserError, 'enumerator sequence not matched'
@@ -1425,8 +1429,8 @@ class Body(RSTState):
                 tableline = self.statemachine.abslineno() - len(block) + 1
                 t = self.buildtable(tabledata, tableline)
                 nodelist = [t] + warnings
-            except MarkupError, details:
-                nodelist = self.malformedtable(block, str(details)) + warnings
+            except MarkupError, detail:
+                nodelist = self.malformedtable(block, str(detail)) + warnings
         else:
             nodelist = warnings
         return nodelist, blankfinish
@@ -1480,10 +1484,10 @@ class Body(RSTState):
     def buildtable(self, tabledata, tableline):
         colspecs, headrows, bodyrows = tabledata
         table = nodes.table()
-        tgroup = nodes.tgroup(cols=str(len(colspecs)))
+        tgroup = nodes.tgroup(cols=len(colspecs))
         table += tgroup
         for colspec in colspecs:
-            tgroup += nodes.colspec(colwidth=str(colspec))
+            tgroup += nodes.colspec(colwidth=colspec)
         if headrows:
             thead = nodes.thead()
             tgroup += thead
@@ -1503,9 +1507,9 @@ class Body(RSTState):
             morerows, morecols, offset, cellblock = cell
             attributes = {}
             if morerows:
-                attributes['morerows'] = str(morerows)
+                attributes['morerows'] = morerows
             if morecols:
-                attributes['morecols'] = str(morecols)
+                attributes['morecols'] = morecols
             entry = nodes.entry(**attributes)
             row += entry
             sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
@@ -1592,7 +1596,12 @@ class Body(RSTState):
 
     def directive(self, match):
         # XXX need to actually *do* something with the directive
-        type = match.group(1).lower()
+        type = match.group(1)
+        try:
+            directivefunction = directives.directive(
+                  type, self.statemachine.memo.language)
+        except Exception, detail:
+            print >>sys.stderr, '%s: %s' % (detail.__class__.__name__, detail)
         atts = {'type': type}
         data = match.string[match.end():].strip()
         if data:
@@ -2078,6 +2087,6 @@ def normname(name):
     """Return a case- and whitespace-normalized name."""
     return ' '.join(name.lower().split())
 
-def updateDictOfLists(master, newdata):
+def update_dictoflists(master, newdata):
     for key, values in newdata.items():
         master.setdefault(key, []).extend(values)
