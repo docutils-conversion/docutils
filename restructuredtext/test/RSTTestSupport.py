@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/01 16:29:12 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/02 13:59:35 $
 :Copyright: This module has been placed in the public domain.
 
 All of my previous ramblings about metaclasses_ are fatigue-deranged.
@@ -31,7 +31,7 @@ that issue later, too.
 __all__ = [ 'ParserTestCaseSuite' ]
 
 import UnitTestFolder
-import sys, os, unittest, re, difflib, types
+import sys, os, unittest, re, difflib, types, inspect
 from pprint import pformat
 
 # try to import the current working version if possible
@@ -77,8 +77,18 @@ class CustomTestSuite(unittest.TestSuite):
         id -- identifier for the suite, prepended to test cases.
         """
         unittest.TestSuite.__init__(self, tests)
-        if id is not None:
+        if id is None:
+            outerframes = inspect.getouterframes(inspect.currentframe())
+            mypath = outerframes[0][1]
+            callerpath = outerframes[1][1]
+            mydir, myname = os.path.split(mypath)
+            if callerpath.startswith(mydir):
+                self.id = callerpath[len(mydir) + 1:] # caller's module
+            else:
+                self.id = callerpath
+        else:
             self.id = id
+        
 
     def addTestCase(self, testCaseClass, methodName, input, expected,
                     id=None, runInDebugger=0, shortDescription=None):
@@ -227,7 +237,7 @@ class ParserTestCase(CustomTestCase):
         self.compareOutput(self.input, output, self.expected)
 
 
-class TableParserTestSuite(unittest.TestSuite):
+class TableParserTestSuite(CustomTestSuite):
 
     """
     A collection of TableParserTestCases.
@@ -273,7 +283,7 @@ class TableParserTestCase(CustomTestCase):
     parser = states.TableParser()
 
     def test_parsegrid(self):
-        parser.init(self.input)
-        output = parser.parsegrid(self.input)
+        self.parser.init(self.input)
+        output = self.parser.parsegrid()
         self.compareOutput(pformat(self.input), pformat(output),
                            pformat(self.expected))
