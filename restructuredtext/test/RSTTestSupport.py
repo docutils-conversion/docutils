@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/09/07 01:43:00 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/09/13 02:29:39 $
 :Copyright: This module has been placed in the public domain.
 
 All of my previous ramblings about metaclasses_ are fatigue-deranged.
@@ -42,6 +42,7 @@ except ImportError:                     # try to run installed code
     from dps.parsers import restructuredtext
 
 from restructuredtext import states
+from restructuredtext import tableparser
 from dps.statemachine import string2lines
 
 try:
@@ -266,10 +267,10 @@ class TableParserTestSuite(CustomTestSuite):
 
 class TableParserTestCase(CustomTestCase):
 
-    parser = states.TableParser()
+    parser = tableparser.TableParser()
 
     def test_parsegrid(self):
-        self.parser.init(string2lines(self.input))
+        self.parser.setup(string2lines(self.input))
         try:
             self.parser.findheadbodysep()
             self.parser.parsegrid()
