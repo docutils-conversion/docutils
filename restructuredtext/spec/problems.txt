@@ -3,8 +3,8 @@
 ==============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/03/16 05:35:15 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/28 04:27:44 $
 
 There are several problems, unresolved issues, and areas of
 controversy within StructuredText_ (Classic and Next Generation). In
@@ -749,7 +749,7 @@ cleanly readable text.
 
 .. _StructuredText:
    http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
-.. _Setext: http://www.bsdi.com/setext
+.. _Setext: http://docutils.sourceforge.net/mirror/setext.html
 .. _reStructuredText: http://structuredtext.sourceforge.net
 .. _detailed description:
    http://www.tibsnjoan.demon.co.uk/STNG-format.html

@@ -1,10 +1,10 @@
-================================================
- Record of reStructuredText Syntax Alternatives
-================================================
+==================================================
+ A Record of reStructuredText Syntax Alternatives
+==================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.18 $
-:Date: $Date: 2002/03/16 05:35:08 $
+:Revision: $Revision: 1.19 $
+:Date: $Date: 2002/03/28 04:27:18 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -13,7 +13,7 @@ originate with StructuredText or Setext, please see `Problems With
 StructuredText`_. See the `reStructuredText Markup Specification`_ for
 full details of the established syntax.
 
-.. _Setext: http://www.bsdi.com/setext
+.. _Setext: http://docutils.sourceforge.net/mirror/setext.html
 .. _StructuredText:
    http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
 .. _Problems with StructuredText:

@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.44 $
-:Date: $Date: 2002/03/16 05:35:29 $
+:Revision: $Revision: 1.45 $
+:Date: $Date: 2002/03/28 04:28:03 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -776,6 +776,12 @@ transform fields or field bodies in certain contexts; they are often
 used as part of an extension syntax. See `Bibliographic Fields`_ below
 for one example, or the "image" directive in `reStructuredText
 Directives`_ for another.
+
+Standard RFC822 headers cannot be used for this construct because they
+are ambiguous.  A word followed by a colon at the beginning of a line
+is common in written text.  However, in well-defined contexts such as
+when a field list invariably occurs at the beginning of a document
+(PEPs and email messages), standard RFC822 headers could be used.
 
 Syntax diagram (simplified)::
 
@@ -1601,14 +1607,14 @@ Directives`_ document. Below are examples of implemented directives.
 
 Directives are meant for the arbitrary processing of their contents
 (the directive data & text block), which can be transformed into
-something possibly unrelated to the original text. Directives can be
-used as an extension mechanism for reStructuredText, a way of adding
+something possibly unrelated to the original text. Directives are used
+as an extension mechanism for reStructuredText, a way of adding
 support for new constructs without adding new syntax.  For example,
-here's how an image could be placed::
+here's how an image may be placed::
 
     .. image:: mylogo.png
 
-A figure (a graphic with a caption) could be placed like this::
+A figure (a graphic with a caption) may placed like this::
 
     .. figure:: larch.png
        The larch.
@@ -1735,9 +1741,11 @@ Images
         and trumped in hand with the |S| 2.
 
         .. |H| image:: /images/heart.png
-                       [height=11 width=11]
+           :height: 11
+           :width: 11
         .. |S| image:: /images/spade.png
-                       [height=11 width=11]
+           :height: 11
+           :width: 11
 
         * |Red light| means stop.
         * |Green light| means go.
@@ -1767,19 +1775,21 @@ Styles [#]_
     for LaTeX, etc), or may be ignored for other output formats (often
     for plain text).
 
-    Interpreted text is unsuitable for this purpose because the set of
-    style names cannot be predefined - it is the domain of the content
-    author, not the author of the parser and output formatter - and
-    there is no way to associate a stylename argument with an
-    interpreted text style role.  Also, it may be desirable to use the
-    same mechanism for styling blocks::
+    .. @@@ This needs to be rethought & rewritten or removed:
 
-        .. style:: motto
-           At Bob's Underwear Shop, we'll do anything to get in your
-           pants.
-
-        .. style:: disclaimer
-           All rights reversed.  Reprint what you like.
+       Interpreted text is unsuitable for this purpose because the set of
+       style names cannot be predefined - it is the domain of the content
+       author, not the author of the parser and output formatter - and
+       there is no way to associate a stylename argument with an
+       interpreted text style role.  Also, it may be desirable to use the
+       same mechanism for styling blocks::
+   
+           .. style:: motto
+              At Bob's Underwear Shop, we'll do anything to get in your
+              pants.
+   
+           .. style:: disclaimer
+              All rights reversed.  Reprint what you like.
 
     .. [#] There may be sufficient need for a "style" mechanism to
        warrant simpler syntax such as an extension to the interpreted
@@ -1896,9 +1906,13 @@ can warn of unresolvable links, giving reasons for the messages.
 Inline Markup
 =============
 
-Inline markup is the markup of words or phrases within a text block.
-Inline markup cannot be nested.  The text within inline markup may not
-begin or end with whitespace.
+In reStructuredText, inline markup applies to words or phrases within
+a text block.  The same whitespace and punctuation that serves to
+delimit words in written text is used to delimit the inline markup
+syntax constructs.  The text within inline markup may not begin or end
+with whitespace.  Arbitrary character-level markup is not supported;
+it is not possible to mark up individual characters within a word.
+Inline markup cannot be nested.
 
 There are nine inline markup constructs.  Five of the constructs use
 identical start-strings and end-strings to indicate the markup:
@@ -2280,15 +2294,15 @@ Punctuation at the end of a URI is not considered part of the URI.
  Error Handling
 ----------------
 
-DTD element: system_message.
+DTD element: system_message, problematic.
 
 Markup errors are handled according to the specification in `PEP
 258`_.
 
 
-.. _reStructuredText: http://structuredtext.sourceforge.net
+.. _reStructuredText: http://structuredtext.sourceforge.net/
 .. _Python Docstring Processing System:
-   http://docstring.sourceforge.net
+   http://docstring.sourceforge.net/
 .. _DPS Document Tree Structure:
    http://docstring.sourceforge.net/spec/doctree.txt
 .. _Generic Plaintext Document Interface DTD:

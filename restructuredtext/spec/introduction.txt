@@ -3,8 +3,8 @@
 =====================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/16 05:31:40 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/28 04:27:31 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system.  It is useful for in-line
@@ -27,7 +27,7 @@ web site, http://structuredtext.sourceforge.net/.
 .. _reStructuredText: http://structuredtext.sourceforge.net/
 .. _StructuredText:
     http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
-.. _Setext: http://www.bsdi.com/setext
+.. _Setext: http://docutils.sourceforge.net/mirror/setext.html
 .. _Python Docstring Processing System:
 .. _Docstring Processing System: http://docstring.sourceforge.net/
 .. _Problems with StructuredText:
@@ -146,12 +146,12 @@ History
 =======
 
 reStructuredText_, the specification, is based on StructuredText_ and
-Setext_.  StructuredText was developed by Jim Fulton of `Digital
-Creations`_ and first released in 1996.  It is now released as a part
-of the open-source 'Z Object Publishing Environment' (ZOPE_).  Ian
-Feldman's and Tony Sanders' earlier Setext_ specification was either
-an influence on StructuredText or, by their similarities, at least
-evidence of the correctness of this approach.
+Setext_.  StructuredText was developed by Jim Fulton of `Zope
+Corporation`_ (formerly Digital Creations) and first released in 1996.
+It is now released as a part of the open-source 'Z Object Publishing
+Environment' (ZOPE_).  Ian Feldman's and Tony Sanders' earlier Setext_
+specification was either an influence on StructuredText or, by their
+similarities, at least evidence of the correctness of this approach.
 
 I discovered StructuredText_ in late 1999 while searching for a way to
 document the Python modules in one of my projects.  Version 1.1 of
@@ -174,9 +174,10 @@ Implementing the new syntax extensions from version 1.23 proved to be
 an exercise in frustration, as the complexity of the module had become
 overwhelming.
 
-Recently, development on StructuredTextNG_ ("Next Generation") has
-begun at Digital Creations.  It seems to have many improvements, but
-still suffers from many of the problems of classic StructuredText.
+In 2000, development on StructuredTextNG_ ("Next Generation") began at
+`Zope Corporation`_ (then Digital Creations).  It seems to have many
+improvements, but still suffers from many of the problems of classic
+StructuredText.
 
 I decided that a complete rewrite was in order, and even started a
 SourceForge project, reStructuredText_.  My motivations (the 'itches'
@@ -270,7 +271,7 @@ followed.
    __ http://mail.python.org/pipermail/doc-sig/2001-June/001857.html
 
 
-.. _Digital Creations: http://www.digicool.com
+.. _Zope Corporation: http://www.zope.com
 .. _ZOPE: http://www.zope.org
 .. _pythondoc: http://starship.python.net/crew/danilo/pythondoc/
 .. _StructuredTextNG:
