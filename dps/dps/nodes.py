@@ -3,18 +3,22 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/08/30 04:28:58 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/09/07 02:08:41 $
 :Copyright: This module has been placed in the public domain.
 
 """
 
 import sys
 import xml.dom.minidom
-from types import StringType
+from types import IntType, SliceType, StringType, TupleType
 from UserString import MutableString
 
 class _Node:
+
+    def __nonzero__(self):
+        """_Node instances are always true."""
+        return 1
 
     def asdom(self, dom=xml.dom.minidom):
         return self._dom_node(dom)
@@ -51,7 +55,7 @@ class Text(_Node, MutableString):
     def astext(self):
         return self.data
 
-    def pprint(self, indent='    ', level=0):
+    def pformat(self, indent='    ', level=0):
         result = []
         indent = indent * level
         for line in self.data.splitlines():
@@ -154,20 +158,38 @@ class _Element(_Node):
     def __getitem__(self, key):
         if isinstance(key, StringType):
             return self.attributes[key]
-        else:
+        elif isinstance(key, IntType):
             return self.children[key]
+        elif isinstance(key, SliceType):
+            assert key.step is None, 'cannot handle slice with stride'
+            return self.children[key.start:key.stop]
+        else:
+            raise TypeError, ('element index must be an integer, a slice, or '
+                              'an attribute name string')
 
     def __setitem__(self, key, item):
         if isinstance(key, StringType):
             self.attributes[key] = item
-        else:
+        elif isinstance(key, IntType):
             self.children[key] = item
+        elif isinstance(key, SliceType):
+            assert key.step is None, 'cannot handle slice with stride'
+            self.children[key.start:key.stop] = item
+        else:
+            raise TypeError, ('element index must be an integer, a slice, or '
+                              'an attribute name string')
 
     def __delitem__(self, key):
         if isinstance(key, StringType):
             del self.attributes[key]
-        else:
+        elif isinstance(key, IntType):
             del self.children[key]
+        elif isinstance(key, SliceType):
+            assert key.step is None, 'cannot handle slice with stride'
+            del self.children[key.start:key.stop]
+        else:
+            raise TypeError, ('element index must be an integer, a simple '
+                              'slice, or an attribute name string')
 
     def __add__(self, other):
         return self.children + other
@@ -218,10 +240,44 @@ class _Element(_Node):
         assert isinstance(item, _Node)
         self.children.remove(item)
 
-    def pprint(self, indent='    ', level=0):
+    def findclass(self, childclass, start=0, end=sys.maxint):
+        """
+        Return the index of the first child whose class matches `childclass`.
+
+        `childclass` may also be a tuple of node classes, in which case any
+        of the classes may match.
+        """
+        if not isinstance(childclass, TupleType):
+            childclass = (childclass,)
+        for index in range(start, min(len(self), end)):
+            for c in childclass:
+                if isinstance(self[index], c):
+                    return index
+        return None
+
+    def findnonclass(self, childclass, start=0, end=sys.maxint):
+        """
+        Return the index of the first child not matching `childclass`.
+
+        `childclass` may also be a tuple of node classes, in which case none
+        of the classes may match.
+        """
+        if not isinstance(childclass, TupleType):
+            childclass = (childclass,)
+        for index in range(start, min(len(self), end)):
+            match = 0
+            for c in childclass:
+                if isinstance(self[index], c):
+                    match = 1
+            if not match:
+                return index
+        return None
+
+    def pformat(self, indent='    ', level=0):
         if self.children:
             return ''.join(['%s%s\n' % (indent * level, self.starttag())] +
-                           [c.pprint(indent, level+1) for c in self.children]
+                           [child.pformat(indent, level+1)
+                            for child in self.children]
                            + ['%s%s\n' % (indent * level, self.endtag())])
         else:
             return '%s%s\n' % (indent * level, self.emptytag())
@@ -259,6 +315,8 @@ class document(_Element):
         self.implicitlinks = {}
         self.indirectlinks = {}
         self.refnames = {}
+        self.autofootnotes = []
+        self.autofootnoterefs = []
         self.errorhandler = errorhandler
 
     def asdom(self, dom=xml.dom.minidom):
@@ -333,6 +391,14 @@ class document(_Element):
         self.indirectlinks.setdefault(name, []).append(linknode)
         self.explicitlinks.setdefault(name, []).append(linknode)
         linknode['name'] = name
+
+    def addautofootnote(self, name, footnotenode):
+        footnotenode['auto'] = '1'
+        self.autofootnotes.append((name, footnotenode))
+
+    def addautofootnoteref(self, refname, refnode):
+        refnode['auto'] = '1'
+        self.autofootnoterefs.append((refname, refnode))
 
 
 # ========================
