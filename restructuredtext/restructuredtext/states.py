@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
-:Contact: dgoodger@bigfoot.com
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/08/14 03:49:25 $
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/08/22 03:33:54 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -297,15 +297,17 @@ class RSTState(StateWS):
 
     inline.openers = '\'"([{<'
     inline.closers = '\'")]}>'
-    inline.start_string_prefix = r'(?:^|[ \n%s])' % re.escape(inline.openers)
-    inline.end_string_suffix = r'(?:$|[- \n.,:;!?%s])' % re.escape(inline.closers)
+    inline.start_string_prefix = (r'(?:(?<=^)|(?<=[ \n%s]))'
+                                  % re.escape(inline.openers))
+    inline.end_string_suffix = (r'(?:(?=$)|(?=[- \n.,:;!?%s]))'
+                                % re.escape(inline.closers))
     inline.non_whitespace_before = r'(?<![ \n])'
     inline.non_whitespace_escape_before = r'(?<![ \n\x00])'
     inline.non_whitespace_after = r'(?![ \n])'
     inline.simplename = r'[a-zA-Z0-9](?:[-_.a-zA-Z0-9]*[a-zA-Z0-9])?'
     inline.uric = r"""[-_.!~*'();/:@&=+$,%a-zA-Z0-9]"""
     inline.urilast = r"""[_~/a-zA-Z0-9]"""
-    inline.emailc = r"""[-_!~*'{|}/#%?^`&=+$a-zA-Z0-9]"""
+    inline.emailc = r"""[-_!~*'{|}/#?^`&=+$%a-zA-Z0-9]"""
     inline.identity = string.maketrans('', '')
     inline.null2backslash = string.maketrans('\x00', '\\')
     inline.patterns = Stuff(
@@ -317,18 +319,25 @@ class RSTState(StateWS):
                                  | \*           # emphasis
                                    (?!\*)         # but not strong
                                  | ``           # literal
-                                 | `            # interpreted or phrase link
-                                   (?!`)          # but not literal
                                )
                                %s             # no whitespace after
                              |              # *OR*
-                               (              # whole constructs (group 3):
-                                   (%s)(_)      # link name, end-string (4,5)
-                                 | \[(%s)(\]_)  # footnote_reference, end (6,7)
+                               ((?::%s:)?)    # optional role (group 3)
+                               (              # start-string (group 4)
+                                 `              # interpreted or phrase link
+                                 (?!`)          # but not literal
+                               )
+                               %s             # no whitespace after
+                             |              # *OR*
+                               (              # whole constructs (group 5):
+                                   (%s)(_)      # link name, end-string (6,7)
+                                 | \[(%s)(\]_)  # footnote_reference, end (8,9)
                                )
                                %s             # end-string suffix
                              )
                              """ % (inline.start_string_prefix,
+                                    inline.non_whitespace_after,
+                                    inline.simplename,
                                     inline.non_whitespace_after,
                                     inline.simplename,
                                     inline.simplename,
@@ -339,18 +348,9 @@ class RSTState(StateWS):
           strong=re.compile(inline.non_whitespace_escape_before
                             + r'(\*\*)' + inline.end_string_suffix),
           interpreted_or_phrase_link=re.compile(
-                inline.non_whitespace_escape_before + '(`_?)'
-                + inline.end_string_suffix),
-          interpreted_role=re.compile(
-                r"""
-                  %s          # no whitespace/escape before
-                  (:[ \n]+)   # prefix role (group 1)
-                |           # *OR*
-                  ([ \n]+:)   # suffix role (group 2)
-                  %s          # no whitespace after
-                """ % (inline.non_whitespace_escape_before,
-                       inline.non_whitespace_after),
-                re.VERBOSE),
+                '%s(`(:%s:|_)?)%s' % (inline.non_whitespace_escape_before,
+                                      inline.simplename,
+                                      inline.end_string_suffix)),
           literal=re.compile(inline.non_whitespace_before + '(``)'
                              + inline.end_string_suffix),
           uri=re.compile(
@@ -362,12 +362,8 @@ class RSTState(StateWS):
                     :
                     (?:
                       (?:                         # either:
-                        //?                         # hierarchical URI
+                        (?://?)?                    # hierarchical URI
                         %s*                         # URI characters
-                        %s                          # final URI char
-                      |                           # OR
-                        %s+(?:\.%s+)*               # opaque URI
-                        (?:@%s+(?:\.%s+)*)?         # (email only?)
                         %s                          # final URI char
                       )
                       (?:                         # optional query
@@ -389,16 +385,19 @@ class RSTState(StateWS):
                   )
                 )
                 %s                          # end-string suffix
-                """ % ((inline.start_string_prefix, inline.uric, inline.urilast)
-                       + (inline.emailc,) * 4
-                       + (inline.urilast, inline.uric, inline.urilast,
-                          inline.uric, inline.urilast)
-                       + (inline.emailc,) * 4
-                       + (inline.urilast, inline.end_string_suffix,)),
+                """ % (inline.start_string_prefix,
+                       inline.uric, inline.urilast,
+                       inline.uric, inline.urilast,
+                       inline.uric, inline.urilast,
+                       inline.emailc, inline.emailc,
+                       inline.emailc, inline.emailc,
+                       inline.urilast,
+                       inline.end_string_suffix,),
                 re.VERBOSE))
-    inline.groups = Stuff(initial=Stuff(start=2, whole=3, linkname=4, linkend=5,
-                                        footnotelabel=6, fnend=7),
-                          interpreted_role=Stuff(prefix=1, suffix=2),
+    inline.groups = Stuff(initial=Stuff(start=2, role=3, backquote=4, whole=5,
+                                        linkname=6, linkend=7, footnotelabel=8,
+                                        fnend=9),
+                          interpreted_or_phrase_link=Stuff(suffix=2),
                           uri=Stuff(whole=1, absolute=2, email=3))
     #print >>sys.stderr, '`RSTState.inline.patterns.uri.pattern`=\n%r' % inline.patterns.uri.pattern
     #print >>sys.stderr, 'RSTState.inline.patterns.uri.pattern=\n%s' % inline.patterns.uri.pattern
@@ -406,8 +405,8 @@ class RSTState(StateWS):
     def quotedstart(self, match):
         """Return 1 if inline markup start-string is 'quoted', 0 if not."""
         string = match.string
-        start = match.start(self.inline.groups.initial.start)
-        end = match.end(self.inline.groups.initial.start)
+        start = match.start()           # self.inline.groups.initial.start
+        end = match.end()               # self.inline.groups.initial.start)
         if start == 0:                  # start-string at beginning of text
             return 0
         prestart = string[start - 1]
@@ -429,21 +428,18 @@ class RSTState(StateWS):
         matchend = match.end(self.inline.groups.initial.start)
         if self.quotedstart(match):
             return (string[:matchend], [], string[matchend:], [])
-        else:
-            endmatch = pattern.search(string[matchend:])
-            if endmatch and endmatch.start(1):  # 1 or more chars
-                text = unescape(endmatch.string[:endmatch.start(1)],
-                                restorebackslashes)
-                rawsource = unescape(
-                      string[matchstart:matchend+endmatch.end(1)], 1)
-                inlineobj = nodeclass(rawsource, text)
-                return (string[:matchstart], [inlineobj],
-                        string[matchend:][endmatch.end(1):], [])
-            else:
-                sw = self.statemachine.memo.errorist.system_warning(
-                      1, 'Inline %s start-string without end-string '
-                      'at line %s.' % (nodeclass.__name__, lineno))
-                return (string[:matchend], [], string[matchend:], [sw])
+        endmatch = pattern.search(string[matchend:])
+        if endmatch and endmatch.start(1):  # 1 or more chars
+            text = unescape(endmatch.string[:endmatch.start(1)],
+                            restorebackslashes)
+            rawsource = unescape(string[matchstart:matchend+endmatch.end(1)], 1)
+            inlineobj = nodeclass(rawsource, text)
+            return (string[:matchstart], [inlineobj],
+                    string[matchend:][endmatch.end(1):], [])
+        sw = self.statemachine.memo.errorist.system_warning(
+              1, 'Inline %s start-string without end-string '
+              'at line %s.' % (nodeclass.__name__, lineno))
+        return (string[:matchend], [], string[matchend:], [sw])
 
     def emphasis(self, match, lineno, pattern=inline.patterns.emphasis):
         return self.inlineobj(match, lineno, pattern, nodes.emphasis)
@@ -453,72 +449,78 @@ class RSTState(StateWS):
 
     def interpreted_or_phrase_link(
           self, match, lineno,
-          pattern=inline.patterns.interpreted_or_phrase_link):
+          pattern=inline.patterns.interpreted_or_phrase_link,
+          rolegroup=inline.groups.initial.role,
+          backquote=inline.groups.initial.backquote):
         string = match.string
-        matchstart = match.start(self.inline.groups.initial.start)
-        matchend = match.end(self.inline.groups.initial.start)
-        if self.quotedstart(match):
+        matchstart = match.start(backquote)
+        matchend = match.end(backquote)
+        rolestart = match.start(rolegroup)
+        role = match.group(rolegroup)
+        position = ''
+        if role:
+            role = role[1:-1]
+            position = 'prefix'
+            #print >>sys.stderr, 'interpreted_or_phrase_link: role=%r, position=%r' % (role, position)
+        elif self.quotedstart(match):
             return (string[:matchend], [], string[matchend:], [])
-        else:
-            endmatch = pattern.search(string[matchend:])
-            if endmatch and endmatch.start(1):  # 1 or more chars
-                escaped = endmatch.string[:endmatch.start(1)]
-                text = unescape(escaped, 0)
-                rawsource = unescape(
-                      string[matchstart:matchend+endmatch.end(1)], 1)
-                if rawsource[-1] == '_':
-                    refname = normname(text)
-                    inlineobj = nodes.link(rawsource, text,
-                                           refname=normname(text))
-                    self.statemachine.memo.document.addrefname(refname,
-                                                               inlineobj)
-                    sw = []
-                else:
-                    inlineobj, sw = self.interpreted(lineno, escaped,
-                                                     rawsource, text)
-                return (string[:matchstart], [inlineobj],
-                        string[matchend:][endmatch.end(1):], sw)
+        endmatch = pattern.search(string[matchend:])
+        if endmatch and endmatch.start(1):  # 1 or more chars
+            escaped = endmatch.string[:endmatch.start(1)]
+            text = unescape(escaped, 0)
+            rawsource = unescape(
+                  string[match.start():matchend+endmatch.end()], 1)
+            if rawsource[-1] == '_':
+                if role:
+                    sw = self.statemachine.memo.errorist.system_warning(
+                          1, 'Mismatch: inline interpreted text start-string '
+                          'and role with phrase-link end-string at line %s.'
+                          % lineno)
+                    return (string[:matchend], [], string[matchend:], [sw])
+                return self.phrase_link(
+                      string[:matchstart], string[matchend:][endmatch.end():],
+                      text, rawsource)
             else:
-                sw = self.statemachine.memo.errorist.system_warning(
-                      1, 'Inline %s start-string without end-string '
-                      'at line %s.' % (nodeclass.__name__, lineno))
-                return (string[:matchend], [], string[matchend:], [sw])
+                return self.interpreted(
+                      string[:rolestart], string[matchend:][endmatch.end():],
+                      endmatch, role, position, lineno,
+                      escaped, rawsource, text)
+        sw = self.statemachine.memo.errorist.system_warning(
+              1, 'Inline interpreted text or phrase link start-string '
+              'without end-string at line %s.' % lineno)
+        return (string[:matchend], [], string[matchend:], [sw])
 
-    def interpreted(self, lineno, escaped, rawsource, text,
-                    pattern=inline.patterns.interpreted_role,
-                    prefix=inline.groups.interpreted_role.prefix,
-                    suffix=inline.groups.interpreted_role.suffix):
-        #print >>sys.stderr, 'RSTState.interpreted: rawsource=%r, text=%r' % (rawsource, text)
-        sw = []
-        match = pattern.search(escaped)
-        if not match:
-            return nodes.interpreted(rawsource, text), sw
-        #print >>sys.stdout, 'RSTState.interpreted: match.groups=%r' % (match.groups(),)
-        if match.group(prefix):
-            #print >>sys.stderr, 'RSTState.interpreted: prefix matched! match.group(prefix)=%r' % (match.group(prefix),)
-            role = normname(unescape(escaped[:match.start(prefix)]))
-            aftercolon = escaped[match.end(prefix):]
-            text = unescape(aftercolon)
+    def phrase_link(self, before, after, text, rawsource):
+        refname = normname(text)
+        inlineobj = nodes.link(rawsource, text, refname=normname(text))
+        self.statemachine.memo.document.addrefname(refname, inlineobj)
+        return (before, [inlineobj], after, [])
+
+    def interpreted(self, before, after, endmatch, role, position, lineno,
+                    escaped, rawsource, text,
+                    suffix=inline.groups.interpreted_or_phrase_link.suffix):
+        if endmatch.group(suffix):
+            if role:
+                sw = self.statemachine.memo.errorist.system_warning(
+                      1, 'Multiple roles in interpreted text at line %s.'
+                      % lineno)
+                return (before + rawsource, [], after, [sw])
+            role = endmatch.group(suffix)[1:-1]
+            position = 'suffix'
+        if role:
+            atts = {'role': role, 'position': position}
         else:
-            #print >>sys.stderr, 'RSTState.interpreted: suffix matched!'
-            aftercolon = escaped[match.end(suffix):]
-            role = normname(unescape(aftercolon))
-            text = unescape(escaped[:match.start(suffix)])
-        #print >>sys.stderr, 'RSTState.interpreted: aftercolon=%r' % aftercolon
-        if pattern.search(aftercolon):
-            sw.append(self.statemachine.memo.errorist.system_warning(
-                  1, 'Multiple role-separators in interpreted text '
-                  'at line %s.' % lineno))
-        return nodes.interpreted(rawsource, text, role=role), sw
+            atts = {}
+        return before, [nodes.interpreted(rawsource, text, **atts)], after, []
 
     def literal(self, match, lineno, pattern=inline.patterns.literal):
         return self.inlineobj(match, lineno, pattern, nodes.literal,
                               restorebackslashes=1)
 
     def footnote_reference(self, match, lineno, pattern=None):
-        fnname = '[%s]' % match.group(self.inline.groups.initial.footnotelabel)
+        fnname = match.group(self.inline.groups.initial.footnotelabel)
         refname = normname(fnname)
-        fnrefnode = nodes.footnote_reference(fnname + '_', fnname,
+        fnrefnode = nodes.footnote_reference('[%s]_' % fnname, fnname,
                                              refname=refname)
         self.statemachine.memo.document.addrefname(refname, fnrefnode)
         string = match.string
@@ -589,6 +591,7 @@ class RSTState(StateWS):
         pattern = self.inline.patterns.initial
         dispatch = self.inline.dispatch
         start = self.inline.groups.initial.start - 1
+        backquote = self.inline.groups.initial.backquote - 1
         linkend = self.inline.groups.initial.linkend - 1
         fnend = self.inline.groups.initial.fnend - 1
         remaining = escape2null(text)
@@ -600,7 +603,8 @@ class RSTState(StateWS):
             if match:
                 groups = match.groups()
                 before, inlines, remaining, syswarnings = \
-                      dispatch[groups[start] or groups[linkend]
+                      dispatch[groups[start] or groups[backquote]
+                               or groups[linkend]
                                or groups[fnend]](self, match, lineno)
                 unprocessed.append(before)
                 warnings += syswarnings
@@ -668,7 +672,8 @@ class Body(RSTState):
     pats['optarg'] = '%(alphanum)s%(alphanumplus)s*' % pats
     pats['shortopt'] = '-%(alphanum)s( %(optarg)s|%(alphanumplus)s+)?' % pats
     pats['longopt'] = '--%(alphanum)s%(alphanumplus)s*([ =]%(optarg)s)?' % pats
-    pats['option'] = '(%(shortopt)s|%(longopt)s)' % pats
+    pats['vmsopt'] = '/%(alphanum)s( %(optarg)s|%(alphanumplus)s+)?' % pats
+    pats['option'] = '(%(shortopt)s|%(longopt)s|%(vmsopt)s)' % pats
 
     for format in enum.formats:
         pats[format] = '(?P<%s>%s%s%s)' % (
@@ -971,7 +976,7 @@ class Body(RSTState):
             tokens = optionstring.split()
             if tokens[0][:2] == '--':
                 tokens[:1] = tokens[0].split('=')
-            elif tokens[0][:1] == '-':
+            elif tokens[0][:1] in '-/':
                 if len(tokens[0]) > 2:
                     tokens[:1] = [tokens[0][:2], tokens[0][2:]]
             else:
@@ -981,6 +986,8 @@ class Body(RSTState):
                     o += nodes.long_option(tokens[0], tokens[0])
                 elif tokens[0][:1] == '-':
                     o += nodes.short_option(tokens[0], tokens[0])
+                elif tokens[0][:1] == '/':
+                    o += nodes.vms_option(tokens[0], tokens[0])
                 if len(tokens) > 1:
                     o += nodes.option_argument(tokens[1], tokens[1])
                 optlist.append(o)
@@ -1024,12 +1031,12 @@ class Body(RSTState):
         indented, indent, offset, blankfinish = \
               self.statemachine.getfirstknownindented(match.end())
         label = match.group(1)
-        name = normname('[' + label + ']')
+        name = normname(label)
         f = nodes.footnote('\n'.join(indented))
         f += nodes.label('', label)
-        self.statemachine.memo.document.addexplicitlink(name, f)
+        self.statemachine.memo.document.addimplicitlink(name, f)
         if indented:
-            #rint >>sys.stdout, 'Body.footnote: indented=%r' % indented
+            #print >>sys.stdout, 'Body.footnote: indented=%r' % indented
             sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
             sm.run(indented, inputoffset=offset,
                    memo=self.statemachine.memo, node=f, matchtitles=0)
@@ -1046,7 +1053,7 @@ class Body(RSTState):
                               % self.statemachine.abslineno())
         name = normname(unescape(targetmatch.group(namegroup)))
         block = self.statemachine.gettextblock()
-        block[0] = unescape(targetmatch.string[targetmatch.end():], 1)
+        reference = unescape(targetmatch.string[targetmatch.end():], 1).strip()
         blankfinish = 1
         for i in range(1,len(block)):
             if block[i][:1] != ' ':
@@ -1054,14 +1061,22 @@ class Body(RSTState):
                 self.statemachine.previousline(len(block) - i)
                 del block[i:]
                 break
-        reference = ''.join([line.strip() for line in block])
-        t = nodes.target('\n'.join([match.string] + block[1:]), reference)
-        if reference:
-            self.statemachine.memo.document.addindirectlink(
-                  name, reference, t, self.statemachine.node)
+            reference += block[i].strip()
+        blocktext = '\n'.join(block)
+        if reference.find(' ') != -1:
+            t = self.statemachine.memo.errorist.system_warning(
+                  1, 'Hyperlink target at line %s contains whitespace. '
+                  'Perhaps a footnote was intended?'
+                  % (self.statemachine.abslineno() - len(block) + 1))
+            t += nodes.literal_block(blocktext, blocktext)
         else:
-            self.statemachine.memo.document.addexplicitlink(
-                  name, t, self.statemachine.node)
+            t = nodes.target(blocktext, reference)
+            if reference:
+                self.statemachine.memo.document.addindirectlink(
+                      name, reference, t, self.statemachine.node)
+            else:
+                self.statemachine.memo.document.addexplicitlink(
+                      name, t, self.statemachine.node)
         return [t], blankfinish
 
     def directive(self, match):
@@ -1085,12 +1100,20 @@ class Body(RSTState):
         return [nodes.directive(text, *children, **atts)], blankfinish
 
     def comment(self, match):
+        if not match.string[match.end():].strip(): # text on first line?
+            try:                        # no
+                if self.statemachine.nextline().strip(): # text on next line?
+                    self.statemachine.previousline() # yes; it's not empty
+                else:                   # yes; it's an empty comment
+                    raise IndexError
+            except IndexError:          # "A tiny but practical wart."
+                return [nodes.comment()], 1
         indented, offset, blankfinish = \
               self.statemachine.getknownindented(match.end())
         text = '\n'.join(indented)
         return [nodes.comment(text, text)], blankfinish
 
-    explicit.constructs = [(re.compile(r'\.\. +_\[(%s)\](?: +|$)'
+    explicit.constructs = [(re.compile(r'\.\. +\[(#|#?(%s))\](?: +|$)'
                                        % RSTState.inline.simplename), footnote),
                            (re.compile(r'\.\. +_'), hyperlink_target),
                            (re.compile(r'\.\. +([\w-]+)::(?: +|$)'), directive)]
@@ -1334,16 +1357,19 @@ class Text(RSTState):
     def indent(self, match, context, nextstate):
         """Definition list item."""
         l = nodes.definition_list()
-        i = self.definition_list_item(context)
+        i, blankfinish = self.definition_list_item(context)
         l += i
         self.statemachine.node += l
         offset = self.statemachine.lineoffset + 1   # next line
         kwargs = self.indentSMkwargs.copy()
         kwargs['initialstate'] = 'DefinitionList'
         sm = self.indentSM(debug=self.debug, **kwargs)
+        sm.states['Definition'].blankfinish = blankfinish
         sm.run(self.statemachine.inputlines[offset:],
                inputoffset=self.statemachine.abslineoffset() + 1,
                memo=self.statemachine.memo, node=l, matchtitles=0)
+        if not sm.states['Definition'].blankfinish:
+            self.statemachine.node += self.unindentwarning()
         sm.unlink()
         try:
             self.statemachine.gotoline(sm.abslineoffset())
@@ -1400,17 +1426,18 @@ class Text(RSTState):
 
     def literal_block(self):
         """Return a list of nodes."""
-        indented, indent, offset, blankfinish = self.statemachine.getindented()
+        indented, indent, offset, blankfinish = \
+              self.statemachine.getindented(1)
         nodelist = []
         if indented:
             data = '\n'.join(indented)
             nodelist.append(nodes.literal_block(data, data))
+            if not blankfinish:
+                nodelist.append(self.unindentwarning())
         else:
             nodelist.append(self.statemachine.memo.errorist.system_warning(
                   1, 'Literal block expected at line %s; none found.'
                   % self.statemachine.abslineno()))
-        if not blankfinish:
-            nodelist.append(self.unindentwarning())
         return nodelist
 
     def definition_list_item(self, termline):
@@ -1423,17 +1450,15 @@ class Text(RSTState):
         d = nodes.definition('', *warnings)
         if termline[0][-2:] == '::':
             d += self.statemachine.memo.errorist.system_warning(
-                  2, 'Blank line missing before literal block? '
+                  0, 'Blank line missing before literal block? '
                   'Interpreted as a definition list item. '
                   'At line %s.' % (lineoffset + 1))
         sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
         sm.run(indented, inputoffset=lineoffset,
                memo=self.statemachine.memo, node=d, matchtitles=0)
         sm.unlink()
-        if not blankfinish:
-            d += self.unindentwarning()
         i = nodes.definition_list_item('\n'.join(termline + indented), t, d)
-        return i
+        return i, blankfinish
 
     def term(self, lines, lineno):
         """Return a definition_list's term object."""
@@ -1462,8 +1487,9 @@ class Definition(Text):
 
     def indent(self, match, context, nextstate):
         """Definition list item."""
-        i = self.definition_list_item(context)
+        i, blankfinish = self.definition_list_item(context)
         self.statemachine.node += i
+        self.blankfinish = blankfinish
         return [], 'DefinitionList', []
 
 
