@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/08/28 03:11:29 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2001/09/01 15:53:13 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -316,10 +316,10 @@ class RSTState(StateWS):
                              (
                                (              # start-strings only (group 2):
                                    \*\*         # strong
-                                 | 
+                                 |
                                    \*           # emphasis
                                    (?!\*)         # but not strong
-                                 | 
+                                 |
                                    ``           # literal
                                )
                                %s             # no whitespace after
@@ -333,8 +333,8 @@ class RSTState(StateWS):
                              |              # *OR*
                                (              # whole constructs (group 5):
                                    (%s)(_)      # link name, end-string (6,7)
-                                 | 
-                                   \[           # footnote_reference start, 
+                                 |
+                                   \[           # footnote_reference start,
                                    (            # footnote label (group 8):
                                        \#         # anonymous auto-numbered
                                      |          # *OR*
@@ -641,7 +641,7 @@ class RSTState(StateWS):
     def unindentwarning(self):
         return self.statemachine.memo.errorist.system_warning(
               1, ('Unindent without blank line at line %s.'
-                  % (self.statemachine.abslineno() + 1)))        
+                  % (self.statemachine.abslineno() + 1)))
 
 
 class Body(RSTState):
@@ -651,8 +651,8 @@ class Body(RSTState):
     """
 
     enum = Stuff()
-    """Enumerated list information."""
-    
+    """Enumerated list parsing information."""
+
     enum.formatinfo = {
           'parens': Stuff(prefix='(', suffix=')', start=1, end=-1),
           'rparen': Stuff(prefix='', suffix=')', start=0, end=-1),
@@ -673,11 +673,17 @@ class Body(RSTState):
                        'lowerroman':
                        lambda s: roman.fromRoman(s.upper()),
                        'upperroman': roman.fromRoman}
-                       
+
     enum.sequenceREs = {}
     for sequence in enum.sequences:
         enum.sequenceREs[sequence] = re.compile(enum.sequencepats[sequence]
                                                 + '$')
+
+    tbl = Stuff()
+    """Table parsing information."""
+
+    tbl.pats = {'tableside': re.compile('[+|].+[+|]$'),
+                'tabletop': re.compile(r'\+-[-+]+-\+ *$')}
 
     pats = {}
     """Fragments of patterns used by transitions."""
@@ -704,7 +710,7 @@ class Body(RSTState):
                 'fieldmarker': r':[^: ]([^:]*[^: ])?:( +|$)',
                 'optionmarker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
                 'doctest': r'>>>( +|$)',
-                'tabletop': r'\+-[-+]+-\+ *$',
+                'tabletop': tbl.pats['tabletop'],
                 'explicit_markup': r'\.\.( +|$)',
                 'overline': r'(%(nonAlphaNum7Bit)s)\1\1\1+ *$' % pats,
                 'rfc822': r'[!-9;-~]+:( +|$)',
@@ -986,7 +992,7 @@ class Body(RSTState):
     def parseoptionmarker(self, match):
         """
         Return a list of `node.option` objects from an option marker match.
-        
+
         :Exception: `MarkupError` for invalid option markers.
         """
         optlist = []
@@ -1035,28 +1041,62 @@ class Body(RSTState):
 
     def table(self):
         """Temporarily parse a table as a literal_block."""
-        nodelist = []
+        block, warnings, blankfinish = self.isolatetable()
+        if block:
+            data = '\n'.join(block)
+            t = nodes.literal_block(data, data)
+            nodelist = [t] + warnings
+        else:
+            nodelist = warnings
+        return nodelist, blankfinish
+
+    def isolatetable(self):
+        warnings = []
         blankfinish = 1
         try:
             block = self.statemachine.getunindented()
         except statemachine.UnexpectedIndentationError, instance:
             block, lineno = instance.args
-            nodelist.append(self.statemachine.memo.errorist.system_warning(
+            warnings.append(self.statemachine.memo.errorist.system_warning(
                   2, 'Unexpected indentation at line %s.' % lineno))
             blankfinish = 0
+        width = len(block[0].strip())
         for i in range(len(block)):
-            if block[i][0] not in '|+':
+            block[i] = block[i].strip()
+            if block[i][0] not in '+|': # check left edge
                 blankfinish = 0
                 self.statemachine.previousline(len(block) - i)
                 del block[i:]
                 break
+        if not self.tbl.pats['tabletop'].match(block[-1]): # find bottom
+            blankfinish = 0
+            # from second-last to third line of table:
+            for i in range(len(block) - 2, 1, -1):
+                if self.tbl.pats['tabletop'].match(block[i]):
+                    self.statemachine.previousline(len(block) - i + 1)
+                    del block[i+1:]
+                    break
+            else:
+                warnings.extend(self.malformedtable(block))
+                return [], warnings, blankfinish
+        for i in range(len(block)):     # check right edge
+            if len(block[i]) != width or block[i][-1] not in '+|':
+                warnings.extend(self.malformedtable(block))
+                return [], warnings, blankfinish
+        return block, warnings, blankfinish
+
+    def malformedtable(self, block):
         data = '\n'.join(block)
-        nodelist.insert(0, nodes.literal_block(data, data))
-        return nodelist, blankfinish
+        nodelist = [
+              self.statemachine.memo.errorist.system_warning(
+              2, 'Malformed table at line %s; formatting as a literal '
+              'block.' % (self.statemachine.abslineno() - len(block) + 1)),
+              nodes.literal_block(data, data)]
+        return nodelist
 
     explicit = Stuff()
     """Patterns and constants used for explicit markup recognition."""
-    
+
     explicit.patterns = Stuff(
           target=re.compile(r"""
                             (`?)        # optional open quote
@@ -1279,7 +1319,7 @@ class SpecializedBody(Body):
 
     """
     Superclass for second and subsequent compound element members.
-    
+
     All transition methods are disabled. Override individual methods in
     subclasses to re-enable.
     """
@@ -1557,7 +1597,7 @@ class SpecializedText(Text):
 
     """
     Superclass for second and subsequent lines of Text-variants.
-    
+
     All transition methods are disabled. Override individual methods in
     subclasses to re-enable.
     """
@@ -1592,6 +1632,58 @@ class Definition(SpecializedText):
 stateclasses = [Body, BulletList, DefinitionList, EnumeratedList, FieldList,
                 OptionList, RFC822List, Explicit, Text, Definition]
 """Standard set of State classes used to start `RSTStateMachine`."""
+
+
+class TableParser:
+
+    def init(self, block):
+        self.block = block
+        self.rowseps = {}
+        self.colseps = {}
+
+    def parse(self, block):
+        self.init(block)
+        self.parsegrid()
+        headrows, bodyrows = self.parserows(rowseps, colseps)
+
+    def parsegrid(self):
+        colseps = self.scanrowsep(0, 0)
+        self.scancolseps(colseps, 0)
+
+    def scanrowsep(self, lineindex, startcol):
+        line = self.block[lineindex]
+        nextline = self.block[lineindex + 1]
+        if lineindex > 0:
+            previousline = self.block[lineindex - 1]
+        else:
+            previousline = ''
+        width = len(line)
+        colindex = startcol
+        colseps = []
+        while colindex < width:
+            if line[colindex] == '+':
+                if nextline[colindex] == '|':
+                    self.colseps.setdefault(colindex, 0) += 1
+                    colseps.append(1)
+                 elif not previousline or previousline[colindex] != '|':
+                    raise MarkupError, ('Problem with table markup at '
+                                        'line %s, column %s.' % (lineindex,
+                                                                 colindex))
+            elif line[colindex] not in '=-':
+                break
+            colindex += 1
+        return colseps
+
+    def scancolseps(self, colseps, startline):
+        height = len(self.block)
+        for colsep in colseps:
+            lineindex = startline + 1
+            while lineindex < height:
+                if self.block[lineindex][colsep] == '+':
+                    self.rowseps.setdefault(lineindex, 0) += 1
+                elif self.block[lineindex][colsep] != '|':
+                    break
+                lineindex += 1
 
 
 def escape2null(text):
