@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/11 03:45:08 $
+:Date: $Date: 2002/03/13 02:48:27 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -125,9 +125,12 @@ Changed contact email addresses.
   - Improved error stream handling.
   - Reworked ``Reporter`` based on "log4j".
   - Added some docstrings.
-  - Added 'parseattributes()', associated functions and exceptions.
+  - Added 'extract_extension_attributes()', associated functions and
+    exceptions.
+  - Added 'extract_name_value()' & 'NameValueError' exception.
   - Moved 'normname()' from restructuredtext.states.
   - Added ``newdocument()``: document Node creation.
+
 
 * dps/test_*.py: Moved to new test/ directory.
 

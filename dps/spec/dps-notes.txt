@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/11 03:45:15 $
-:Revision: $Revision: 1.30 $
+:Date: $Date: 2002/03/13 02:48:34 $
+:Revision: $Revision: 1.31 $
 
 
 To Do
@@ -86,23 +86,27 @@ To Do
 - Add "name" -> "id" attribute conversion.  We must have unique,
   SGML-ID-friendly id's and a one-to-one mapping for later lookup.
 
-  - Add conversion to nodes.document record-keeping code? Or as a new
-    transform?
+  - Implement a "name mangling" scheme: name "section title" becomes
+    id "section_title", name "1" becomes id "footnote1" (or just
+    "1"?).
 
-  - Use a "name mangling" scheme (like name "section title" becomes id
-    "section_title", name "1" becomes id "footnote1")?  Or use an
-    arbitrary sequential id?  How to do inter-document references in
-    that case?
+  - Whenever possible, use the "name mangling" scheme.  When that's
+    not possible (duplicate names, no name), and use an arbitrary
+    sequential id.
 
-    - Perhaps combine name mangling with sequential ids?
+  - ID as required.
 
-  - ID everything?  Or only named elements?
+  - Remove dependency on names as sole distinguishing characteristic.
+    Use IDs instead.
 
-  - How to do inter-document references in *any* case?
+    - Perhaps get rid of "name" attributes altoghether?
 
   - Perhaps keep a name->id mapping file?  This could be stored
     permanently, read by subsequent processing runs, and updated with
     new entries.  ("Persistent ID mapping"?)
+
+  - When resolving reference IDs from names, we must check for
+    non-existent mappings.  In the Writer or in a transform?
 
 - Considerations for an HTML Writer [#]_:
 
@@ -119,9 +123,6 @@ To Do
 
   .. [#] Source: `HTML 4.0 in Netscape and Explorer`__.
   __ http://www.webreference.com/dev/html4nsie/index.html
-
-- The Reporter needs another threshold writers. Use warninglevel as a
-  default.
 
 
 Coding Conventions
@@ -404,6 +405,7 @@ Examples:
 - Wiki: Global reference lookups of "wiki links" incorporated into
   transforms. (CamelCase only or unrestricted?) Lazy indentation?
 - Web Page: As standalone, but recognize meta fields as meta tags.
+  Support for templates of some sort? (After <body>, before </body>?)
 - FAQ: Structured "question & answer(s)" constructs.
 - Compound document: Merge chapters into a book. Master TOC file?
 
@@ -476,42 +478,6 @@ Examples:
 - Single file
 - Multiple files & directories
 - Objects in memory
-
-
-Mixing Automatic and Manual Footnote Numbering
-==============================================
-
-[David]
-I'm re-examining (for validity) what I wrote in the spec:
-
-    Automatic footnote numbering may not be mixed with manual footnote
-    numbering; it would cause numbering and referencing conflicts.
-
-Would such mixing inevitably cause conflicts? We could probably work
-around potential conflicts with a decent algorithm. Should we?
-Requires thought.  Opinions?
-
-[Tony]
-Well, I read that paragraph in the documentation, and decided that it
-was in the category of "don't, in practice, care" so far as I was
-concerned. This is the same category I put the forbidding of nested
-inline markup - quite clearly one *can* do it, but equally clearly
-it's a pain to implement, and not a terribly great gain, all things
-considered.
-
-It's a category with the subtext "examine for correctness after we've
-had some experience of people *using* reST in the wild".
-
-Thus, given there are lots of other things to do, I would tend to
-leave it as-is (especially if you are able to *warn* people about it
-if they do it by mistake).
-
-To my mind, being able to do ``[#thing]_`` probably give people enough
-precision over footnotes whils still allowing autonumbering - the
-*only* potential problem is when referring to a footnote in a
-different document (and that, again, is something I would leave fallow
-for the moment, although we know I tend to want to use roles as
-annotation for that sort of thing).
 
 
 
