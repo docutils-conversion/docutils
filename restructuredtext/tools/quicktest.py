@@ -3,8 +3,8 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/09/21 03:53:44 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/10/18 03:58:02 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -29,40 +29,53 @@ Usage::
 Options:
 """
 
-options = [#(long option, short option, description)
-           ('pretty', 'p',
+options = [('pretty', 'p',
             'output pretty pseudo-xml: no "&abc;" entities (default)'),
-           ('test', 't', 'output parser test data (input & expected output)'),
+           ('test', 't', 'output test-ready data (input & expected output, '
+            'ready to be copied to a parser test module)'),
            ('rawxml', 'r', 'output raw XML'),
-           ('styledxml', 's', 'output XML with XSL style sheet reference'),
+           ('styledxml=', 's', 'output raw XML with XSL style sheet reference '
+            '(filename supplied in the option argument)'),
            ('xml', 'x', 'output pretty XML (indented)'),
            ('help', 'h', 'show help text')]
+"""See distutils.fancy_getopt.FancyGetopt.__init__ for a description of the
+data structure: (long option, short option, description)."""
 
+#(long option, short option, description)
 def usage():
     print usage_header
     for longopt, shortopt, description in options:
-        print '-%s, --%-9s' % (shortopt, longopt),
-        if len(longopt) > 8:
+        if longopt[-1:] == '=':
+            opts = '-%s arg, --%sarg' % (shortopt, longopt)
+        else:
+            opts = '-%s, --%s' % (shortopt, longopt),
+        print '%-15s' % opts,
+        if len(opts) > 14:
             print '%-16s' % '\n',
+        while len(description) > 60:
+            limit = description.rindex(' ', 0, 60)
+            print description[:limit].strip()
+            description = description[limit + 1:]
+            print '%-15s' % ' ',
         print description
 
-def _pretty(input, document):
+def _pretty(input, document, optargs):
     return document.pformat()
 
-def _rawxml(input, document):
-    return document.asdom().toprettyxml('', '\n')
+def _rawxml(input, document, optargs):
+    return document.asdom().toxml()
 
-def _styledxml(input, document):
+def _styledxml(input, document, optargs):
     docnode = document.asdom().childNodes[0]
     return '%s\n%s\n%s' % (
           '<?xml version="1.0" encoding="ISO-8859-1"?>',
-          '<?xml-stylesheet type="text/xsl" href="rtxt2html.xsl"?>',
-          docnode.toprettyxml('', '\n'))
+          '<?xml-stylesheet type="text/xsl" href="%s"?>' % optargs['styledxml'],
+          docnode.toxml())
 
-def _prettyxml(input, document):
+def _prettyxml(input, document, optargs):
     return document.asdom().toprettyxml('    ', '\n')
 
-def _test(input, document):
+def _test(input, document, optargs):
     tq = '"""'
     output = _pretty(input, document)
     return """\
@@ -90,9 +103,9 @@ _outputFormatters = {
     'test': _test
     }
 
-def format(outputFormat, input, document):
+def format(outputFormat, input, document, optargs):
     formatter = _outputFormatters[outputFormat]
-    return formatter(input, document)
+    return formatter(input, document, optargs)
 
 def getArgs():
     if os.name == 'mac' and len(sys.argv) <= 1:
@@ -102,13 +115,16 @@ def getArgs():
 
 def posixGetArgs(argv):
     outputFormat = 'pretty'
-    shortopts = ''.join([option[1] for option in options])
-    longopts = [option[0] for option in options]
+    # convert fancy_getopt style option list to getopt.getopt() arguments
+    shortopts = ''.join([option[1] + ':' * (option[0][-1:] == '=')
+                         for option in options if option[1]])
+    longopts = [option[0] for option in options if option[0]]
     try:
         opts, args = getopt.getopt(argv, shortopts, longopts)
     except getopt.GetoptError:
         usage()
         sys.exit(2)
+    optargs = {}
     for o, a in opts:
         if o in ['-h', '--help']:
             usage()
@@ -117,6 +133,7 @@ def posixGetArgs(argv):
             outputFormat = 'rawxml'
         elif o in ['-s', '--styledxml']:
             outputFormat = 'styledxml'
+            optargs['styledxml'] = a
         elif o in ['-x', '--xml']:
             outputFormat = 'xml'
         elif o in ['-p', '--pretty']:
@@ -133,7 +150,7 @@ def posixGetArgs(argv):
         inputFile = open(args[0])
     else:
         inputFile = sys.stdin
-    return inputFile, outputFormat
+    return inputFile, outputFormat, optargs
 
 def macGetArgs():
     import EasyDialogs
@@ -151,11 +168,11 @@ In the following window, please:
     return posixGetArgs(argv)
 
 def main():
-    inputFile, outputFormat = getArgs() # process cmdline arguments
+    inputFile, outputFormat, optargs = getArgs() # process cmdline arguments
     parser = Parser()                   # create a parser
     input = inputFile.read()            # gather input
     document = parser.parse(input)      # parse the input
-    output = format(outputFormat, input, document)
+    output = format(outputFormat, input, document, optargs)
     print output,
 
 
