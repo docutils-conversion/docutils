@@ -1,5 +1,5 @@
 <!--
-.. $Id: ppdi.dtd,v 1.1 2001/07/22 22:36:28 goodger Exp $
+.. $Id: ppdi.dtd,v 1.2 2001/07/26 06:04:58 gtk Exp $
 
 ===========================================================================
     Python Plaintext Document Interface DTD
@@ -139,7 +139,7 @@ http://docstring.sf.net/spec/gpdi.dtd.
 <!ELEMENT option_argument (#PCDATA)>
 <!ATTLIST option_argument %basic.atts;>
 
-<!ELEMENT description (&body.elements;)+>
+<!ELEMENT description (%body.elements;)+>
 <!ATTLIST description %basic.atts;>
 
 <!ELEMENT doctest_block (#PCDATA)>
