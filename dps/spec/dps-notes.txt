@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/15 03:23:44 $
-Revision: $Revision: 1.6 $
+:Date: $Date: 2001/08/16 02:26:54 $
+:Revision: $Revision: 1.7 $
 
 
 To Do
@@ -38,34 +38,6 @@ To Do
   use them.
 
 
-Error Handling
-==============
-
-Tibs pointed out that the four levels correspond to `VMS severity levels`_:
-
-+-------+-------+--------------+------------------------------------+
-| DPS   | VMS   |              |                                    |
-| Level | Value | Severity     | Response                           |
-+=======+=======+==============+====================================+
-| n/a   | 1     | Success      | Execution continues, expected      |
-|       |       |              | results                            |
-+-------+-------+--------------+------------------------------------+
-| 0     | 3     | Information  | Execution continues, informational |
-|       |       |              | message displayed                  |
-+-------+-------+--------------+------------------------------------+
-| 1     | 0     | Warning      | Execution continues, unpredictable |
-|       |       |              | results                            |
-+-------+-------+--------------+------------------------------------+
-| 2     | 2     | Error        | Execution continues, erroneous     |
-|       |       |              | results                            |
-+-------+-------+--------------+------------------------------------+
-| 3     | 4     | Severe error | Execution terminates, no output    |
-+-------+-------+--------------+------------------------------------+
-
-.. _VMS severity levels:
-   http://www.openvms.compaq.com:8000/73final/5841/5841pro_027.html#error_cond_severity
-
-
 I/O APIs
 ========
 
@@ -77,9 +49,9 @@ Docstring Extractor
 ===================
 
 We need code that scans a parsed Python module, and returns an ordered
-tree containing the names, docstrings (including additional
-docstrings), and additional info (in parentheses below) of all of the
-following objects:
+tree containing the names, docstrings (including attribute and
+additional docstrings), and additional info (in parentheses below) of
+all of the following objects:
 
 - packages
 - modules
@@ -87,13 +59,13 @@ following objects:
 - classes (+ inheritance)
 - class attributes (+ values)
 - instance attributes (+ values)
-- methods (+ formal parameters)
-- functions (+ formal parameters)
+- methods (+ formal parameters & defaults)
+- functions (+ formal parameters & defaults)
 
 In order to evaluate interpreted text cross-references, namespaces for
 each of the above will also be required.
 
-See python-dev/docstring-develp thread "AST mining", started on
+See python-dev/docstring-develop thread "AST mining", started on
 2001-08-14.
 
 
