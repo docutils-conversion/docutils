@@ -3,8 +3,8 @@
 """
 Author: Garth Kidd
 Contact: garth@deadlybloodyserious.com
-Revision: $Revision: 1.1.2.1 $
-Date: $Date: 2001/07/29 09:05:39 $
+Revision: $Revision: 1.1.2.2 $
+Date: $Date: 2001/07/29 22:34:52 $
 Copyright: This module has been placed in the public domain.
 """
 

@@ -2,17 +2,16 @@
 
 """
 Author: Garth Kidd 
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1.2.1 $
-Date: $Date: 2001/07/29 12:21:09 $
+Contact: garth@deadlybloodyserious.com
+Revision: $Revision: 1.1.2.2 $
+Date: $Date: 2001/07/29 22:34:52 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
 """
 
 from TestFramework import *  # states, main, debug, verbose
-import sys
-import unittest, re, difflib
+import sys, unittest, re, difflib, types
 
 from dps.statemachine import string2lines
 
@@ -22,13 +21,29 @@ except:
     import pdb
 
 """\
-Okay, here's where things get a little confusing. For this part of the
-test framework I'm going to be resorting to the use of metaclasses_.
-Why? I need to be able to add bound methods to a test case *after* it
-has been defined, which counts out the previous methodology. 
+All of my previous ramblings about metaclasses_ are fatigue-deranged.
+The primary benefit of basing tests as ``test*`` methods in a very
+large TestCase is that they can share `setUp()` and `tearDown()`. If
+it's too hard to use the method method <ahem>, the appropriate recourse
+is to *find another way of providing shared fixtures*. So, here's the
+design I'm going to pursue when I can next sit down and hack code: 
+
+`ParserTestSuite` instances will provide shared test fixtures (`sm`, an 
+instance of `states.RSTStateMachine`) and methods (`matchOutput()` et
+al) and will crank out internally any `ParserTest`s required.
+
+I'll decide on whether it should subclass `unittest.Suite` or just
+return one from a `suite()` method when I get back to the code. 
+
+Finally; now that I've decided on which class I'm going to expose, the 
+filename of this module is looking like a silly choice. I'll ponder
+that issue later, too. 
 
 .. _metaclasses: http://www.python.org/doc/essays/metaclasses/
+"""
 
+
+"""
 David's old code follows:
 """
 
