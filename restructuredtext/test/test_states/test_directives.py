@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2002/02/12 02:30:27 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/02/13 02:20:57 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -658,6 +658,69 @@ totest['meta'] = [
 """\
 <document>
     <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+"""],
+["""\
+.. meta::
+   :name: content
+     over multiple lines
+""",
+"""\
+<document>
+    <meta content="content over multiple lines" name="name">
+"""],
+["""\
+Paragraph
+
+.. meta::
+   :name: content
+""",
+"""\
+<document>
+    <paragraph>
+        Paragraph
+    <meta content="content" name="name">
+"""],
+["""\
+.. meta::
+""",
+"""\
+<document>
+    <system_warning level="3" type="ERROR">
+        <paragraph>
+            Empty meta directive at line 1.
+"""],
+["""\
+.. meta::
+   not a field list
+""",
+"""\
+<document>
+    <system_warning level="3" type="ERROR">
+        <paragraph>
+            Invalid meta directive at line 2.
+"""],
+["""\
+.. meta::
+   :name: content
+   not a field
+""",
+"""\
+<document>
+    <meta content="content" name="name">
+    <system_warning level="3" type="ERROR">
+        <paragraph>
+            Invalid meta directive at line 3.
+"""],
+["""\
+.. meta::
+   :name notattval: content
+""",
+"""\
+<document>
+    <system_warning level="3" type="ERROR">
+        <paragraph>
+            Error parsing meta tag attribute "notattval": missing "="
+    <meta content="content" name="name">
 """],
 ]
 
