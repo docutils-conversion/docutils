@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.30 $
-:Date: $Date: 2001/10/31 05:52:39 $
+:Revision: $Revision: 1.31 $
+:Date: $Date: 2001/11/01 04:08:18 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -356,8 +356,8 @@ class RSTState(StateWS):
     inline.non_whitespace_escape_before = r'(?<![ \n\x00])'
     inline.non_whitespace_after = r'(?![ \n])'
     inline.simplename = r'[a-zA-Z0-9](?:[-_.a-zA-Z0-9]*[a-zA-Z0-9])?'
-    inline.uric = r"""[-_.!~*'();/:@&=+$,%a-zA-Z0-9]"""
-    inline.urilast = r"""[_~/a-zA-Z0-9]"""
+    inline.uric = r"""[-_.!~*'()[\];/:@&=+$,%a-zA-Z0-9]"""
+    inline.urilast = r"""[_~/\]a-zA-Z0-9]"""
     inline.emailc = r"""[-_!~*'{|}/#?^`&=+$%a-zA-Z0-9]"""
     inline.identity = string.maketrans('', '')
     inline.null2backslash = string.maketrans('\x00', '\\')

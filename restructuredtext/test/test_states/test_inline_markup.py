@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/10/31 05:48:00 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/11/01 04:08:36 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -482,6 +482,10 @@ http://www.standalone.hyperlink.com
 
 http:/one-slash-only.absolute.path
 
+http://[1080:0:0:0:8:800:200C:417A]/IPv6address.html
+
+http://[3ffe:2a00:100:7031::1]
+
 mailto:someone@somewhere.com
 
 news:comp.lang.python
@@ -500,6 +504,12 @@ ftp://ends.with.a.period.
     <paragraph>
         <reference refuri="http:/one-slash-only.absolute.path">
             http:/one-slash-only.absolute.path
+    <paragraph>
+        <reference refuri="http://[1080:0:0:0:8:800:200C:417A]/IPv6address.html">
+            http://[1080:0:0:0:8:800:200C:417A]/IPv6address.html
+    <paragraph>
+        <reference refuri="http://[3ffe:2a00:100:7031::1]">
+            http://[3ffe:2a00:100:7031::1]
     <paragraph>
         <reference refuri="mailto:someone@somewhere.com">
             mailto:someone@somewhere.com
