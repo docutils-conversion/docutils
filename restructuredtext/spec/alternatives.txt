@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/01 15:46:43 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/10/18 03:49:26 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -303,6 +303,48 @@ The underscores can be viewed as if they were right-pointing arrows:
 '-->'. So ``hyperlink_`` points away from the reference, and
 ``.. _hyperlink:`` points toward the target.
 
+
+Anonymous Hyperlinks
+====================
+
+Alan Jaffray came up with this idea, along with the following syntax::
+
+    Search the `Python DOC-SIG mailing list archives`{}_.
+   
+    .. _: http://mail.python.org/pipermail/doc-sig/    
+
+The idea is sound and useful. I suggested a "double underscore"
+syntax::
+
+    Search the `Python DOC-SIG mailing list archives`__.
+
+    .. __: http://mail.python.org/pipermail/doc-sig/
+
+But perhaps single underscores are okay? The syntax looks better, but
+the hyperlink itself doesn't explicitly say "anonymous"::
+
+    Search the `Python DOC-SIG mailing list archives`_.
+
+    .. _: http://mail.python.org/pipermail/doc-sig/
+
+Mixing anonymous and named hyperlinks becomes confusing. The order of
+targets is not significant for named hyperlinks, but it is for
+anonymous hyperlinks::
+
+    Hyperlinks: anonymous_, named_, and another anonymous_.
+
+    .. _named: named
+    .. _: anonymous1
+    .. _: anonymous2
+
+Without the extra syntax of double underscores, determining which
+hyperlink references are anonymous may be difficult. We'd have to
+check which references don't have corresponding targets, and match
+those up with anonymous targets. Keeping to a simple consistent
+ordering (as with auto-numbered footnotes) seems simplest.
+
+reStructuredText will use the explicit double-underscore syntax for
+anonymous hyperlinks.
 
 
 ..
