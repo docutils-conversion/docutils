@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/16 05:45:11 $
+:Date: $Date: 2002/04/14 19:40:19 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -44,7 +44,8 @@ Changed contact email addresses.
   - Modified for import by install.py.
   - Added 'restructuredtext.languages' subpackage.
 
-* docs: Subdirectory added. Contains quickref.html by Tony Ibbs.
+* docs: Subdirectory added. Contains quickref.html by Tony Ibbs and
+  quickstart.txt by Richard Jones.
 
 * restructuredtext/__init__.py:
 
