@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2001/10/27 05:41:17 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2001/10/30 05:11:35 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -377,7 +377,7 @@ class document(_Element):
         if self.explicittargets.has_key(name):
             level = 0
             for t in self.explicittargets.get(name, []):
-                if len(t) != 1 or str(t[0]) != reference:
+                if not t.has_key('refuri') or t['refuri'] != reference:
                     level = 1
                     break
             sw = self.errorhandler.system_warning(
@@ -394,15 +394,18 @@ class document(_Element):
         self.externaltargets.setdefault(name, []).append(targetnode)
         self.explicittargets.setdefault(name, []).append(targetnode)
         targetnode['name'] = name
+        targetnode['refuri'] = reference
 
     def addindirecttarget(self, refname, targetnode):
-        self.indirecttargets[refname] = targetnode
         targetnode['refname'] = refname
+        self.indirecttargets[refname] = targetnode
 
     def addanonymoustarget(self, targetnode):
+        targetnode['anonymous'] = 1
         self.anonymoustargets.append(targetnode)
 
     def addanonymousref(self, refnode):
+        refnode['anonymous'] = 1
         self.anonymousrefs.append(refnode)
 
     def addautofootnote(self, name, footnotenode):
