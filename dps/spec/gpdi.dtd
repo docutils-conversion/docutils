@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.37 $
-:Date: $Date: 2002/03/07 03:53:53 $
+:Revision: $Revision: 1.38 $
+:Date: $Date: 2002/03/11 03:26:52 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -428,6 +428,7 @@ Table elements: table, tgroup, colspec, thead, tbody, row, entry.
 <!ELEMENT system_message (%body.elements;)+>
 <!ATTLIST system_message
     %basic.atts;
+    %refid.att;
     level     NMTOKEN   #IMPLIED
     type      CDATA     #IMPLIED>
 
@@ -493,7 +494,9 @@ following caveats:
     %refname.att;>
 
 <!ELEMENT problematic (%text.model;)>
-<!ATTLIST problematic %basic.atts;>
+<!ATTLIST problematic
+    %basic.atts;
+    %refid.att;>
 
 
 <!--
