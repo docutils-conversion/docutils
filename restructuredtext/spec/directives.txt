@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/03/04 04:38:41 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/03/07 03:40:15 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -93,7 +93,7 @@ lines.  If there are multiple lines in the link block, they are
 stripped of leading and trailing whitespace and joined together.
 
 Optionally, the image link block may end with a flat field list, the
-_`image attribute specifications`.  For example::
+_`image attributes`.  For example::
 
     .. image:: picture.png
        :height: 100
@@ -101,12 +101,21 @@ _`image attribute specifications`.  For example::
        :scale: 50
        :alt: alternate text
 
-None, some, or all of the "alt", "height", "width", and "scale"
-attributes may be present.  The "alt" attribute contains arbitrary
-text; its field body may be a single paragraph.  The other attributes
-are all simple integers; "height" and "width" values are in pixels,
-and "scale" is a percentage (but no "%" symbol is required or
-allowed).
+The following attributes are recognized:
+
+``alt`` : text
+    Alternate text: a short description of the image, displayed by
+    applications that cannot display images, or spoken by applications
+    for visually impaired users.
+``height`` : integer
+    The height of the image in pixels, used to reserve space or scale
+    the image vertically.
+``width`` : integer
+    The width of the image in pixels, used to reserve space or scale
+    the image horizontally.
+``scale`` : integer
+    The uniform scaling factor of the image, a percentage (but no "%"
+    symbol is required or allowed).  "100" means full-size.
 
 
 Figure
@@ -119,8 +128,8 @@ interpreted as an image URI, optional attributes, a caption, and an
 optional legend.
 
 A "figure" consists of image_ data (optionally including `image
-attribute specifications`_), an optional caption (a single paragraph),
-and an optional legend (arbitrary body elements)::
+attributes`_), an optional caption (a single paragraph), and an
+optional legend (arbitrary body elements)::
 
     .. figure:: picture.png
        :scale: 50
@@ -154,7 +163,7 @@ legend.  To specify a legend without a caption, use an empty comment
 Table of Contents
 =================
 
-DTD element: pending, topic.
+DTD elements: pending, topic.
 
 Directive block: directive data and following indented lines (up to
 the first blank line) are interpreted as the topic title and optional
@@ -198,6 +207,30 @@ The following attributes are recognized:
 ``depth`` : integer
     The number of section levels that are collected in the table of
     contents.
+
+
+Footnotes
+=========
+
+DTD elements: pending, topic.
+
+@@@
+
+
+Citations
+=========
+
+DTD elements: pending, topic.
+
+@@@
+
+
+Topic
+=====
+
+DTD element: topic.
+
+@@@
 
 
 ---------------
@@ -268,6 +301,35 @@ Non-standard element: imagemap.
 ---------------
  Miscellaneous
 ---------------
+
+Raw Data Pass-Through
+=====================
+
+DTD element: raw.
+
+Directive block: the directive data is interpreted as an output format
+type, and all following indented text is stored verbatim,
+uninterpreted.
+
+The "raw" directive indicates non-reStructuredText data that is to be
+passed untouched to the Writer.  The name of the output format is
+given in the directive data.  The interpretation of the code is up to
+the Writer.  A Writer may ignore any raw output not matching its
+format.
+
+For example, given the following input::
+
+    .. raw:: latex
+       \documentclass[twocolumn]{article}
+
+The following XML would be generated::
+
+    <raw format="latex">
+    \documentclass[twocolumn]{article}
+    </raw>
+
+A LaTeX Writer could insert the raw content into its output.
+
 
 Restructuredtext-Test-Directive
 ===============================
