@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.26 $
-:Date: $Date: 2001/11/08 02:41:48 $
+:Revision: $Revision: 1.27 $
+:Date: $Date: 2001/11/09 23:15:39 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -159,7 +159,6 @@ Here are examples of `body elements`_:
 
 - Substitutions_::
 
-      .. /text/ This is substitution text.
       .. /symbol/ image:: symbol.png
 
 - Comments_::
@@ -1455,29 +1454,22 @@ and the substitution block.  Substitution names are simple `reference
 names`_ (case-insensitive single words consisting of alphanumerics
 plus internal hyphens, underscores, and periods; no whitespace).
 
-`Substitution references`_ are replaced in-line by the contents of the
-corresponding substitution block.  Substitutions allow the power and
-flexibility of directives to be shared by inline text.  They are a way
-to include boilerplate text and arbitrarily complex inline objects
-within text, while keeping the details out of the flow of text.  They
-are the equivalent of SGML/XML's named entities.
+`Substitution references`_ are replaced in-line by the processed
+contents of the corresponding substitution block.  Substitutions allow
+the power and flexibility of directives to be shared by inline text.
+They are a way to include arbitrarily complex inline objects within
+text, while keeping the details out of the flow of text.  They are the
+equivalent of SGML/XML's named entities.
 
 Substitutions allow arbitrary text-level (inline) structures, the way
 directives allow arbitrary block-level structures.  Without them,
 every time someone wants a specific new inline structure, they would
 have to petition for a syntax change.  In combination with existing
-constructs, any inline structure can be coded without new syntax
+directive syntax, any inline structure can be coded without new syntax
 (except possibly a new directive).
 
-A substitution block may contain either replacement text (from a
-single word to an entire paragraph) or a nested inline-compatible
-directive (without the ".. "), such as an image.  For example::
-
-    Here is some `/boilerplate/`.
-
-    .. /boilerplate/
-       replacement text to be *inserted* at the point of the
-       substitution reference
+A substitution block contains a nested inline-compatible directive
+(without the leading ".. "), such as an image.  For example::
 
     The `/biohazard/` symbol must be used on containers used to
     dispose of medical waste.
@@ -1490,9 +1482,9 @@ contain a circular substitution reference.
 Syntax diagram::
 
     +-------+---------------------------+
-    | ".. " | "/" name "/" substitution |
-    +-------+ block                     |
-            |                           |
+    | ".. " | "/" name "/ " directive   |
+    +-------+ type "::" directive       |
+            | block                     |
             +---------------------------+
 
 
@@ -1802,8 +1794,8 @@ backquote.  A substitution may also be a reference by appending a "_"
 the reference name in the named case.
 
 The processing system replaces substitution references with the
-contents of the corresponding substitutions_.  Substitutions may be
-replacement text or inline-compatible elements.
+processed contents of the corresponding substitutions_.  Substitutions
+are inline-compatible elements.
 
 Examples::
 
