@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger; Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/12 02:19:27 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/22 02:01:02 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Reader modules.
@@ -17,6 +17,7 @@ __all__ = ['Reader', 'get_reader_class']
 
 import sys
 from dps import nodes, utils
+from dps.transforms import universal
 
 
 class Reader:
@@ -29,7 +30,7 @@ class Reader:
     """
 
     transforms = ()
-    """Ordered list of transform classes (each with a ``transform()`` method).
+    """Ordered tuple of transform classes (each with a ``transform()`` method).
     Populated by subclasses. `Reader.transform()` instantiates & runs them."""
 
     def __init__(self, reporter, languagecode):
@@ -53,7 +54,7 @@ class Reader:
         """Raw text input; either a single string or, for more complex cases,
         a collection of strings."""
 
-        self.transforms = list(self.transforms)
+        self.transforms = tuple(self.transforms)
         """Instance copy of `Reader.transforms`; may be modified by client."""
 
     def read(self, source, parser):
@@ -91,7 +92,9 @@ class Reader:
 
     def transform(self):
         """Run all of the transforms defined for this Reader."""
-        for xclass in self.transforms:
+        for xclass in (universal.first_reader_transforms
+                       + tuple(self.transforms)
+                       + universal.last_reader_transforms):
             xclass().transform(self.document)
 
     def newdocument(self, languagecode=None):

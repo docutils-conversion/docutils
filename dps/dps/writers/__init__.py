@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/20 04:14:52 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/22 02:01:11 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Writer modules.
@@ -15,8 +15,9 @@ __docformat__ = 'reStructuredText'
 __all__ = ['Writer', 'get_writer_class']
 
 
-from dps import languages
 import sys
+from dps import languages
+from dps.transforms import universal
 
 
 class Writer:
@@ -56,7 +57,9 @@ class Writer:
 
     def transform(self):
         """Run all of the transforms defined for this Writer."""
-        for xclass in self.transforms:
+        for xclass in (universal.first_writer_transforms
+                       + tuple(self.transforms)
+                       + universal.last_writer_transforms):
             xclass().transform(self.document)
 
     def translate(self):
