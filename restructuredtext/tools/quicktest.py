@@ -5,13 +5,12 @@
 :Contact: garth@deadlybloodyserious.com
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2002/02/07 01:52:52 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/02/13 02:18:54 $
 :Copyright: This module has been placed in the public domain.
 """
 
 import sys, os, getopt
-from StringIO import StringIO
 import dps.utils
 try:
     from restructuredtext import Parser
