@@ -17,9 +17,9 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :organization: humankind
-:date: $Date: 2002/02/23 15:55:12 $
+:date: $Date: 2002/03/01 02:58:25 $
 :status: This is a "work in progress"
-:revision: $Revision: 1.3 $
+:revision: $Revision: 1.4 $
 :version: 1
 :copyright: This document has been placed in the public domain. You
             may do with it as you wish. You may copy, modify,
@@ -71,8 +71,9 @@ Paragraphs contain text and may contain inline markup: *emphasis*,
 **strong emphasis**, `interpreted text`, ``inline literals``,
 standalone hyperlinks (http://www.python.org), external hyperlinks
 (Python_), internal cross-references (example_), footnote references
-([1]_), substitution references (|example|), and _`inline hyperlink
-targets`. Problems are indicated by |problematic| text.
+(manually numbered [1]_, auto-numbered [#]_, or labeled [label]_),
+substitution references (|example|), and _`inline hyperlink targets`.
+Problems are indicated by |problematic| text.
 
 Bullet Lists
 ------------
@@ -89,13 +90,27 @@ Enumerated Lists
 
 1. Arabic numerals.
 
-   a) lower alpha
+   a) lower alpha)
 
-      (i) lower roman
+      (i) (lower roman)
 
-          A. upper alpha
+          A. upper alpha.
 
-             I) upper roman
+             I) upper roman)
+
+2. Lists that don't start at 1:
+
+   3. Three
+
+   4. Four
+
+   C. C
+
+   D. D
+
+   iii. iii
+
+   iv. iv
 
 Definition Lists
 ----------------
@@ -111,7 +126,7 @@ Field Lists
 -----------
 
 :what: Field lists map field names to field bodies, like database
-       records.
+       records. They are often part of an extension syntax.
 
 :how arg1 arg2:
 
@@ -132,10 +147,17 @@ For listing command-line options:
 --long        options can be long also
 --input=file  long options can also have
               arguments
+
 --very-long-option
               The description can also start on the next line.
 
-              The description may contain multiple body elements.
+              The description may contain multiple body elements,
+              regardless of where it starts.
+
+-x, -y, -z    Multiple options are an "option group".
+-v, --verbose  Commonly-seen: short & long options.
+-1 file, --one=file, --two file
+              Multiple options with arguments.
 /V            DOS/VMS-style options too
 
 There must be at least two spaces between the option and the
@@ -144,8 +166,8 @@ description.
 Literal Blocks
 --------------
 
-Literal blocks are indented, and indicated with a double-colon
-("::") at the end of the preceding paragraph (right here -->)::
+Literal blocks are indented, and indicated with a double-colon ("::")
+at the end of the preceding paragraph (right here ``-->``)::
 
     if literal_block:
         text = 'is left as-is'
@@ -183,7 +205,10 @@ Tables
 | body row 3             | Cells may  | - Table cells       |
 +------------------------+ span rows. | - contain           |
 | body row 4             |            | - body elements.    |
-+------------------------+------------+---------------------+
++------------------------+------------+----------+----------+
+| body row 5             | Cells may also be     |          |
+|                        | empty: ``-->``        |          |
++------------------------+-----------------------+----------+
 
 Footnotes
 ---------
@@ -191,15 +216,20 @@ Footnotes
 .. [label] A footnote contains body elements, consistently
    indented by at least 3 spaces.
 
+   This is the footnote's second paragraph.
+
 .. [#] Footnotes may be numbered, either manually or automatically
-   using a "#" label. Manual and automatic footnotes may not be mixed.
+       using a "#" label. Manual and automatic footnotes may not be
+       mixed.
 
 Targets
 -------
 
 .. _example:
 
-This paragraph is pointed to by the "example" target.
+This paragraph is pointed to by the explicit "example" target. A
+reference can be found under `Inline Markup`_, above. `Inline
+hyperlink targets`_ are also possible.
 
 Section headers are implicit targets, referred to by name. See
 Targets_, which is a subsection of `Body Elements`_.
@@ -233,6 +263,8 @@ A figure directive:
    +------------+-----------------------------------------------+
    | Text       | Well it is, isn't it?                         |
    +------------+-----------------------------------------------+
+
+   This paragraph is also part of the legend.
 
 Admonitions
 ```````````
@@ -270,14 +302,18 @@ An inline image (|example|) example:
 
 .. |EXAMPLE| image:: ../docs/images/biohazard.png
 
+(Substitution definitions are not visible in the HTML source.)
+
 Comments
 --------
 
-Here's one (check the source):
+Here's one:
 
 .. Comments begin with two dots and a space. Anything may
    follow, except for the syntax of footnotes, hyperlink
    targets, directives, or substitution definitions.
+
+(View the HTML source to see the comment.)
 
 Error Handling
 ==============
