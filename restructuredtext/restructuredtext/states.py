@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.39 $
-:Date: $Date: 2002/01/30 05:01:25 $
+:Revision: $Revision: 1.40 $
+:Date: $Date: 2002/02/06 02:24:58 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -141,7 +141,7 @@ class RSTStateMachine(StateMachineWS):
         StateMachine, and return the resulting
         document.
         """
-        self.language = languages.language(docroot.languagecode)
+        self.language = languages.getlanguage(docroot.languagecode)
         self.matchtitles = matchtitles
         self.memo = Stuff(document=docroot,
                           reporter=docroot.reporter,
@@ -905,7 +905,7 @@ class Body(RSTState):
                 self.statemachine.node += self.unindentwarning()
             return [], nextstate, []
         if ordinal != 1:
-            sw = self.statemachine.memo.reporter.information(
+            sw = self.statemachine.memo.reporter.info(
                   ('Enumerated list start value not ordinal-1 at line %s: '
                       '%r (ordinal %s)' % (self.statemachine.abslineno(),
                                            text, ordinal)))
@@ -1780,7 +1780,7 @@ class Text(RSTState):
         source = title + '\n' + underline
         if len(title) > len(underline):
             self.statemachine.node += \
-                  self.statemachine.memo.reporter.information(
+                  self.statemachine.memo.reporter.info(
                   'Title underline too short at line %s.' % lineno)
         style = underline[0]
         context[:] = []
@@ -1814,6 +1814,8 @@ class Text(RSTState):
         indented, indent, offset, blankfinish = \
               self.statemachine.getindented()
         nodelist = []
+        while indented and not indented[-1].strip():
+            indented.pop()
         if indented:
             data = '\n'.join(indented)
             nodelist.append(nodes.literal_block(data, data))
@@ -1836,7 +1838,7 @@ class Text(RSTState):
         definition = nodes.definition('', *warnings)
         definitionlistitem += definition
         if termline[0][-2:] == '::':
-            definition += self.statemachine.memo.reporter.information(
+            definition += self.statemachine.memo.reporter.info(
                   'Blank line missing before literal block? Interpreted as a '
                   'definition list item. At line %s.' % (lineoffset + 1))
         self.nestedparse(indented, inputoffset=lineoffset, node=definition)
@@ -1965,7 +1967,7 @@ class Line(SpecializedText):
         title = title.rstrip()
         if len(title) > len(overline):
             self.statemachine.node += \
-                  self.statemachine.memo.reporter.information(
+                  self.statemachine.memo.reporter.info(
                   'Title overline too short at line %s.'% lineno)
         style = (overline[0], underline[0])
         self.eofcheck = 0               # @@@ not sure this is correct
