@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/15 22:45:30 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/21 03:39:10 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for utils.py.
@@ -36,7 +36,7 @@ class ReporterTests(unittest.TestCase):
         debug output
 """)
         self.assertEquals(self.stream.getvalue(),
-                          'Reporter: DEBUG [level 0] debug output\n')
+                          'Reporter: DEBUG (0) debug output\n')
 
     def test_level1(self):
         sw = self.reporter.system_message(1, 'a little reminder')
@@ -55,7 +55,7 @@ class ReporterTests(unittest.TestCase):
         a warning
 """)
         self.assertEquals(self.stream.getvalue(),
-                          'Reporter: WARNING [level 2] a warning\n')
+                          'Reporter: WARNING (2) a warning\n')
 
     def test_level3(self):
         sw = self.reporter.system_message(3, 'an error')
@@ -65,12 +65,12 @@ class ReporterTests(unittest.TestCase):
         an error
 """)
         self.assertEquals(self.stream.getvalue(),
-                          'Reporter: ERROR [level 3] an error\n')
+                          'Reporter: ERROR (3) an error\n')
 
     def test_level4(self):
         self.assertRaises(utils.SystemMessage, self.reporter.system_message, 4,
                           'a severe error, raises an exception')
-        self.assertEquals(self.stream.getvalue(), 'Reporter: SEVERE [level 4] '
+        self.assertEquals(self.stream.getvalue(), 'Reporter: SEVERE (4) '
                           'a severe error, raises an exception\n')
 
 
@@ -163,7 +163,7 @@ class ReporterCategoryTests(unittest.TestCase):
         self.assertEquals(self.stream.getvalue(), '')
         sw = self.reporter.debug('debug output')
         self.assertEquals(self.stream.getvalue(),
-                          'Reporter: DEBUG [level 0] debug output\n')
+                          'Reporter: DEBUG (0) debug output\n')
 
     def test_info(self):
         sw = self.reporter.info('some info')
@@ -171,39 +171,39 @@ class ReporterCategoryTests(unittest.TestCase):
         sw = self.reporter.info('some info', category='lemon.curry')
         self.assertEquals(
               self.stream.getvalue(),
-              'Reporter "lemon.curry": INFO [level 1] some info\n')
+              'Reporter "lemon.curry": INFO (1) some info\n')
 
     def test_warning(self):
         sw = self.reporter.warning('a warning')
         self.assertEquals(self.stream.getvalue(),
-                          'Reporter: WARNING [level 2] a warning\n')
+                          'Reporter: WARNING (2) a warning\n')
         sw = self.reporter.warning('a warning', category='lemon.curry')
         self.assertEquals(self.stream.getvalue(), """\
-Reporter: WARNING [level 2] a warning
-Reporter "lemon.curry": WARNING [level 2] a warning
+Reporter: WARNING (2) a warning
+Reporter "lemon.curry": WARNING (2) a warning
 """)
 
     def test_error(self):
         sw = self.reporter.error('an error')
         self.assertEquals(self.stream.getvalue(),
-                          'Reporter: ERROR [level 3] an error\n')
+                          'Reporter: ERROR (3) an error\n')
         self.assertRaises(utils.SystemMessage, self.reporter.error,
                           'an error', category='lemon.curry')
         self.assertEquals(self.stream.getvalue(), """\
-Reporter: ERROR [level 3] an error
-Reporter "lemon.curry": ERROR [level 3] an error
+Reporter: ERROR (3) an error
+Reporter "lemon.curry": ERROR (3) an error
 """)
 
     def test_severe(self):
         self.assertRaises(utils.SystemMessage, self.reporter.severe,
                           'a severe error')
         self.assertEquals(self.stream.getvalue(),
-                          'Reporter: SEVERE [level 4] a severe error\n')
+                          'Reporter: SEVERE (4) a severe error\n')
         self.assertRaises(utils.SystemMessage, self.reporter.severe,
                           'a severe error', category='lemon.curry')
         self.assertEquals(self.stream.getvalue(), """\
-Reporter: SEVERE [level 4] a severe error
-Reporter "lemon.curry": SEVERE [level 4] a severe error
+Reporter: SEVERE (4) a severe error
+Reporter "lemon.curry": SEVERE (4) a severe error
 """)
 
 
