@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.50 $
-:Date: $Date: 2002/04/13 16:43:53 $
+:Revision: $Revision: 1.51 $
+:Date: $Date: 2002/04/18 02:46:51 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -108,13 +108,8 @@ import directives, languages
 from tableparser import TableParser, TableMarkupError
 
 
-__all__ = ['RSTStateMachine', 'MarkupError', 'ParserError',
-           'TransformationError']
-
-
 class MarkupError(Exception): pass
 class ParserError(Exception): pass
-class TransformationError(Exception): pass
 
 
 class Stuff:
@@ -1055,7 +1050,6 @@ class Body(RSTState):
     def option_marker(self, match, context, nextstate):
         """Option list item."""
         optionlist = nodes.option_list()
-        self.statemachine.node += optionlist
         try:
             listitem, blankfinish = self.option_list_item(match)
         except MarkupError, detail:     # shouldn't happen; won't match pattern
@@ -1070,6 +1064,7 @@ class Body(RSTState):
             if not blankfinish:
                 self.statemachine.node += self.unindentwarning()
             return [], nextstate, []
+        self.statemachine.node += optionlist
         optionlist += listitem
         offset = self.statemachine.lineoffset + 1   # next line
         newlineoffset, blankfinish = self.nestedlistparse(
@@ -1086,6 +1081,8 @@ class Body(RSTState):
         options = self.parse_option_marker(match)
         indented, indent, lineoffset, blankfinish = \
               self.statemachine.getfirstknownindented(match.end())
+        if not indented:                # not an option list item
+            raise statemachine.TransitionCorrection('text')
         option_group = nodes.option_group('', *options)
         description = nodes.description('\n'.join(indented))
         option_list_item = nodes.option_list_item('', option_group, description)
