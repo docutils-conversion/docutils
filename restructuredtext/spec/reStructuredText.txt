@@ -3,8 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.3 $
-Date: $Date: 2001/07/29 16:09:11 $
+Revision: $Revision: 1.4 $
+Date: $Date: 2001/08/01 02:51:46 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -20,11 +20,17 @@ minimal and unobtrusive as possible. Less often-used constructs and
 extensions to the basic reStructuredText syntax may have more
 elaborate or explicit markup.
 
+reStructuredText is applicable to documents of any length, from the
+very small (such as inline program documentation fragments, e.g.
+Python docstrings) to the quite large (this document).
+
 The first section gives a quick overview of the syntax of the
 reStructuredText markup by example. More details are given in the
 `Syntax Details`_ section.
 
-`Literal blocks`_ are used for examples throughout this document.
+`Literal blocks`_ (in which no markup processing is done) are used for
+examples throughout this document, to illustrate the plain text
+markup.
 
 
 -----------------------
@@ -165,7 +171,7 @@ Whitespace
 
 Blank lines are used to separate paragraphs and other elements. Blank
 lines may be omitted when the markup makes element separation
-unambiguous.
+unambiguous, in conjunction with indentation.
 
 Indentation is used to indicate, and is only significant in
 indicating:
@@ -174,6 +180,10 @@ indicating:
 - the definition part of a definition list item,
 - block quotes, and
 - the extent of literal blocks.
+
+Any text whose indentation is less than that of the current level
+(i.e., unindented text or "dedents") ends the current level of
+indentation.
 
 Although spaces are recommended for indentation, tabs may also be
 used. Tabs will be converted to spaces. Tab stops are at every 8th
@@ -433,7 +443,7 @@ Field Lists
 DTD elements: field_list, field, field_name, field_argument,
 field_body.
 
-.. XXX Syntax under construction. Comments and suggestions welcome.
+    Syntax under construction. Comments and suggestions welcome.
 
 Field lists are mappings from field names to field bodies, modeled on
 RFC822_ headers. A field name is made up of one or more letters,
@@ -441,6 +451,18 @@ numbers, and punctuation, except colons (':') and whitespace. Field
 names are case-insensitive. A single colon and whitespace follows the
 field name, and this is followed by the field body. The field body may
 contain multiple body elements.
+
+    Why is RFC822 compliance important? It's a universal Internet
+    standard, and super obvious. Also, I'd like to support the PEP
+    format (ulterior motive: get PEPs to use reStructuredText as their
+    standard). But it *would* be easy to get used to an alternative
+    (easy even to convert PEPs; probably harder to convert
+    python-deviants ;-).
+
+    Unfortunately, without well-defined context (such as in email
+    headers: RFC822 applies before any blank lines only), the RFC822
+    format is very common in ordinary text. To implement field lists
+    unambiguously, we need explicit syntax.
 
 Applications of reStructuredText may recognize field names and
 transform fields or field bodies in certain contexts. Any
@@ -455,25 +477,33 @@ alternatives:
        Author: Me
        Version: 1
 
-   Advantages: clean, precedent. Disadvantage: ambiguous (these
-   paragraphs are a prime example).
+   Advantages: clean, precedent (RFC822-compliant). Disadvantage:
+   ambiguous (these paragraphs are a prime example).
 
    Conclusion: rejected.
 
 2. Special case: use unadorned RFC822_ for the very first or very last
-   text block of a docstring::
+   text block of a document::
 
        """
        Author: Me
        Version: 1
 
-       The rest of the docstring...
+       The rest of the document...
        """
 
-   Advantages: clean, precedent. Disadvantages: special case, flat
-   (unnested) field lists only.
+   Advantages: clean, precedent (RFC822-compliant). Disadvantages:
+   special case, flat (unnested) field lists only, still ambiguous::
 
-   Conclusion: accepted, see below.
+       """
+       Usage: cmdname [options] arg1 arg2 ...
+
+       We obviously *don't* want the like above to be interpreted as a
+       field list item. Or do we?
+       """
+
+   Conclusion: was accepted (although not yet implemented; see below);
+   currently reconsidering.
 
 3. Use a directive::
 
@@ -482,7 +512,8 @@ alternatives:
           Author: Me
           Version: 1
 
-   Advantages: explicit and unambiguous. Disadvantage: cumbersome.
+   Advantages: explicit and unambiguous, RFC822-compliant.
+   Disadvantage: cumbersome.
 
 4. Use Javadoc-style::
 
@@ -491,15 +522,24 @@ alternatives:
        @param a: integer
 
    Advantages: unambiguous, precedent, flexible. Disadvantages:
-   non-intuitive, ugly.
+   non-intuitive, ugly, not RFC822-compliant.
 
-One special context is defined for field lists. A field list as the
-very first non-comment block, or the second non-comment block
+5. Use leading colons::
+
+       :Author: Me
+       :Version: 1
+
+   Advantages: unambiguous, obvious? (*almost* RFC822-compliant),
+   flexible, perhaps even elegant. Disadvantage: no precedent, not
+   quite RFC822-compliant.
+
+One special context is defined for field lists [1]_. A field list as
+the very first non-comment block, or the second non-comment block
 immediately after a title, is interpreted as document bibliographic
-data. No special syntax is required, just unadorned RFC822_. The first
-block ends with a blank line, therefore field bodies must be single
-paragraphs only and there may be no blank lines between fields. The
-following field names are recognized and transformed to the
+data. No special syntax is required, just unadorned RFC822_ [2]_. The
+first block ends with a blank line, therefore field bodies must be
+single paragraphs only and there may be no blank lines between fields.
+The following field names are recognized and transformed to the
 corresponding DTD elements listed, child elements of the 'document'
 element. No ordering is imposed on these fields:
 
@@ -516,6 +556,16 @@ element. No ordering is imposed on these fields:
 
 This field-name-to-element mapping can be extended, or replaced for
 other languages. See the implementation documentation for details.
+
+.. _[1] Should "bibliographic field lists" be defined at the parser
+   level, or at the DPS transformation level? In other words, are they
+   reStructuredText-specific, or would they also be applicable to
+   another (many/every other?) syntax?
+
+.. _[2] Note that this "no special syntax required" provision is being
+   reconsidered. An unambiguous syntax would also remove the
+   requirement for a bibliographic field list to end with a blank
+   line.
 
 
 Literal Blocks
@@ -852,10 +902,11 @@ Comments
 DTD element: comment.
 
 Arbitrary text may follow the explicit markup start and will be
-processed as a comment element. Depending on the output formatter,
-comments may be removed from the processed output. The only
-restriction on comments is that they not use the same syntax as
-directives, footnotes, or hyperlink targets.
+processed as a comment element. No further processing is done on the
+comment block text; a comment contains a single "text blob". Depending
+on the output formatter, comments may be removed from the processed
+output. The only restriction on comments is that they not use the same
+syntax as directives, footnotes, or hyperlink targets.
 
 Syntax diagram::
 
