@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/07 01:36:32 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/01/25 23:41:32 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -17,11 +17,11 @@ import sys, os
 class Tee:
 
     """Write to a file and a stream (default: stdout) simultaneously."""
-    
+
     def __init__(self, filename, stream=sys.__stdout__):
         self.file = open(filename, 'w')
         self.stream = stream
-    
+
     def write(self, string):
         self.stream.write(string)
         self.file.write(string)

@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/11/15 03:08:10 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/01/25 23:41:43 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -85,7 +85,6 @@ class CustomTestSuite(unittest.TestSuite):
                 self.id = callerpath
         else:
             self.id = id
-        
 
     def addTestCase(self, testCaseClass, methodName, input, expected,
                     id=None, runInDebugger=0, shortDescription=None):
@@ -95,8 +94,8 @@ class CustomTestSuite(unittest.TestSuite):
 
         Arguments:
 
-        testCaseClass -- 
-        methodName -- 
+        testCaseClass --
+        methodName --
         input -- input to the parser.
         expected -- expected output from the parser.
         id -- unique test identifier, used by the test framework.
