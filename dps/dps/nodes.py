@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.15 $
-:Date: $Date: 2001/10/30 05:11:35 $
+:Revision: $Revision: 1.16 $
+:Date: $Date: 2001/10/31 05:55:26 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -548,7 +548,7 @@ class emphasis(_TextElement): pass
 class strong(_TextElement): pass
 class interpreted(_TextElement): pass
 class literal(_TextElement): pass
-class link(_TextElement): pass
+class reference(_TextElement): pass
 class footnote_reference(_TextElement): pass
 class image(_TextElement): pass
 

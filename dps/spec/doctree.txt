@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/10/27 05:38:27 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/10/31 05:55:39 $
 
 This document describes the internal data structure representing
 document trees in the Python Docstring Processing System. The data
@@ -69,7 +69,7 @@ following groups:
     system_warning_
 
 - _`Inline elements`: emphasis_, strong_, interpreted_, literal_,
-  link_, target_, footnote_reference_, image_
+  reference_, target_, footnote_reference_, image_
 
 
 ``document``
@@ -187,9 +187,9 @@ The ``%body.elements;`` parameter entity
 The ``%inline.elements;`` parameter entity
 
 
-``%link.atts;``
+``%reference.atts;``
 ===============
-The ``%link.atts;`` parameter entity
+The ``%reference.atts;`` parameter entity
 
 
 ``%structure.model;``

@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.20 $
-:Date: $Date: 2001/10/30 05:16:37 $
+:Revision: $Revision: 1.21 $
+:Date: $Date: 2001/10/31 05:56:04 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -116,7 +116,7 @@ Attributes shared by all elements in this DTD:
 <!ENTITY % additional.inline.elements "">
 <!ENTITY % inline.elements
   " emphasis | strong | interpreted | literal
-    | link | target | footnote_reference | image
+    | reference | target | footnote_reference | image
     %additional.inline.elements; ">
 
 <!-- Element Content Models
@@ -429,8 +429,8 @@ Inline elements occur within the PCDATA of body elements.
 <!ELEMENT literal (#PCDATA)>
 <!ATTLIST literal %basic.atts;>
 
-<!ELEMENT link (#PCDATA)>
-<!ATTLIST link
+<!ELEMENT reference (#PCDATA)>
+<!ATTLIST reference
     %basic.atts;
     %reference.atts;
     %anonymous.att;>
