@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2001/10/20 03:07:15 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2001/10/23 02:23:25 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -311,10 +311,13 @@ class document(_Element):
 
     def __init__(self, errorhandler, *args, **kwargs):
         _Element.__init__(self, *args, **kwargs)
-        self.explicitlinks = {}
-        self.implicitlinks = {}
-        self.externallinks = {}
+        self.explicittargets = {}
+        self.implicittargets = {}
+        self.externaltargets = {}
+        self.indirecttargets = {}
         self.refnames = {}
+        self.anonymoustargets = []
+        self.anonymousrefs = []
         self.autofootnotes = []
         self.autofootnoterefs = []
         self.errorhandler = errorhandler
@@ -324,45 +327,45 @@ class document(_Element):
         domroot.appendChild(_Element._rooted_dom_node(self, domroot))
         return domroot
 
-    def addimplicitlink(self, name, linknode, innode=None):
+    def addimplicittarget(self, name, targetnode, innode=None):
         if innode == None:
-            innode = linknode
-        if self.explicitlinks.has_key(name) \
-              or self.externallinks.has_key(name) \
-              or self.implicitlinks.has_key(name):
+            innode = targetnode
+        if self.explicittargets.has_key(name) \
+              or self.externaltargets.has_key(name) \
+              or self.implicittargets.has_key(name):
             sw = self.errorhandler.system_warning(
-                  0, 'Duplicate implicit link name: "%s"' % name)
+                  0, 'Duplicate implicit target name: "%s"' % name)
             innode += sw
-            self.clearlinknames(name, self.implicitlinks)
-            linknode['dupname'] = name
-            self.implicitlinks.setdefault(name, []).append(linknode)
+            self.cleartargetnames(name, self.implicittargets)
+            targetnode['dupname'] = name
+            self.implicittargets.setdefault(name, []).append(targetnode)
         else:
-            self.implicitlinks[name] = [linknode]
-            linknode['name'] = name
+            self.implicittargets[name] = [targetnode]
+            targetnode['name'] = name
 
-    def addexplicitlink(self, name, linknode, innode=None):
+    def addexplicittarget(self, name, targetnode, innode=None):
         if innode == None:
-            innode = linknode
-        if self.explicitlinks.has_key(name):
+            innode = targetnode
+        if self.explicittargets.has_key(name):
             sw = self.errorhandler.system_warning(
-                  1, 'Duplicate explicit link name: "%s"' % name)
+                  1, 'Duplicate explicit target name: "%s"' % name)
             innode += sw
-            self.clearlinknames(name, self.explicitlinks, self.implicitlinks,
-                                self.externallinks)
-            linknode['dupname'] = name
-            self.explicitlinks.setdefault(name, []).append(linknode)
+            self.cleartargetnames(name, self.explicittargets,
+                                  self.implicittargets, self.externaltargets)
+            targetnode['dupname'] = name
+            self.explicittargets.setdefault(name, []).append(targetnode)
             return
-        elif self.implicitlinks.has_key(name):
+        elif self.implicittargets.has_key(name):
             sw = self.errorhandler.system_warning(
-                  0, 'Duplicate implicit link name: "%s"' % name)
+                  0, 'Duplicate implicit target name: "%s"' % name)
             innode += sw
-            self.clearlinknames(name, self.implicitlinks)
-        self.explicitlinks[name] = [linknode]
-        linknode['name'] = name
+            self.cleartargetnames(name, self.implicittargets)
+        self.explicittargets[name] = [targetnode]
+        targetnode['name'] = name
 
-    def clearlinknames(self, name, *linkdicts):
-        for linkdict in linkdicts:
-            for node in linkdict.get(name, []):
+    def cleartargetnames(self, name, *targetdicts):
+        for targetdict in targetdicts:
+            for node in targetdict.get(name, []):
                 if node.has_key('name'):
                     node['dupname'] = node['name']
                     del node['name']
@@ -370,27 +373,37 @@ class document(_Element):
     def addrefname(self, name, node):
         self.refnames.setdefault(name, []).append(node)
 
-    def addexternallink(self, name, reference, linknode, innode):
-        if self.explicitlinks.has_key(name):
+    def addexternaltarget(self, name, reference, targetnode, innode):
+        if self.explicittargets.has_key(name):
             level = 0
-            for t in self.explicitlinks.get(name, []):
+            for t in self.explicittargets.get(name, []):
                 if len(t) != 1 or str(t[0]) != reference:
                     level = 1
                     break
             sw = self.errorhandler.system_warning(
-                  level, 'Duplicate external link name: "%s"' % name)
+                  level, 'Duplicate external target name: "%s"' % name)
             innode += sw
-            self.clearlinknames(name, self.explicitlinks, self.externallinks,
-                                self.implicitlinks)
-        elif self.implicitlinks.has_key(name):
-            print >>sys.stderr, "already has explicit link"
+            self.cleartargetnames(name, self.explicittargets,
+                                  self.externaltargets, self.implicittargets)
+        elif self.implicittargets.has_key(name):
+            print >>sys.stderr, "already has explicit target"
             sw = self.errorhandler.system_warning(
-                  0, 'Duplicate implicit link name: "%s"' % name)
+                  0, 'Duplicate implicit target name: "%s"' % name)
             innode += sw
-            self.clearlinknames(name, self.implicitlinks)
-        self.externallinks.setdefault(name, []).append(linknode)
-        self.explicitlinks.setdefault(name, []).append(linknode)
-        linknode['name'] = name
+            self.cleartargetnames(name, self.implicittargets)
+        self.externaltargets.setdefault(name, []).append(targetnode)
+        self.explicittargets.setdefault(name, []).append(targetnode)
+        targetnode['name'] = name
+
+    def addindirecttarget(self, refname, targetnode):
+        self.indirecttargets[refname] = targetnode
+        targetnode['refname'] = refname
+
+    def addanonymoustarget(self, targetnode):
+        self.anonymoustargets.append(targetnode)
+
+    def addanonymousref(self, refnode):
+        self.anonymousrefs.append(refnode)
 
     def addautofootnote(self, name, footnotenode):
         footnotenode['auto'] = 1
