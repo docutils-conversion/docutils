@@ -4,8 +4,38 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/06/18 23:34:36 $
+Date: $Date: 2001/07/21 22:14:04 $
 Website: http://structuredtext.sf.net/
+
+
+Release 0.3 (2001-07-19)
+========================
+
+Removed all explicit hyperlink targets matching section titles in spec
+documents; they are now declared implicitly (see
+spec/reStructuredText.txt).
+
+* restructuredtext/states.py: Added to project.
+
+* restructuredtext/test_states.py: Added to project.
+
+* restructuredtext/ndiff.py: Added to project. This is a modified
+  version of Python's Tools/scripts/ndiff.py, and is used by 
+  test_states.py. I have committed to adding its functionality to
+  Python's Lib/difflib.py.
+
+* spec/reStructuredText.txt:
+
+  - Introduced implicit hyperlink targets for section titles.
+  - Changed 'comment block' to 'explicit markup block'. Rearranged &
+    edited the text of footnotes, hyperlink targets, directives, &
+    comments.
+  - Clarified the syntax of interpreted text roles.
+  - Clarified the case-insensitivity and character set of hyperlink
+    names, footnote labels, and directives.
+  - Changed the definition for simple link names and footnote labels
+    (underlines and dashes allowed internally only, not at begin/end).
+  - Added 'Error Handling' section.
 
 
 Release 0.2 (2001-06-18)
@@ -95,14 +125,15 @@ Acknowledgements
 
 I would like to acknowledge the people who have made a direct impact
 on the reStructuredText project, knowingly or not, in terms of
-encouragement, suggestions, criticism, bug reports, and code
-contributions:
+encouragement, suggestions, criticism, bug reports, code
+contributions, and ideas borrowed from related projects:
 
     David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
     Juergen Hermann, Tony Ibbs, Daniel Larsson, Marc-Andre Lemburg,
-    Wolfgang Lipp, Edward Loper, Ken Manheimer, Sam Penrose, Tim
-    Peters, Tavis Rudd, Bob Tolbert, Laurence Tratt, Guido van Rossum,
-    Barry Warsaw, Edward Welbourne, Ka-Ping Yee, Moshe Zadka
+    Wolfgang Lipp, Edward Loper, Ken Manheimer, Alex Martelli, Michel
+    Pelletier, Sam Penrose, Tim Peters, Tavis Rudd, Bob Tolbert,
+    Laurence Tratt, Guido van Rossum, Barry Warsaw, Edward Welbourne,
+    Ka-Ping Yee, Moshe Zadka
 
 (I'm still waiting for contributions of yummy treats, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten

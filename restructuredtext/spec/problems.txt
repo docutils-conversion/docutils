@@ -3,9 +3,8 @@
 ==============================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 0.2.2
-Revision: $Revision: 1.31 $
-Date: $Date: 2001/06/18 23:32:19 $
+Revision: $Revision: 1.1.1.1 $
+Date: $Date: 2001/07/21 22:14:19 $
 
 There are several problems, unresolved issues, and areas of
 controversy within StructuredText_ (Classic and Next Generation). In
@@ -14,9 +13,9 @@ issues out into the open, enumerates all the alternatives, and
 proposes solutions to be incorporated into the reStructuredText_
 specification.
 
-1. No formal specification_. The code *is* the standard.
-2. Code is difficult to `understand and extend`_.
-3. Section structure via indentation_.
+1. No `formal specification`_. The code *is* the standard.
+2. `Understanding and extending the code`_ is difficult.
+3. `Section structure via indentation`_.
 4. No `character escaping mechanism`_.
 5. `Blank lines in lists`_.
 6. `Bullet list markup`_.
@@ -26,13 +25,13 @@ specification.
 10. Tables_.
 11. `Delimitation of inline markup`_ (must start with whitespace).
 12. Awkward underlining_ markup.
-13. Awkward `inline literals`_ markup.
-14. Awkward `hyperlink markup`_.
+13. Awkward markup for `inline literals`_.
+14. Awkward markup for hyperlinks_.
 
-.. _specification:
 
-1. Formal Specification
-=======================
+Formal Specification
+====================
+
 The description in the original StructuredText.py has been criticized
 for being vague. For practical purposes, "the code *is* the spec."
 Tony Ibbs has been working on deducing a `detailed description`_ from
@@ -45,10 +44,10 @@ adopted as a standard. Of course, a specification may be revised
 during lifetime of the code, but without a spec there is no visible
 control and thus no confidence.
 
-.. _understand and extend:
 
-2. Understanding and Extending the Code
-=======================================
+Understanding and Extending the Code
+====================================
+
 The original StructuredText_ is a dense mass of sparsely commented
 code and inscrutable regular expressions. It was not designed to be
 extended and is very difficult to understand. StructuredTextNG_ has
@@ -63,10 +62,10 @@ reStructuredText to be taken seriously, it must be a sterling example
 of the potential of docstrings; the implementation must practice what
 the specification preaches.
 
-.. _indentation:
 
-3. Structure via Indentation
-============================
+Section Structure via Indentation
+=================================
+
 Setext_ required that body text be indented by 2 spaces. The original
 StructuredText_ and StructuredTextNG_ require that section structure
 be indicated through indentation, as "inspired by Python". For certain
@@ -108,10 +107,10 @@ fact, it is already in widespread use in plain text documents,
 including in Python's standard distribution (such as the toplevel
 README_ file).
 
-.. _character escaping mechanism:
 
-4. Character Escaping Mechanism
-===============================
+Character Escaping Mechanism
+============================
+
 No matter what characters are chosen for markup, some day someone will
 want to write documentation *about* that markup or using markup
 characters in a non-markup context. Therefore, any complete markup
@@ -162,10 +161,10 @@ in the output. This would make describing regular expressions and
 other uses of backslashes easier. However, this would complicate the
 markup rules and would be confusing.
 
-.. _Blank lines in lists:
 
-5. Blank Lines in Lists
-=======================
+Blank Lines in Lists
+====================
+
 Oft-requested in Doc-SIG (the earliest reference is dated 1996-08-13)
 is the ability to write lists without requiring blank lines between
 items. In docstrings, space is at a premium. Authors want to convey
@@ -179,10 +178,10 @@ However, in order to eliminate ambiguity, a blank line is required
 before the first list item and after the last. Nested lists also
 require blank lines before the list start and after the list end.
 
-.. _Bullet list markup:
 
-6. Bullet List Markup
-=====================
+Bullet List Markup
+==================
+
 StructuredText_ includes 'o' as a bullet character. This is dangerous
 and counter to the language-independent nature of the markup. There
 are many languages in which 'o' is a word. For example, in Spanish:
@@ -206,10 +205,10 @@ could be misinterpreted as a bullet list.
 In reStructuredText_, 'o' is not used as a bullet character. '-', '*',
 and '+' are the possible bullet characters.
 
-.. _enumerated list markup:
 
-7. Enumerated List Markup
-=========================
+Enumerated List Markup
+======================
+
 StructuredText enumerated lists are allowed to begin with numbers and
 letters followed by a period or right-parenthesis, then whitespace.
 This has surprising consequences for writing styles. For example, this
@@ -253,10 +252,10 @@ indentation? Via compound enumerators for example? Simply count the
    2.a. two
    2.b.I. three
 
-.. _definition list markup:
 
-8. Definition List Markup
-=========================
+Definition List Markup
+======================
+
 StructuredText uses ' -- ' (whitespace, two hyphens, whitespace) on
 the first line of a paragraph to indicate a definition list item. The
 ' -- ' serves to separate the term (on the left) from the definition
@@ -288,10 +287,9 @@ block indented relative to the term, and may contain multiple
 paragraphs and other body elements. No blank line preceedes a
 definition (this distinguishes definition lists from block quotes).
 
-.. _literal blocks:
 
-9. Literal Blocks
-=================
+Literal Blocks
+==============
 The StructuredText_ specification has literal blocks indicated by
 'example', 'examples', or '::' ending the preceeding paragraph. STNG
 only recognizes '::'; 'example'/'examples' are not implemented. This
@@ -314,10 +312,10 @@ Thus, a section could begin with a literal block as follows::
     ::
         print "this is example literal"
 
-.. _tables:
 
-10. Tables
-==========
+Tables
+======
+
 The table markup scheme in classic StructuredText was horrible. Its
 omission from StructuredTextNG is welcome, and its markup will not be
 repeated here. However, tables themselves are useful in documentation.
@@ -382,10 +380,10 @@ Alternatives:
 
 Alternative #1 is the choice adopted by reStructuredText.
 
-.. _delimitation of inline markup:
 
-11. Delimitation of Inline Markup
-=================================
+Delimitation of Inline Markup
+=============================
+
 StructuredText specifies that inline markup must begin with
 whitespace, precluding such constructs as parenthesized or quoted
 emphatic text::
@@ -402,10 +400,10 @@ So we can say, "Use asterisks (*) around words or phrases to
 reduces the need for markup escaping to the point where an escape
 character is *almost* (but not quite!) unnecessary.
 
-.. _underlining:
 
-12. Underlining
-===============
+Underlining
+===========
+
 StructuredText uses '_text_' to indicate underlining. To quote David
 Ascher in his 2000-01-21 Doc-SIG mailing list post, "Docstring
 grammar: a very revised proposal":
@@ -424,10 +422,10 @@ grammar: a very revised proposal":
 
 Underlining is not part of the reStructuredText specification.
 
-.. _inline literals:
 
-13. Inline Literals
-===================
+Inline Literals
+===============
+
 StructuredText's markup for inline literals (text left as-is,
 verbatim, usually in a monospaced font; as in HTML <TT>) is single
 quotes ('literals'). The problem with single quotes is that they are
@@ -538,10 +536,10 @@ expressions involving the inline literal quote and/or the backslash
 will end up looking ugly. We can only choose the least often ugly
 option.
 
-.. _hyperlink markup:
 
-14. HyperLinks
-==============
+HyperLinks
+==========
+
 There are three forms of hyperlink currently in StructuredText_:
 
 1. (Absolute & relative URIs.) Text enclosed by double quotes followed

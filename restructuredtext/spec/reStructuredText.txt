@@ -3,9 +3,8 @@
 =======================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 0.2.2
-Revision: $Revision: 1.38 $
-Date: $Date: 2001/06/18 23:33:26 $
+Revision: $Revision: 1.1.1.1 $
+Date: $Date: 2001/07/21 22:14:24 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -26,6 +25,7 @@ reStructuredText markup by example. More details are given in the
 `Syntax Details`_ section.
 
 `Literal blocks`_ are used for examples throughout this document.
+
 
 -----------------------
  Quick Syntax Overview
@@ -101,16 +101,6 @@ Here are examples of body elements:
       | body row 2             | Cells may span        |
       +------------------------+------------+----------+
 
-- Comments_::
-
-      .. Comments begin with two dots and a space. Anything may
-         follow, except for the syntax of directives, footnotes, and
-         hyperlink targets, described below.
-
-- Directives_::
-
-      .. graphic:: mylogo.png
-
 - Footnotes_::
 
       .. _[1] A footnote contains indented body elements.
@@ -125,7 +115,16 @@ Here are examples of body elements:
 
       The '_example' target above points to this paragraph.
 
-.. _syntax details:
+- Directives_::
+
+      .. graphic:: mylogo.png
+
+- Comments_::
+
+      .. Comments begin with two dots and a space. Anything may
+         follow, except for the syntax of footnotes, hyperlink
+         targets, and directives, described above.
+
 
 ----------------
  Syntax Details
@@ -145,10 +144,10 @@ further body elements, etc. ::
     |                           |                           +-------+  |
     |---------------------------+-------------------------+------------|
     | [body elements:]                                    | (sections) |
-    |         |         | - lists  |       | - comments   +------------+
-    |         |         | - tables |       | - directives |
-    | para-   | literal | - block  | foot- | - hyperlink  |
-    | graphs  | blocks  |   quotes | notes |   targets    |
+    |         |         | - lists  |       | - hyperlink  +------------+
+    |         |         | - tables |       |   targets    |
+    | para-   | literal | - block  | foot- | - directives |
+    | graphs  | blocks  |   quotes | notes | - comments   |
     +---------+---------+----------+-------+--------------+
     | [text]+ | [text]  | (body elements)  | [text]       |
     | (inline +---------+------------------+--------------+
@@ -160,10 +159,10 @@ Document Interface DTD" XML document type definition, gpdi.dtd_.
 Descriptions below list 'DTD elements' (XML 'generic identifiers')
 corresponding to syntax constructs.
 
-.. _whitespace:
 
 Whitespace
 ==========
+
 Blank lines are used to separate paragraphs and other elements. Blank
 lines may be omitted when the markup makes element separation
 unambiguous.
@@ -180,10 +179,10 @@ Although spaces are recommended for indentation, tabs may also be
 used. Tabs will be converted to spaces. Tab stops are at every 8th
 column.
 
-.. _escaping mechanism:
 
 Escaping Mechanism
 ==================
+
 The character set available in plain text documents, 7-bit ASCII, is
 limited. No matter what characters are used for markup, they will
 already have multiple meanings in written text. Therefore markup
@@ -205,17 +204,18 @@ There are two contexts in which backslashes have no special meaning:
 literal blocks and inline literals. In these contexts, a single
 backslash represents a literal backslash.
 
-.. _section structure:
 
 Section Structure
 =================
+
 DTD elements: section, title.
 
 Sections are identified through their titles, which are marked up with
 adornment: 'underlines' below the title text, and, in some cases,
-'overlines' above the title. An underline/overline is a line of
-non-alphanumeric characters that begins in column 1 and extends at
-least as far as the right edge of the title text. When there an
+matching 'overlines' above the title. An underline/overline is a line
+of non-alphanumeric characters that begins in column 1 and extends at
+least as far as the right edge of the title text. An
+underline/overline must be at least 3 characters long. When an
 overline is used, the length and character used must match the
 underline. There may be any number of levels of section titles.
 
@@ -240,6 +240,12 @@ Below are examples of section title styles::
 
     Section Title
     -------------
+
+    Section Title
+    `````````````
+
+    Section Title
+    '''''''''''''
 
     Section Title
     .............
@@ -269,15 +275,18 @@ section title style be used. However, a document must be consistent in
 its use of section titles: once a hierarchy of title styles is
 established, sections must use that hierarchy.
 
-.. _body elements:
+Each section title automatically generates a hyperlink target pointing
+to the section. The text of the hyperlink target is the same as that
+of the section title. See `Implicit Hyperlink Targets`_ for a complete
+description.
+
 
 Body Elements
 =============
 
-.. _paragraphs:
-
 Paragraphs
 ----------
+
 DTD element: paragraph.
 
 Paragraphs consist of blocks of left-aligned text with no markup
@@ -296,10 +305,10 @@ Syntax diagram::
     |                              |
     +------------------------------+
 
-.. _bullet lists:
 
 Bullet Lists
 ------------
+
 DTD elements: bullet_list, list_item.
 
 A text block which begins with a '-', '*', or '+', followed by
@@ -344,10 +353,10 @@ Syntax diagram::
     +------| (body elements)+      |
            +-----------------------+
 
-.. _enumerated lists:
 
 Enumerated Lists
 ----------------
+
 DTD elements: enumerated_list, list_item.
 
 Enumerated lists (a.k.a. 'ordered' lists) are similar to bullet lists,
@@ -386,10 +395,10 @@ example::
        a) item 1a.
        b) Item 1b.
 
-.. _definition lists:
 
 Definition Lists
------------------
+----------------
+
 DTD elements: definition_list, definition_list_item, term, definition.
 
 Each definition list item contains a term and a definition. A term is
@@ -417,10 +426,10 @@ Syntax diagram::
        | (body elements)+          |
        +---------------------------+
 
-.. _field lists:
 
 Field Lists
 -----------
+
 DTD elements: field_list, field, field_name, field_argument,
 field_body.
 
@@ -428,14 +437,15 @@ field_body.
 
 Field lists are mappings from field names to field bodies, modeled on
 RFC822_ headers. A field name is made up of one or more letters,
-numbers, and punctuation, except colons (':') and whitespace. A single
-colon and whitespace follows the field name, and this is followed by
-the field body. The field body may contain multiple body elements.
+numbers, and punctuation, except colons (':') and whitespace. Field
+names are case-insensitive. A single colon and whitespace follows the
+field name, and this is followed by the field body. The field body may
+contain multiple body elements.
 
 Applications of reStructuredText may recognize field names and
-transform fields or field bodies in certain contexts. Field names are
-case-insensitive. Any untransformed fields remain in the field list as
-the document's first body element.
+transform fields or field bodies in certain contexts. Any
+untransformed fields remain in the field list as the document's first
+body element.
 
 The syntax for field lists has not been finalized. Syntax
 alternatives:
@@ -456,7 +466,7 @@ alternatives:
        """
        Author: Me
        Version: 1
-  
+
        The rest of the docstring...
        """
 
@@ -495,7 +505,8 @@ element. No ordering is imposed on these fields:
 
 - Title: title
 - Subtitle: subtitle
-- Author/Authors: author
+- Author: author
+- Authors: authors (a list of author elements)
 - Organization: organization
 - Contact: contact
 - Version: version
@@ -506,10 +517,10 @@ element. No ordering is imposed on these fields:
 This field-name-to-element mapping can be extended, or replaced for
 other languages. See the implementation documentation for details.
 
-.. _literal blocks:
 
 Literal Blocks
 --------------
+
 DTD element: literal_block.
 
 Two colons ('::') at the end of a paragraph signifies that all
@@ -572,10 +583,10 @@ Syntax diagram::
        | literal block             |
        +---------------------------+
 
-.. _block quotes:
 
 Block Quotes
 ------------
+
 DTD element: block_quote.
 
 A text block that is indented relative to the preceeding text, without
@@ -603,10 +614,10 @@ Syntax diagram::
        | (body elements)+          |
        +---------------------------+
 
-.. _tables:
 
 Tables
 ------
+
 DTD elements: table, tgroup, colspec, thead, tbody, row, entry.
 
 Tables are described with a visual outline made up of the characters
@@ -636,50 +647,165 @@ tables. Tables' left edges should align with the left edge of
 preceeding text blocks; otherwise, the table is considered to be part
 of a block quote.
 
-Comment Blocks
---------------
-A comment block is a text block:
 
-- whose first line begins with '.. ' (the 'comment start'),
+Explicit Markup Blocks
+----------------------
+
+An explicit markup block is a text block:
+
+- whose first line begins with '.. ' (the 'explicit markup start'),
 - whose second and subsequent lines (if any) are indented relative to
   the first, and
 - which ends with an unindented line.
 
-Comments are analogous to bullet lists, with '..' as the bullet. Blank
-lines are required between comment blocks and other elements, but are
-optional between comment blocks where unambiguous.
+Explicit markup blocks are analogous to bullet list items, with '..'
+as the bullet. Blank lines are required between explicit markup blocks
+and other elements, but are optional between explicit markup blocks
+where unambiguous.
 
-The comment block syntax is used for comments, directives, footnotes,
-and hyperlink targets.
+The explicit markup syntax is used for footnotes, hyperlink targets,
+directives, and comments.
 
-.. _comments:
 
-Comments
-........
-DTD element: comment.
+Footnotes
+`````````
 
-Arbitrary text may follow the comment start and will be processed as a
-comment element, possibly being removed from the processed output. The
-only restriction on comments is that they not use the same syntax as
-directives, footnotes, or hyperlink targets.
+DTD elements: footnote, label.
+
+Footnotes consist of an explicit markup start ('.. '), an underscore,
+an left square bracket, the footnote label, a right square bracket,
+and whitespace, followed by body elements. Footnote labels are
+case-insensitive single words (alphanumerics plus hyphens,
+underscores, and periods; no whitespace). If the first body element
+within a footnote is a simple paragraph, it may begin on the same line
+as the footnote label. Other elements must begin on a new line,
+left-aligned with the underscore.
+
+Footnotes may occur anywhere in the document, not only at the end.
+Where or how they appear in the processed output depends on the output
+formatter. Here is a footnote, referred to in `Footnote References`_::
+
+    .. _[GVR2001] Python Documentation; van Rossum, Drake, et al.;
+       http://www.python.org/doc/
+
+Syntax diagram::
+
+    +-------+-------------------------+
+    | '.. ' | '_[' label ']' footnote |
+    +-------+                         |
+            | (body elements)+        |
+            +-------------------------+
+
+
+Hyperlink Targets
+`````````````````
+
+DTD element: target.
+
+Hyperlink targets consist of an explicit markup start ('.. '), an
+underscore, the hyperlink name (no trailing underscore), a colon,
+whitespace, and a link block. These are also called 'explicit
+hyperlink targets', to differentiate them from `implicit hyperlink
+targets`_ defined below.
+
+Hyperlink names are whitespace-neutral and case-insensitive. See
+`Indirect Hyperlinks`_ for examples.
+
+To differentiate hyperlink targets from footnotes:
+
+- square brackets are not used,
+- hyperlink names may contain whitespace,
+- a colon is required after the hyperlink name.
+
+Hyperlink targets go together with `indirect hyperlinks`_ and
+`internal hyperlinks`_. Internal hyperlink targets have empty link
+blocks; they point to the next element. Indirect hyperlink targets
+have an absolute or relative URI in their link blocks.
+
+An indirect hyperlink's URI may begin on the same line as the explicit
+markup start and target name, or it may begin in an indented text
+block immediately following, with no intervening blank lines. If there
+are multiple lines in the link block, they are stripped of leading and
+trailing whitespace and joined together. The following indirect
+hyperlink targets are equivalent::
+
+    .. _one-liner: http://structuredtext.sourceforge.net
+
+    .. _starts-on-this-line: http://
+                             structuredtext.
+                             sourceforge.net
+
+    .. _entirely-below:
+       http://structuredtext.
+       sourceforge.net
+
+If a hyperlink name contains a colon followed by whitespace, either:
+
+- the phrase must be enclosed in backquotes::
+
+      .. _`FAQTS: Computers: Programming: Languages: Python`:
+         http://python.faqts.com/
+
+- or the colon(s) must be backslash-escaped in the link target::
+
+      .. _Chapter One\: 'Tadpole Days':
+
+      It's not easy being green...
+
+See `Implicit Hyperlink Targets`_ below for the resolution of
+duplicate hyperlink names.
 
 Syntax diagram::
 
     +-------+----------------------+
-    | '.. ' | comment block        |
-    +--+----+                      |
-       |                           |
-       +---------------------------+
+    | '.. ' | '_' name ':' link    |
+    +-------+              block   |
+            |                      |
+            +----------------------+
 
-.. _directives:
+
+Implicit Hyperlink Targets
+``````````````````````````
+
+Implicit hyperlink targets are generated by section titles, and may
+also be generated by extension constructs. Implicit hyperlink targets
+behave identically to explicit `hyperlink targets`_.
+
+Problems of ambiguity due to conflicting duplicate implicit and
+explicit hyperlink names are avoided because the reStructuredText
+parser follows these rules:
+
+1. Explicit hyperlink targets override any implicit targets having the
+   same hyperlink name. The implicit hyperlink targets are removed,
+   and level-0 system warnings are inserted.
+
+2. If two or more sections have the same title (such as "Introduction"
+   subsections of a rigidly-structured document), there will be
+   duplicate implicit target hyperlink names. Solution: all duplicate
+   hyperlink targets are removed, and level-0 system warnings
+   inserted.
+
+3. If there are duplicate explicit hyperlink target names, all
+   duplicates are removed, and level-1 system warnings inserted.
+
+System warnings are inserted where target links have been removed. See
+'Error Handling' in `PEP 258`_.
+
+The parser must return a set of *unique* hyperlink targets. The
+calling software (such as the `Python Docstring Processing System`_)
+can warn of unresolvable links, giving reasons for the warnings.
+
 
 Directives
-..........
+``````````
+
 DTD element: directive.
 
-Directives are indicated by a comment start followed by a single word
-(the directive type, regular expression '`[a-zA-Z][a-zA-Z0-9_-]*`'),
-two colons, and whitespace. Two colons are used for these reasons:
+Directives are indicated by an explicit markup start ('.. ') followed
+by the directive type, two colons, and whitespace. Directive types are
+case-insensitive single words (alphanumerics plus hyphens and
+underscores; no whitespace). Two colons are used after the directive
+type for these reasons:
 
 - To avoid clashes with common comment text like::
 
@@ -691,16 +817,14 @@ two colons, and whitespace. Two colons are used for these reasons:
   a literal block, and a warning generated. Thus '::' is a natural
   choice.
 
-Directive names are case-insensitive. Actions taken in response to
-directives and the interpretation of data in the directive block or
-subsequent text block(s) are directive-dependent.
-
-No directives have been defined by the core reStructuredText
-specification. The following are only examples of *possible uses* of
-directives.
+Actions taken in response to directives and the interpretation of data
+in the directive block or subsequent text block(s) are
+directive-dependent. No directives have been defined by the core
+reStructuredText specification. The following are only examples of
+*possible uses* of directives.
 
 Directives can be used as an extension mechanism for reStructuredText.
-For example, hhere's how a graphic could be placed::
+For example, here's how a graphic could be placed::
 
     .. graphic:: mylogo.png
 
@@ -715,93 +839,46 @@ parser, such as to experiment with alternate syntax.
 
 Syntax diagram::
 
-    +-----------------+------------+
-    | '.. ' type '::' | directive  |
-    +--+--------------+ block      |
-       |                           |
-       +---------------------------+
+    +-------+----------------------+
+    | '.. ' | type '::' directive  |
+    +-------+           block      |
+            |                      |
+            +----------------------+
 
-.. _hyperlink targets:
 
-Hyperlink Targets
-.................
-DTD element: target.
+Comments
+````````
 
-Hyperlink targets consist of a comment start ('.. '), an underscore,
-the hyperlink name (no trailing underscore), a colon, whitespace, and
-a link block. Hyperlink targets go together with `indirect
-hyperlinks`_ and `internal hyperlinks`_. Internal hyperlink targets
-have empty link blocks; they point to the next element. Indirect
-hyperlink targerss have an absolute or relative URI in their link
-blocks.
+DTD element: comment.
 
-If a hyperlink name contains colons, either:
-
-- the phrase must be enclosed in backquotes::
-
-      .. _`FAQTS: Computers: Programming: Languages: Python`:
-         http://python.faqts.com/
-
-- or the colon(s) must be backslash-escaped in the link target::
-
-      .. _Chapter One\: 'Tadpole Days':
-
-      It's not easy being green...
-
-Whitespace is normalized within hyperlink names, which are
-case-insensitive.
+Arbitrary text may follow the explicit markup start and will be
+processed as a comment element. Depending on the output formatter,
+comments may be removed from the processed output. The only
+restriction on comments is that they not use the same syntax as
+directives, footnotes, or hyperlink targets.
 
 Syntax diagram::
 
-    +-----------------+------------+
-    | '.. _' name ':' | link       |
-    +--+--------------+ block      |
-       |                           |
-       +---------------------------+
+    +-------+----------------------+
+    | '.. ' | comment block        |
+    +-------+                      |
+            |                      |
+            +----------------------+
 
-.. _footnotes:
-
-Footnotes
-.........
-DTD elements: footnote, label.
-
-Footnotes are similar to hyperlink targets: a comment start, an
-underscore, open square bracket, footnote label, close square bracket,
-and whitespace. To differentiate footnotes from hyperlink targets:
-
-- the square brackets are used,
-- the footnote label may not contain whitespace,
-- no colon appears after the close bracket.
-
-Footnotes may occur anywhere in the document, not necessarily at the
-end. Where or how they appear in the processed output depends on the
-output formatter. Here is a footnote, referred to in `Footnote
-References`_::
-
-    .. _[GVR2001] Python Documentation, van Rossum, Drake, et al.,
-       http://www.python.org/doc/
-
-Syntax diagram::
-
-    +-------------------+----------+
-    | '.. _[' label ']' | footnote |
-    +--+----------------+          |
-       | (body elements)+          |
-       +---------------------------+
-
-.. _inline markup:
 
 Inline Markup
 =============
-Inline markup is the markup of text within a text block. Inline markup
-cannot be nested.
 
-There are six inline markup constructs. Four of the constructs
+Inline markup is the markup of words or phrases within a text block.
+Inline markup cannot be nested.
+
+There are eight inline markup constructs. Four of the constructs
 (emphasis_, `strong emphasis`_, `interpreted text`_, and `inline
-literals`_) use start-strings and end-strings to indicate the markup.
-The `indirect hyperlink`_ construct (shared by `internal hyperlinks`_)
-uses an end-string only. `Standalone hyperlinks`_ are interpreted
-implicitly, and use no extra markup.
+literals`_) use identical start-strings and end-strings to indicate
+the markup. The `footnote references`_, `indirect hyperlinks`_, and
+`internal hyperlinks`_ use differenct start-strings and end-strings.
+`Standalone hyperlinks`_ are recognized implicitly, and use no extra
+markup.
 
 The inline markup start-string and end-string recognition rules are as
 follows:
@@ -821,9 +898,9 @@ follows:
    ')', ']', or '}', followed by whitespace.
 
 5. If an inline markup start-string is immediately preceeded by a
-   single or double quote, '(', '[', or '{', it must not be
+   single or double quote, '(', '[', '{', or '<', it must not be
    immediately followed by the corresponding single or double quote,
-   ')', ']', or '}'.
+   ')', ']', '}', or '>'.
 
 6. An inline markup end-string must be separated by at least one
    character from the start-string.
@@ -832,69 +909,77 @@ follows:
    backslash preceeding a start-string or end-string will disable
    markup recognition. See `escaping mechanism`_ above for details.
 
-For example, none of the following are recognized as inline markup
-start-strings: ' * ', '"*"', "'*'", '(*)', '(* ', '[*]', '{*}', '\*',
-' ` ', etc.
+For example, none of the following are recognized as containing inline
+markup start-strings: ' * ', '"*"', "'*'", '(*)', '(* ', '[*]', '{*}',
+'\*', ' ` ', etc.
 
-.. _emphasis:
 
 Emphasis
 --------
+
 DTD element: emphasis.
 
-Text enclosed by single asterisk characters (start-string = end-string
-= '*') is emphasized::
+Start-string = end-string = '*'.
+
+Text enclosed by single asterisk characters is emphasized::
 
     This is *emphasized text*.
 
 Emphasized text is typically displayed in italics.
 
-.. _strong emphasis:
 
 Strong Emphasis
 ---------------
+
 DTD element: strong.
 
-Text enclosed by double-asterisks (start-string = end-string = '**')
-is emphasized strongly::
+Start-string = end-string = '**'.
+
+Text enclosed by double-asterisks is emphasized strongly::
 
     This is **strong text**.
 
 Strongly emphasized text is typically displayed in boldface.
 
-.. _interpreted text:
 
 Interpreted Text
 ----------------
+
 DTD element: interpreted.
 
-Text enclosed by single backquote characters (start-string =
-end-string = '`') is interpreted::
+Start-string = end-string = '`'.
+
+Text enclosed by single backquote characters is interpreted::
 
     This is `interpreted text`.
 
 The semantics of interpreted text are domain-dependent. It can be used
 as implicit or explicit descriptive markup (such as for program
-identifiers, as in the `Python Extensions`_ to reStructuredText), for
+identifiers, as in the `Python Extensions to reStructuredText`_), for
 cross-reference interpretation (such as index entries), or for other
-applications where context can be inferred. The role of the
-interpreted text may be inferred implicitly. The role of the
-interpreted text may also be indicated explicitly, using either a
-prefix (role + colon + space) or a suffix (space + colon + role),
+applications where context can be inferred.
+
+The role of the interpreted text may be inferred implicitly. The role
+of the interpreted text may also be indicated explicitly, using either
+a prefix (role + colon + space) or a suffix (space + colon + role),
 depending on which reads better::
 
     `role: interpreted text`
 
     `interpreted text :role`
 
-.. _inline literals:
+A role name may contain arbitrary text, except colons. Interpreted
+text may contain at most one colon in a role-indicating context.
+
 
 Inline Literals
 ---------------
+
 DTD element: literal.
 
-Text enclosed by double-backquotes (start-string = end-string = '``')
-is treated as inline literals::
+Start-string = end-string = '``'.
+
+Text enclosed by double-backquotes is treated as inline literals::
 
     This text is an example of ``inline literals``.
 
@@ -913,27 +998,29 @@ is important, literal blocks should be used.
 Inline literals are useful for short code snippets. For example::
 
     The regular expression ``[+-]?(\d+(\.\d*)?|\.\d+)`` matches
-    non-exponential floating-point numbers.
+    floating-point numbers (without exponents).
 
-.. _hyperlinks:
 
 Hyperlinks
 ----------
+
 Hyperlinks are indicated by a trailing underscore, '_', except for
 `standalone hyperlinks`_ which are recognized independently. The
-trailing underscore can be thought of as pointing away from the
-reference, and the leading underscores in `hyperlink targets`_ can be
-thought of as pointing toward the target.
+underscore can be thought of as a right-pointing arrow. The trailing
+underscores point away from hyperlink references, and the leading
+underscores point toward `hyperlink targets`_.
 
-.. _standalone hyperlinks:
 
 Standalone Hyperlinks
-.....................
+`````````````````````
+
 DTD element: link.
 
+Start-string = end-string = '' (empty string).
+
 An absolute URI [URI]_ within a text block is treated as a general
-external hyperlink with the URI itself as the link's text
-(start-string = end-string = '', the empty string). For example::
+external hyperlink with the URI itself as the link's text. For
+example::
 
     See http://www.python.org for info.
 
@@ -945,17 +1032,23 @@ would be marked up in HTML as::
 .. _[URI] Uniform Resource Identifier. URIs are a general form of URLs
    (Uniform Resource Locators). For the syntax of URIs see RFC2396_.
 
-.. _indirect hyperlinks:
 
 Indirect Hyperlinks
-...................
+```````````````````
+
 DTD element: link.
 
+- Start-string = '' (empty string), end-string: '_'.
+- Start-string = '`', end-string: = '`_'. (Phrase links.)
+
 Indirect hyperlinks consist of two parts. In the text body, there is a
-source link, a name with a trailing underscore (start-string = '',
-end-string = '_'; start-string = '`', end-string = '`_')::
+source link, a hyperlink name with a trailing underscore::
 
     See the Python_ home page for info.
+
+Simple hyperlink names are single words consisting of alphanumerics
+plus internal hypens, underscores, and periods; no whitespace or other
+characters are allowed.
 
 Somewhere else in the document is a target link containing a URI (see
 `Hyperlink Targets`_ for a full description)::
@@ -967,28 +1060,37 @@ After processing into HTML, this should be expressed as::
     See the <A HREF="http://www.python.org">Python</A> home page for
     info.
 
-Phrase-links (a hyperlink whose name is a phrase, two or more
-space-separated words) can be expressed by enclosing the phrase in
-backquotes and treating the backquoted text as a link name::
+Hyperlink names using punctuation or whose names are phrases (two or
+more space-separated words) are called 'phrase-links'. Phrase-links
+can be expressed by enclosing the phrase in backquotes and treating
+the backquoted text as a link name::
 
     Want to learn about `my favorite programming language`_?
 
     .. _my favorite programming language: http://www.python.org
 
-Whitespace is normalized within hyperlink names, which are
-case-insensitive.
+Hyperlink names are whitespace-neutral and case-insensitive. When
+resolving hyperlink names internally, whitespace and case are
+normalized. For example, the following hyperlinks are equivalent::
 
-.. _internal hyperlinks:
+    - `A HYPERLINK`_
+    - `a    hyperlink`_
+    - `A
+      Hyperlink`_
+
 
 Internal Hyperlinks
-...................
+```````````````````
+
 DTD element: link.
 
+- Start-string = '' (empty string), end-string: '_'.
+- Start-string = '`', end-string: = '`_'.
+
 Internal hyperlinks connect one point to another within a document.
-They are identical to indirect hyperlinks (start-string = '',
-end-string = '_'; start-string = '`', end-string = '`_') except that
-there is no URI in the target link. See `Hyperlink Targets`_ for a
-full description. For example::
+They are identical to `indirect hyperlinks`_ except that there is no
+URI in the target link. See `Hyperlink Targets`_ for a full
+description. For example::
 
     Clicking on this internal hyperlink will take us to the target_
     below.
@@ -997,19 +1099,31 @@ full description. For example::
 
     The hyperlink target above points to this paragraph.
 
-.. _footnote references:
 
 Footnote References
-...................
+```````````````````
+
 DTD element: footnote_reference.
 
-Footnote references consist of a square-bracketed label (no
-whitespace), with a trailing underscore (start-string = '[',
-end-string = ']_')::
+Start-string = '[', end-string = ']_'.
+
+Footnote references consist of a square-bracketed label followed by a
+trailing underscore. Footnote labels are case-insensitive single words
+(alphanumerics plus internal hyphens, underscores, and periods; no
+whitespace). For example::
 
     Please refer to the fine manual [GVR2001]_.
 
 See Footnotes_ for the footnote itself.
+
+
+----------------
+ Error Handling
+----------------
+
+Markup errors are handled according to the specification in `PEP
+258`_.
+
 
 .. _reStructuredText: http://structuredtext.sf.net
 .. _Python Docstring Processing System: http://docstring.sf.net
@@ -1017,8 +1131,9 @@ See Footnotes_ for the footnote itself.
 .. _gpdi.dtd: http://docstring.sf.net/spec/gpdi.dtd
 .. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
 .. _RFC2396: http://www.rfc-editor.org/rfc/rfc2396.txt
-.. _Python Extensions:
+.. _Python Extensions to reStructuredText:
    http://structuredtext.sf.net/spec/pyextensions.txt
+.. _PEP 258: http://docstring.sf.net/spec/pep-0258.txt
 
 
 Local Variables:

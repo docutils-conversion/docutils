@@ -3,9 +3,8 @@
 =====================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 0.2.1
-Revision: $Revision: 1.10 $
-Date: $Date: 2001/06/18 23:31:47 $
+Revision: $Revision: 1.1.1.1 $
+Date: $Date: 2001/07/21 22:14:16 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system. It is useful for in-line
@@ -32,7 +31,6 @@ http://structuredtext.sf.net/.
 .. _Setext: http://www.bsdi.com/setext
 .. _Python Docstring Processing System: http://docstring.sf.net
 
-.. _goals:
 
 Goals
 =====
@@ -130,10 +128,10 @@ Author's note:
 
 .. _Doc-SIG: http://www.python.org/sigs/doc-sig/
 
-.. _history:
 
 History
 =======
+
 reStructuredText_, the specification, is based on StructuredText_ and
 Setext_. StructuredText was developed by Jim Fulton of `Digital
 Creations`_ and first released in 1996. It is now released as a part
@@ -209,6 +207,11 @@ be constructed. This framework has become the more important of the
 two projects; reStructuredText has found its place as one possible
 choice for a single component of the larger framework.
 
+The project web site and the first project release were rolled out in
+June 2001, including posting the second draft of the spec to the
+Doc-SIG. Implementation history details can be found in the project
+file, HISTORY.txt_.
+
 .. _Digital Creations: http://www.digicool.com
 .. _ZOPE: http://www.zope.org
 .. _pythondoc: http://starship.python.net/crew/danilo/pythondoc/
@@ -221,11 +224,12 @@ choice for a single component of the larger framework.
 .. _[reStructuredText: Revised Structured Text Specification]:
     http://mail.python.org/pipermail/doc-sig/2000-November/001241.html
 .. _Docstring Processing System: http://docstring.sf.net
+.. _HISTORY.txt: http://structuredtext.sf.net/spec/HISTORY.txt
 
-.. _parser implementation plan:
 
 Parser Implementation Plan
 ==========================
+
 The author will implement a reStructuredText parser in stages, listed
 below. It will be posted to the `project web site`_, and contributions
 (of testing, bug reports, patches, administration, encouragement,
@@ -246,6 +250,8 @@ constructs:
      - paragraphs
      - literal blocks
      - bullet lists
+     - directives
+     - comments
 
    + inline markup
 
@@ -257,11 +263,6 @@ constructs:
    + structural markup
 
      - section headers
-
-   + extension markup
-
-     - directives
-     - comments
 
 2. General markup, level 2
 

@@ -1,24 +1,25 @@
 =======
  Notes
 =======
-Date: $Date: 2001/06/18 01:06:57 $
-Revision: $Revision: 1.27 $
+Date: $Date: 2001/07/21 22:14:24 $
+Revision: $Revision: 1.1.1.1 $
 
 
 To Do
 =====
+
+- set up CVS on SF!
 
 - implement a parser according to the markup implementation plan
 
 - create a standalone reStructuredText -> HTML/XML converter (stdin ->
   stdout filter)
 
-- rename comment blocks to something not implying "ignore".
-  Processing instruction? Directive blocks? Meta blocks?
-
 - allow very long titles (on two or more lines)?
 
-- back out indented section changes
+- interpret RCS keywords in field lists? ``$keyword: value$`` could be
+  interpreted as ``keyword: value``; ``$keyword$`` could be
+  interpreted as ``keyword:`` (no value).
 
 
 Enumerated Lists
@@ -83,6 +84,19 @@ Problem?
 
        Literal block?
 
+Hmm... Non-strict indentation isn't such a good idea.
+
+Another approach: Going back to the first draft of reStructuredText
+(2000-11-27 post to Doc-SIG):
+
+    - This is the fourth item of the main list (no blank line above).
+    The second line of this item is not indented relative to the
+    bullet, which precludes it from having a second paragraph.
+
+Change that to *require* a blank line above and below, to reduce
+ambiguity. This "loosening" may be added later, once the parser's
+been nailed down.
+
 
 Horizontal Rules
 ================
@@ -103,35 +117,16 @@ significance do they have?
 Parser Notes
 ============
 
-- parser: state machine (Structural & body element markup only?
-  Separate mechanism for inline markup?)
+- What should incorrect indentation do? E.g.::
 
-- recursive: in a table, call parser with cells as text blocks and
-  "body elements only" state.  Should all nested structures use
-  recursive state machines?
+      Here is a paragraph.
 
-- states:
+              Indent 8 spaces.
 
-  - body elements & structure
+          Indent 4 spaces.
 
-  - body elements only
-
-  - read paragraph first line, looking for context (title underline,
-    definition, or paragraph)
-
-  - list (dedent w/o blank line ok, as long as its another list item)
-
-  - potential enumerated list item
-
-- Adding syntax to the parser: new transitions are prepended to the
-  list, meaning new syntax either overrides old syntax or new & old
-  are mutually exclusive.
-
-- Inline markup: List of all start-strings is made into a pattern.
-  Search for a start-string. When one is found, check for validity.
-  If valid, search for the corresponding end string.  Check for
-  validity.  If not found or invalid, raise a warning and ignore the
-  start-string. Standalone hyperlinks are found last.
+  As is, this generates a <block_quote><block_quote></></>. Should
+  this trigger a warning?
 
 
 Local Variables:

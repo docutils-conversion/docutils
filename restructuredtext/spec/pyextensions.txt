@@ -3,14 +3,14 @@
 ================================================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 0.2
-Revision: $Revision: 1.17 $
-Date: $Date: 2001/06/18 23:32:55 $
+Revision: $Revision: 1.1.1.1 $
+Date: $Date: 2001/07/21 22:14:20 $
 
 This document details Python-specific additions to and interpretations
 of the base `reStructuredText Markup Specification`_, part of the
 reStructuredText_ project, in the context of the `Python Docstring
 Processing System`_.
+
 
 ----------------
  Syntax Details
@@ -22,8 +22,10 @@ modifies the generic gpdi.dtd_). Descriptions below list 'DTD
 elements' (XML 'generic identifiers') corresponding to syntax
 constructs.
 
+
 Option Lists
 ============
+
 DTD elements: option_list, option_list_item, option, short_option,
 long_option, option_argument, description.
 
@@ -51,8 +53,10 @@ between option entries. For example::
 
                This is the second.
 
+
 Doctest Blocks
 ==============
+
 DTD element: doctest_block.
 
 Doctest blocks are interactive Python sessions cut-and-pasted into
@@ -79,8 +83,10 @@ literal block syntax takes priority over Doctest block syntax::
 
 Indentation is not required for doctest blocks.
 
+
 Interpreted Text
 ================
+
 DTD elements: package, module, class, method, function,
 module_attribute, class_attribute, instance_attribute, variable,
 parameter, type, exception_class, warning_class.
@@ -135,8 +141,8 @@ identifier in either prefix or suffix form::
 The role may be one of 'package', 'module', 'class', 'method',
 'function', 'module attribute', 'moduleatt', 'class attribute',
 'classatt', 'instance attribute', 'instanceatt', 'variable',
-'parameter', 'type', 'exception', or 'warning'. Other roles may be
-defined.
+'parameter', 'type', 'exception class', 'exception', 'warning class',
+or 'warning'. Other roles may be defined.
 
 .. _reStructuredText Markup Specification:
    http://structuredtext.sf.net/spec/reStructuredText.txt
