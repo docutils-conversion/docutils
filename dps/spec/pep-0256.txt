@@ -1,13 +1,11 @@
 PEP: 256
 Title: Docstring Processing System Framework
 Version: $Revision: 1.1.1.1 $
-Last-Modified: $Date: 2001/06/17 11:44:33 $
+Last-Modified: $Date: 2001/07/22 22:36:18 $
 Author: dgoodger@bigfoot.com (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
 Type: Standards Track
-Requires: PEP 257 Docstring Conventions
-          PEP 258 DPS Generic Implementation Details
 Created: 01-Jun-2001
 Post-History: 13-Jun-2001
 
@@ -182,7 +180,7 @@ Specification
 
        - First line is a one-line synopsis.
 
-       PEP 257, "Docstring Conventions" [11], documents these issues.
+       PEP 257, Docstring Conventions [11], documents these issues.
 
     2. Docstring processing system generic implementation details.
        Documents issues such as:
@@ -205,7 +203,7 @@ Specification
        - Output management.
 
        These issues are applicable to any docstring processing system
-       implementation.  PEP 258, "DPS Generic Implementation Details"
+       implementation.  PEP 258, DPS Generic Implementation Details
        [12], documents these issues.
 
     3. Docstring processing system implementation.
@@ -283,11 +281,14 @@ References and Footnotes
 
     [10] http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage/
 
-    [11] http://python.sf.net/peps/pep-0257.html
+    [11] PEP 257, Docstring Conventions, Goodger, Van Rossum
+         http://www.python.org/peps/pep-0257.html
 
-    [12] http://python.sf.net/peps/pep-0258.html
+    [12] PEP 258, DPS Generic Implementation Details, Goodger
+         http://www.python.org/peps/pep-0258.html
 
-    [13] http://python.sf.net/peps/pep-0216.html
+    [13] PEP 216, Docstring Format, Zadka
+         http://www.python.org/peps/pep-0216.html
 
 
 
@@ -298,7 +299,7 @@ Copyright
 
 Acknowledgements
 
-    This document borrows text from PEP 216 "Docstring Format" by
+    This document borrows text from PEP 216, Docstring Format, by
     Moshe Zadka [13].  It is intended as a reorganization of PEP 216
     and its approach.
 

@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# $Id: model.py,v 1.2 2001/05/24 23:23:54 David_Goodger Exp $
+# $Id: model.py,v 1.1.1.1 2001/07/22 22:35:39 goodger Exp $
 # by David Goodger
 
 class Formatter:

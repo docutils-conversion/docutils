@@ -1,5 +1,5 @@
 <!--
-.. $Id: ppdi.dtd,v 1.14 2001/05/29 23:55:54 David_Goodger Exp $
+.. $Id: ppdi.dtd,v 1.1.1.1 2001/07/22 22:36:28 goodger Exp $
 
 ===========================================================================
     Python Plaintext Document Interface DTD
@@ -40,7 +40,7 @@ The proposed formal public identifier for this DTD is::
 <!ENTITY % additional.inline.elements
   " | package | module | class | method | function
     | variable | parameter | type
-    | class_attribute | instance_attribute
+    | module_attribute | class_attribute | instance_attribute
     | exception_class | warning_class ">
 
 
@@ -71,7 +71,7 @@ http://docstring.sf.net/spec/gpdi.dtd.
 <!ATTLIST module_section %basic.atts;>
 
 <!ELEMENT class_section
-    (class, inheritance?, parameter_list?, %structure.model;)>
+    (class, inheritance_list?, parameter_list?, %structure.model;)>
 <!ATTLIST class_section %basic.atts;>
 
 <!ELEMENT method_section (method, parameter_list?, %structure.model;)>
@@ -92,8 +92,8 @@ http://docstring.sf.net/spec/gpdi.dtd.
     (instance_attribute, initial_value?, %structure.model;)>
 <!ATTLIST instance_attribute_section %basic.atts;>
 
-<!ELEMENT inheritance (class+)>
-<!ATTLIST inheritance %basic.atts;>
+<!ELEMENT inheritance_list (class+)>
+<!ATTLIST inheritance_list %basic.atts;>
 
 <!ELEMENT parameter_list 
     ((parameter_item+, optional_parameters*) | optional_parameters+)>

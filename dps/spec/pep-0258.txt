@@ -1,11 +1,12 @@
 PEP: 258
 Title: DPS Generic Implementation Details
 Version: $Revision: 1.1.1.1 $
-Last-Modified: $Date: 2001/06/17 11:52:00 $
+Last-Modified: $Date: 2001/07/22 22:36:26 $
 Author: dgoodger@bigfoot.com (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
 Type: Standards Track
+Requires: 256, 257
 Created: 31-May-2001
 Post-History: 13-Jun-2001
 
@@ -26,18 +27,20 @@ Specification
     ==========================
 
     1. What to examine:
-    
+
        a) If the '__all__' variable is present in the module being
           documented, only identifiers listed in '__all__' are
-          examined for docstrings.  In the absense of '__all__', all
-          identifiers are examined, except those whose names are
-          private (names begin with '_' but don't begin and end with
-          '__').
+          examined for docstrings.
 
-       b) #1a can be overridden by a parameter or command-line option.
+       b) In the absense of '__all__', all identifiers are examined,
+          except those whose names are private (names begin with '_'
+          but don't begin and end with '__').
+
+       c) 1a and 1b can be overridden by a parameter or command-line
+          option.
 
     2. Where:
-    
+
        Docstrings are string literal expressions, and are recognized
        in the following places within Python modules:
 
@@ -56,14 +59,18 @@ Specification
 
     3. How:
 
-       Python modules must be parsed by the docstring processing
-       system, not imported.  There are security reasons for not
-       importing untrusted code.  Also, docstrings are to be
-       recognized in places where the bytecode compiler ignores string
-       literal expressions (2b and 2c above), meaning importing the
-       module will lose these docstrings.  Of course, standard Python
-       parsing tools such as the 'parser' library module should be
-       used.
+       Whenever possible, Python modules should be parsed by the
+       docstring processing system, not imported.  There are security
+       reasons for not importing untrusted code.  Also, docstrings are
+       to be recognized in places where the bytecode compiler ignores
+       string literal expressions (2b and 2c above), meaning importing
+       the module will lose these docstrings.  Of course, standard
+       Python parsing tools such as the 'parser' library module should
+       be used.
+
+       When the Python source code for a module is not available
+       (i.e. only the .pyc file exists) or for C extension modules, to
+       access docstrings the module must be imported.
 
     Since attribute docstrings and additional docstrings are ignored
     by the Python bytecode compiler, no namespace pollution or runtime
@@ -71,12 +78,8 @@ Specification
     __doc__ or to any other attribute.  The initial parsing of a
     module may take a slight performance hit.
 
-
     Attribute Docstrings
     --------------------
-
-    XXX A description of attribute docstrings would be appropriate in
-    PEP 257 "Docstring Conventions".
 
     (This is a simplified version of PEP 224 [2] by Marc-Andre
     Lemberg.)
@@ -88,20 +91,19 @@ Specification
 
     1. The assignment must be in one of the following contexts:
 
-       a) At the top level of a module (i.e., not inside a loop or
-          conditional): a module attribute.
+       a) At the top level of a module (i.e., not nested inside a
+          compound statement such as a loop or conditional): a module
+          attribute.
 
        b) At the top level of a class definition: a class attribute.
 
-       c) At the top level of a class' '__init__' method definition:
-          an instance attribute.
+       c) At the top level of the '__init__' method definition of a
+          class: an instance attribute.
 
-       Since each of the above contexts are at the top level (i.e.,
-       just inside the outermost suite of a definition), it may be
-       necessary to place dummy assignments for attributes assigned
-       conditionally or in a loop.  Blank lines may be used after
-       attribute docstrings to emphasize the connection between the
-       assignment and the docstring.
+       Since each of the above contexts are at the top level (i.e., in
+       the outermost suite of a definition), it may be necessary to
+       place dummy assignments for attributes assigned conditionally
+       or in a loop.
 
     2. The assignment must be to a single target, not to a list or a
        tuple of targets.
@@ -116,6 +118,9 @@ Specification
           'self.attrib', where 'self' matches the '__init__' method's
           first parameter (the instance parameter) and 'attrib' is a
           simple indentifier as in 3a.
+
+    Blank lines may be used after attribute docstrings to emphasize
+    the connection between the assignment and the docstring.
 
     Examples::
 
@@ -133,9 +138,6 @@ Specification
 
     Additional Docstrings
     ---------------------
-
-    XXX A description of additional docstrings would be appropriate in
-    the PEP 257, "Docstring Conventions" [3].
 
     Many programmers would like to make extensive use of docstrings
     for API documentation.  However, docstrings do take up space in
@@ -225,7 +227,7 @@ Specification
 
         - others to be added
 
-      - utility modules: 'dps.statemachine'
+      - utility modules: 'dps.nodes', 'dps.statemachine', 'dps.utils'
 
     Command-Line Interface
     ======================
@@ -245,12 +247,12 @@ Specification
 
         class Parser:
 
-            def __init__(self, inputstring, errors='warn',
-                         language='en'):
+            def __init__(self, inputstring, warninglevel=1,
+                         errorlevel=3, language='en'):
                 """Initialize the Parser instance."""
 
             def parse(self):
-                """Return a tree representation of the parsed input string."""
+                """Parse the input string and return a tree."""
 
     XXX This needs a lot of work.  What is required for this API?
 
@@ -273,7 +275,7 @@ Specification
                 """Return a formatted string from the DOM tree."""
 
     XXX This also needs a lot of work.  What is required for this API?
-    
+
     XXX How to handle unimplemented elements?
 
     A model 'Formatter' class implementing the full interface along
@@ -327,14 +329,39 @@ Specification
     (long file names were one of the reasons pythondoc couldn't run on
     MacOS).
 
+    Error Handling
+    ==============
+
+    When the parser encounters an error in markup, it inserts a system
+    warning (DTD element 'system_warning'). There are four levels of
+    system warnings:
+
+    - Level-0: A minor issue that can be ignored. There is no effect
+      on the processing. Typically level-0 system warnings are not
+      reported.
+
+    - Level-1: An issue that should be addressed. If ignored, there
+      may be minor problems with the output.
+
+    - Level-2: An issue that should be addressed. If ignored, there
+      may be significant problems with the output.
+
+    - Level-3: A major issue that must be addressed. Typically level-3
+      system warnings are turned into exceptions which halt
+      processing. If ignored, the output will have significant
+      problems.
+
 
 References and Footnotes
 
-    [1] http://python.sf.net/peps/pep-0256.html
+    [1] PEP 256, Docstring Processing System Framework, Goodger
+        http://www.python.org/peps/pep-0256.html
 
-    [2] http://python.sf.net/peps/pep-0224.html
+    [2] PEP 224, Attribute Docstrings, Lemburg
+        http://www.python.org/peps/pep-0224.html
 
-    [3] http://python.sf.net/peps/pep-0257.html
+    [3] PEP 257, Docstring Conventions, Goodger, Van Rossum
+        http://www.python.org/peps/pep-0257.html
 
     [4] http://www.rfc-editor.org/rfc/rfc1766.txt
 

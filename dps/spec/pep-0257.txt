@@ -1,7 +1,7 @@
 PEP: 257
 Title: Docstring Conventions
-Version: $Revision: 1.2 $
-Last-Modified: $Date: 2001/06/18 22:50:46 $
+Version: $Revision: 1.1.1.1 $
+Last-Modified: $Date: 2001/07/22 22:36:21 $
 Author: dgoodger@bigfoot.com (David Goodger),
         guido@digicool.com (Guido van Rossum)
 Discussions-To: doc-sig@python.org
@@ -52,17 +52,17 @@ Specification
     docstrings.  A package may be documented in the module docstring
     of the __init__.py file in the package directory.
 
-    String literals occuring elsewhere in Python code may also act as
+    String literals occurring elsewhere in Python code may also act as
     documentation. They are not recognized by the Python bytecode
     compiler and are not accessible as runtime object attributes
     (i.e. not assigned to __doc__), but two types of extra docstrings
-    are recognized by software tools:
+    are extracted by software tools:
 
-    1. String literals occuring immediately after a simple assignment
+    1. String literals occurring immediately after a simple assignment
        at the top level of a module, class, or __init__ method
        are called "attribute docstrings".
 
-    2. String literals occuring immediately after another docstring
+    2. String literals occurring immediately after another docstring
        are called "additional docstrings".
 
     Please see PEP 258 "DPS Generic Implementation Details" [2] for a
@@ -205,14 +205,17 @@ Specification
 
 References and Footnotes
 
-    [1] http://python.sf.net/peps/pep-0256.html
+    [1] PEP 256, Docstring Processing System Framework, Goodger
+        http://www.python.org/peps/pep-0256.html
 
-    [2] http://python.sf.net/peps/pep-0258.html
+    [2] PEP 258, DPS Generic Implementation Details, Goodger
+        http://www.python.org/peps/pep-0258.html
 
     [3] Guido van Rossum, Python's creator and Benevolent Dictator For
         Life.
 
-    [4] http://www.python.org/doc/essays/styleguide.html
+    [4] PEP 8, Style Guide for Python Code, van Rossum, Warsaw
+        http://www.python.org/peps/pep-0008.html
 
     [5] http://www.python.org/sigs/doc-sig/
 

@@ -1,18 +1,21 @@
 =======
  Notes
 =======
-Date: $Date: 2001/06/18 00:57:20 $
-Revision: $Revision: 1.5 $
+Date: $Date: 2001/07/22 22:36:09 $
+Revision: $Revision: 1.1.1.1 $
 
 
 To Do
 =====
 
+- set up CVS on SF!
+
 - Complete PEP 258 DPS Generic Implementation Details.
 
   - Fill in the blanks in API details.
 
-- Updates based on feedback. Currently at Doc-SIG #366.
+- Rework PEP 257, separating style from spec wrt DPS. See Doc-SIG
+  from 2001-06-19/20.
 
 - Document DTD element semantics.
 
@@ -20,6 +23,8 @@ To Do
   stdout filter), as a proof of concept.
 
 - Get cracking on the DPS itself!
+
+- Add layout component to framework? Or part of the formatter?
 
 
 I/O APIs
@@ -34,7 +39,7 @@ Docstring Extractor
 
 We need code that scans a parsed Python module, and returns an ordered
 tree containing the names, docstrings (including additional
-docstrings), and additional info (in parentheses) of all of the
+docstrings), and additional info (in parentheses below) of all of the
 following objects:
 
 - packages
@@ -46,8 +51,8 @@ following objects:
 - methods (+ formal parameters)
 - functions (+ formal parameters)
 
-Eventually it should also return namespaces for each of the above as
-well.
+In order to evaluate interpreted text cross-references, namespaces for
+each of the above will also be required.
 
 
 Local Variables:
