@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.22 $
-:Date: $Date: 2002/01/25 23:58:09 $
+:Revision: $Revision: 1.23 $
+:Date: $Date: 2002/01/28 02:18:45 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -435,6 +435,9 @@ class document(Root, Element):
         self.substitution_refs = {}
         """Mapping of substitution names to substitution_reference nodes."""
 
+        self.footnote_refs = {}
+        """Mapping of footnote labels to footnote_reference nodes."""
+
         self.anonymous_targets = []
         """List of anonymous target nodes."""
 
@@ -531,6 +534,10 @@ class document(Root, Element):
 
     def note_autofootnote_ref(self, refnode):
         self.autofootnote_refs.append(refnode)
+
+    def note_footnote_ref(self, refnode):
+        self.footnote_refs.setdefault(refnode['refname'], []).append(refnode)
+        self.note_refname(refnode)
 
     def note_substitution_def(self, substitutiondefnode, innode=None):
         if innode == None:
