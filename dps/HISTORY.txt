@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/28 04:47:58 $
+:Date: $Date: 2002/03/28 05:18:06 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -177,20 +177,14 @@ Changed contact email addresses.
 
 * spec/doctree.txt: "DPS Document Tree Structure", added to project.
 
-* spec/pep-0256.txt:
-
-  - Added ref to Ed Loper's STminus.
-  - Added "methods" to abstract.
+* spec/pep-0256.txt: Overhauled.
 
 * spec/pep-0257.txt:
 
   - Added "methods" to descriptions.
   - Mentioned Unicode strings.
 
-* spec/pep-0258.txt:
-
-  - Clarifications due to Tony Ibbs.
-  - Added names to system warnings, updated.
+* spec/pep-0258.txt: Overhauled and retitled.
 
 * spec/gdpi.dtd:
 
