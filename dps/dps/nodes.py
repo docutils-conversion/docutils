@@ -3,9 +3,11 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.37 $
-:Date: $Date: 2002/03/16 06:07:41 $
+:Revision: $Revision: 1.38 $
+:Date: $Date: 2002/03/28 04:46:24 $
 :Copyright: This module has been placed in the public domain.
+
+Docutils document tree element class library.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
 exception is `Text`, for a text node; uppercase is used to differentiate from
@@ -19,7 +21,7 @@ element generic identifiers in the DTD_.
 
 import sys, os
 import xml.dom.minidom
-from types import IntType, SliceType, StringType, TupleType
+from types import IntType, SliceType, StringType, TupleType, ListType
 from UserString import MutableString
 from dps import utils
 import dps
@@ -240,9 +242,16 @@ class Element(Node):
             return self.emptytag()
 
     def starttag(self):
-        return '<%s>' % ' '.join([self.tagname] +
-                                 ['%s="%s"' % (n, v)
-                                  for n, v in self.attlist()])
+        parts = [self.tagname]
+        for name, value in self.attlist:
+            if value is None:           # boolean attribute
+                parts.append(name)
+            elif isinstance(value, ListType):
+                values = [str(v) for v in value]
+                parts.append('%s="%s"' % (name, ' '.join(values)))
+            else:
+                parts.append('%s="%s"' % (name, str(value)))
+        return '<%s>' % ' '.join(parts)
 
     def endtag(self):
         return '</%s>' % self.tagname
@@ -325,6 +334,9 @@ class Element(Node):
 
     def hasattr(self, attr):
         return self.attributes.has_key(attr)
+
+    def setdefault(self, key, failobj=None):
+        return self.attributes.setdefault(key, failobj)
 
     has_key = hasattr
 
@@ -437,6 +449,12 @@ class TextElement(Element):
 class ToBeResolved:
 
     resolved = 0
+
+
+class BackLinkable:
+
+    def add_refid(self, refid):
+        self.setdefault('refid', []).append(refid)
 
 
 # ====================
@@ -579,7 +597,7 @@ class document(Root, Structural, Element):
         if node.has_key('id'):
             id = node['id']
             if self.ids.has_key(id) and self.ids[id] is not node:
-                msg = self.reporter.error('Duplicate ID: "%s"' % id)
+                msg = self.reporter.error('Duplicate ID: "%s".' % id)
                 msgnode += msg
         else:
             if node.has_key('name'):
@@ -593,12 +611,6 @@ class document(Root, Structural, Element):
         self.ids[id] = node
         if node.has_key('name'):
             name = node['name']
-            #if self.nameids.has_key(name) \
-            #      and self.ids[self.nameids[name]].has_key('name'):
-            #    msg = self.reporter.info(
-            #          'Multiple IDs for name "%s": "%s", "%s"'
-            #          % (name, self.nameids[name], id))
-            #    msgnode += msg
             self.nameids[name] = id
         return id
 
@@ -610,7 +622,7 @@ class document(Root, Structural, Element):
         if self.explicit_targets.has_key(name) \
               or self.implicit_targets.has_key(name):
             msg = self.reporter.info(
-                  'Duplicate implicit target name: "%s"' % name, refid=id)
+                  'Duplicate implicit target name: "%s".' % name, refid=id)
             msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
             del targetnode['name']
@@ -631,7 +643,7 @@ class document(Root, Structural, Element):
                       and t['refuri'] == refuri:
                     level = 1           # just inform if refuri's identical
             msg = self.reporter.system_message(
-                  level, 'Duplicate explicit target name: "%s"' % name,
+                  level, 'Duplicate explicit target name: "%s".' % name,
                   refid=id)
             msgnode += msg
             self.clear_target_names(name, self.explicit_targets,
@@ -641,7 +653,7 @@ class document(Root, Structural, Element):
                 targetnode['dupname'] = name
         elif self.implicit_targets.has_key(name):
             msg = self.reporter.info(
-                  'Duplicate implicit target name: "%s"' % name, refid=id)
+                  'Duplicate implicit target name: "%s".' % name, refid=id)
             msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
         self.explicit_targets[name] = targetnode
@@ -695,7 +707,7 @@ class document(Root, Structural, Element):
         name = substitutiondefnode['name']
         if self.substitution_defs.has_key(name):
             msg = self.reporter.error(
-                  'Duplicate substitution definition name: "%s"' % name)
+                  'Duplicate substitution definition name: "%s".' % name)
             if msgnode == None:
                 msgnode = self.messages
             msgnode += msg
@@ -823,8 +835,8 @@ class warning(Admonition, Element): pass
 class comment(Special, PreBibliographic, TextElement): pass
 class substitution_definition(Special, TextElement): pass
 class target(Special, Inline, TextElement, ToBeResolved): pass
-class footnote(General, Element): pass
-class citation(General, Element): pass
+class footnote(General, Element, BackLinkable): pass
+class citation(General, Element, BackLinkable): pass
 class label(Component, TextElement): pass
 class figure(General, Element): pass
 class caption(Component, TextElement): pass
@@ -838,7 +850,7 @@ class row(Component, Element): pass
 class entry(Component, Element): pass
 
 
-class system_message(Special, PreBibliographic, Element):
+class system_message(Special, PreBibliographic, Element, BackLinkable):
 
     def __init__(self, comment=None, *children, **attributes):
         if comment:
@@ -854,7 +866,6 @@ class system_message(Special, PreBibliographic, Element):
 class pending(Special, PreBibliographic, Element):
 
     """
-
     The "pending" element is used to encapsulate a pending operation: the
     operation, the point at which to apply it, and any data it requires.  Only
     the pending operation's location within the document is stored in the
@@ -890,7 +901,7 @@ class pending(Special, PreBibliographic, Element):
         """The stage of processing when the function will be called."""
 
         self.details = details
-        """Detail data required by the pending operation."""
+        """Detail data (dictionary) required by the pending operation."""
 
     def pformat(self, indent='    ', level=0):
         internals = [
