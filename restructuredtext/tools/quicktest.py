@@ -3,8 +3,8 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/10/18 03:58:02 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/11/22 04:21:23 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -37,11 +37,11 @@ options = [('pretty', 'p',
            ('styledxml=', 's', 'output raw XML with XSL style sheet reference '
             '(filename supplied in the option argument)'),
            ('xml', 'x', 'output pretty XML (indented)'),
+           ('debug', 'd', 'debug mode (lots of output)'),
            ('help', 'h', 'show help text')]
 """See distutils.fancy_getopt.FancyGetopt.__init__ for a description of the
 data structure: (long option, short option, description)."""
 
-#(long option, short option, description)
 def usage():
     print usage_header
     for longopt, shortopt, description in options:
@@ -77,7 +77,7 @@ def _prettyxml(input, document, optargs):
 
 def _test(input, document, optargs):
     tq = '"""'
-    output = _pretty(input, document)
+    output = document.pformat()         # same as _pretty()
     return """\
     totest['change_this_test_name'] = [
 [%s\\
@@ -124,7 +124,7 @@ def posixGetArgs(argv):
     except getopt.GetoptError:
         usage()
         sys.exit(2)
-    optargs = {}
+    optargs = {'debug': 0}
     for o, a in opts:
         if o in ['-h', '--help']:
             usage()
@@ -140,6 +140,8 @@ def posixGetArgs(argv):
             outputFormat = 'pretty'
         elif o in ['-t', '--test']:
             outputFormat = 'test'
+        elif o in ['-d', '--debug']:
+            optargs['debug'] = 1
         else:
             raise getopt.GetoptError, "getopt should have saved us!"
     if len(args) > 1:
@@ -169,7 +171,7 @@ In the following window, please:
 
 def main():
     inputFile, outputFormat, optargs = getArgs() # process cmdline arguments
-    parser = Parser()                   # create a parser
+    parser = Parser(debug=optargs['debug']) # create a parser
     input = inputFile.read()            # gather input
     document = parser.parse(input)      # parse the input
     output = format(outputFormat, input, document, optargs)
@@ -177,4 +179,5 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.stderr = sys.stdout
     main()

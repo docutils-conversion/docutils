@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.29 $
-:Date: $Date: 2001/11/19 04:18:41 $
+:Revision: $Revision: 1.30 $
+:Date: $Date: 2001/11/22 04:21:02 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -1785,8 +1785,9 @@ end-string will not be recognized or processed.
    non-whitespace.
 
 4. Inline markup end-strings must end a text block or be immediately
-   followed by whitespace, single or double quotes, ".", ",", ":",
-   ";", "!", "?", "-", ")", "]", "}", or ">".
+   followed by whitespace or one of::
+
+       ' " . , : ; ! ? - ) ] } >
 
 5. If an inline markup start-string is immediately preceded by a
    single or double quote, "(", "[", "{", or "<", it must not be

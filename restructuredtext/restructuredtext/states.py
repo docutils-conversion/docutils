@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.34 $
-:Date: $Date: 2001/11/19 04:27:54 $
+:Revision: $Revision: 1.35 $
+:Date: $Date: 2001/11/22 04:20:49 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -133,7 +133,7 @@ class RSTStateMachine(StateMachineWS):
     """
 
     def __init__(self, stateclasses, initialstate, language, debug=0):
-        StateMachineWS.__init__(self, stateclasses, initialstate, debug=0)
+        StateMachineWS.__init__(self, stateclasses, initialstate, debug=debug)
         self.language = language
 
     def run(self, inputlines, inputoffset=0, warninglevel=1, errorlevel=3,
@@ -1273,22 +1273,31 @@ class Body(RSTState):
             self.nestedparse(indented, inputoffset=offset, node=footnotenode)
         return [footnotenode], blankfinish
 
-    # @@@ have to allow multi-line hyperlink names
     def hyperlink_target(self, match,
                          pattern=explicit.patterns.target,
                          namegroup=explicit.groups.target.name):
-        escaped = escape2null(match.string)
-        targetmatch = pattern.match(escaped[match.end():])
-        if not targetmatch:
-            raise MarkupError('malformed hyperlink target at line %s.'
-                              % self.statemachine.abslineno())
-        referencestart = match.end() + targetmatch.end()
-        block, indent, offset, blankfinish \
-              = self.statemachine.getfirstknownindented(referencestart,
-                                                        uptoblank=1)
-        blocktext = match.string[:referencestart] + '\n'.join(block)
+        lineno = self.statemachine.abslineno()
+        block, indent, offset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end(), uptoblank=1,
+                                                      stripindent=0)
+        blocktext = match.string[:match.end()] + '\n'.join(block)
+        block = [escape2null(line) for line in block]
+        escaped = block[0]
+        blockindex = 0
+        while 1:
+            targetmatch = pattern.match(escaped)
+            if targetmatch:
+                break
+            blockindex += 1
+            try:
+                escaped += block[blockindex]
+            except (IndexError, MarkupError):
+                raise MarkupError('malformed hyperlink target at line %s.'
+                                  % lineno)
+        del block[:blockindex]
+        block[0] = (block[0] + ' ')[targetmatch.end()-len(escaped)-1:].strip()
         if block and block[-1].strip()[-1:] == '_': # possible indirect target
-            reference = escape2null(' '.join([line.strip() for line in block]))
+            reference = ' '.join([line.strip() for line in block])
             refname = self.isreference(reference)
             if refname:
                 target = nodes.target(blocktext, '')
@@ -1297,7 +1306,7 @@ class Body(RSTState):
                                                                   target)
                 return [target], blankfinish
         nodelist = []
-        reference = escape2null(''.join([line.strip() for line in block]))
+        reference = ''.join([line.strip() for line in block])
         if reference.find(' ') != -1:
             warning = self.statemachine.memo.reporter.warning(
                   'Hyperlink target at line %s contains whitespace. '
@@ -1335,30 +1344,43 @@ class Body(RSTState):
             if reference:
                 target['refuri'] = reference
 
-    # @@@ have to allow multi-line substitution text
     def substitutiondef(self, match,
                         pattern=explicit.patterns.substitution,
                         namegroup=explicit.groups.substitution.name):
-        escaped = escape2null(match.string)
-        subdefmatch = pattern.match(escaped[match.end():])
-        if not subdefmatch:
-            raise MarkupError('malformed substitution definition at line %s.'
-                              % self.statemachine.abslineno())
-        directivestart = match.end() + subdefmatch.end()
-        indented, indent, offset, blankfinish = \
-              self.statemachine.getfirstknownindented(directivestart, uptoblank=1,
-                                                      stripindent=0)
-        blocktext = match.string[:directivestart] + '\n'.join(indented)
+        lineno = self.statemachine.abslineno()
+        block, indent, offset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end(), stripindent=0)
+        blocktext = (match.string[:match.end()]
+                     + '\n'.join(block))
+        block = [escape2null(line) for line in block]
+        escaped = block[0].rstrip()
+        blockindex = 0
+        while 1:
+            subdefmatch = pattern.match(escaped)
+            if subdefmatch:
+                break
+            blockindex += 1
+            try:
+                escaped = escaped + ' ' + block[blockindex].strip()
+            except (IndexError, MarkupError):
+                raise MarkupError('malformed substitution definition '
+                                  'at line %s.' % lineno)
+        # strip out the substitution marker
+        del block[:blockindex]
+        block[0] = (block[0] + ' ')[subdefmatch.end()-len(escaped)-1:].strip()
+        if not block[0]:
+            del block[0]
+            offset += 1
         subname = subdefmatch.group(namegroup)
         name = normname(subname)
         substitutionnode = nodes.substitution_definition(
               blocktext, name=name, alt=subname)
-        if indented:
-            indented[0] = indented[0].lstrip()
-            self.nestedparse(
-                  indented, inputoffset=offset, node=substitutionnode,
-                  statemachinekwargs={'stateclasses': stateclasses,
-                                      'initialstate': 'SubstitutionDef'})
+        if block:
+            block[0] = block[0].strip()
+            newabsoffset, blankfinish = self.nestedlistparse(
+                  block, inputoffset=offset, node=substitutionnode,
+                  initialstate='SubstitutionDef', blankfinish=blankfinish)
+            self.statemachine.previousline(len(block) + offset - newabsoffset - 1)
             i = 0
             for node in substitutionnode[:]:
                 if not (isinstance(node, nodes.Inline) or
@@ -1398,10 +1420,7 @@ class Body(RSTState):
     def unknowndirective(self, typename, data):
         lineno = self.statemachine.abslineno()
         indented, indent, offset, blankfinish = \
-              self.statemachine.getfirstknownindented(0)
-        margin = ' ' * indent
-        for i in range(1, len(indented)):
-            indented[i] = margin + indented[i]
+              self.statemachine.getfirstknownindented(0, stripindent=0)
         text = '\n'.join(indented)
         error = self.statemachine.memo.reporter.error(
               'Unknown directive type "%s" at line %s.\n'
@@ -1488,9 +1507,9 @@ class Body(RSTState):
               inputoffset=self.statemachine.abslineoffset() + 1,
               node=self.statemachine.node, initialstate='Explicit',
               blankfinish=blankfinish)
+        self.gotoline(newlineoffset)
         if not blankfinish:
             self.statemachine.node += self.unindentwarning()
-        self.gotoline(newlineoffset)
 
     def anonymous(self, match, context, nextstate):
         """Anonymous hyperlink targets."""
@@ -1671,7 +1690,7 @@ class Explicit(SpecializedBody):
         return [], nextstate, []
 
 
-class SubstitutionDef(SpecializedBody):
+class SubstitutionDef(Body):
 
     """
     Parser for the contents of a substitution_definition element.
@@ -1689,8 +1708,14 @@ class SubstitutionDef(SpecializedBody):
             attributes = {}
         nodelist, blankfinish = self.directive(match, **attributes)
         self.statemachine.node += nodelist
-        self.blankfinish = blankfinish
-        return [], nextstate, []
+        if not self.statemachine.ateof():
+            self.blankfinish = blankfinish
+        raise EOFError
+
+    def text(self, match, context, nextstate):
+        if not self.statemachine.ateof():
+            self.blankfinish = self.statemachine.nextlineblank()
+        raise EOFError
 
 
 class Text(RSTState):
