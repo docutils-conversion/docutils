@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/03/08 04:31:54 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/03/11 03:38:56 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms needed by most or all documents:
@@ -33,6 +33,7 @@ class Messages(Transform):
             # @@@ get this from the language module?
             section += nodes.title('', 'Docutils System Messages')
             section += doctree.messages.getchildren()
+            doctree.messages[:] = []
             doctree += section
 
 
