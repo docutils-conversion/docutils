@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/15 22:54:35 $
+:Date: $Date: 2002/02/20 04:18:25 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -88,6 +88,7 @@ Changed contact email addresses.
   - Added ``Element.index()`` and ``Element.replace()`` methods.
   - Simplified target record keeping.
   - Changed "system_warning" to "system_message".
+  - Added 'id' attribute support to ``document``.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -181,7 +182,8 @@ Changed contact email addresses.
 * spec/gdpi.dtd:
 
   - Fixed typos & omissions; now validates.
-  - Added 'source' to basic.atts; removed 'rawtext'.
+  - Added 'source' to %basic.atts, removed 'rawtext'.
+  - Added 'class' to %basic.atts for style sheets.
   - Changed field_argument's model to PCDATA.
   - Added option_list and doctest_block from ppdi.dtd.
   - Added vms_option element to option.
