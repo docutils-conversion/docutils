@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.21 $
-:Date: $Date: 2001/09/18 04:37:36 $
+:Revision: $Revision: 1.22 $
+:Date: $Date: 2001/09/18 21:27:24 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -207,11 +207,13 @@ class RSTStateMachine(StateMachineWS):
                 del self.node[index]
             self.node[biblioindex:biblioindex] = bibliographic
 
-    def extractbibliographic(self, field_list, title):
+    def extractbibliographic(self, field_list, titleindex):
         nodelist = []
         remainder = []
         bibliofields = self.language.bibliographic_fields
         abstract = None
+        title = titleindex is not None
+        subtitle = None
         for field in field_list:
             try:
                 name = field[0][0].astext()
@@ -223,17 +225,16 @@ class RSTStateMachine(StateMachineWS):
                 if issubclass(biblioclass, nodes._TextElement):
                     if self.checkcompoundbibliofield(field, name):
                         raise TransformationError
+                    self.filterrcskeywords(field[1][0][0])
                     if issubclass(biblioclass, nodes.title):
                         self.extracttitle(field, name, title, nodelist)
                         title = 1
-                    # XXX handle subtitle too
-                    # XXX extractrcskeywords for title (& subtitle) too?
+                    elif issubclass(biblioclass, nodes.subtitle):
+                        self.extractsubtitle(field, name, subtitle, title,
+                                             nodelist)
+                        subtitle = 1
                     else:
-                        contents = field[1][0].children
-                        if len(contents) == 1 and isinstance(contents[0],
-                                                             nodes.Text):
-                            contents = [self.extractrcskeywords(contents[0])]
-                        nodelist.append(biblioclass('', '', *contents))
+                        nodelist.append(biblioclass('', '', field[1][0][0]))
                 else:                   # multiple body elements possible
                     if issubclass(biblioclass, nodes.authors):
                         self.extractauthors(field, name, nodelist)
@@ -266,39 +267,52 @@ class RSTStateMachine(StateMachineWS):
     def checkcompoundbibliofield(self, field, name):
         if len(field[1]) > 1:
             field[-1] += self.memo.reporter.error(
-                  'Cannot extract compound title bibliographic '
-                  'field "%s".' % name)
+                  'Cannot extract compound bibliographic field "%s".' % name)
             return 1
-        if not isinstance(field[1][0], nodes.paragraph):
+        if not isinstance(field[1][0], nodes.paragraph) \
+              or len(field[1][0]) != 1 \
+              or not isinstance(field[1][0][0], nodes.Text):
             field[-1] += self.memo.reporter.error(
-                  'Cannot extract bibliographic field "%s" '
-                  'containing anything other than a simple paragraph.'
+                  'Cannot extract bibliographic field "%s" containing anything '
+                  'other than a simple, unformatted paragraph.'
                   % name)
             return 1
         return None
 
     def extracttitle(self, field, name, title, nodelist):
-        if title is not None:
+        if title:
             field[-1] += self.memo.reporter.error(
                   'Multiple document titles (bibliographic field "%s").'
                   % name)
             raise TransformationError
         nodelist.insert(0, nodes.title('', '', *field[1][0].children))
 
-    rcskeywordsubstitutions = [
-          (re.compile(r'^\$Date: 2001/09/18 04:37:36 $$',
-                      re.IGNORECASE), r'\1-\2-\3'),
-          (re.compile(r'^\$RCSfile: states.py,v $$',
-                      re.IGNORECASE), r'\1'),
-          (re.compile(r'^\$[a-zA-Z]+: (.+) \$$'), r'\1'),]
+    def extractsubtitle(self, field, name, subtitle, title, nodelist):
+        if not title:
+            field[-1] += self.memo.reporter.error(
+                  'Subtitle must appear after a title (bibliographic field "%s").'
+                  % name)
+            raise TransformationError
+        if subtitle:
+            field[-1] += self.memo.reporter.error(
+                  'Multiple document subtitles (bibliographic field "%s").'
+                  % name)
+            raise TransformationError
+        nodelist.insert(1, nodes.subtitle('', '', *field[1][0].children))
 
-    def extractrcskeywords(self, textnode):
+    rcskeywordsubstitutions = [
+          (re.compile(r'\$' r'Date: (\d\d\d\d)/(\d\d)/(\d\d) [\d:]+ \$$',
+                      re.IGNORECASE), r'\1-\2-\3'),
+          (re.compile(r'\$' r'RCSfile: (.+),v \$$',
+                      re.IGNORECASE), r'\1'),
+          (re.compile(r'\$[a-zA-Z]+: (.+) \$$'), r'\1'),]
+
+    def filterrcskeywords(self, textnode):
         for pattern, substitution in self.rcskeywordsubstitutions:
             match = pattern.match(textnode.data)
             if match:
                 textnode.data = pattern.sub(substitution, textnode.data)
                 break
-        return textnode
 
     def extractauthors(self, field, name, nodelist):
         try:
