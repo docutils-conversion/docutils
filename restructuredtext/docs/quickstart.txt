@@ -1,3 +1,9 @@
+A ReStructuredText Primer
+=========================
+
+:Author: Richard Jones
+:Version: $Revision: 1.3 $
+
 Structure
 ---------
 
@@ -6,7 +12,7 @@ misnomer. It's more like "Relaxed Text" that uses certain consistent
 patterns. These patterns are interpreted by a HTML converter to produce
 "Very Structured Text" that can be used by a web browser.
 
-The most basic structure recognised is a **paragraph**. That's a chunk
+The most basic pattern recognised is a **paragraph**. That's a chunk
 of text that is separated by blank lines (one is enough). Paragraphs must
 have the same indentation - that is, line up at their left edge.
 
@@ -14,8 +20,43 @@ To break text up into sections, you use **section headers**. These are a
 single line of text (one or more words) with an underline (and optionally
 an overline) in dashes
 "``-----``", equals  "``======``", tildes "``~~~~~~``" or any of the
-non-alphanumeric characters ``= - ` : ' " ~ ^ _ * + # < >``. All sections
-marked with the same underline style are deemed to be at the same level.
+non-alphanumeric characters ``= - ` : ' " ~ ^ _ * + # < >`` that you feel
+comfortable with. Be consistent though, since all sections marked with the
+same underline style are deemed to be at the same level::
+
+  Chapter 1 Title
+  ===============
+
+  Section 1.1 Title
+  -----------------
+
+  Subsection 1.1.1 Title
+  ~~~~~~~~~~~~~~~~~~~~~~
+
+  Section 1.2 Title
+  -----------------
+
+  Chapter 2 Title
+  ===============
+
+results in:
+
+.. sorry, I change the heading style here, but it's only an example :)
+
+Chapter 1 Title
+~~~~~~~~~~~~~~~
+
+Section 1.1 Title
+'''''''''''''''''
+
+Subsection 1.1.1 Title
+""""""""""""""""""""""
+
+Section 1.2 Title
+'''''''''''''''''
+
+Chapter 2 Title
+~~~~~~~~~~~~~~~
 
 Note that section headers are available as link targets, just using their
 name. To link to the Lists_ heading, I write "``Lists_``". If the heading
@@ -26,7 +67,7 @@ Text styles
 -----------
 
 Inside paragraphs and other bodies of text, you may additionally mark
-text for *italics* "``*italics``" or **bold** "``**bold**``".
+text for *italics* with "``*italics*``" or **bold** with "``**bold**``".
 
 If you want something to appear as a fixed-space literal, use
 "````double back-quotes````". Note that no further fiddling is done inside
@@ -43,14 +84,15 @@ Lists
 Lists of items come in three flavours: **enumerated**, **bulleted** and
 **definitions**. In all list cases, you may have as many paragraphs,
 sublists, etc. as you want, as long as the left-hand side of the paragraph
-or whatever aligns with the first line of text in the list item. Lists must
-always start a new paragraph - that is, they must appear after a blank
-line.
+or whatever aligns with the first line of text in the list item.
+
+Lists must always start a new paragraph - that is, they must appear after a
+blank line.
 
 **enumerated** lists (numbers, letters or roman numerals)
   Start a line off with a number or letter followed by a period ".",
-  right bracket ")" or surrounded by brackets "( )". All of the
-  following forms are recognised::
+  right bracket ")" or surrounded by brackets "( )" - whatever you're
+  comfortable with. All of the following forms are recognised::
 
     1. numbers
 
