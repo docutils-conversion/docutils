@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/11/15 03:01:41 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/12 02:26:03 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -14,8 +14,10 @@ reStructuredText parser.
  Admonitions
 -------------
 
-DTD elements: attention, caution, danger, error, important, note, tip,
-warning.
+DTD elements: attention, caution, danger, error, hint, important,
+note, tip, warning.
+
+Directive block: directive data and all following indented text.
 
 Admonitions are specially marked 'topics' that can appear anywhere an
 ordinary body element can.  They contain arbitrary body elements.
@@ -40,10 +42,10 @@ The following admonition directives have been implemented:
 - caution
 - danger
 - error
+- hint
 - important
 - note
 - tip
-- hint
 - warning
 
 Any text immediately following the directive indicator (on the same
@@ -71,6 +73,9 @@ Image
 =====
 
 DTD element: image.
+
+Directive block: directive data and following indented lines (up to
+the first blank line).
 
 An 'image' is a simple picture::
 
@@ -109,6 +114,8 @@ Figure
 
 DTD elements: figure, image, caption, legend.
 
+Directive block: directive data and all following indented text.
+
 A 'figure' consists of image_ data (optionally including `image attribute
 specifications`_), an optional caption (a single paragraph), and an
 optional legend (arbitrary body elements)::
@@ -138,13 +145,78 @@ legend.  To specify a legend without a caption, use an empty comment
 
 
 --------------------------
+ HTML-Specific Directives
+--------------------------
+
+Meta
+====
+
+Non-standard element: meta.
+
+Directive block: directive data and following indented lines (up to
+the first blank line).
+
+The 'meta' directive is used to specify HTML metadata stored in HTML
+META tags.  Metadata is data about data, in this case data about web
+pages.  Metadata is used to describe and classify web pages in the
+World Wide Web, in a form that is easy for search engines to extract
+and collate.
+
+Within the directive block, a flat field list provides the syntax for
+metadata.  The field name becomes the contents of the "name" attribute
+of the META tag, and the field body (interpreted as a single string
+without inline markup) becomes the contents of the "content"
+attribute.  For example::
+
+    .. meta::
+       :description: The reStructuredText plaintext markup language
+       :keywords: plaintext,markup language
+
+This would be converted to the following HTML::
+
+    <meta name="description"
+        content="The reStructuredText plaintext markup language">
+    <meta name="keywords" content="plaintext,markup language">
+
+Support for other META attributes ("http-equiv", "scheme", "lang",
+"dir") are provided through field arguments, which must be of the form
+"attr=value"::
+
+    .. meta::
+       :description lang=en: An amusing story
+       :description lang=fr: Un histoire amusant
+
+And their HTML equivalents::
+
+    <meta name="description" lang="en" content="An amusing story">
+    <meta name="description" lang="fr" content="Un histoire amusant">
+
+Some META tags use an "http-equiv" attribute instead of the "name"
+attribute.  To specify "http-equiv" META tags, simply omit the name::
+
+    .. meta::
+       :http-equiv=Content-Type: text/html; charset=ISO-8859-1
+
+HTML equivalent::
+
+    <meta http-equiv="Content-Type"
+         content="text/html; charset=ISO-8859-1">
+
+
+Imagemap
+========
+
+Non-standard element: imagemap.
+
+
+--------------------------
  Miscellaneous Directives
 --------------------------
 
 Test Directive
 ==============
 
-DTD element: directive.
+DTD element: system_warning.
 
 'Restructuredtext-test-directive' is provided for test purposes
 (nobody is expected to type in a name *that* long!).
