@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.18 $
-:Date: $Date: 2001/11/09 23:13:22 $
+:Revision: $Revision: 1.19 $
+:Date: $Date: 2001/11/19 04:06:00 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -346,7 +346,7 @@ class document(Root, Element):
         self.implicittargets = {}
         self.externaltargets = {}
         self.indirecttargets = {}
-        self.substitutions = {}
+        self.substitutiondefs = {}
         self.refnames = {}
         self.substitutionrefs = {}
         self.anonymoustargets = []
@@ -449,13 +449,15 @@ class document(Root, Element):
         refnode['auto'] = 1
         self.autofootnoterefs.append((refname, refnode))
 
-    def addsubstitution(self, name, substitutionnode, innode):
-        if self.substitutions.has_key(name):
+    def addsubstitutiondef(self, name, substitutiondefnode, innode):
+        if self.substitutiondefs.has_key(name):
             sw = self.errorhandler.error(
-                  'Duplicate substitution name: "%s"' % name)
+                  'Duplicate substitution definition name: "%s"' % name)
             innode += sw
-        self.substitutions[name] = substitutionnode
-        substitutionnode['name'] = name
+            oldnode = self.substitutiondefs[name]
+            oldnode['dupname'] = oldnode['name']
+            del oldnode['name']
+        self.substitutiondefs[name] = substitutiondefnode
 
     def addsubstitutionref(self, refname, subrefnode):
         subrefnode['refname'] = refname
@@ -554,8 +556,7 @@ class tip(Admonition, Element): pass
 class hint(Admonition, Element): pass
 class warning(Admonition, Element): pass
 class comment(Special, TextElement): pass
-class directive(Special, TextElement): pass
-class substitution(Special, TextElement): pass
+class substitution_definition(Special, TextElement): pass
 class target(Special, Inline, TextElement): pass
 class footnote(General, Element): pass
 class label(Component, TextElement): pass
