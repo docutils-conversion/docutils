@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2002/02/20 04:25:16 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/03/12 03:28:35 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -66,20 +66,41 @@ Paragraph.
             Paragraph.
 """],
 ["""\
-Test unexpected section title.
+Test unexpected section titles.
 
     Title
     =====
+    Paragraph.
+
+    -----
+    Title
+    -----
     Paragraph.
 """,
 """\
 <document>
     <paragraph>
-        Test unexpected section title.
+        Test unexpected section titles.
     <block_quote>
         <system_message level="4" type="SEVERE">
             <paragraph>
                 Unexpected section title at line 4.
+            <literal_block>
+                Title
+                =====
+        <paragraph>
+            Paragraph.
+        <system_message level="4" type="SEVERE">
+            <paragraph>
+                Unexpected section title or transition at line 7.
+            <literal_block>
+                -----
+        <system_message level="4" type="SEVERE">
+            <paragraph>
+                Unexpected section title at line 9.
+            <literal_block>
+                Title
+                -----
         <paragraph>
             Paragraph.
 """],
@@ -94,6 +115,9 @@ Test short underline.
     <system_message level="1" type="INFO">
         <paragraph>
             Title underline too short at line 2.
+        <literal_block>
+            Title
+            ====
     <section id="id1" name="title">
         <title>
             Title
@@ -139,6 +163,9 @@ Test overline title with inset.
     <system_message level="4" type="SEVERE">
         <paragraph>
             Incomplete section title at line 1.
+        <literal_block>
+            ========================
+             Test Missing Underline
 """],
 ["""\
 ========================
@@ -150,6 +177,9 @@ Test overline title with inset.
     <system_message level="4" type="SEVERE">
         <paragraph>
             Missing underline for overline at line 1.
+        <literal_block>
+            ========================
+             Test Missing Underline
 """],
 ["""\
 =======
@@ -162,6 +192,9 @@ Test missing underline, with paragraph.
     <system_message level="4" type="SEVERE">
         <paragraph>
             Missing underline for overline at line 1.
+        <literal_block>
+            =======
+             Title
     <paragraph>
         Test missing underline, with paragraph.
 """],
@@ -177,6 +210,10 @@ Test long title and space normalization.
     <system_message level="1" type="INFO">
         <paragraph>
             Title overline too short at line 1.
+        <literal_block>
+            =======
+             Long    Title
+            =======
     <section id="id1" name="long title">
         <title>
             Long    Title
@@ -195,6 +232,10 @@ Paragraph.
     <system_message level="4" type="SEVERE">
         <paragraph>
             Title overline & underline mismatch at line 1.
+        <literal_block>
+            =======
+             Title
+            -------
     <paragraph>
         Paragraph.
 """],
@@ -215,8 +256,13 @@ Test missing titles; blank line in-between.
         <paragraph>
             Document or section may not begin with a transition (line 1).
     <transition>
+    <system_message level="3" type="ERROR">
+        <paragraph>
+            At least one body element must separate transitions; adjacent transitions at line 3.
+    <transition>
     <paragraph>
         Test missing titles; blank line in-between.
+    <transition>
     <transition>
     <system_message level="3" type="ERROR">
         <paragraph>
@@ -236,11 +282,17 @@ Test missing titles; nothing in-between.
     <system_message level="3" type="ERROR">
         <paragraph>
             Invalid section title or transition marker at line 1.
+        <literal_block>
+            ========================
+            ========================
     <paragraph>
         Test missing titles; nothing in-between.
     <system_message level="3" type="ERROR">
         <paragraph>
             Invalid section title or transition marker at line 6.
+        <literal_block>
+            ========================
+            ========================
 """],
 ["""\
 .. Test return to existing, highest-level section (Title 3).

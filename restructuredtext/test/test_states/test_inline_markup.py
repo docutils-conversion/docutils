@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2002/03/07 03:46:21 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2002/03/12 03:28:24 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -41,13 +41,15 @@ across lines*
             across lines
 """],
 ["""\
-*emphasis
+*emphasis without closing asterisk
 """,
 """\
 <document>
     <paragraph>
-        *emphasis
-    <system_message level="2" type="WARNING">
+        <problematic id="id2" refid="id1">
+            *
+        emphasis without closing asterisk
+    <system_message id="id1" level="2" refid="id2" type="WARNING">
         <paragraph>
             Inline emphasis start-string without end-string at line 1.
 """],
@@ -66,16 +68,19 @@ what about *this**?
         <emphasis>
             emphasis
         ' but not '*' or '"*"' or  x*2* or 2*x* or *args or *
-        or \n\
+        or 
         <emphasis>
-            the* *stars\\* *inside
+            the* *stars\* *inside
     <paragraph>
-        (however, '*args' will trigger a warning and may be problematic)
-    <system_message level="2" type="WARNING">
+        (however, '
+        <problematic id="id2" refid="id1">
+            *
+        args' will trigger a warning and may be problematic)
+    <system_message id="id1" level="2" refid="id2" type="WARNING">
         <paragraph>
             Inline emphasis start-string without end-string at line 4.
     <paragraph>
-        what about \n\
+        what about 
         <emphasis>
             this*
         ?
@@ -121,8 +126,11 @@ totest['strong'] = [
             strong
         ) but not (**) or '(** ' or x**2 or **kwargs or **
     <paragraph>
-        (however, '**kwargs' will trigger a warning and may be problematic)
-    <system_message level="2" type="WARNING">
+        (however, '
+        <problematic id="id2" refid="id1">
+            **
+        kwargs' will trigger a warning and may be problematic)
+    <system_message id="id1" level="2" refid="id2" type="WARNING">
         <paragraph>
             Inline strong start-string without end-string at line 3.
 """],
@@ -194,9 +202,12 @@ and may be problematic)
             literal ``TeX quotes'' & \\backslash
          but not "``" or ``
     <paragraph>
-        (however, ``standalone TeX quotes'' will trigger a warning
+        (however, 
+        <problematic id="id2" refid="id1">
+            ``
+        standalone TeX quotes'' will trigger a warning
         and may be problematic)
-    <system_message level="2" type="WARNING">
+    <system_message id="id1" level="2" refid="id2" type="WARNING">
         <paragraph>
             Inline literal start-string without end-string at line 3.
 """],
@@ -379,8 +390,11 @@ Invalid phrase reference:
     <paragraph>
         Invalid phrase reference:
     <paragraph>
-        :role:`phrase reference`_
-    <system_message level="2" type="WARNING">
+        :role:
+        <problematic id="id2" refid="id1">
+            `
+        phrase reference`_
+    <system_message id="id1" level="2" refid="id2" type="WARNING">
         <paragraph>
             Mismatch: inline interpreted text start-string and role with phrase-reference end-string at line 3.
 """],
@@ -438,8 +452,11 @@ And _`this`_ is just plain confusing.
     <paragraph>
         But this isn't a _target; targets require backquotes.
     <paragraph>
-        And _`this`_ is just plain confusing.
-    <system_message level="2" type="WARNING">
+        And 
+        <problematic id="id2" refid="id1">
+            _`
+        this`_ is just plain confusing.
+    <system_message id="id1" level="2" refid="id2" type="WARNING">
         <paragraph>
             Inline target start-string without end-string at line 3.
 """],

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/02/15 22:58:17 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/12 03:28:45 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -128,6 +128,8 @@ No blank line after.
    And some more, line 2.
 
 .. |invalid 3| there's no directive here
+
+.. | bad name | bad data
 """,
 """\
 <document>
@@ -143,21 +145,30 @@ No blank line after.
     <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "empty" missing contents at line 6.
+        <literal_block>
+            .. |empty|
     <system_message level="3" type="ERROR">
         <paragraph>
             Unknown directive type "directive" at line 8.
-            Rendering the directive as a literal block.
-    <literal_block>
-        directive:: symbol.png
+        <literal_block>
+            directive:: symbol.png
     <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "unknown" empty or invalid at line 8.
+        <literal_block>
+            .. |unknown| directive:: symbol.png
     <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "invalid 1" empty or invalid at line 10.
+        <literal_block>
+            .. |invalid 1| there's no directive here
     <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "invalid 2" empty or invalid at line 11.
+        <literal_block>
+            .. |invalid 2| there's no directive here
+               With some block quote text, line 1.
+               And some more, line 2.
     <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 12.
@@ -168,6 +179,10 @@ No blank line after.
     <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "invalid 3" empty or invalid at line 15.
+        <literal_block>
+            .. |invalid 3| there's no directive here
+    <comment>
+        | bad name | bad data
 """],
 ]
 

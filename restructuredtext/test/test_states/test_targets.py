@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2002/03/11 03:18:45 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2002/03/12 03:28:54 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -73,6 +73,9 @@ Indirect hyperlink targets:
 .. _target1: Not a proper hyperlink target
 
 .. _target2: Although it ends with an underscore, this is not a phrase-link_
+
+.. _target3: A multi-line verson of something
+   ending with an underscore, but not a phrase-link_
 """,
 """\
 <document>
@@ -86,6 +89,39 @@ Indirect hyperlink targets:
             Hyperlink target at line 3 contains whitespace. Perhaps a footnote was intended?
         <literal_block>
             .. _target2: Although it ends with an underscore, this is not a phrase-link_
+    <system_message level="2" type="WARNING">
+        <paragraph>
+            Hyperlink target at line 5 contains whitespace. Perhaps a footnote was intended?
+        <literal_block>
+            .. _target3: A multi-line verson of something
+               ending with an underscore, but not a phrase-link_
+"""],
+["""\
+.. __: Not a proper hyperlink target
+
+__ Although it ends with an underscore, this is not a phrase-link_
+
+__ A multi-line verson of something
+   ending with an underscore, but not a phrase-link_
+""",
+"""\
+<document>
+    <system_message level="2" type="WARNING">
+        <paragraph>
+            Hyperlink target at line 1 contains whitespace. Perhaps a footnote was intended?
+        <literal_block>
+            .. __: Not a proper hyperlink target
+    <system_message level="2" type="WARNING">
+        <paragraph>
+            Anonymous hyperlink target at line 3 contains whitespace. Perhaps a footnote was intended?
+        <literal_block>
+            __ Although it ends with an underscore, this is not a phrase-link_
+    <system_message level="2" type="WARNING">
+        <paragraph>
+            Anonymous hyperlink target at line 5 contains whitespace. Perhaps a footnote was intended?
+        <literal_block>
+            __ A multi-line verson of something
+            ending with an underscore, but not a phrase-link_
 """],
 ["""\
 .. _a long target name:

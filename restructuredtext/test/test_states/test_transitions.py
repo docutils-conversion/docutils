@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/20 04:26:05 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/03/12 03:29:04 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for reStructuredText.
@@ -90,14 +90,17 @@ may not end with a transition.
     <system_message level="3" type="ERROR">
         <paragraph>
             Document or section may not begin with a transition (line 1).
+    <transition>
     <paragraph>
         A section or document may not begin with a transition.
     <paragraph>
         The DTD specifies that two transitions may not
         be adjacent:
+    <transition>
     <system_message level="3" type="ERROR">
         <paragraph>
             At least one body element must separate transitions; adjacent transitions at line 10.
+    <transition>
     <system_message level="3" type="ERROR">
         <paragraph>
             At least one body element must separate transitions; adjacent transitions at line 12.
@@ -105,9 +108,34 @@ may not end with a transition.
     <paragraph>
         The DTD also specifies that a section or document
         may not end with a transition.
+    <transition>
     <system_message level="3" type="ERROR">
         <paragraph>
             Document or section may not end with a transition (line 17).
+"""],
+["""\
+Test unexpected transition markers.
+
+    Block quote.
+
+    --------
+
+    Paragraph.
+""",
+"""\
+<document>
+    <paragraph>
+        Test unexpected transition markers.
+    <block_quote>
+        <paragraph>
+            Block quote.
+        <system_message level="4" type="SEVERE">
+            <paragraph>
+                Unexpected section title or transition at line 5.
+            <literal_block>
+                --------
+        <paragraph>
+            Paragraph.
 """],
 ]
 
