@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.29 $
-:Date: $Date: 2002/01/29 02:17:42 $
+:Revision: $Revision: 1.30 $
+:Date: $Date: 2002/02/06 03:06:03 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -409,7 +409,7 @@ Table elements: table, tgroup, colspec, thead, tbody, row, entry.
 <!ATTLIST system_warning
     %basic.atts;
     level     NMTOKEN   #IMPLIED
-    warning   CDATA     #IMPLIED>
+    type      CDATA     #IMPLIED>
 
 
 <!--
