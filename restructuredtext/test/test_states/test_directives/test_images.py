@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/03/13 02:30:16 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/03/16 05:28:43 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for images.py image directives.
@@ -117,8 +117,8 @@ totest['images'] = [
 <document>
     <system_message level="3" type="ERROR">
         <paragraph>
-            Invalid image attribute data at line 1:
-            extension attribute field body may consist of
+            Error in "image" directive attributes at line 1:
+            invalid attribute data: extension attribute field body may contain
             a single paragraph only (attribute "scale").
         <literal_block>
             .. image:: picture.png
@@ -132,9 +132,9 @@ totest['images'] = [
 <document>
     <system_message level="3" type="ERROR">
         <paragraph>
-            Invalid image attribute data at line 1:
-            extension attribute field body may consist of
-            a single paragraph only (attribute "scale").
+            Error in "image" directive attributes at line 1:
+            invalid attribute value:
+            (attribute "scale", value "None") object can't be converted to int.
         <literal_block>
             .. image:: picture.png
                :scale:
@@ -147,7 +147,8 @@ totest['images'] = [
 <document>
     <system_message level="3" type="ERROR">
         <paragraph>
-            Invalid attribute block for image directive at line 1.
+            Error in "image" directive attributes at line 1:
+            invalid attribute block.
         <literal_block>
             .. image:: picture.png
                :scale 50
@@ -173,7 +174,8 @@ totest['images'] = [
 <document>
     <system_message level="3" type="ERROR">
         <paragraph>
-            Invalid attribute block for image directive at line 1.
+            Error in "image" directive attributes at line 1:
+            invalid attribute block.
         <literal_block>
             .. image:: picture.png
                :: 50
@@ -186,7 +188,8 @@ totest['images'] = [
 <document>
     <system_message level="3" type="ERROR">
         <paragraph>
-            Unknown image attribute at line 1: "sale".
+            Error in "image" directive attributes at line 1:
+            unknown attribute: "sale".
         <literal_block>
             .. image:: picture.png
                :sale: 50
@@ -199,8 +202,9 @@ totest['images'] = [
 <document>
     <system_message level="3" type="ERROR">
         <paragraph>
-            Invalid image attribute value at line 1:
-            (attribute "scale") invalid literal for int(): fifty.
+            Error in "image" directive attributes at line 1:
+            invalid attribute value:
+            (attribute "scale", value "'fifty'") invalid literal for int(): fifty.
         <literal_block>
             .. image:: picture.png
                :scale: fifty
@@ -214,8 +218,8 @@ totest['images'] = [
 <document>
     <system_message level="3" type="ERROR">
         <paragraph>
-            Invalid image attribute data at line 1:
-            duplicate attribute "scale".
+            Error in "image" directive attributes at line 1:
+            invalid attribute data: duplicate attribute "scale".
         <literal_block>
             .. image:: picture.png
                :scale: 50

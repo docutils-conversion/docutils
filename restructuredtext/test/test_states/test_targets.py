@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2002/03/12 03:28:54 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2002/03/16 05:29:51 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -27,7 +27,7 @@ totest['targets'] = [
 """,
 """\
 <document>
-    <target id="id1" name="target">
+    <target id="target" name="target">
     <paragraph>
         (Internal hyperlink target.)
 """],
@@ -50,10 +50,10 @@ External hyperlink targets:
 <document>
     <paragraph>
         External hyperlink targets:
-    <target id="id1" name="one-liner" refuri="http://structuredtext.sourceforge.net">
-    <target id="id2" name="starts-on-this-line" refuri="http://structuredtext.sourceforge.net">
-    <target id="id3" name="entirely-below" refuri="http://structuredtext.sourceforge.net">
-    <target id="id4" name="not-indirect" refuri="uri_">
+    <target id="one-liner" name="one-liner" refuri="http://structuredtext.sourceforge.net">
+    <target id="starts-on-this-line" name="starts-on-this-line" refuri="http://structuredtext.sourceforge.net">
+    <target id="entirely-below" name="entirely-below" refuri="http://structuredtext.sourceforge.net">
+    <target id="not-indirect" name="not-indirect" refuri="uri_">
 """],
 ["""\
 Indirect hyperlink targets:
@@ -66,8 +66,8 @@ Indirect hyperlink targets:
 <document>
     <paragraph>
         Indirect hyperlink targets:
-    <target id="id1" name="target1" refname="reference">
-    <target id="id2" name="target2" refname="phrase-link reference">
+    <target id="target1" name="target1" refname="reference">
+    <target id="target2" name="target2" refname="phrase-link reference">
 """],
 ["""\
 .. _target1: Not a proper hyperlink target
@@ -132,9 +132,9 @@ __ A multi-line verson of something
 """,
 """\
 <document>
-    <target id="id1" name="a long target name">
-    <target id="id2" name="a target name: including a colon (quoted)">
-    <target id="id3" name="a target name: including a colon (escaped)">
+    <target id="a-long-target-name" name="a long target name">
+    <target id="a-target-name-including-a-colon-quoted" name="a target name: including a colon (quoted)">
+    <target id="a-target-name-including-a-colon-escaped" name="a target name: including a colon (escaped)">
 """],
 ["""\
 .. _a very long target name,
@@ -144,8 +144,8 @@ __ A multi-line verson of something
 """,
 """\
 <document>
-    <target id="id1" name="a very long target name, split across lines">
-    <target id="id2" name="and another, with backquotes">
+    <target id="a-very-long-target-name-split-across-lines" name="a very long target name, split across lines">
+    <target id="and-another-with-backquotes" name="and another, with backquotes">
 """],
 ["""\
 External hyperlink:
@@ -156,7 +156,7 @@ External hyperlink:
 <document>
     <paragraph>
         External hyperlink:
-    <target id="id1" name="target" refuri="http://www.python.org/">
+    <target id="target" name="target" refuri="http://www.python.org/">
 """],
 ["""\
 Duplicate external targets (different URIs):
@@ -169,11 +169,11 @@ Duplicate external targets (different URIs):
 <document>
     <paragraph>
         Duplicate external targets (different URIs):
-    <target dupname="target" id="id1" refuri="first">
-    <system_message level="2" refid="id2" type="WARNING">
+    <target dupname="target" id="target" refuri="first">
+    <system_message level="2" refid="id1" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "target"
-    <target dupname="target" id="id2" refuri="second">
+    <target dupname="target" id="id1" refuri="second">
 """],
 ["""\
 Duplicate external targets (same URIs):
@@ -186,11 +186,11 @@ Duplicate external targets (same URIs):
 <document>
     <paragraph>
         Duplicate external targets (same URIs):
-    <target dupname="target" id="id1" refuri="first">
-    <system_message level="1" refid="id2" type="INFO">
+    <target dupname="target" id="target" refuri="first">
+    <system_message level="1" refid="id1" type="INFO">
         <paragraph>
             Duplicate explicit target name: "target"
-    <target id="id2" name="target" refuri="first">
+    <target id="id1" name="target" refuri="first">
 """],
 ["""\
 Duplicate implicit targets.
@@ -209,15 +209,15 @@ Paragraph.
 <document>
     <paragraph>
         Duplicate implicit targets.
-    <section dupname="title" id="id1">
+    <section dupname="title" id="title">
         <title>
             Title
         <paragraph>
             Paragraph.
-    <section dupname="title" id="id2">
+    <section dupname="title" id="id1">
         <title>
             Title
-        <system_message level="1" refid="id2" type="INFO">
+        <system_message level="1" refid="id1" type="INFO">
             <paragraph>
                 Duplicate implicit target name: "title"
         <paragraph>
@@ -237,13 +237,13 @@ Paragraph.
 <document>
     <paragraph>
         Duplicate implicit/explicit targets.
-    <section dupname="title" id="id1">
+    <section dupname="title" id="title">
         <title>
             Title
-        <system_message level="1" refid="id2" type="INFO">
+        <system_message level="1" refid="id1" type="INFO">
             <paragraph>
                 Duplicate implicit target name: "title"
-        <target id="id2" name="title">
+        <target id="id1" name="title">
         <paragraph>
             Paragraph.
 """],
@@ -266,19 +266,19 @@ Third.
 <document>
     <paragraph>
         Duplicate explicit targets.
-    <target dupname="title" id="id1">
+    <target dupname="title" id="title">
     <paragraph>
         First.
+    <system_message level="2" refid="id1" type="WARNING">
+        <paragraph>
+            Duplicate explicit target name: "title"
+    <target dupname="title" id="id1">
+    <paragraph>
+        Second.
     <system_message level="2" refid="id2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "title"
     <target dupname="title" id="id2">
-    <paragraph>
-        Second.
-    <system_message level="2" refid="id3" type="WARNING">
-        <paragraph>
-            Duplicate explicit target name: "title"
-    <target dupname="title" id="id3">
     <paragraph>
         Third.
 """],
@@ -292,6 +292,8 @@ Implicit section header target.
 
 .. [target] Citation target.
 
+.. [#target] Autonumber-labeled footnote target.
+
 .. _target:
 
 Explicit internal target.
@@ -302,19 +304,25 @@ Explicit internal target.
 <document>
     <paragraph>
         Duplicate targets:
-    <section dupname="target" id="id1">
+    <section dupname="target" id="target">
         <title>
             Target
         <paragraph>
             Implicit section header target.
-        <citation dupname="target" id="id2">
+        <citation dupname="target" id="id1">
             <label>
                 target
-            <system_message level="1" refid="id2" type="INFO">
+            <system_message level="1" refid="id1" type="INFO">
                 <paragraph>
                     Duplicate implicit target name: "target"
             <paragraph>
                 Citation target.
+        <footnote auto="1" dupname="target" id="id2">
+            <system_message level="2" refid="id2" type="WARNING">
+                <paragraph>
+                    Duplicate explicit target name: "target"
+            <paragraph>
+                Autonumber-labeled footnote target.
         <system_message level="2" refid="id3" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "target"
@@ -398,13 +406,13 @@ no blank line
     <target anonymous="1" refname="reference">
     <target anonymous="1" refname="reference">
     <target anonymous="1" refname="reference">
-    <target id="id1" name="target1" refname="reference">
+    <target id="target1" name="target1" refname="reference">
     <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 7.
     <paragraph>
         no blank line
-    <target id="id2" name="target2" refname="reference">
+    <target id="target2" name="target2" refname="reference">
     <target anonymous="1" refname="reference">
     <target anonymous="1" refname="reference">
     <target anonymous="1" refname="reference">

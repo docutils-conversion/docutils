@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/03/07 04:12:20 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/03/16 05:28:21 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -25,7 +25,7 @@ totest['citations'] = [
 """,
 """\
 <document>
-    <citation id="id1" name="citation">
+    <citation id="citation" name="citation">
         <label>
             citation
         <paragraph>
@@ -36,7 +36,7 @@ totest['citations'] = [
 """,
 """\
 <document>
-    <citation id="id1" name="citation1234">
+    <citation id="citation1234" name="citation1234">
         <label>
             citation1234
         <paragraph>
@@ -48,7 +48,7 @@ totest['citations'] = [
 """,
 """\
 <document>
-    <citation id="id1" name="citation">
+    <citation id="citation" name="citation">
         <label>
             citation
         <paragraph>
@@ -64,13 +64,13 @@ totest['citations'] = [
 """,
 """\
 <document>
-    <citation id="id1" name="citation1">
+    <citation id="citation1" name="citation1">
         <label>
             citation1
         <paragraph>
             This is a citation
             on multiple lines with more space.
-    <citation id="id2" name="citation2">
+    <citation id="citation2" name="citation2">
         <label>
             citation2
         <paragraph>
@@ -84,7 +84,7 @@ totest['citations'] = [
 """,
 """\
 <document>
-    <citation id="id1" name="citation">
+    <citation id="citation" name="citation">
         <label>
             citation
         <paragraph>
@@ -98,7 +98,7 @@ That was an empty citation.
 """,
 """\
 <document>
-    <citation id="id1" name="citation">
+    <citation id="citation" name="citation">
         <label>
             citation
     <paragraph>
@@ -110,7 +110,7 @@ No blank line.
 """,
 """\
 <document>
-    <citation id="id1" name="citation">
+    <citation id="citation" name="citation">
         <label>
             citation
     <system_message level="2" type="WARNING">

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2002/03/12 03:28:24 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2002/03/16 05:29:19 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -68,7 +68,7 @@ what about *this**?
         <emphasis>
             emphasis
         ' but not '*' or '"*"' or  x*2* or 2*x* or *args or *
-        or 
+        or \n\
         <emphasis>
             the* *stars\* *inside
     <paragraph>
@@ -80,7 +80,7 @@ what about *this**?
         <paragraph>
             Inline emphasis start-string without end-string at line 4.
     <paragraph>
-        what about 
+        what about \n\
         <emphasis>
             this*
         ?
@@ -202,7 +202,7 @@ and may be problematic)
             literal ``TeX quotes'' & \\backslash
          but not "``" or ``
     <paragraph>
-        (however, 
+        (however, \n\
         <problematic id="id2" refid="id1">
             ``
         standalone TeX quotes'' will trigger a warning
@@ -426,19 +426,19 @@ _`Here is  a    TaRgeT` with case and spacial difficulties.
 """\
 <document>
     <paragraph>
-        <target id="id1" name="target">
+        <target id="target" name="target">
             target
     <paragraph>
         Here is \n\
-        <target id="id2" name="another target">
+        <target id="another-target" name="another target">
             another target
          in some text. And \n\
-        <target id="id3" name="yet another target">
+        <target id="yet-another-target" name="yet another target">
             yet
             another target
         , spanning lines.
     <paragraph>
-        <target id="id4" name="here is a target">
+        <target id="here-is-a-target" name="here is a target">
             Here is  a    TaRgeT
          with case and spacial difficulties.
 """],
@@ -452,7 +452,7 @@ And _`this`_ is just plain confusing.
     <paragraph>
         But this isn't a _target; targets require backquotes.
     <paragraph>
-        And 
+        And \n\
         <problematic id="id2" refid="id1">
             _`
         this`_ is just plain confusing.

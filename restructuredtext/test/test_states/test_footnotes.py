@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2002/03/11 03:18:29 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/03/16 05:28:57 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -160,13 +160,13 @@ the footnotes: first_, second_, third_.
     <paragraph>
         <footnote_reference auto="1" refname="third">
          is a reference to the third auto-numbered footnote.
-    <footnote auto="1" id="id1" name="first">
+    <footnote auto="1" id="first" name="first">
         <paragraph>
             First auto-numbered footnote.
-    <footnote auto="1" id="id2" name="second">
+    <footnote auto="1" id="second" name="second">
         <paragraph>
             Second auto-numbered footnote.
-    <footnote auto="1" id="id3" name="third">
+    <footnote auto="1" id="third" name="third">
         <paragraph>
             Third auto-numbered footnote.
     <paragraph>
@@ -223,20 +223,20 @@ Mixed anonymous and labelled auto-numbered footnotes:
     <footnote auto="1">
         <paragraph>
             Auto-numbered footnote 1.
-    <footnote auto="1" id="id1" name="two">
+    <footnote auto="1" id="two" name="two">
         <paragraph>
             Auto-numbered footnote 2.
     <footnote auto="1">
         <paragraph>
             Auto-numbered footnote 3.
-    <footnote auto="1" id="id2" name="four">
+    <footnote auto="1" id="four" name="four">
         <paragraph>
             Auto-numbered footnote 4.
-    <footnote auto="1" dupname="five" id="id3">
+    <footnote auto="1" dupname="five" id="five">
         <paragraph>
             Auto-numbered footnote 5.
-    <footnote auto="1" dupname="five" id="id4">
-        <system_message level="2" refid="id4" type="WARNING">
+    <footnote auto="1" dupname="five" id="id1">
+        <system_message level="2" refid="id1" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "five"
         <paragraph>
@@ -291,19 +291,19 @@ and labelled auto-numbered footnotes:
     <footnote auto="1">
         <paragraph>
             Auto-numbered footnote 2.
-    <footnote auto="1" id="id2" name="four">
+    <footnote auto="1" id="four" name="four">
         <paragraph>
             Auto-numbered footnote 4.
-    <footnote id="id3" name="3">
+    <footnote id="id2" name="3">
         <label>
             3
         <paragraph>
             Manually-numbered footnote 3
-    <footnote auto="1" dupname="five" id="id4">
+    <footnote auto="1" dupname="five" id="five">
         <paragraph>
             Auto-numbered footnote 5.
-    <footnote auto="1" dupname="five" id="id5">
-        <system_message level="2" refid="id5" type="WARNING">
+    <footnote auto="1" dupname="five" id="id3">
+        <system_message level="2" refid="id3" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "five"
         <paragraph>

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/12 03:28:11 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/16 05:28:33 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -237,27 +237,27 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
     <definition_list>
         <definition_list_item>
             <term>
-                Term 
+                Term \n\
                 <problematic id="id2" refid="id1">
                     `
-                with 
+                with \n\
                 <problematic id="id4" refid="id3">
                     *
-                inline 
+                inline \n\
                 <problematic id="id6" refid="id5">
                     ``
-                text 
+                text \n\
                 <problematic id="id8" refid="id7">
                     **
                 errors
             <classifier>
-                classifier 
+                classifier \n\
                 <problematic id="id10" refid="id9">
                     `
-                with 
+                with \n\
                 <problematic id="id12" refid="id11">
                     *
-                errors 
+                errors \n\
                 <problematic id="id14" refid="id13">
                     ``
                 too
@@ -284,16 +284,16 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
                     <paragraph>
                         Inline literal start-string without end-string at line 1.
                 <paragraph>
-                    Definition 
+                    Definition \n\
                     <problematic id="id16" refid="id15">
                         `
-                    with 
+                    with \n\
                     <problematic id="id18" refid="id17">
                         *
-                    inline 
+                    inline \n\
                     <problematic id="id20" refid="id19">
                         ``
-                    text 
+                    text \n\
                     <problematic id="id22" refid="id21">
                         **
                     markup errors.

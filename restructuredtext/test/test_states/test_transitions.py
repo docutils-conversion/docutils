@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/03/12 03:29:04 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/16 05:30:13 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for reStructuredText.
@@ -52,7 +52,7 @@ Paragraph 2 in section 2.
 """,
 """\
 <document>
-    <section id="id1" name="section 1">
+    <section id="section-1" name="section 1">
         <title>
             Section 1
         <paragraph>
@@ -60,7 +60,7 @@ Paragraph 2 in section 2.
         <transition>
         <paragraph>
             Second text division of section 1.
-        <section id="id2" name="section 2">
+        <section id="section-2" name="section 2">
             <title>
                 Section 2
             <paragraph>
