@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/01/16 02:43:21 $
-:Revision: $Revision: 1.18 $
+:Date: $Date: 2002/01/26 00:02:16 $
+:Revision: $Revision: 1.19 $
 
 
 To Do
@@ -46,10 +46,10 @@ To Do
 - Incorporate readers/"input modes", using Tony Ibbs' 2001-08-03
   Doc-SIG post 'Suggestions for reST "modes"' as a base.
 
-- Write modules for common transformations, such as:
+- Write modules for common transforms. See Transforms_ below.
 
   - Resolving auto-numbered footnotes & references.
-  - Resolving internal cross-references and indirect hyperlinks.
+  - Resolving internal, external, and indirect hyperlinks.
   - Propagating URIs to chained hyperlink targets.
 
   These transformations may be turned on or off by individual modes.
@@ -61,6 +61,228 @@ To Do
 
 - Once doctree.txt is fleshed out, how about breaking (most of) it up
   and putting it into nodes.py as docstrings?
+
+- Refactor:
+
+  - Apply the `coding conventions`_ as given below.
+
+
+Coding Conventions
+==================
+
+This project shall follow the generic coding conventions as specified
+in the `Style Guide for Python Code`__ and `Docstring Conventions`__
+PEPs, with the following clarifications:
+
+- 4 spaces per indentation level. No tabs.
+- No one-liner compound statements (i.e., no ``if x: return``: use two
+  lines & indentation), except for degenerate class or method
+  definitions (i.e., ``class X: pass`` is O.K.).
+- Lines should be no more than 78 or 79 characters long.
+- "CamelCase" shall be used for class names.
+- Use "lowercase" or "lowercase_with_underscores" for function,
+  method, and variable names. For short names, maximum two joined
+  words, use lowercase (e.g. 'tagname'). For long names with three or
+  more joined words, or where it's hard to parse the split between two
+  words, use lowercase_with_underscores (e.g., 'note_explicit_target',
+  'explicit_target').
+
+__ http://www.python.org/peps/pep-0008.html
+__ http://www.python.org/peps/pep-0257.html
+
+
+Transforms
+==========
+
+Footnote Numbering
+------------------
+
+[Tony]
+This runs over a subtree (clearly for Python code, we don't want to
+run it over anything bigger than a docstring, lest we confuse
+footnotes!) and sorts out the numbering (in my development version of
+pyspd (not on the web yet) this is actually done as part of the HTML
+output phase, which is clearly the Wrong Place for it.
+
+David - a question or two on this. Each autonumbered footnote/footnote
+reference has the attribute 'auto' set to "1". I want to *insert*
+actual footnote numbers into the tree. I can just add a new attribute
+'auto-number' into elements as required, *or* I could ask that you set
+'auto' to be "-1" for the "no number yet" case, and use 'auto' to
+store the *actual* number calculated. Which to do is a style issue, so
+I'd prefer to leave it up to you (but using the same attribute would
+make things a bit neater in the code - I'm not sure if it would
+generate as elegant XML, though - I'd need to look up the detailed
+attribute present/absent rules).
+
+[David]
+Auto-numbered footnotes have attribute ``auto=1`` and no label.
+Auto-numbered footnote_references have no reference text (they're
+empty elements). If you resolve the numbering, just add a label
+element to the beginning of the footnote, and reference text to the
+footnote_reference. Take this input::
+
+    References to the first ([A]_), third ([#spam]_), and second
+    ([#]_) footnotes.
+
+    .. [A] This footnote is labeled with "A".
+    .. [#] This footnote is auto-numbered.
+    .. [#spam] This footnote has autonumber name "spam".
+
+Parsed (watch for empty footnote_reference elements: indentation)::
+
+    <document>
+        <paragraph>
+            References to the first (
+            <footnote_reference refname="a">
+                A
+            ), third (
+            <footnote_reference auto="1" refname="spam">
+            ), and second
+            (
+            <footnote_reference auto="1">
+            ) footnotes.
+        <footnote name="a">
+            <label>
+                A
+            <paragraph>
+                This footnote is labeled with "A".
+        <footnote auto="1">
+            <paragraph>
+                This footnote is auto-numbered.
+        <footnote auto="1" name="spam">
+            <paragraph>
+                This footnote has autonumber name "spam".
+
+Only the first footnote_reference contains reference text. After
+auto-numbering resolution, the tree should become::
+
+    <document>
+        <paragraph>
+            References to the first (
+            <footnote_reference refname="a">
+                A
+            ), third (
+            <footnote_reference auto="1" refname="spam">
+                2
+            ), and second
+            (
+            <footnote_reference auto="1" refname="_footnote 1">
+                1
+            ) footnotes.
+        <footnote name="a">
+            <label>
+                A
+            <paragraph>
+                This footnote is labeled with "A".
+        <footnote auto="1" name="_footnote 1">
+            <label>
+                1
+            <paragraph>
+                This footnote is auto-numbered.
+        <footnote auto="1" name="spam">
+            <label>
+                2
+            <paragraph>
+                This footnote has autonumber name "spam".
+
+The labels and reference text are added to the two auto-numbered
+footnotes & footnote_references. The unnamed auto-numbered footnote
+& reference need name & refname attributes. Let's use "_footnote " +
+footnote number for those attributes (a name-mangling unlikely to
+occur in the real world; note that this hasn't been documented yet).
+Of course (!), the implicitlinks and refnames instance attributes of
+the dps.nodes.document instance must be updated. (It will soon be my
+pleasure to document the dps/nodes.py data structure, since I'm
+gradually forgetting its details.)
+
+After adding labels and reference text, the "auto" attributes can be
+ignored.
+
+
+[David]
+> Let's use "_footnote " + footnote number for those attributes
+> (a name-mangling unlikely to occur in the real world; note that
+> this hasn't been documented yet).
+
+[Tony]
+> Hmm - I wasn't assuming that unnamed autonumbered footnotes would have any
+> name other than the number (since you're following the XML tradition and
+> storing such things as strings anyway).
+
+[David]
+I suppose we could go either way. I'm re-examining (for validity) what I
+wrote in the spec:
+
+    Automatic footnote numbering may not be mixed with manual footnote
+    numbering; it would cause numbering and referencing conflicts.
+
+Would such mixing inevitably cause conflicts? We could probably work around
+potential conflicts with a decent algorithm. Should we? Requires thought.
+Opinions?
+
+[Tony]
+Well, I read that paragraph in the documentation, and decided that it
+was in the category of "don't, in practice, care" so far as I was
+concerned. This is the same category I put the forbidding of nested
+inline markup - quite clearly one *can* do it, but equally clearly it's
+a pain to implement, and not a terribly great gain, all things
+considered.
+
+It's a category with the subtext "examine for correctness after we've
+had some experience of people *using* reST in the wild".
+
+Thus, given there are lots of other things to do, I would tend to leave
+it as-is (especially if you are able to *warn* people about it if they
+do it by mistake).
+
+To my mind, being able to do ``[#thing]_`` probably give people enough
+precision over footnotes whils still allowing autonumbering - the *only*
+potential problem is when referring to a footnote in a different
+document (and that, again, is something I would leave fallow for the
+moment, although we know I tend to want to use roles as annotation for
+that sort of thing).
+
+
+Footnote Gathering
+------------------
+
+Collect and move footnotes to the end of a document.
+
+
+Hyperlink Target Gathering
+--------------------------
+
+It probably comes in two phases, because in a Python context we need
+to *resolve* them on a per-docstring basis, but if the user is trying
+to do the callout form of presentation, they would then want to group
+them all at the end of the document.
+
+
+Substitutions
+-------------
+
+@@@
+
+
+Table of Contents
+-----------------
+
+@@@
+
+This runs over the entire tree, and locates <section> elements. It
+produces a <contents> subtree, which can be inserted at the
+appropriate place, with links to the <section>s. It needs to make sure
+that the links it uses are *real*, so ideally it will use the
+"implicit" link for a section when it exists, and it will have to
+invent one when the implicit link isn't there (presumably because the
+section is the twelfth "Introduction" in the document...).
+
+
+Index
+-----
+
+@@@
 
 
 I/O APIs
@@ -181,6 +403,42 @@ Tony's contribution:
        DPS parser process. In the Python case, I clearly want to *use*
        the normal HTML parser for HTML output, but with extra support
        "around it" for the Python specific infrastructure.
+
+
+nodes.py
+========
+
+Add ``Nodes.walkabout()``, ``Visitor.walkabout()``,
+``Visitor.leave_*()``, and ``GenericVisitor.default_leave()`` methods
+to catch elements on the way out? Here's ``Nodes.walkabout()``::
+
+    def walkabout(self, visitor, ancestry=()):
+        """
+        Traverse a tree of `Node` objects. Call `visitor`'s
+        ``visit_...`` method (upon initial entry) **and** its
+        ``leave_...`` method (before exiting).
+
+        Parameters:
+
+        - `visitor`: A `Visitor` object, containing a ``visit_...``
+          and ``leave_...`` method for each `Node` subclass
+          encountered.
+        - `ancestry`: A list of (parent, index) pairs. `self`'s parent
+          is the last entry.
+        """
+        method = getattr(visitor, 'visit_' + self.__class__.__name__)
+        method(self, ancestry)
+        children = self.getchildren()
+        for i in range(len(children)):
+            children[i].walkabout(visitor, ancestry + ((self, i),))
+        method = getattr(visitor, 'leave_' + self.__class__.__name__)
+        method(self, ancestry)
+
+Here's ``Visitor.walkabout()``::
+
+    def walkabout(self):
+        self.doctree.walkabout(self)
+
 
 
 
