@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/15 22:45:58 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/20 04:30:03 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Hyperlinks.
@@ -41,7 +41,7 @@ direct_ external
         <reference refuri="http://direct">
             direct
          external
-    <target name="direct" refuri="http://direct">
+    <target id="id1" name="direct" refuri="http://direct">
 """],
 ["""\
 indirect_ external
@@ -55,8 +55,8 @@ indirect_ external
         <reference refuri="http://indirect">
             indirect
          external
-    <target name="indirect" refuri="http://indirect">
-    <target name="xtarget" refuri="http://indirect">
+    <target id="id1" name="indirect" refuri="http://indirect">
+    <target id="id2" name="xtarget" refuri="http://indirect">
 """],
 ["""\
 .. _direct:
@@ -65,7 +65,7 @@ direct_ internal
 """,
 """\
 <document>
-    <target name="direct">
+    <target id="id1" name="direct">
     <paragraph>
         <reference refname="direct">
             direct
@@ -81,13 +81,13 @@ indirect_ internal
 """,
 """\
 <document>
-    <target name="ztarget">
+    <target id="id1" name="ztarget">
     <paragraph>
         <reference refname="ztarget">
             indirect
          internal
-    <target name="indirect2" refname="ztarget">
-    <target name="indirect" refname="ztarget">
+    <target id="id2" name="indirect2" refname="ztarget">
+    <target id="id3" name="indirect" refname="ztarget">
 """],
 ["""\
 `direct external`__
@@ -99,7 +99,7 @@ __ http://direct
     <paragraph>
         <reference refuri="http://direct">
             direct external
-    <target name="_:1:_" refuri="http://direct">
+    <target id="id1" name="_:1:_" refuri="http://direct">
 """],
 ["""\
 `indirect external`__
@@ -112,8 +112,8 @@ __ xtarget_
     <paragraph>
         <reference refuri="http://indirect">
             indirect external
-    <target name="_:1:_" refuri="http://indirect">
-    <target name="xtarget" refuri="http://indirect">
+    <target id="id2" name="_:1:_" refuri="http://indirect">
+    <target id="id1" name="xtarget" refuri="http://indirect">
 """],
 ["""\
 __
@@ -122,7 +122,7 @@ __
 """,
 """\
 <document>
-    <target name="_:1:_">
+    <target id="id1" name="_:1:_">
     <paragraph>
         <reference refname="_:1:_">
             direct internal
@@ -136,11 +136,11 @@ __ ztarget_
 """,
 """\
 <document>
-    <target name="ztarget">
+    <target id="id1" name="ztarget">
     <paragraph>
         <reference refname="ztarget">
             indirect internal
-    <target name="_:1:_" refname="ztarget">
+    <target id="id2" name="_:1:_" refname="ztarget">
 """],
 ])
 
@@ -154,7 +154,7 @@ By this `internal hyperlink`_ referemce.
 """,
 """\
 <document>
-    <target name="internal hyperlink">
+    <target id="id1" name="internal hyperlink">
     <paragraph>
         This paragraph referenced.
     <paragraph>
@@ -176,8 +176,8 @@ The results of the transform are not visible at the XML level.
 """,
 """\
 <document>
-    <target name="chained">
-    <target name="internal hyperlink">
+    <target id="id1" name="chained">
+    <target id="id2" name="internal hyperlink">
     <paragraph>
         This paragraph referenced.
     <paragraph>
@@ -199,7 +199,7 @@ The results of the transform are not visible at the XML level.
 """,
 """\
 <document>
-    <target name="external hyperlink" refuri="http://uri">
+    <target id="id1" name="external hyperlink" refuri="http://uri">
     <paragraph>
         <reference refuri="http://uri">
             External hyperlink
@@ -211,8 +211,8 @@ The results of the transform are not visible at the XML level.
 """,
 """\
 <document>
-    <target name="external hyperlink" refuri="http://uri">
-    <target name="indirect target" refuri="http://uri">
+    <target id="id1" name="external hyperlink" refuri="http://uri">
+    <target id="id2" name="indirect target" refuri="http://uri">
     <system_message level="1" type="INFO">
         <paragraph>
             External hyperlink target "indirect target" is not referenced.
@@ -226,8 +226,8 @@ and a chained_ reference too.
 """,
 """\
 <document>
-    <target name="chained" refuri="http://uri">
-    <target name="external hyperlink" refuri="http://uri">
+    <target id="id1" name="chained" refuri="http://uri">
+    <target id="id2" name="external hyperlink" refuri="http://uri">
     <paragraph>
         <reference refuri="http://uri">
             External hyperlink
@@ -245,8 +245,8 @@ and a chained_ reference too.
 """,
 """\
 <document>
-    <target name="external hyperlink" refuri="http://uri">
-    <target name="indirect hyperlink" refuri="http://uri">
+    <target id="id1" name="external hyperlink" refuri="http://uri">
+    <target id="id2" name="indirect hyperlink" refuri="http://uri">
     <paragraph>
         <reference refuri="http://uri">
             Indirect hyperlink
@@ -261,9 +261,9 @@ Chained_ `indirect hyperlink`_ reference.
 """,
 """\
 <document>
-    <target name="external hyperlink" refuri="http://uri">
-    <target name="chained" refuri="http://uri">
-    <target name="indirect hyperlink" refuri="http://uri">
+    <target id="id1" name="external hyperlink" refuri="http://uri">
+    <target id="id2" name="chained" refuri="http://uri">
+    <target id="id3" name="indirect hyperlink" refuri="http://uri">
     <paragraph>
         <reference refuri="http://uri">
             Chained
@@ -288,12 +288,12 @@ __
 """,
 """\
 <document>
-    <target name="_:1:_" refuri="http://full">
-    <target name="_:2:_" refuri="http://simplified">
-    <target name="_:3:_" refuri="http://simplified">
-    <target name="external" refuri="http://indirect.external">
-    <target name="_:4:_" refuri="http://indirect.external">
-    <target name="_:5:_">
+    <target id="id2" name="_:1:_" refuri="http://full">
+    <target id="id3" name="_:2:_" refuri="http://simplified">
+    <target id="id4" name="_:3:_" refuri="http://simplified">
+    <target id="id1" name="external" refuri="http://indirect.external">
+    <target id="id5" name="_:4:_" refuri="http://indirect.external">
+    <target id="id6" name="_:5:_">
     <paragraph>
         <reference refuri="http://full">
             Full syntax anonymous external hyperlink reference
@@ -325,11 +325,11 @@ Duplicate external target_'s (different URIs):
         <reference refname="target">
             target
         's (different URIs):
-    <target dupname="target" refuri="first">
+    <target dupname="target" id="id1" refuri="first">
     <system_message level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "target"
-    <target dupname="target" refuri="second">
+    <target dupname="target" id="id2" refuri="second">
 """],
 ])
 
