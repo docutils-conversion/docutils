@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/09/08 03:20:58 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/09/10 04:07:11 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -32,7 +32,7 @@ class Errorist:
 
         Raise an exception or generate a warning if appropriate.
         """
-        sw = nodes.system_warning(comment, level=str(level), *children)
+        sw = nodes.system_warning(comment, level=level, *children)
         if level >= self.errorlevel:
             raise SystemWarning(sw)
         if level >= self.warninglevel:
@@ -59,18 +59,3 @@ class Errorist:
         if sourcetext:
             children.append(nodes.literal_block('', sourcetext))
         return self.system_warning(3, children=children)
-
-
-languages = {}
-
-def language(languagecode):
-    if languages.has_key(languagecode):
-        return languages[languagecode]
-    try:
-        module = getattr(__import__('dps.languages', globals(), locals(),
-                                    [languagecode]),
-                         languagecode)
-    except:
-        raise
-    languages[languagecode] = module
-    return module
