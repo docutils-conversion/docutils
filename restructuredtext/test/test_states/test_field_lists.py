@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:04:06 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/07 01:47:00 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -588,6 +588,403 @@ Field: marker is missing its open-colon.
     <paragraph>
         :Field marker is missing its close-colon.
     </paragraph>
+</document>
+"""],
+]
+
+totest['bibliographic_field_lists'] = [
+["""\
+.. Bibliographic element extraction.
+
+:Title: Document Title
+:Abstract:
+    There can only be one abstract.
+
+    It is automatically moved to the end of the other bibliographic elements.
+    
+:Author: Me
+:Version: 1
+:Date: 2001-08-11
+:Parameter i: integer
+""",
+"""\
+<document>
+    <title>
+        Document Title
+    </title>
+    <author>
+        Me
+    </author>
+    <version>
+        1
+    </version>
+    <date>
+        2001-08-11
+    </date>
+    <abstract>
+        <paragraph>
+            There can only be one abstract.
+        </paragraph>
+        <paragraph>
+            It is automatically moved to the end of the other bibliographic elements.
+        </paragraph>
+    </abstract>
+    <comment>
+        Bibliographic element extraction.
+    </comment>
+    <field_list>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    integer
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+.. Bibliographic element extraction.
+
+Title
+=====
+:Title: Second Title
+:Subtitle: The Title field should generate a warning
+:Abstract: Abstract 1.
+:Author: Me
+:Version: 1
+:Abstract: Abstract 2.
+:Date: 2001-08-11
+:Parameter i: integer
+""",
+"""\
+<document name="title">
+    <title>
+        Title
+    </title>
+    <subtitle>
+        The Title field should generate a warning
+    </subtitle>
+    <author>
+        Me
+    </author>
+    <version>
+        1
+    </version>
+    <date>
+        2001-08-11
+    </date>
+    <abstract>
+        <paragraph>
+            Abstract 1.
+        </paragraph>
+    </abstract>
+    <comment>
+        Bibliographic element extraction.
+    </comment>
+    <field_list>
+        <field>
+            <field_name>
+                Title
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Second Title
+                </paragraph>
+                <system_warning level="2">
+                    <paragraph>
+                        Multiple document titles (bibliographic field "Title").
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Abstract
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Abstract 2.
+                </paragraph>
+                <system_warning level="2">
+                    <paragraph>
+                        There can only be one abstract.
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    integer
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+:Author: - must be a paragraph
+:Date: But only one
+
+       paragraph.
+:Version:
+
+.. and not empty either
+""",
+"""\
+<document>
+    <field_list>
+        <field>
+            <field_name>
+                Author
+            </field_name>
+            <field_body>
+                <bullet_list bullet="-">
+                    <list_item>
+                        <paragraph>
+                            must be a paragraph
+                        </paragraph>
+                    </list_item>
+                </bullet_list>
+                <system_warning level="2">
+                    <paragraph>
+                        Cannot extract bibliographic field "Author" containing anything other than a simple paragraph.
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Date
+            </field_name>
+            <field_body>
+                <paragraph>
+                    But only one
+                </paragraph>
+                <paragraph>
+                    paragraph.
+                </paragraph>
+                <system_warning level="2">
+                    <paragraph>
+                        Cannot extract compound title bibliographic field "Date".
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Version
+            </field_name>
+            <field_body>
+                <system_warning level="2">
+                    <paragraph>
+                        Cannot extract empty bibliographic field "Version".
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+    </field_list>
+    <comment>
+        and not empty either
+    </comment>
+</document>
+"""],
+["""\
+:Authors: Me, Myself, **I**
+:Authors: PacMan; Ms. PacMan; PacMan, Jr.
+:Authors:
+    Here
+
+    There
+
+    *Everywhere*
+:Authors: - First
+          - Second
+          - Third
+""",
+"""\
+<document>
+    <authors>
+        <author>
+            Me
+        </author>
+        <author>
+            Myself
+        </author>
+        <author>
+            I
+        </author>
+    </authors>
+    <authors>
+        <author>
+            PacMan
+        </author>
+        <author>
+            Ms. PacMan
+        </author>
+        <author>
+            PacMan, Jr.
+        </author>
+    </authors>
+    <authors>
+        <author>
+            Here
+        </author>
+        <author>
+            There
+        </author>
+        <author>
+            <emphasis>
+                Everywhere
+            </emphasis>
+        </author>
+    </authors>
+    <authors>
+        <author>
+            First
+        </author>
+        <author>
+            Second
+        </author>
+        <author>
+            Third
+        </author>
+    </authors>
+</document>
+"""],
+["""\
+:Authors:
+
+:Authors: 1. One
+          2. Two
+
+:Authors:
+    -
+    -
+
+:Authors:
+    - One
+
+    Two
+
+:Authors:
+    - One
+
+      Two
+""",
+"""\
+<document>
+    <field_list>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <system_warning level="2">
+                    <paragraph>
+                        Cannot extract empty bibliographic field "Authors".
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <enumerated_list enumtype="arabic" prefix="" start="1" suffix=".">
+                    <list_item>
+                        <paragraph>
+                            One
+                        </paragraph>
+                    </list_item>
+                    <list_item>
+                        <paragraph>
+                            Two
+                        </paragraph>
+                    </list_item>
+                </enumerated_list>
+                <system_warning level="2">
+                    <paragraph>
+                        Bibliographic field "Authors" incompatible with extraction: it must contain either a single paragraph (with authors separated by one of ";,"), multiple paragraphs (one per author), or a bullet list with one paragraph (one author) per item.
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <bullet_list bullet="-">
+                    <list_item/>
+                    <list_item/>
+                </bullet_list>
+                <system_warning level="2">
+                    <paragraph>
+                        Bibliographic field "Authors" incompatible with extraction: it must contain either a single paragraph (with authors separated by one of ";,"), multiple paragraphs (one per author), or a bullet list with one paragraph (one author) per item.
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <bullet_list bullet="-">
+                    <list_item>
+                        <paragraph>
+                            One
+                        </paragraph>
+                    </list_item>
+                </bullet_list>
+                <paragraph>
+                    Two
+                </paragraph>
+                <system_warning level="2">
+                    <paragraph>
+                        Bibliographic field "Authors" incompatible with extraction: it must contain either a single paragraph (with authors separated by one of ";,"), multiple paragraphs (one per author), or a bullet list with one paragraph (one author) per item.
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <bullet_list bullet="-">
+                    <list_item>
+                        <paragraph>
+                            One
+                        </paragraph>
+                        <paragraph>
+                            Two
+                        </paragraph>
+                    </list_item>
+                </bullet_list>
+                <system_warning level="2">
+                    <paragraph>
+                        Bibliographic field "Authors" incompatible with extraction: it must contain either a single paragraph (with authors separated by one of ";,"), multiple paragraphs (one per author), or a bullet list with one paragraph (one author) per item.
+                    </paragraph>
+                </system_warning>
+            </field_body>
+        </field>
+    </field_list>
 </document>
 """],
 ]
