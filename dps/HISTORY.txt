@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/13 02:16:24 $
+:Date: $Date: 2001/09/17 04:15:23 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -74,11 +74,16 @@ Changed contact email addresses.
   - Added form feed & vertical tab conversion to string2lines.
   - Added StateMachine.nextlineblank().
   - Added 'nestedSM' and 'nestedSMkwargs' to State.
+  - Added 'uptoblank' optional argument to 'getindented',
+    'getknownindented', and 'getfirstknownindented' methods of
+    StateWS, and to 'extractindented' function.
 
 * dps/utils.py:
 
+  - Renamed error reporter class to 'Reporter' from 'Errorist'.
   - Added named methods (aliases to numbered system_warning calls) to
-    Errorist.
+    Reporter.
+  - Added some docstrings.
 
 * dps/parsers/model.py:
 
@@ -94,6 +99,11 @@ Changed contact email addresses.
   - Fixed ``__all__``.
   - Changed node class names to node classes.
   - Removed parser-specific data.
+
+* test: Subdirectory added. The top-level consists of a modular test
+  framework begun by Garth Kidd.
+
+* test/test_utils.py: Converted from doctest to unittest & updated.
 
 * spec/pep-0256.txt:
 
