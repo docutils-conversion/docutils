@@ -3,8 +3,10 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2002/02/06 02:18:27 $
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2002/02/07 01:52:52 $
 :Copyright: This module has been placed in the public domain.
 """
 
