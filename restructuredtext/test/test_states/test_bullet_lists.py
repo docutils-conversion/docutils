@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/06 02:16:58 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/15 22:58:16 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -124,7 +124,7 @@ Different bullets:
         <list_item>
             <paragraph>
                 item 3
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 8.
     <bullet_list bullet="-">
@@ -142,7 +142,7 @@ no blank line
         <list_item>
             <paragraph>
                 item
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 2.
     <paragraph>
@@ -168,7 +168,7 @@ empty item above, no blank line
 <document>
     <bullet_list bullet="-">
         <list_item>
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 2.
     <paragraph>

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2002/02/12 02:30:42 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/02/15 22:58:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -114,7 +114,7 @@ empty item above, no blank line
             <field_name>
                 field
             <field_body>
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 2.
     <paragraph>
@@ -457,7 +457,7 @@ Field: marker is missing its open-colon.
             <field_body>
                 <paragraph>
                     Me
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
     <paragraph>

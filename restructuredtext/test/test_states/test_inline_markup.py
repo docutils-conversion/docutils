@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2002/02/06 02:18:10 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2002/02/15 22:58:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -47,7 +47,7 @@ across lines*
 <document>
     <paragraph>
         *emphasis
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Inline emphasis start-string without end-string at line 1.
 """],
@@ -71,7 +71,7 @@ what about *this**?
             the* *stars\\* *inside
     <paragraph>
         (however, '*args' will trigger a warning and may be problematic)
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Inline emphasis start-string without end-string at line 4.
     <paragraph>
@@ -122,7 +122,7 @@ totest['strong'] = [
         ) but not (**) or '(** ' or x**2 or **kwargs or **
     <paragraph>
         (however, '**kwargs' will trigger a warning and may be problematic)
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Inline strong start-string without end-string at line 3.
 """],
@@ -196,7 +196,7 @@ and may be problematic)
     <paragraph>
         (however, ``standalone TeX quotes'' will trigger a warning
         and may be problematic)
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Inline literal start-string without end-string at line 3.
 """],
@@ -380,7 +380,7 @@ Invalid phrase reference:
         Invalid phrase reference:
     <paragraph>
         :role:`phrase reference`_
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Mismatch: inline interpreted text start-string and role with phrase-reference end-string at line 3.
 """],
@@ -439,7 +439,7 @@ And _`this`_ is just plain confusing.
         But this isn't a _target; targets require backquotes.
     <paragraph>
         And _`this`_ is just plain confusing.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Inline target start-string without end-string at line 3.
 """],

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/06 02:17:21 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/15 22:58:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -66,7 +66,7 @@ no blank line
             <definition>
                 <paragraph>
                     definition
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 3.
     <paragraph>
@@ -83,7 +83,7 @@ A paragraph::
             <term>
                 A paragraph::
             <definition>
-                <system_warning level="1" type="INFO">
+                <system_message level="1" type="INFO">
                     <paragraph>
                         Blank line missing before literal block? Interpreted as a definition list item. At line 2.
                 <paragraph>
@@ -241,39 +241,39 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
             <classifier>
                 classifier `with *errors ``too
             <definition>
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline interpreted text or phrase reference start-string without end-string at line 1.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 1.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline literal start-string without end-string at line 1.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline strong start-string without end-string at line 1.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline interpreted text or phrase reference start-string without end-string at line 1.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 1.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline literal start-string without end-string at line 1.
                 <paragraph>
                     Definition `with *inline ``text **markup errors.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline interpreted text or phrase reference start-string without end-string at line 2.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 2.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline literal start-string without end-string at line 2.
-                <system_warning level="2" type="WARNING">
+                <system_message level="2" type="WARNING">
                     <paragraph>
                         Inline strong start-string without end-string at line 2.
 """],

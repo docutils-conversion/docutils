@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.41 $
-:Date: $Date: 2002/02/12 02:26:53 $
+:Revision: $Revision: 1.42 $
+:Date: $Date: 2002/02/15 22:57:38 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -301,12 +301,12 @@ class RSTState(StateWS):
         memo.sectionlevel += 1
         sectionnode = nodes.section()
         self.statemachine.node += sectionnode
-        textnodes, warnings = self.inline_text(title, lineno)
+        textnodes, messages = self.inline_text(title, lineno)
         titlenode = nodes.title(title, '', *textnodes)
         name = normname(titlenode.astext())
         sectionnode['name'] = name
         sectionnode += titlenode
-        sectionnode += warnings
+        sectionnode += messages
         memo.document.note_implicit_target(sectionnode, sectionnode)
         offset = self.statemachine.lineoffset + 1
         absoffset = self.statemachine.abslineoffset() + 1
@@ -321,7 +321,7 @@ class RSTState(StateWS):
 
     def paragraph(self, lines, lineno):
         """
-        Return a list (paragraph & warnings) and a boolean: literal_block next?
+        Return a list (paragraph & messages) and a boolean: literal_block next?
         """
         data = '\n'.join(lines).rstrip()
         if data[-2:] == '::':
@@ -335,9 +335,9 @@ class RSTState(StateWS):
         else:
             text = data
             literalnext = 0
-        textnodes, warnings = self.inline_text(text, lineno)
+        textnodes, messages = self.inline_text(text, lineno)
         p = nodes.paragraph(data, '', *textnodes)
-        return [p] + warnings, literalnext
+        return [p] + messages, literalnext
 
     inline = Stuff()
     """Patterns and constants used for inline markup recognition."""
@@ -509,14 +509,14 @@ class RSTState(StateWS):
         return string[:matchend], [], string[matchend:], [sw], ''
 
     def emphasis(self, match, lineno, pattern=inline.patterns.emphasis):
-        before, inlines, remaining, syswarnings, endstring = self.inlineobj(
+        before, inlines, remaining, sysmessages, endstring = self.inlineobj(
               match, lineno, pattern, nodes.emphasis)
-        return before, inlines, remaining, syswarnings
+        return before, inlines, remaining, sysmessages
 
     def strong(self, match, lineno, pattern=inline.patterns.strong):
-        before, inlines, remaining, syswarnings, endstring = self.inlineobj(
+        before, inlines, remaining, sysmessages, endstring = self.inlineobj(
               match, lineno, pattern, nodes.strong)
-        return before, inlines, remaining, syswarnings
+        return before, inlines, remaining, sysmessages
 
     def interpreted_or_phrase_ref(
           self, match, lineno,
@@ -589,12 +589,12 @@ class RSTState(StateWS):
         return before, [nodes.interpreted(rawsource, text, **atts)], after, []
 
     def literal(self, match, lineno, pattern=inline.patterns.literal):
-        before, inlines, remaining, syswarnings, endstring = self.inlineobj(
+        before, inlines, remaining, sysmessages, endstring = self.inlineobj(
               match, lineno, pattern, nodes.literal, restorebackslashes=1)
-        return before, inlines, remaining, syswarnings
+        return before, inlines, remaining, sysmessages
 
     def inline_target(self, match, lineno, pattern=inline.patterns.target):
-        before, inlines, remaining, syswarnings, endstring = self.inlineobj(
+        before, inlines, remaining, sysmessages, endstring = self.inlineobj(
               match, lineno, pattern, nodes.target)
         if inlines:
             assert len(inlines) == 1
@@ -604,11 +604,11 @@ class RSTState(StateWS):
             target['name'] = name
             self.statemachine.memo.document.note_explicit_target(
                   target, self.statemachine.node)
-        return before, inlines, remaining, syswarnings
+        return before, inlines, remaining, sysmessages
 
     def substitution_reference(self, match, lineno,
                                pattern=inline.patterns.substitution_ref):
-        before, inlines, remaining, syswarnings, endstring = self.inlineobj(
+        before, inlines, remaining, sysmessages, endstring = self.inlineobj(
               match, lineno, pattern, nodes.substitution_reference)
         if inlines:
             assert len(inlines) == 1
@@ -628,7 +628,7 @@ class RSTState(StateWS):
                     self.statemachine.memo.document.note_refname(referencenode)
                 referencenode += subrefnode
                 inlines = [referencenode]
-        return before, inlines, remaining, syswarnings
+        return before, inlines, remaining, sysmessages
 
     def footnote_reference(self, match, lineno):
         fnname = match.group(self.inline.groups.initial.footnotelabel)
@@ -722,7 +722,7 @@ class RSTState(StateWS):
                     refend=inline.groups.initial.refend-1,
                     fnend=inline.groups.initial.fnend-1):
         """
-        Return 2 lists: nodes (text and inline elements), and system_warnings.
+        Return 2 lists: nodes (text and inline elements), and system_messages.
 
         Using a `pattern` matching start-strings (for emphasis, strong,
         interpreted, phrase reference, literal, substitution reference, and
@@ -730,23 +730,23 @@ class RSTState(StateWS):
         reference) we search for a candidate. When one is found, we check for
         validity (e.g., not a quoted '*' character). If valid, search for the
         corresponding end string if applicable, and check for validity. If not
-        found or invalid, raise a warning and ignore the start-string.
+        found or invalid, generate a warning and ignore the start-string.
         Standalone hyperlinks are found last.
         """
         remaining = escape2null(text)
         processed = []
         unprocessed = []
-        warnings = []
+        messages = []
         while remaining:
             match = pattern.search(remaining)
             if match:
                 groups = match.groups()
-                before, inlines, remaining, syswarnings = \
+                before, inlines, remaining, sysmessages = \
                       dispatch[groups[start] or groups[backquote]
                                or groups[refend]
                                or groups[fnend]](self, match, lineno)
                 unprocessed.append(before)
-                warnings += syswarnings
+                messages += sysmessages
                 if inlines:
                     processed += self.standalone_uri(''.join(unprocessed),
                                                      lineno)
@@ -757,7 +757,7 @@ class RSTState(StateWS):
         remaining = ''.join(unprocessed) + remaining
         if remaining:
             processed += self.standalone_uri(remaining, lineno)
-        return processed, warnings
+        return processed, messages
 
     def unindentwarning(self):
         return self.statemachine.memo.reporter.warning(
@@ -1105,27 +1105,27 @@ class Body(RSTState):
 
     def table(self):
         """Parse a table."""
-        block, warnings, blankfinish = self.isolatetable()
+        block, messages, blankfinish = self.isolatetable()
         if block:
             try:
                 tabledata = self.tableparser.parse(block)
                 tableline = self.statemachine.abslineno() - len(block) + 1
                 table = self.buildtable(tabledata, tableline)
-                nodelist = [table] + warnings
+                nodelist = [table] + messages
             except TableMarkupError, detail:
-                nodelist = self.malformedtable(block, str(detail)) + warnings
+                nodelist = self.malformedtable(block, str(detail)) + messages
         else:
-            nodelist = warnings
+            nodelist = messages
         return nodelist, blankfinish
 
     def isolatetable(self):
-        warnings = []
+        messages = []
         blankfinish = 1
         try:
             block = self.statemachine.getunindented()
         except statemachine.UnexpectedIndentationError, instance:
             block, lineno = instance.args
-            warnings.append(self.statemachine.memo.reporter.error(
+            messages.append(self.statemachine.memo.reporter.error(
                   'Unexpected indentation at line %s.' % lineno))
             blankfinish = 0
         width = len(block[0].strip())
@@ -1145,13 +1145,13 @@ class Body(RSTState):
                     del block[i+1:]
                     break
             else:
-                warnings.extend(self.malformedtable(block))
-                return [], warnings, blankfinish
+                messages.extend(self.malformedtable(block))
+                return [], messages, blankfinish
         for i in range(len(block)):     # check right edge
             if len(block[i]) != width or block[i][-1] not in '+|':
-                warnings.extend(self.malformedtable(block))
-                return [], warnings, blankfinish
-        return block, warnings, blankfinish
+                messages.extend(self.malformedtable(block))
+                return [], messages, blankfinish
+        return block, messages, blankfinish
 
     def malformedtable(self, block, detail=''):
         data = '\n'.join(block)
@@ -1832,10 +1832,10 @@ class Text(RSTState):
               self.statemachine.getindented()
         definitionlistitem = nodes.definition_list_item('\n'.join(termline
                                                                   + indented))
-        termlist, warnings = self.term(termline,
+        termlist, messages = self.term(termline,
                                        self.statemachine.abslineno() - 1)
         definitionlistitem += termlist
-        definition = nodes.definition('', *warnings)
+        definition = nodes.definition('', *messages)
         definitionlistitem += definition
         if termline[0][-2:] == '::':
             definition += self.statemachine.memo.reporter.info(
@@ -1850,14 +1850,14 @@ class Text(RSTState):
         nodelist = []
         parts = lines[0].split(' : ', 1)  # split into 1 or 2 parts
         termpart = parts[0].rstrip()
-        textnodes, warnings = self.inline_text(termpart, lineno)
+        textnodes, messages = self.inline_text(termpart, lineno)
         nodelist = [nodes.term(termpart, '', *textnodes)]
         if len(parts) == 2:
             classifierpart = parts[1].lstrip()
-            textnodes, cpwarnings = self.inline_text(classifierpart, lineno)
+            textnodes, cpmessages = self.inline_text(classifierpart, lineno)
             nodelist.append(nodes.classifier(classifierpart, '', *textnodes))
-            warnings += cpwarnings
-        return nodelist, warnings
+            messages += cpmessages
+        return nodelist, messages
 
 
 class SpecializedText(Text):

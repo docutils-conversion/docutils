@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/06 02:18:21 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/15 22:58:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -88,7 +88,7 @@ one line::
         A paragraph
         on more than
         one line:
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Unexpected indentation at line 4.
     <literal_block>
@@ -107,7 +107,7 @@ no blank line
         A paragraph:
     <literal_block>
         A literal block.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
     <paragraph>
@@ -148,7 +148,7 @@ Not a literal block.
 <document>
     <paragraph>
         A paragraph:
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Literal block expected at line 2; none found.
     <paragraph>
@@ -179,7 +179,7 @@ EOF, even though a literal block is indicated::
 <document>
     <paragraph>
         EOF, even though a literal block is indicated:
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Literal block expected at line 2; none found.
 """],

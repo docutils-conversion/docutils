@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/06 02:18:54 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/15 22:58:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -106,7 +106,7 @@ Here are some duplicate substitution definitions:
         Here are some duplicate substitution definitions:
     <substitution_definition dupname="symbol">
         <image alt="symbol" uri="symbol.png">
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Duplicate substitution definition name: "symbol"
     <substitution_definition name="symbol">
@@ -135,37 +135,37 @@ No blank line after.
         Here are some bad cases:
     <substitution_definition name="symbol">
         <image alt="symbol" uri="symbol.png">
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 4.
     <paragraph>
         No blank line after.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "empty" missing contents at line 6.
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Unknown directive type "directive" at line 8.
             Rendering the directive as a literal block.
     <literal_block>
         directive:: symbol.png
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "unknown" empty or invalid at line 8.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "invalid 1" empty or invalid at line 10.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "invalid 2" empty or invalid at line 11.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 12.
     <block_quote>
         <paragraph>
             With some block quote text, line 1.
             And some more, line 2.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Substitution definition "invalid 3" empty or invalid at line 15.
 """],

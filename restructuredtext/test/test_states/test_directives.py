@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2002/02/13 02:20:57 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2002/02/15 22:58:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -27,7 +27,7 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Directive processed. Type="reStructuredText-test-directive", data="", directive block: None
     <paragraph>
@@ -40,7 +40,7 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Directive processed. Type="reStructuredText-test-directive", data="argument", directive block: None
     <paragraph>
@@ -55,7 +55,7 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Directive processed. Type="reStructuredText-test-directive", data="", directive block:
         <literal_block>
@@ -71,7 +71,7 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Directive processed. Type="reStructuredText-test-directive", data="", directive block:
         <literal_block>
@@ -88,12 +88,12 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Directive processed. Type="reStructuredText-test-directive", data="", directive block:
         <literal_block>
             block
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 3.
     <paragraph>
@@ -111,19 +111,19 @@ Paragraph.
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Unknown directive type "reStructuredText-unknown-directive" at line 1.
             Rendering the directive as a literal block.
     <literal_block>
         .. reStructuredText-unknown-directive::
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Unknown directive type "reStructuredText-unknown-directive" at line 3.
             Rendering the directive as a literal block.
     <literal_block>
         .. reStructuredText-unknown-directive:: argument
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Unknown directive type "reStructuredText-unknown-directive" at line 5.
             Rendering the directive as a literal block.
@@ -238,7 +238,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Missing image URI argument at line 1.
         <literal_block>
@@ -249,7 +249,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Image URI at line 1 contains whitespace.
         <literal_block>
@@ -308,7 +308,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute data at line 1: input line not enclosed in "[" and "]".
         <literal_block>
@@ -322,7 +322,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute data at line 1: missing value after "scale=".
         <literal_block>
@@ -335,7 +335,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute data at line 1: missing "=".
         <literal_block>
@@ -348,7 +348,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute data at line 1: missing attribute name before "=".
         <literal_block>
@@ -361,7 +361,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Unknown image attribute at line 1: "sale".
         <literal_block>
@@ -374,7 +374,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute value at line 1: invalid literal for int(): fifty.
         <literal_block>
@@ -387,7 +387,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute data at line 1: duplicate attribute "scale".
         <literal_block>
@@ -400,7 +400,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute data at line 1: attribute "alt" missing end quote (').
         <literal_block>
@@ -413,7 +413,7 @@ totest['images'] = [
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid image attribute data at line 1: attribute "alt" end quote (') not followed by whitespace.
         <literal_block>
@@ -685,7 +685,7 @@ Paragraph
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Empty meta directive at line 1.
 """],
@@ -695,7 +695,7 @@ Paragraph
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid meta directive at line 2.
 """],
@@ -707,7 +707,7 @@ Paragraph
 """\
 <document>
     <meta content="content" name="name">
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Invalid meta directive at line 3.
 """],
@@ -717,7 +717,7 @@ Paragraph
 """,
 """\
 <document>
-    <system_warning level="3" type="ERROR">
+    <system_message level="3" type="ERROR">
         <paragraph>
             Error parsing meta tag attribute "notattval": missing "="
     <meta content="content" name="name">

@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/07 01:55:41 $
+:Date: $Date: 2002/02/15 23:00:24 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -115,6 +115,7 @@ Changed contact email addresses.
   - Updated for languagecode.
   - Updated for hyperlink, footnote transforms.
   - Updated for new root document Node creation protocol.
+  - Changed "system_warning" to "system_message".
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/06 02:18:32 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/15 22:58:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -417,7 +417,7 @@ empty item above, no blank line
                 <long_option>
                     option
             <description>
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 2.
     <paragraph>

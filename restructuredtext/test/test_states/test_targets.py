@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2002/02/06 02:19:12 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/02/15 22:58:16 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -76,12 +76,12 @@ Indirect hyperlink targets:
 """,
 """\
 <document>
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Hyperlink target at line 1 contains whitespace. Perhaps a footnote was intended?
         <literal_block>
             .. _target1: Not a proper hyperlink target
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Hyperlink target at line 3 contains whitespace. Perhaps a footnote was intended?
         <literal_block>
@@ -134,7 +134,7 @@ Duplicate external targets (different URIs):
     <paragraph>
         Duplicate external targets (different URIs):
     <target dupname="target" refuri="first">
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "target"
     <target dupname="target" refuri="second">
@@ -151,7 +151,7 @@ Duplicate external targets (same URIs):
     <paragraph>
         Duplicate external targets (same URIs):
     <target dupname="target" refuri="first">
-    <system_warning level="1" type="INFO">
+    <system_message level="1" type="INFO">
         <paragraph>
             Duplicate explicit target name: "target"
     <target name="target" refuri="first">
@@ -181,7 +181,7 @@ Paragraph.
     <section dupname="title">
         <title>
             Title
-        <system_warning level="1" type="INFO">
+        <system_message level="1" type="INFO">
             <paragraph>
                 Duplicate implicit target name: "title"
         <paragraph>
@@ -204,7 +204,7 @@ Paragraph.
     <section dupname="title">
         <title>
             Title
-        <system_warning level="1" type="INFO">
+        <system_message level="1" type="INFO">
             <paragraph>
                 Duplicate implicit target name: "title"
         <target name="title">
@@ -233,13 +233,13 @@ Third.
     <target dupname="title">
     <paragraph>
         First.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "title"
     <target dupname="title">
     <paragraph>
         Second.
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "title"
     <target dupname="title">
@@ -274,18 +274,18 @@ Explicit internal target.
         <footnote dupname="target">
             <label>
                 target
-            <system_warning level="1" type="INFO">
+            <system_message level="1" type="INFO">
                 <paragraph>
                     Duplicate implicit target name: "target"
             <paragraph>
                 Footnote target.
-        <system_warning level="2" type="WARNING">
+        <system_message level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "target"
         <target dupname="target">
         <paragraph>
             Explicit internal target.
-        <system_warning level="2" type="WARNING">
+        <system_message level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "target"
         <target dupname="target" refuri="Explicit_external_target">
@@ -363,7 +363,7 @@ no blank line
     <target anonymous="1" refname="reference">
     <target anonymous="1" refname="reference">
     <target name="target1" refname="reference">
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 7.
     <paragraph>
@@ -372,7 +372,7 @@ no blank line
     <target anonymous="1" refname="reference">
     <target anonymous="1" refname="reference">
     <target anonymous="1" refname="reference">
-    <system_warning level="2" type="WARNING">
+    <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 13.
     <paragraph>
