@@ -1,7 +1,7 @@
 PEP: 258
 Title: Docutils Design Specification
-Version: $Revision: 1.8 $
-Last-Modified: $Date: 2002/04/04 05:52:44 $
+Version: $Revision: 1.9 $
+Last-Modified: $Date: 2002/04/13 17:00:21 $
 Author: goodger@users.sourceforge.net (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
@@ -420,7 +420,7 @@ Specification
     Distributors
     ------------
 
-    Distributors exist for each method of storing the results of
+    Distributors will exist for each method of storing the results of
     processing:
 
     - In a single file on disk.
