@@ -9,8 +9,8 @@ Function get_close_matches(word, possibilities, n=3, cutoff=0.6):
 Function ndiff(a, b):
     Return a delta: the difference between `a` and `b` (lists of strings).
 
-Function restore(sequence, which):
-    Return one of the two sequences that generated a delta.
+Function restore(delta, which):
+    Return one of the two sequences that generated an ndiff delta.
 
 Class SequenceMatcher:
     A flexible class for comparing pairs of sequences of any type.
@@ -19,32 +19,36 @@ Class Differ:
     For producing human-readable deltas from sequences of lines of text.
 """
 
+__all__ = ['get_close_matches', 'ndiff', 'restore', 'SequenceMatcher',
+           'Differ']
+
 TRACE = 0
 
 class SequenceMatcher:
 
     """
     SequenceMatcher is a flexible class for comparing pairs of sequences of
-    any type, so long as the sequence elements are hashable. The basic
+    any type, so long as the sequence elements are hashable.  The basic
     algorithm predates, and is a little fancier than, an algorithm
     published in the late 1980's by Ratcliff and Obershelp under the
-    hyperbolic name "gestalt pattern matching". The basic idea is to find
+    hyperbolic name "gestalt pattern matching".  The basic idea is to find
     the longest contiguous matching subsequence that contains no "junk"
-    elements (R-O doesn't address junk). The same idea is then applied
+    elements (R-O doesn't address junk).  The same idea is then applied
     recursively to the pieces of the sequences to the left and to the right
-    of the matching subsequence. This does not yield minimal edit
+    of the matching subsequence.  This does not yield minimal edit
     sequences, but does tend to yield matches that "look right" to people.
 
     SequenceMatcher tries to compute a "human-friendly diff" between two
-    sequences. Unlike e.g. UNIX(tm) diff, the fundamental notion is the
-    longest *contiguous* & junk-free matching subsequence. That's what catches
-    peoples' eyes. The Windows(tm) windiff has another interesting notion,
-    pairing up elements that appear uniquely in each sequence. That, and the
-    method here, appear to yield more intuitive difference reports than does
-    diff. This method appears to be the least vulnerable to synching up on
-    blocks of "junk lines", though (like blank lines in ordinary text files,
-    or maybe "<P>" lines in HTML files). That may be because this is the only
-    method of the 3 that has a *concept* of "junk" <wink>.
+    sequences.  Unlike e.g. UNIX(tm) diff, the fundamental notion is the
+    longest *contiguous* & junk-free matching subsequence.  That's what
+    catches peoples' eyes.  The Windows(tm) windiff has another interesting
+    notion, pairing up elements that appear uniquely in each sequence.
+    That, and the method here, appear to yield more intuitive difference
+    reports than does diff.  This method appears to be the least vulnerable
+    to synching up on blocks of "junk lines", though (like blank lines in
+    ordinary text files, or maybe "<P>" lines in HTML files).  That may be
+    because this is the only method of the 3 that has a *concept* of
+    "junk" <wink>.
 
     Example, comparing two strings, and considering blanks to be "junk":
 
@@ -135,7 +139,7 @@ class SequenceMatcher:
 
         Optional arg isjunk is None (the default), or a one-argument
         function that takes a sequence element and returns true iff the
-        element is junk. None is equivalent to passing "lambda x: 0", i.e.
+        element is junk.  None is equivalent to passing "lambda x: 0", i.e.
         no elements are considered to be junk.  For example, pass
             lambda x: x in " \\t"
         if you're comparing lines as sequences of characters, and don't
@@ -569,12 +573,77 @@ class SequenceMatcher:
         # shorter sequence
         return 2.0 * min(la, lb) / (la + lb)
 
+def get_close_matches(word, possibilities, n=3, cutoff=0.6):
+    """Use SequenceMatcher to return list of the best "good enough" matches.
+
+    word is a sequence for which close matches are desired (typically a
+    string).
+
+    possibilities is a list of sequences against which to match word
+    (typically a list of strings).
+
+    Optional arg n (default 3) is the maximum number of close matches to
+    return.  n must be > 0.
+
+    Optional arg cutoff (default 0.6) is a float in [0, 1].  Possibilities
+    that don't score at least that similar to word are ignored.
+
+    The best (no more than n) matches among the possibilities are returned
+    in a list, sorted by similarity score, most similar first.
+
+    >>> get_close_matches("appel", ["ape", "apple", "peach", "puppy"])
+    ['apple', 'ape']
+    >>> import keyword as _keyword
+    >>> get_close_matches("wheel", _keyword.kwlist)
+    ['while']
+    >>> get_close_matches("apple", _keyword.kwlist)
+    []
+    >>> get_close_matches("accept", _keyword.kwlist)
+    ['except']
+    """
+
+    if not n >  0:
+        raise ValueError("n must be > 0: " + `n`)
+    if not 0.0 <= cutoff <= 1.0:
+        raise ValueError("cutoff must be in [0.0, 1.0]: " + `cutoff`)
+    result = []
+    s = SequenceMatcher()
+    s.set_seq2(word)
+    for x in possibilities:
+        s.set_seq1(x)
+        if s.real_quick_ratio() >= cutoff and \
+           s.quick_ratio() >= cutoff and \
+           s.ratio() >= cutoff:
+            result.append((s.ratio(), x))
+    # Sort by score.
+    result.sort()
+    # Retain only the best n.
+    result = result[-n:]
+    # Move best-scorer to head of list.
+    result.reverse()
+    # Strip scores.
+    return [x for score, x in result]
+
+
+def _count_leading(line, ch):
+    """
+    Return number of `ch` characters at the start of `line`.
+
+    Example:
+
+    >>> _count_leading('   abc', ' ')
+    3
+    """
+
+    i, n = 0, len(line)
+    while i < n and line[i] == ch:
+        i += 1
+    return i
 
 class Differ:
-
     r"""
     Differ is a class for comparing sequences of lines of text, and
-    producing human-readable differences or deltas. Differ uses
+    producing human-readable differences or deltas.  Differ uses
     SequenceMatcher both to compare sequences of lines, and to compare
     sequences of characters within similar (near-matching) lines.
 
@@ -586,10 +655,10 @@ class Differ:
         '? '    line not present in either input sequence
 
     Lines beginning with '? ' attempt to guide the eye to intraline
-    differences, and were not present in either input sequence. These lines
+    differences, and were not present in either input sequence.  These lines
     can be confusing if the sequences contain tab characters.
 
-    Note that Differ makes no claim to produce a *minimal* diff. To the
+    Note that Differ makes no claim to produce a *minimal* diff.  To the
     contrary, minimal diffs are often counter-intuitive, because they synch
     up anywhere possible, sometimes accidental matches 100 pages apart.
     Restricting synch points to contiguous matches preserves some notion of
@@ -621,7 +690,7 @@ class Differ:
     >>> d = Differ()
 
     Note that when instantiating a Differ object we may pass functions to
-    filter out line and character 'junk'. See Differ.__init__ for details.
+    filter out line and character 'junk'.  See Differ.__init__ for details.
 
     Finally, we compare the two:
 
@@ -635,11 +704,11 @@ class Differ:
      '-   2. Explicit is better than implicit.\n',
      '-   3. Simple is better than complex.\n',
      '+   3.   Simple is better than complex.\n',
-     '?     ++                                \n',
+     '?     ++\n',
      '-   4. Complex is better than complicated.\n',
-     '?            ^                     ---- ^  \n',
+     '?            ^                     ---- ^\n',
      '+   4. Complicated is better than complex.\n',
-     '?           ++++ ^                      ^  \n',
+     '?           ++++ ^                      ^\n',
      '+   5. Flat is better than nested.\n']
 
     As a single multi-line string it looks like this:
@@ -649,11 +718,11 @@ class Differ:
     -   2. Explicit is better than implicit.
     -   3. Simple is better than complex.
     +   3.   Simple is better than complex.
-    ?     ++                                
+    ?     ++
     -   4. Complex is better than complicated.
-    ?            ^                     ---- ^  
+    ?            ^                     ---- ^
     +   4. Complicated is better than complex.
-    ?           ++++ ^                      ^  
+    ?           ++++ ^                      ^
     +   5. Flat is better than nested.
 
     Methods:
@@ -681,6 +750,7 @@ class Differ:
           whitespace characters (a blank or tab; **note**: bad idea to include
           newline in this!).
         """
+
         self.linejunk = linejunk
         self.charjunk = charjunk
         self.results = []
@@ -700,48 +770,49 @@ class Differ:
         >>> print ''.join(Differ().compare('one\ntwo\nthree\n'.splitlines(1),
         ...                                'ore\ntree\nemu\n'.splitlines(1))),
         - one
-        ?  ^  
+        ?  ^
         + ore
-        ?  ^  
+        ?  ^
         - two
         - three
-        ?  -    
+        ?  -
         + tree
         + emu
         """
+
         cruncher = SequenceMatcher(self.linejunk, a, b)
         for tag, alo, ahi, blo, bhi in cruncher.get_opcodes():
             if tag == 'replace':
-                self.fancy_replace(a, alo, ahi, b, blo, bhi)
+                self._fancy_replace(a, alo, ahi, b, blo, bhi)
             elif tag == 'delete':
-                self.dump('-', a, alo, ahi)
+                self._dump('-', a, alo, ahi)
             elif tag == 'insert':
-                self.dump('+', b, blo, bhi)
+                self._dump('+', b, blo, bhi)
             elif tag == 'equal':
-                self.dump(' ', a, alo, ahi)
+                self._dump(' ', a, alo, ahi)
             else:
                 raise ValueError, 'unknown tag ' + `tag`
         results = self.results
         self.results = []
         return results
 
-    def dump(self, tag, x, lo, hi):
+    def _dump(self, tag, x, lo, hi):
         """Store comparison results for a same-tagged range."""
         for i in xrange(lo, hi):
             self.results.append('%s %s' % (tag, x[i]))
 
-    def plain_replace(self, a, alo, ahi, b, blo, bhi):
+    def _plain_replace(self, a, alo, ahi, b, blo, bhi):
         assert alo < ahi and blo < bhi
         # dump the shorter block first -- reduces the burden on short-term
         # memory if the blocks are of very different sizes
         if bhi - blo < ahi - alo:
-            self.dump('+', b, blo, bhi)
-            self.dump('-', a, alo, ahi)
+            self._dump('+', b, blo, bhi)
+            self._dump('-', a, alo, ahi)
         else:
-            self.dump('-', a, alo, ahi)
-            self.dump('+', b, blo, bhi)
+            self._dump('-', a, alo, ahi)
+            self._dump('+', b, blo, bhi)
 
-    def fancy_replace(self, a, alo, ahi, b, blo, bhi):
+    def _fancy_replace(self, a, alo, ahi, b, blo, bhi):
         r"""
         When replacing one block of lines with another, search the blocks
         for *similar* lines; the best-matching pair (if any) is used as a
@@ -751,18 +822,19 @@ class Differ:
         Example:
 
         >>> d = Differ()
-        >>> d.fancy_replace(['abcDefghiJkl\n'], 0, 1, ['abcdefGhijkl\n'], 0, 1)
+        >>> d._fancy_replace(['abcDefghiJkl\n'], 0, 1, ['abcdefGhijkl\n'], 0, 1)
         >>> print ''.join(d.results),
         - abcDefghiJkl
-        ?    ^  ^  ^   
+        ?    ^  ^  ^
         + abcdefGhijkl
-        ?    ^  ^  ^   
+        ?    ^  ^  ^
         """
+
         if TRACE:
-            self.results.append('*** fancy_replace %s %s %s %s\n'
+            self.results.append('*** _fancy_replace %s %s %s %s\n'
                                 % (alo, ahi, blo, bhi))
-            self.dump('>', a, alo, ahi)
-            self.dump('<', b, blo, bhi)
+            self._dump('>', a, alo, ahi)
+            self._dump('<', b, blo, bhi)
 
         # don't synch up unless the lines have a similarity score of at
         # least cutoff; best_ratio tracks the best score seen so far
@@ -797,7 +869,7 @@ class Differ:
             # no non-identical "pretty close" pair
             if eqi is None:
                 # no identical pair either -- treat it as a straight replace
-                self.plain_replace(a, alo, ahi, b, blo, bhi)
+                self._plain_replace(a, alo, ahi, b, blo, bhi)
                 return
             # no close pair, but an identical pair -- synch up on that
             best_i, best_j, best_ratio = eqi, eqj, 1.0
@@ -810,11 +882,11 @@ class Differ:
         if TRACE:
             self.results.append('*** best_ratio %s %s %s %s\n'
                                 % (best_ratio, best_i, best_j))
-            self.dump('>', a, best_i, best_i+1)
-            self.dump('<', b, best_j, best_j+1)
+            self._dump('>', a, best_i, best_i+1)
+            self._dump('<', b, best_j, best_j+1)
 
         # pump out diffs from before the synch point
-        self.fancy_helper(a, alo, best_i, b, blo, best_j)
+        self._fancy_helper(a, alo, best_i, b, blo, best_j)
 
         # do intraline marking on the synch pair
         aelt, belt = a[best_i], b[best_j]
@@ -836,64 +908,54 @@ class Differ:
                     btags += ' ' * lb
                 else:
                     raise ValueError, 'unknown tag ' + `tag`
-            self.qformat(aelt, belt, atags, btags)
+            self._qformat(aelt, belt, atags, btags)
         else:
             # the synch pair is identical
             self.results.append('  ' + aelt)
 
         # pump out diffs from after the synch point
-        self.fancy_helper(a, best_i+1, ahi, b, best_j+1, bhi)
+        self._fancy_helper(a, best_i+1, ahi, b, best_j+1, bhi)
 
-    def fancy_helper(self, a, alo, ahi, b, blo, bhi):
+    def _fancy_helper(self, a, alo, ahi, b, blo, bhi):
         if alo < ahi:
             if blo < bhi:
-                self.fancy_replace(a, alo, ahi, b, blo, bhi)
+                self._fancy_replace(a, alo, ahi, b, blo, bhi)
             else:
-                self.dump('-', a, alo, ahi)
+                self._dump('-', a, alo, ahi)
         elif blo < bhi:
-            self.dump('+', b, blo, bhi)
+            self._dump('+', b, blo, bhi)
 
-    def qformat(self, aline, bline, atags, btags):
+    def _qformat(self, aline, bline, atags, btags):
         r"""
         Format "?" output and deal with leading tabs.
 
         Example:
 
         >>> d = Differ()
-        >>> d.qformat('\tabcDefghiJkl\n', '\t\tabcdefGhijkl\n',
-        ...           '  ^ ^  ^      ', '+  ^ ^  ^      ')
+        >>> d._qformat('\tabcDefghiJkl\n', '\t\tabcdefGhijkl\n',
+        ...            '  ^ ^  ^      ', '+  ^ ^  ^      ')
         >>> for line in d.results: print repr(line)
         ...
         '- \tabcDefghiJkl\n'
-        '? \t ^ ^  ^      \n'
+        '? \t ^ ^  ^\n'
         '+ \t\tabcdefGhijkl\n'
-        '? \t  ^ ^  ^      \n'
+        '? \t  ^ ^  ^\n'
         """
+
         # Can hurt, but will probably help most of the time.
-        common = min(self.count_leading(aline, "\t"),
-                     self.count_leading(bline, "\t"))
-        common = min(common, self.count_leading(atags[:common], " "))
+        common = min(_count_leading(aline, "\t"),
+                     _count_leading(bline, "\t"))
+        common = min(common, _count_leading(atags[:common], " "))
+        atags = atags[common:].rstrip()
+        btags = btags[common:].rstrip()
+
         self.results.append("- " + aline)
-        if self.count_leading(atags, " ") < len(atags):
-            self.results.append("? %s%s\n" % ("\t" * common, atags[common:]))
+        if atags:
+            self.results.append("? %s%s\n" % ("\t" * common, atags))
+
         self.results.append("+ " + bline)
-        if self.count_leading(btags, " ") < len(btags):
-            self.results.append("? %s%s\n" % ("\t" * common, btags[common:]))
-
-    def count_leading(self, line, ch):
-        """
-        Return number of `ch` characters at the start of `line`.
-
-        Example:
-
-        >>> Differ().count_leading('   abc', ' ')
-        3
-        """
-        i, n = 0, len(line)
-        while i < n and line[i] == ch:
-            i += 1
-        return i
-
+        if btags:
+            self.results.append("? %s%s\n" % ("\t" * common, btags))
 
 # With respect to junk, an earlier version of ndiff simply refused to
 # *start* a match with a junk element.  The result was cases like this:
@@ -927,6 +989,7 @@ def IS_LINE_JUNK(line, pat=re.compile(r"\s*#?\s*$").match):
     >>> IS_LINE_JUNK('hello\n')
     0
     """
+
     return pat(line) is not None
 
 def IS_CHARACTER_JUNK(ch, ws=" \t"):
@@ -944,6 +1007,7 @@ def IS_CHARACTER_JUNK(ch, ws=" \t"):
     >>> IS_CHARACTER_JUNK('x')
     0
     """
+
     return ch in ws
 
 del re
@@ -973,22 +1037,22 @@ def ndiff(a, b, linejunk=IS_LINE_JUNK, charjunk=IS_CHARACTER_JUNK):
     ...              'ore\ntree\nemu\n'.splitlines(1))
     >>> print ''.join(diff),
     - one
-    ?  ^  
+    ?  ^
     + ore
-    ?  ^  
+    ?  ^
     - two
     - three
-    ?  -    
+    ?  -
     + tree
     + emu
     """
     return Differ(linejunk, charjunk).compare(a, b)
 
-def restore(sequence, which):
+def restore(delta, which):
     r"""
     Return one of the two sequences that generated a delta.
 
-    Given a `sequence` produced by `Differ.compare()` or `ndiff()`, extract
+    Given a `delta` produced by `Differ.compare()` or `ndiff()`, extract
     lines originating from file 1 or 2 (parameter `which`), stripping off line
     prefixes.
 
@@ -1008,64 +1072,14 @@ def restore(sequence, which):
     try:
         tag = {1: "- ", 2: "+ "}[int(which)]
     except KeyError:
-        raise ValueError, ('unknown sequence choice (must be 1 or 2): %r'
+        raise ValueError, ('unknown delta choice (must be 1 or 2): %r'
                            % which)
     prefixes = ("  ", tag)
     results = []
-    for line in sequence:
+    for line in delta:
         if line[:2] in prefixes:
             results.append(line[2:])
     return results
-
-def get_close_matches(word, possibilities, n=3, cutoff=0.6):
-    """Use SequenceMatcher to return list of the best "good enough" matches.
-
-    word is a sequence for which close matches are desired (typically a
-    string).
-
-    possibilities is a list of sequences against which to match word
-    (typically a list of strings).
-
-    Optional arg n (default 3) is the maximum number of close matches to
-    return.  n must be > 0.
-
-    Optional arg cutoff (default 0.6) is a float in [0, 1].  Possibilities
-    that don't score at least that similar to word are ignored.
-
-    The best (no more than n) matches among the possibilities are returned
-    in a list, sorted by similarity score, most similar first.
-
-    >>> get_close_matches("appel", ["ape", "apple", "peach", "puppy"])
-    ['apple', 'ape']
-    >>> import keyword as _keyword
-    >>> get_close_matches("wheel", _keyword.kwlist)
-    ['while']
-    >>> get_close_matches("apple", _keyword.kwlist)
-    []
-    >>> get_close_matches("accept", _keyword.kwlist)
-    ['except']
-    """
-    if not n >  0:
-        raise ValueError("n must be > 0: " + `n`)
-    if not 0.0 <= cutoff <= 1.0:
-        raise ValueError("cutoff must be in [0.0, 1.0]: " + `cutoff`)
-    result = []
-    s = SequenceMatcher()
-    s.set_seq2(word)
-    for x in possibilities:
-        s.set_seq1(x)
-        if s.real_quick_ratio() >= cutoff and \
-           s.quick_ratio() >= cutoff and \
-           s.ratio() >= cutoff:
-            result.append((s.ratio(), x))
-    # Sort by score.
-    result.sort()
-    # Retain only the best n.
-    result = result[-n:]
-    # Move best-scorer to head of list.
-    result.reverse()
-    # Strip scores.
-    return [x for score, x in result]
 
 def _test():
     import doctest, difflib
