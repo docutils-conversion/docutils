@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/02/12 02:29:02 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/07 03:27:49 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains directive implementation modules.
@@ -34,10 +34,6 @@ __docformat__ = 'reStructuredText'
 __all__ = ['directive']
 
 _directive_registry = {
-      'restructuredtext-test-directive': ('directivetest',
-                                          'directive_test_function'),
-      'image': ('images', 'image'),
-      'figure': ('images', 'figure'),
       'attention': ('admonitions', 'attention'),
       'caution': ('admonitions', 'caution'),
       'danger': ('admonitions', 'danger'),
@@ -47,8 +43,16 @@ _directive_registry = {
       'tip': ('admonitions', 'tip'),
       'hint': ('admonitions', 'hint'),
       'warning': ('admonitions', 'warning'),
+      'image': ('images', 'image'),
+      'figure': ('images', 'figure'),
+      'contents': ('components', 'contents'),
+      'footnotes': ('components', 'footnotes'),
+      'citations': ('components', 'citations'),
+      'topic': ('components', 'topic'),
       'meta': ('html', 'meta'),
-      'imagemap': ('html', 'imagemap'),}
+      'imagemap': ('html', 'imagemap'),
+      'raw': ('misc', 'raw'),
+      'restructuredtext-test-directive': ('misc', 'directive_test_function'),}
 """Mapping of directive name to (module name, function name). The directive
 'name' is canonical & must be lowercase; language-dependent names are defined
 in the language package."""
