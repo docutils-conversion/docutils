@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2001/09/26 03:32:11 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2001/10/20 03:07:15 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -313,7 +313,7 @@ class document(_Element):
         _Element.__init__(self, *args, **kwargs)
         self.explicitlinks = {}
         self.implicitlinks = {}
-        self.indirectlinks = {}
+        self.externallinks = {}
         self.refnames = {}
         self.autofootnotes = []
         self.autofootnoterefs = []
@@ -328,7 +328,7 @@ class document(_Element):
         if innode == None:
             innode = linknode
         if self.explicitlinks.has_key(name) \
-              or self.indirectlinks.has_key(name) \
+              or self.externallinks.has_key(name) \
               or self.implicitlinks.has_key(name):
             sw = self.errorhandler.system_warning(
                   0, 'Duplicate implicit link name: "%s"' % name)
@@ -348,7 +348,7 @@ class document(_Element):
                   1, 'Duplicate explicit link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.explicitlinks, self.implicitlinks,
-                                self.indirectlinks)
+                                self.externallinks)
             linknode['dupname'] = name
             self.explicitlinks.setdefault(name, []).append(linknode)
             return
@@ -370,7 +370,7 @@ class document(_Element):
     def addrefname(self, name, node):
         self.refnames.setdefault(name, []).append(node)
 
-    def addindirectlink(self, name, reference, linknode, innode):
+    def addexternallink(self, name, reference, linknode, innode):
         if self.explicitlinks.has_key(name):
             level = 0
             for t in self.explicitlinks.get(name, []):
@@ -378,9 +378,9 @@ class document(_Element):
                     level = 1
                     break
             sw = self.errorhandler.system_warning(
-                  level, 'Duplicate indirect link name: "%s"' % name)
+                  level, 'Duplicate external link name: "%s"' % name)
             innode += sw
-            self.clearlinknames(name, self.explicitlinks, self.indirectlinks,
+            self.clearlinknames(name, self.explicitlinks, self.externallinks,
                                 self.implicitlinks)
         elif self.implicitlinks.has_key(name):
             print >>sys.stderr, "already has explicit link"
@@ -388,7 +388,7 @@ class document(_Element):
                   0, 'Duplicate implicit link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.implicitlinks)
-        self.indirectlinks.setdefault(name, []).append(linknode)
+        self.externallinks.setdefault(name, []).append(linknode)
         self.explicitlinks.setdefault(name, []).append(linknode)
         linknode['name'] = name
 
