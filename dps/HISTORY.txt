@@ -4,7 +4,7 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/08/11 01:53:18 $
+Date: $Date: 2001/08/14 03:54:58 $
 Website: http://docstring.sourceforge.net/
 
 
@@ -63,7 +63,10 @@ Release 0.4? (pending)
   - Clarifications due to Tony Ibbs.
   - Added names to system warnings.
 
-* spec/gdpi.dtd: Fixed typos & omissions; now validates.
+* spec/gdpi.dtd:
+
+  - Fixed typos & omissions; now validates.
+  - Changed field_argument's model to PCDATA.
 
 * spec/pdpi.dtd: Fixed typos; now validates.
 
