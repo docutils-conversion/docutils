@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.37 $
-:Date: $Date: 2002/01/25 23:48:14 $
+:Revision: $Revision: 1.38 $
+:Date: $Date: 2002/01/28 02:12:41 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -651,7 +651,7 @@ class RSTState(StateWS):
             fnrefnode += nodes.Text(fnname)
         if refname:
             fnrefnode['refname'] = refname
-            self.statemachine.memo.document.note_refname(fnrefnode)
+            self.statemachine.memo.document.note_footnote_ref(fnrefnode)
         string = match.string
         matchstart = match.start(self.inline.groups.initial.whole)
         matchend = match.end(self.inline.groups.initial.whole)
@@ -1277,8 +1277,8 @@ class Body(RSTState):
             footnotenode += nodes.label('', label)
         if name:
             footnotenode['name'] = name
-            self.statemachine.memo.document.note_implicit_target(footnotenode,
-                                                               footnotenode)
+            self.statemachine.memo.document.note_explicit_target(
+                  footnotenode, footnotenode)
         if indented:
             self.nestedparse(indented, inputoffset=offset, node=footnotenode)
         return [footnotenode], blankfinish
