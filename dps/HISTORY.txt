@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/28 05:18:06 $
+:Date: $Date: 2002/04/13 17:09:12 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -222,7 +222,7 @@ Changed contact email addresses.
   - Added 'problematic', inline relative of 'system_message'.
   - Added 'type' attribute to 'system_warning', removed 'warning'.
   - Changed "system_warning" to "system_message"; added backlink
-    attribute "refids".
+    attribute "backrefs".
   - Reworked option lists.
   - Removed "abstract"
   - Added "topic".
@@ -230,7 +230,8 @@ Changed contact email addresses.
   - Added "citation" and "citation_reference".
   - Added "raw".
   - Added "refid" attribute to "title" for two-way Tables of Contents.
-  - Added "refids" attribute to "footnote" & "citation" for backlinks.
+  - Added "backrefs" attribute to "footnote" & "citation" for
+    backlinks.
 
 * spec/pdpi.dtd:
 

@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/04/04 05:53:11 $
-:Revision: $Revision: 1.34 $
+:Date: $Date: 2002/04/13 17:09:21 $
+:Revision: $Revision: 1.35 $
 
 .. contents::
 
@@ -71,24 +71,13 @@ To Do
   avoid importing top-level modules if the module name is not in
   dps/readers. Potential nastiness.)
 
-- Add "name" -> "id" attribute conversion.  We must have unique,
-  SGML-ID-friendly id's and a one-to-one mapping for later lookup.
+- Perhaps store a name->id mapping file?  This could be stored
+  permanently, read by subsequent processing runs, and updated with
+  new entries.  ("Persistent ID mapping"?)
 
-  - Remove dependency on names as sole distinguishing characteristic.
-    Use IDs instead.
-
-    - Perhaps get rid of "name" attributes altoghether?  Certainly get
-      rid of the "_:1:_" abominations.
-
-  - Perhaps keep a name->id mapping file?  This could be stored
-    permanently, read by subsequent processing runs, and updated with
-    new entries.  ("Persistent ID mapping"?)
-
-  - When resolving reference IDs from names, we must check for
-    non-existent mappings.  In the Writer or in a transform?
-
-- Add support for "refids" attribute on footnotes & citations, for
-  backlinks.
+- The name->id conversion and hyperlink resolution code needs to be
+  checked for correctness and refactored.  I'm afraid it's a bit of a
+  spaghetti mess now.
 
 - Considerations for an HTML Writer [#]_:
 
@@ -109,6 +98,12 @@ To Do
   .. _CSS1 spec: http://www.w3.org/TR/REC-CSS1
   .. [#] Source: `HTML 4.0 in Netscape and Explorer`__.
   __ http://www.webreference.com/dev/html4nsie/index.html
+
+- Allow for style sheet info to be passed in, either as a <LINK>, or
+  as embedded style info.
+
+- Construct a templating system, as in ht2html/yaptu, using directives
+  and substitutions for dynamic stuff.
 
 
 Coding Conventions
