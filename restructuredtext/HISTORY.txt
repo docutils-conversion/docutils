@@ -4,9 +4,23 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/07/21 22:14:04 $
+Date: $Date: 2001/07/25 08:09:21 $
 Website: http://structuredtext.sf.net/
 
+Rrefactor-test
+==============
+
+The ``Rrefactor-test`` branch is being used by Garth to try out a major 
+re-structuring of the reStructuredText unit tests. Working on such an 
+update in ``MAIN`` or ``rel-0-3`` would be downright impolite, hence the 
+branch. 
+
+Changes made in ``Rrefactor-test`` will be merged into ``MAIN`` when, and 
+if, the following occur: 
+
+* Garth starts his work. 
+* Garth finishes his work. 
+* David is persuaded that Garth's changes are useful. 
 
 Release 0.3 (2001-07-19)
 ========================
