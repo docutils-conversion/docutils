@@ -1,10 +1,10 @@
 ==============================
  Problems With StructuredText
 ==============================
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.2 $
-Date: $Date: 2001/08/06 04:43:26 $
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/08/17 02:18:55 $
 
 There are several problems, unresolved issues, and areas of
 controversy within StructuredText_ (Classic and Next Generation). In
@@ -625,22 +625,24 @@ underscore indicates the interpretation of the phrase, as a hyperlink.
 #3 also disambiguates hyperlinks from footnote references. Alternative
 #3 wins.
 
-The same trailing underscore markup can also be used for footnotes,
-removing the problem with ordinary bracketed text and Python lists::
+The same trailing underscore markup can also be used for footnote
+references, removing the problem with ordinary bracketed text and
+Python lists::
 
     Please refer to the fine manual [GVR2000]_.
 
-    .. _[GVR2000] Python Documentation, van Rossum, Drake, et al.,
+    .. [GVR2000] Python Documentation, van Rossum, Drake, et al.,
        http://www.python.org/doc/
 
 The two-dots-and-a-space syntax was generalized by Setext for
 comments, which are removed from the (visible) processed output.
 reStructuredText uses this syntax for comments, footnotes, and link
-target. For link targets, in order to eliminate ambiguity with
-comments and footnotes, reStructuredText specifies that a colon always
-follow the link target word/phrase. The colon denotes 'maps to'. There
-is no reason to restrict target links to the end of the document; they
-could just as easily be interspersed.
+target, collectively termed "explicit markup". For link targets, in
+order to eliminate ambiguity with comments and footnotes,
+reStructuredText specifies that a colon always follow the link target
+word/phrase. The colon denotes 'maps to'. There is no reason to
+restrict target links to the end of the document; they could just as
+easily be interspersed.
 
 Internal hyperlinks (links from one point to another within a single
 document) can be expressed by a source link as before, and a target
@@ -648,10 +650,10 @@ link with a colon but no URI. In effect, these targets 'map to' the
 element immediately following.
 
 As an added bonus, we now have a perfect candidate for
-reStructuredText directives, a simple extension mechanism: a comment
-containing a single word followed by two colons and whitespace. The
-interpretation of subsequent data on the directive line or following
-is directive-dependent.
+reStructuredText directives, a simple extension mechanism: explicit
+markup containing a single word followed by two colons and whitespace.
+The interpretation of subsequent data on the directive line or
+following is directive-dependent.
 
 To summarize::
 
@@ -669,7 +671,7 @@ To summarize::
     Here is `an indirect hyperlink phrase`_.
 
     .. _footnotes:
-    .. _[1] Footnote text goes here.
+    .. [1] Footnote text goes here.
 
     .. indirect hyperlink target mappings:
     .. _one-word: http://www.123.xyz
@@ -726,7 +728,7 @@ bracketed text. In HTML, each example should evaluate to::
        Also see http://eggs.org.
 
        .. _URI: http:/spam.org
-       .. _[eggs2000] "Spam, Spam, Spam, Eggs, Bacon, and Spam"
+       .. [eggs2000] "Spam, Spam, Spam, Eggs, Bacon, and Spam"
 
 The bracketed text '[Publisher]' may be problematic with
 StructuredText (syntax 2 & 3).
