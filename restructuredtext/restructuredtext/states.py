@@ -1,18 +1,101 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.2 $
-Date: $Date: 2001/07/28 05:16:59 $
+Revision: $Revision: 1.3 $
+Date: $Date: 2001/08/01 03:00:54 $
 Copyright: This module has been placed in the public domain.
 
+This is the ``dps.parsers.restructuredtext.states`` module, the core of the
+reStructuredText parser. It defines the following classes:
 
+- `RSTStateMachine`: reStructuredText's customized StateMachine.
+- `RSTState`: reStructuredText State superclass.
+- `Body`: Generic classifier of the first line of a block.
+- `BulletList`: Second and subsequent bullet_list list_items
+- `DefinitionList`: Second and subsequent definition_list_items.
+- `Explicit`: Second and subsequent explicit markup constructs.
+- `Text`: Classifier of second line of a text block.
+- `Definition`: Second line of potential definition_list_item.
+- `Stuff`: an auxilliary collection class.
+
+Exception classes:
+
+- `MarkupError`
+
+Functions:
+
+- `escape2null()`: Return a string with escape-backslashes converted to nulls.
+- `unescape()`: Return a string with nulls removed or restored to backslashes.
+- `normname()`: Return a case- and whitespace-normalized name.
+
+Attributes:
+
+- `stateclasses`: set of State classes used with `RSTStateMachine`.
+
+Parser Overview
+===============
+
+The reStructuredText parser is implemented as a state machine, examining its
+input one line at a time. To understand how the parser works, please first
+become familiar with the `dps.statemachine` module. In the description below,
+references are made to classes defined in this module; please see the
+individual classes for details.
+
+Parsing proceeds as follows:
+
+1. The state machine examines each line of input, checking each of the
+   transition patterns of the state `Body`, in order, looking for a match. The
+   implicit transitions (blank lines and indentation) are checked before any
+   others. The 'text' transition is a catch-all (matches anything).
+
+2. The method associated with the matched transition pattern is called.
+
+   A. Some transition methods are self-contained, appending elements to the
+      document tree ('doctest' parses a doctest block). The parser's current
+      line index is advanced to the end of the element, and parsing continues
+      with step 1.
+
+   B. Others trigger the creation of a subordinate state machine, whose job is
+      to parse a compound construct ('indent' for a block quote, 'bullet' for
+      a bullet list, 'overline' for a section [first checking for a valid
+      section header]).
+
+      - In the case of lists and explicit markup, a new state machine is
+        created and run to parse the first item.
+
+      - A new state machine is created and its initial state is set to the
+        appropriate specialized state (`BulletList` in the case of the
+        'bullet' transition). This state machine is run to parse the compound
+        element (or series of explicit markup elements), and returns as soon
+        as a non-member element is encountered. For example, the `BulletList`
+        state machine aborts as soon as it encounters an element which is not
+        a list item of that bullet list. The optional omission of
+        inter-element blank lines is also handled.
+
+      - The current line index is advanced to the end of the elements parsed,
+        and parsing continues with step 1.
+
+   C. The result of the 'text' transition depends on the next line of text.
+      The current state is changed to `Text`, under which the second line is
+      examined. If the second line is:
+
+      - Indented: The element is a definition list item, and parsing proceeds
+        similarly to step 2.B, using the `DefinitionList` state.
+
+      - A line of uniform punctuation characters: The element is a section
+        header; again, parsing proceeds as in step 2.B, and `Body` is still
+        used.
+
+      - Anything else: The element is a paragraph, which is examined for
+        inline markup and appended to the parent element. Processing continues
+        with step 1.
 """
 
 import sys, re, string
 from dps import nodes, statemachine, utils
 from dps.statemachine import StateMachineWS, StateWS
 
-__all__ = ['RSTStateMachine']
+__all__ = ['RSTStateMachine', 'MarkupError']
 
 
 class MarkupError(Exception): pass
@@ -35,8 +118,15 @@ class RSTStateMachine(StateMachineWS):
     def run(self, inputlines, inputoffset=0,
             warninglevel=1, errorlevel=3,
             memo=None, node=None, matchtitles=1):
-        """Extend `StateMachineWS.run()`: set up document-wide data."""
-        self.warninglevel=warninglevel
+        """
+        Extend `StateMachineWS.run()`: set up document-wide data.
+
+        When called initially (from outside, to parse a document), `memo` and
+        `node` must *not* be supplied. When subsequently called (internally,
+        to parse a portion of the document), `memo` and `node` *must* be
+        supplied.
+        """
+        self.warninglevel = warninglevel
         self.errorlevel = errorlevel
         self.matchtitles = matchtitles
         if memo is None:
@@ -58,7 +148,11 @@ class RSTStateMachine(StateMachineWS):
             for state in self.states.values:
                 if state.transitions.has_key('firstfield'):
                     state.removetransition('firstfield')
-        return StateMachineWS.run(self, inputlines, inputoffset)
+        results = StateMachineWS.run(self, inputlines, inputoffset)
+        assert results == [], 'RSTStateMachine results should be empty.'
+        if memo is none:                # initial (external) call
+            self.node = self.memo = None
+            return docroot
 
 
 class RSTState(StateWS):
@@ -68,6 +162,10 @@ class RSTState(StateWS):
     def __init__(self, statemachine, debug=0):
         self.indentSMkwargs = {'stateclasses': stateclasses,
                                'initialstate': 'Body'}
+
+        self.errorist = statemachine.memo.errorist
+        """Shortcut to error/warning generator."""
+
         StateWS.__init__(self, statemachine, debug)
 
     def bof(self, context):
@@ -102,7 +200,7 @@ class RSTState(StateWS):
             if level == mylevel + 1:    # subsection
                 memo.sectionlevel += 1
             else:
-                sw = memo.errorist.strong_system_warning(
+                sw = self.errorist.strong_system_warning(
                       'ABORT', 'Title level inconsistent at line %s:' % lineno,
                       source)
                 self.statemachine.node += sw
@@ -112,7 +210,7 @@ class RSTState(StateWS):
                 memo.sectionlevel += 1
                 titlestyles.append(style)
             else:                       # not at lowest level
-                sw = memo.errorist.strong_system_warning(
+                sw = self.errorist.strong_system_warning(
                       'ABORT', 'Title level inconsistent at line %s:' % lineno,
                       source)
                 self.statemachine.node += sw
@@ -319,7 +417,7 @@ class RSTState(StateWS):
                 return (string[:matchstart], [inlineobj],
                         string[matchend:][endmatch.end(1):], [])
             else:
-                sw = self.statemachine.memo.errorist.system_warning(
+                sw = self.errorist.system_warning(
                       1, 'Inline %s start-string without end-string '
                       'at line %s.' % (nodeclass.__name__, lineno))
                 return (string[:matchend], [], string[matchend:], [sw])
@@ -358,7 +456,7 @@ class RSTState(StateWS):
                 return (string[:matchstart], [inlineobj],
                         string[matchend:][endmatch.end(1):], sw)
             else:
-                sw = self.statemachine.memo.errorist.system_warning(
+                sw = self.errorist.system_warning(
                       1, 'Inline %s start-string without end-string '
                       'at line %s.' % (nodeclass.__name__, lineno))
                 return (string[:matchend], [], string[matchend:], [sw])
@@ -385,7 +483,7 @@ class RSTState(StateWS):
             text = unescape(escaped[:match.start(suffix)])
         #print >>sys.stderr, 'RSTState.interpreted: aftercolon=%r' % aftercolon
         if pattern.search(aftercolon):
-            sw.append(self.statemachine.memo.errorist.system_warning(
+            sw.append(self.errorist.system_warning(
                   1, 'Multiple role-separators in interpreted text '
                   'at line %s.' % lineno))
         return nodes.interpreted(rawsource, text, role=role), sw
@@ -496,14 +594,16 @@ class RSTState(StateWS):
         return processed, warnings
 
     def unindentwarning(self):
-        return self.statemachine.memo.errorist.system_warning(
+        return self.errorist.system_warning(
               1, ('Unindent without blank line at line %s.'
                   % (self.statemachine.abslineno() + 1)))        
 
 
 class Body(RSTState):
 
-    """Identifier of first line of a body element or section title."""
+    """
+    Generic classifier of the first line of a block.
+    """
 
     pats = {'arabic': '[0-9]+',
             'loweralpha': '[a-z]',
@@ -544,11 +644,11 @@ class Body(RSTState):
             print >>sys.stderr, ('\nstates.Body.indent (block_quote): '
                                  'indented=%r' % indented)
         bq = nodes.block_quote()
+        self.statemachine.node += bq
         sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
         sm.run(indented, inputoffset=lineoffset,
                memo=self.statemachine.memo, node=bq, matchtitles=0)
         sm.unlink()
-        self.statemachine.node += bq
         if not blankfinish:
             self.statemachine.node += self.unindentwarning()
         return context, nextstate, []
@@ -556,10 +656,10 @@ class Body(RSTState):
     def bullet(self, match, context, nextstate):
         """Bullet list item."""
         l = nodes.bullet_list()
+        self.statemachine.node += l
         l['bullet'] = match.string[0]
         i, blankfinish = self.list_item(match.end())
         l += i
-        self.statemachine.node += l
         offset = self.statemachine.lineoffset + 1   # next line
         kwargs = self.indentSMkwargs.copy()
         kwargs['initialstate'] = 'BulletList'
@@ -719,7 +819,7 @@ class Body(RSTState):
                     return method(self, expmatch)
                 except MarkupError, detail:
                     errors.append(
-                          self.statemachine.memo.errorist.system_warning(
+                          self.errorist.system_warning(
                           1, detail.__class__.__name__ + ': ' + str(detail)))
                     break
         nodelist, blankfinish = self.comment(match)
@@ -730,7 +830,7 @@ class Body(RSTState):
         makesection = 1
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
-            sw = self.statemachine.memo.errorist.system_warning(
+            sw = self.errorist.system_warning(
                   3, 'Unexpected section title at line %s.' % lineno)
             self.statemachine.node += sw
             return [], nextstate, []
@@ -739,7 +839,7 @@ class Body(RSTState):
             title = self.statemachine.nextline()
             underline = self.statemachine.nextline()
         except IndexError:
-            sw = self.statemachine.memo.errorist.system_warning(
+            sw = self.errorist.system_warning(
                   3, 'Incomplete section title at line %s.' % lineno)
             self.statemachine.node += sw
             makesection = 0
@@ -747,12 +847,12 @@ class Body(RSTState):
         overline = match.string.rstrip()
         underline = underline.rstrip()
         if not self.transitions['overline'][0].match(underline):
-            sw = self.statemachine.memo.errorist.system_warning(
+            sw = self.errorist.system_warning(
                   3, 'Missing underline for overline at line %s.' % lineno)
             self.statemachine.node += sw
             makesection = 0
         elif overline != underline:
-            sw = self.statemachine.memo.errorist.system_warning(
+            sw = self.errorist.system_warning(
                   3, 'Title overline & underline mismatch at ' 'line %s.'
                   % lineno)
             self.statemachine.node += sw
@@ -760,7 +860,7 @@ class Body(RSTState):
         title = title.strip()
         if len(title) > len(overline):
             self.statemachine.node += \
-                  self.statemachine.memo.errorist.system_warning(
+                  self.errorist.system_warning(
                   0, 'Title overline too short at line %s.'% lineno)
         if makesection:
             style = (overline[0], underline[0])
@@ -852,7 +952,7 @@ class Explicit(Body):
 class Text(RSTState):
 
     """
-    Second line of a text block.
+    Classifier of second line of a text block.
 
     Could be a paragraph, a definition list item, or a title.
     """
@@ -907,7 +1007,7 @@ class Text(RSTState):
         """Section title."""
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
-            sw = self.statemachine.memo.errorist.system_warning(
+            sw = self.errorist.system_warning(
                   3, 'Unexpected section title at line %s.' % lineno)
             self.statemachine.node += sw
             return [], nextstate, []
@@ -921,7 +1021,7 @@ class Text(RSTState):
                                     self.statemachine.memo.titlestyles))
         if len(title) > len(underline):
             self.statemachine.node += \
-                  self.statemachine.memo.errorist.system_warning(
+                  self.errorist.system_warning(
                   0, 'Title underline too short at line %s.' % lineno)
         style = underline[0]
         context[:] = []
@@ -936,7 +1036,7 @@ class Text(RSTState):
             block = self.statemachine.getunindented()
         except statemachine.UnexpectedIndentationError, instance:
             block, lineno = instance.args
-            sw = self.statemachine.memo.errorist.system_warning(
+            sw = self.errorist.system_warning(
                   2, 'Unexpected indentation at line %s.' % lineno)
         lines = context + block
         if self.debug:
@@ -958,7 +1058,7 @@ class Text(RSTState):
             data = '\n'.join(indented)
             nodelist.append(nodes.literal_block(data, data))
         else:
-            nodelist.append(self.statemachine.memo.errorist.system_warning(
+            nodelist.append(self.errorist.system_warning(
                   1, 'Literal block expected at line %s; none found.'
                   % self.statemachine.abslineno()))
         if not blankfinish:
@@ -974,7 +1074,7 @@ class Text(RSTState):
         t, warnings = self.term(termline, self.statemachine.abslineno() - 1)
         d = nodes.definition('', *warnings)
         if termline[0][-2:] == '::':
-            d += self.statemachine.memo.errorist.system_warning(
+            d += self.errorist.system_warning(
                   2, 'Blank line missing before literal block? '
                   'Interpreted as a definition list item. '
                   'At line %s.' % (lineoffset + 1))
