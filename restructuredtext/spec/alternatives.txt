@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2001/11/15 23:36:00 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2001/11/19 04:19:52 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -510,35 +510,37 @@ The underscores can be viewed as if they were right-pointing arrows:
 ``.. _hyperlink:`` points toward the target.
 
 
-Inline Substitutions
-====================
+Substitution Mechanism
+======================
 
-Inline substitutions arose out of a Doc-SIG thread begun on 2001-10-28
-by Alan Jaffray, "reStructuredText inline markup".  It reminded me of
-a missing piece of the reStructuredText puzzle, first referred to in
-my contribution to "Documentation markup & processing / PEPs" (Doc-SIG
+Substitutions arose out of a Doc-SIG thread begun on 2001-10-28 by
+Alan Jaffray, "reStructuredText inline markup".  It reminded me of a
+missing piece of the reStructuredText puzzle, first referred to in my
+contribution to "Documentation markup & processing / PEPs" (Doc-SIG
 2001-06-21).
 
-Inline substitutions allow the power and flexibility of directives to
-be shared by inline text.  They are a way to allow arbitrarily complex
-inline objects, while keeping the details out of the flow of text.
+Substitutions allow the power and flexibility of directives to be
+shared by inline text.  They are a way to allow arbitrarily complex
+inline objects, while keeping the details out of the flow of text. 
 They are the equivalent of SGML/XML's named entities.  For example, an
-inline image (using inline syntax alternative 3/slashes & substitution
-alternative 3, the alternatives chosen for inclusion in the spec)::
+inline image (using reference syntax alternative 4d (vertical bars)
+and definition alternative 3, the alternatives chosen for inclusion in
+the spec)::
 
-    The `/biohazard/` symbol must be used on containers used to
-    dispose of medical waste.
+    The |biohazard| symbol must be used on containers used to dispose
+    of medical waste.
 
-    .. /biohazard/ image:: biohazard.png
+    .. |biohazard| image:: biohazard.png
        [height=20 width=20]
 
-```/biohazard/``` will be replaced in-line by whatever the
-``.. /biohazard/`` substitution generates (in this case, an image).  A
-substitution contains the substitution name, followed by a directive
-block containing a nested inline-compatible directive, such as
-"image".  A transform is required to handle the substitution itself.
+The ``|biohazard|`` substitution reference will be replaced in-line by
+whatever the ``.. |biohazard|`` substitution definition generates (in
+this case, an image).  A substitution definition contains the
+substitution text bracketed with vertical bars, followed by a an
+embedded inline-compatible directive, such as "image".  A transform is
+required to complete the substitution.
 
-Syntax alternatives for the inline part:
+Syntax alternatives for the reference:
 
 1. Use the existing interpreted text syntax, with a predefined role
    such as "sub"::
@@ -580,13 +582,14 @@ Syntax alternatives for the inline part:
        (m) `'name'`
 
    To avoid ML confusion (k) and (l) are definitely out.  Square
-   brackets (j) won't work in the target (the substitution declaration
+   brackets (j) won't work in the target (the substitution definition
    would be indistinguishable from a footnote).
 
-   The ```/name/``` syntax (g) is reminiscent of substitution.
-   However, it may have a misleading association with regexps, and
-   looks like an absolute POSIX path. (i) is visually equivalent and
-   lacking the connotations.
+   The ```/name/``` syntax (g) is reminiscent of "s/find/sub"
+   substitution syntax in ed-like languages.  However, it may have a
+   misleading association with regexps, and looks like an absolute
+   POSIX path.  (i) is visually equivalent and lacking the
+   connotations.
 
    A disadvantage of all of these is that they limit interpreted text,
    albeit only slightly.
@@ -614,10 +617,10 @@ Syntax alternatives for the inline part:
 
    "|" (d) and "^" (h) are feasible.
 
-5. Redefine the trailing underscore syntax. See substitution syntax
+5. Redefine the trailing underscore syntax. See definition syntax
    alternative 4, below.
 
-Syntax alternatives for the substitution part::
+Syntax alternatives for the definition::
 
 1. Use the existing directive syntax, with a predefined directive such
    as "sub".  It contains a further embedded directive resolving to an
@@ -634,8 +637,7 @@ Syntax alternatives for the substitution part::
    The advantages and disadvantages are the same as in inline
    alternative 1.
 
-2. Use syntax as in #1, but compressed.  If the substitution contents
-   is a directive, append it to the substitution directive marker::
+2. Use syntax as in #1, but with an embedded directivecompressed::
 
        .. sub:: biohazard image:: biohazard.png
           [height=20 width=20]
@@ -643,28 +645,17 @@ Syntax alternatives for the substitution part::
    This is a bit better than alternative 1, but still too much.
 
 3. Use a variant of directive syntax, incorporating the substitution
-   name, obviating the need for a special "sub" directive name.  If we
-   assume inline alternative 3 (g) (slashes), the matching
-   substitutions would look like this::
-
-       .. /biohazard/ image:: biohazard.png
-          [height=20 width=20]
-
-   There is potential conflict with short paths in comments, but
-   that can be safely ignored.
-
-   Using vertical bars, as in 4 (d) or 3 (i) above, we get this::
+   text, obviating the need for a special "sub" directive name.  If we
+   assume reference alternative 4d (vertical bars), the matching
+   definition would look like this::
 
        .. |biohazard| image:: biohazard.png
           [height=20 width=20]
 
-   There's no significant conflict here.
-
 4. (Suggested by Alan Jaffray on Doc-SIG from 2001-11-06.)
 
-   Instead of adding new substitution syntax, redefine the trailing
-   underscore syntax to mean "directive reference" (or "substitution
-   reference" or "tagging reference") instead of "hyperlink
+   Instead of adding new syntax, redefine the trailing underscore
+   syntax to mean "substitution reference" instead of "hyperlink
    reference".  Alan's example::
 
        I had lunch with Jonathan_ today.  We talked about Zope_.
@@ -674,8 +665,8 @@ Syntax alternatives for the substitution part::
 
    A problem with the proposed syntax is that URIs which look like
    simple reference names (alphanum plus ".", "-", "_") would be
-   indistinguishable from directive names.  A more consistent syntax
-   would be::
+   indistinguishable from substitution directive names.  A more
+   consistent syntax would be::
 
        I had lunch with Jonathan_ today.  We talked about Zope_.
 
@@ -685,8 +676,8 @@ Syntax alternatives for the substitution part::
    (``::`` after ``.. _Jonathan: lj``.)
 
    The "Zope" target is a simple external hyperlink, but the
-   "Jonathan" target contains a directive.  Alan's proposition is that
-   the reference text be replaced by whatever the referenced directive
+   "Jonathan" target contains a directive.  Alan proposed is that the
+   reference text be replaced by whatever the referenced directive
    (the "directive target") produces.  A directive reference becomes a
    hyperlink reference if the contents of the directive target resolve
    to a hyperlink.  If the directive target resolves to an icon, the
@@ -694,9 +685,7 @@ Syntax alternatives for the substitution part::
    resolves to a hyperlink, the directive reference becomes a
    hyperlink reference.
 
-   The reference text would be replaced by the result of the directive
-   target. This seems too indirect and complicated for easy
-   comprehension.
+   This seems too indirect and complicated for easy comprehension.
 
    The reference in the text will sometimes become a link, sometimes
    not.  Sometimes the reference text will remain, sometimes not.  We
@@ -707,14 +696,12 @@ Syntax alternatives for the substitution part::
 
    That's a problem.
 
-The syntax that seems most consistent and suggestive of its intended
-purpose is the combination of inline alternative 3/slashes with
-substitution alternative 3::
+The syntax that has been incorporated into the spec and parser is
+reference alternative 4d with definition alternative 3::
 
+    The |biohazard| symbol...
 
-    The `/biohazard/` symbol...
-
-    .. /biohazard/ image:: biohazard.png
+    .. |biohazard| image:: biohazard.png
        [height=20 width=20]
 
 We can also combine substitution references with hyperlink references,
@@ -722,43 +709,78 @@ by appending a "_" (named hyperlink reference) or "__" (anonymous
 hyperlink reference) suffix to the substitution reference.  This
 allows us to click on an image-link::
 
-    The `/biohazard/`_ symbol...
+    The |biohazard|_ symbol...
 
-    .. /biohazard/ image:: biohazard.png
+    .. |biohazard| image:: biohazard.png
        [height=20 width=20]
     .. _biohazard: http://www.cdc.gov/
 
-This syntax has been incorporated into the spec and parser.
+There have been several suggestions for the naming of these
+constructs, originally called "substitution references" and
+"substitutions".
 
-As for naming, here are candidates for the substitution reference
-construct:
+1. Candidate names for the reference construct:
 
-(a) substitution references
-(b) tagging references
-(c) inline directive references
-(d) directive references
-(e) indirect inline directive references
-(f) inline directive placeholders
-(g) inline directive insertion references
-(h) directive insertion references
+   (a) substitution reference
+   (b) tagging reference
+   (c) inline directive reference
+   (d) directive reference
+   (e) indirect inline directive reference
+   (f) inline directive placeholder
+   (g) inline directive insertion reference
+   (h) directive insertion reference
+   (i) insertion reference
+   (j) directive macro reference
+   (k) macro reference
+   (l) substitution directive reference
 
-The following are candidates for naming the substitution construct:
+2. Candidate names for the definition construct:
 
-(a) substitutions
-(b) substitution directives
-(c) tags
-(d) tagged directives
-(e) directive targets
-(f) inline directives
-(g) inline directive targets/definitions/declarations
-(h) referenced directives
-(i) indirect directives
-(j) indirect directive definitions/declarations
-(k) directive definitions
-(l) indirect inline directives
-(m) named directive declarations
-(n) inline directive insertion definitions/declarations
-(o) directive insertion definitions/declarations
+   (a) substitution
+   (b) substitution directive
+   (c) tag
+   (d) tagged directive
+   (e) directive target
+   (f) inline directive
+   (g) inline directive definition
+   (h) referenced directive
+   (i) indirect directive
+   (j) indirect directive definition
+   (k) directive definition
+   (l) indirect inline directive
+   (m) named directive definition
+   (n) inline directive insertion definition
+   (o) directive insertion definition
+   (p) insertion definition
+   (q) insertion directive
+   (r) substitution definition
+   (s) directive macro definition
+   (t) macro definition
+   (u) substitution directive definition
+   (v) substitution definition
+
+"Inline directive reference" (1c) seems to be an appropriate term at
+first, but the term "inline" is redundant in the case of the
+reference.  Its counterpart "inline directive definition" (2g) is
+awkward, because the directive definition itself is not inline.
+
+"Directive reference" (1d) and "directive definition" (2k) are too
+vague.  "Directive definition" could be used to refer to any
+directive, not just those used for inline substitutions.
+
+One meaning of the term "macro" (1k, 2s, 2t) is too
+programming-language-specific.  Also, macros are typically simple text
+substitution mechanisms: the text is substituted first and evaluated
+later.  reStructuredText substitution definitions are evaluated in
+place at parse time and substituted afterwards.
+
+"Insertion" (1h, 1i, 2n-2q) is almost right, but it implies that
+something new is getting added rather than one construct being
+replaced by another.
+
+Which brings us back to "substitution".  The overall best names are
+"substitution reference" (1a) and "substitution definition" (2v).  A
+long way to go to add one word!
 
 
 ..
