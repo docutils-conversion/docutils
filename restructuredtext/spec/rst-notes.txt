@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/04 15:22:24 $
-Revision: $Revision: 1.4 $
+Date: $Date: 2001/08/06 04:40:33 $
+Revision: $Revision: 1.5 $
 
 
 To Do
@@ -37,16 +37,24 @@ To Do
   the target URIs: same -> level-0 warning; different -> level-1.
 
 
-Enumerated Lists
-================
+Or Not To Do?
+=============
+
+This is the realm of the possible but questionably probable. These ideas
+are kept here as a record of what has been proposed, for posterity and
+just in case any of them prove to be useful.
+
+
+Compound Enumerated Lists
+-------------------------
 
 (A future revision of this specification may allow for compound
 enumerators, such as '1.a.' or '1(a)', to allow for nested enumerated
 lists without indentation.)
 
 
-Literal Blocks
-==============
+Two-For-One Literal Blocks
+--------------------------
 
 [Aside: One possible variation is for meta-documentation (perhaps an
 extension?): use triple-colons (':::') or a directive ('..
@@ -57,8 +65,8 @@ as 'Marked up as:', or may alter the formatting (different font, set
 in a colored box, whatever).]
 
 
-Indentation of List Items
-=========================
+Sloppy Indentation of List Items
+--------------------------------
 
 Perhaps the indentation shouldn't be so strict. Currently, this is
 required::
@@ -101,6 +109,10 @@ Problem?
 
 Hmm... Non-strict indentation isn't such a good idea.
 
+
+Lazy Indentation of List Items
+------------------------------
+
 Another approach: Going back to the first draft of reStructuredText
 (2000-11-27 post to Doc-SIG):
 
@@ -117,7 +129,7 @@ indentation".
 
 
 Horizontal Rules
-================
+----------------
 
 Wolfgang Lipp suggested adding horizontal rules (HTML <HR>) to the
 syntax.  A line of punctuation with a blank line before and after::
@@ -130,6 +142,19 @@ syntax.  A line of punctuation with a blank line before and after::
 
 The problem is, HRs are purely presentational.  What structural
 significance do they have?
+
+
+Comments Revisited
+------------------
+
+Perhaps comments should be one-liners only? Would this mean that
+footnotes, hyperlink targets, and directives must also be
+one-liners?
+
+If we adopt Tony Ibbs' suggested "comment" directive, we could limit
+a comment to a single text block. A "multi-block comment" could use
+"comment-start" and "comment-end" directives. This would remove the
+indentation-incompatibility.
 
 
 Parser Notes
@@ -163,10 +188,6 @@ Wonky cases, marked by "XXX" in the unit tests:
          (if you can't think of what to write in the paragraph)
 
         blockquote
-
-  Perhaps comments should be one-liners only? Would this mean that
-  footnotes, hyperlink targets, and directives must also be
-  one-liners?
 
 
 Local Variables:
