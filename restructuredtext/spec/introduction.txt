@@ -3,8 +3,8 @@
 =====================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/09/01 15:47:11 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/11/13 03:16:54 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system. It is useful for in-line
@@ -233,7 +233,7 @@ file, HISTORY.txt_.
     http://mail.python.org/pipermail/doc-sig/2000-November/001241.html
 .. _Docstring Processing System: http://docstring.sourceforge.net
 .. _HISTORY.txt:
-    http://structuredtext.sourceforge.net/spec/HISTORY.txt
+    http://structuredtext.sourceforge.net/HISTORY.txt
 
 
 Parser Implementation Plan
@@ -280,13 +280,12 @@ constructs:
      - definition lists
      - block quotes
      - footnotes
-     - internal/indirect hyperlink targets
+     - internal/external/indirect hyperlink targets
 
    + inline markup
 
      - standalone (direct external) hyperlinks
-     - indirect external hyperlinks
-     - internal hyperlinks
+     - hyperlink references
      - footnote references
 
 3. General markup, level 3

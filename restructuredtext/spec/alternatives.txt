@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/11/09 23:17:51 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2001/11/13 03:16:45 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -643,15 +643,17 @@ Syntax alternatives for the substitution part::
        .. _Jonathan: lj:: user=jhl
        .. _Zope: http://www.zope.org/
 
-   (``::`` after ``.. _Jonathan:``.)
+   (``::`` after ``.. _Jonathan: lj``.)
 
    The "Zope" target is a simple external hyperlink, but the
    "Jonathan" target contains a directive.  Alan's proposition is that
-   the reference text be replaced by the product of the directive
-   referred to, the "directive target".  A directive reference becomes
-   a hyperlink reference if the contents of the directive target
-   resolve to a hyperlink.  If the directive target resolves to an
-   icon, the reference is replaced by an inline icon.
+   the reference text be replaced by whatever the referenced directive
+   (the "directive target") produces.  A directive reference becomes a
+   hyperlink reference if the contents of the directive target resolve
+   to a hyperlink.  If the directive target resolves to an icon, the
+   reference is replaced by an inline icon.  If the directive target
+   resolves to a hyperlink, the directive reference becomes a
+   hyperlink reference.
 
    The reference text would be replaced by the result of the directive
    target. This seems too indirect and complicated for easy

@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/11/01 04:12:34 $
-:Revision: $Revision: 1.24 $
+:Date: $Date: 2001/11/13 03:17:06 $
+:Revision: $Revision: 1.25 $
 
 
 To Do
@@ -13,8 +13,9 @@ To Do
   - Keep the quickref up to date.
   - Internal module documentation.
   - User docs.
+  - Add motivation sections for constructs.
 
-- Implement a parser according to the markup implementation plan.
+- Refactor the complicated bits of the parser.
 
 - Create a standalone reStructuredText -> HTML/XML converter (stdin ->
   stdout filter). (Flesh out tools/quicktest.py.)
@@ -49,12 +50,9 @@ To Do
   - issue a warning when processing documents with no default role
     which contain interpreted text with no explicitly specified role
 
-- Add inline substitutions? See alternatives.txt__.
-
-  __ http://structuredtext.sourceforge.net/spec/alternatives.txt
-
 - Fix the parser's indentation handling to conform with the stricter
-  definition in the spec.
+  definition in the spec. (Explicit markup blocks should be strict or
+  forgiving?)
 
 
 Or Not To Do?

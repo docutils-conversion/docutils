@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/11/06 23:11:52 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/11/13 03:17:16 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -21,39 +21,6 @@ totest = {}
 
 totest['substitutions'] = [
 ["""\
-.. /text/ This is replacement text.
-""",
-"""\
-<document>
-    <substitution name="text">
-        This is replacement text.
-"""],
-["""\
-.. /text/ This is replacement text with *inline* ``markup``.
-""",
-"""\
-<document>
-    <substitution name="text">
-        This is replacement text with 
-        <emphasis>
-            inline
-         
-        <literal>
-            markup
-        .
-"""],
-["""\
-.. /text/ This is replacement text with another `/substitution/`.
-""",
-"""\
-<document>
-    <substitution name="text">
-        This is replacement text with another 
-        <substitution_reference refname="substitution">
-            substitution
-        .
-"""],
-["""\
 Here's an image substitution:
 
 .. /symbol/ image:: symbol.png
@@ -69,9 +36,9 @@ Here's an image substitution:
 Here's a series of substitutions:
 
 .. /symbol1/ image:: symbol1.png
-.. /text1/ This is replacement text.
 .. /symbol2/ image:: symbol2.png
-.. /text2/ This is replacement text.
+   [height=50 width=100]
+.. /symbol3/ image:: symbol3.png
 """,
 """\
 <document>
@@ -79,20 +46,16 @@ Here's a series of substitutions:
         Here's a series of substitutions:
     <substitution name="symbol1">
         <image uri="symbol1.png">
-    <substitution name="text1">
-        This is replacement text.
     <substitution name="symbol2">
-        <image uri="symbol2.png">
-    <substitution name="text2">
-        This is replacement text.
+        <image height="50" uri="symbol2.png" width="100">
+    <substitution name="symbol3">
+        <image uri="symbol3.png">
 """],
 ["""\
 Here are some duplicate substitutions:
 
 .. /symbol/ image:: symbol.png
-.. /text/ This is replacement text.
 .. /symbol/ image:: symbol.png
-.. /text/ This is replacement text.
 """,
 """\
 <document>
@@ -100,18 +63,11 @@ Here are some duplicate substitutions:
         Here are some duplicate substitutions:
     <substitution name="symbol">
         <image uri="symbol.png">
-    <substitution name="text">
-        This is replacement text.
     <system_warning level="2">
         <paragraph>
             Duplicate substitution name: "symbol"
     <substitution name="symbol">
         <image uri="symbol.png">
-    <system_warning level="2">
-        <paragraph>
-            Duplicate substitution name: "text"
-    <substitution name="text">
-        This is replacement text.
 """],
 ["""\
 Here are some bad cases:
@@ -122,6 +78,8 @@ No blank line after.
 .. /empty/
 
 .. /unknown/ directive:: symbol.png
+
+.. /invalid/ there's no directive here
 """,
 """\
 <document>
@@ -136,15 +94,19 @@ No blank line after.
         No blank line after.
     <system_warning level="1">
         <paragraph>
-            Substitution missing contents at line 6
-    <substitution name="empty">
+            Substitution "empty" missing contents at line 6.
     <system_warning level="2">
         <paragraph>
             Unknown directive type "directive" at line 8.
             Rendering the directive as a literal block.
     <literal_block>
         directive:: symbol.png
-    <substitution name="unknown">
+    <system_warning level="1">
+        <paragraph>
+            Substitution "unknown" empty or invalid at line 8.
+    <system_warning level="1">
+        <paragraph>
+            Substitution "invalid" empty or invalid at line 10.
 """],
 ]
 

@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/06 00:56:29 $
+:Date: $Date: 2001/11/13 03:16:31 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -190,6 +190,8 @@ Changed contact email addresses.
 * spec/reStructuredText.txt:
 
   - Modified inline markup prefix & suffix definitions.
+  - Added a note on inline markup & escapes.
+  - Added inline markup recognition order info.
   - Moved interpreted text's role outside of backquotes.
   - Changed interpreted text roles to ":role:" syntax.
   - Settled on field list syntax, updated definition.
@@ -209,7 +211,6 @@ Changed contact email addresses.
     implicit hyperlink generation.
   - Updated & expanded definition of directives; added link to new
     directives.txt.
-  - Added a note on inline markup & escapes.
   - Added option lists & doctest blocks from pyextensions.txt.
   - Added VMS/DOS-style options to option lists.
   - Converted sf->sourceforge.
