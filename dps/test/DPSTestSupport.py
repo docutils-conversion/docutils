@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 """
-:Author:  David Goodger
+:Authors:  David Goodger; Garth Kidd
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/16 02:42:06 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/01/26 00:04:50 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -76,7 +76,6 @@ class CustomTestSuite(unittest.TestSuite):
                 self.id = callerpath
         else:
             self.id = id
-        
 
     def addTestCase(self, testCaseClass, methodName, input, expected,
                     id=None, runInDebugger=0, shortDescription=None,
@@ -87,8 +86,8 @@ class CustomTestSuite(unittest.TestSuite):
 
         Arguments:
 
-        testCaseClass -- 
-        methodName -- 
+        testCaseClass --
+        methodName --
         input -- input to the parser.
         expected -- expected output from the parser.
         id -- unique test identifier, used by the test framework.
@@ -170,8 +169,9 @@ class TransformTestSuite(CustomTestSuite):
         """Parser shared by all test cases."""
 
         CustomTestSuite.__init__(self)
-         
-    def generateTests(self, dict, dictname='totest'):
+
+    def generateTests(self, dict, dictname='totest',
+                      testmethod='test_transforms'):
         """
         Stock the suite with test cases generated from a test data dictionary.
 
@@ -192,7 +192,7 @@ class TransformTestSuite(CustomTestSuite):
                     else:
                         continue
                 self.addTestCase(
-                      TransformTestCase, 'test_transforms',
+                      TransformTestCase, testmethod,
                       transforms=transforms, parser=self.parser,
                       input=case[0], expected=case[1],
                       id='%s[%r][%s]' % (dictname, name, casenum),
@@ -215,7 +215,7 @@ class TransformTestCase(CustomTestCase):
 
         self.parser = kwargs['parser']
         """Input parser for this test case."""
-        
+
         del kwargs['transforms'], kwargs['parser'] # only wanted here
         CustomTestCase.__init__(self, *args, **kwargs)
 
@@ -226,4 +226,20 @@ class TransformTestCase(CustomTestCase):
         for transformClass in self.transforms:
             transformClass().transform(doctree)
         output = doctree.pformat()
+        self.compareOutput(self.input, output, self.expected)
+
+    def test_transforms_verbosely(self):
+        if self.runInDebugger:
+            pdb.set_trace()
+        print '\n', self.id
+        print '-' * 70
+        print self.input
+        doctree = self.parser.parse(self.input)
+        print '-' * 70
+        print doctree.pformat()
+        for transformClass in self.transforms:
+            transformClass().transform(doctree)
+        output = doctree.pformat()
+        print '-' * 70
+        print output
         self.compareOutput(self.input, output, self.expected)
