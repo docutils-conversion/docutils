@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.36 $
-:Date: $Date: 2002/02/20 04:22:55 $
+:Revision: $Revision: 1.37 $
+:Date: $Date: 2002/02/21 03:35:10 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -626,7 +626,7 @@ A system warning will be generated for each of the following cases:
 1. The enumerators do not all have the same format and sequence type.
 
 2. The enumerators are not in sequence (i.e., "1.", "3." generates a
-   warning).
+   warning and produces two separate lists).
 
 It is recommended that the enumerator of the first list item be
 ordinal-1 ("1", "A", "a", "I", or "i"). Although other start-values
@@ -836,7 +836,8 @@ DTD elements: option_list, option_list_item, option, short_option,
 long_option, vms_option, option_argument, description.
 
 Option lists are two-column lists of command-line options and
-descriptions. There are three types of options:
+descriptions, documenting a program's options. There are three types
+of options:
 
 - Short POSIX options consist of one dash and an option letter.
 - Long POSIX options consist of two dashes and an option word.
@@ -846,6 +847,12 @@ descriptions. There are three types of options:
 be used by DOS or Windows software. The names above have been chosen
 for convenience only.)
 
+The syntax for short and long POSIX options is based on the syntax
+supported by Python's getopt.py_ module, which implements an option
+parser similar to the `GNU libc getopt_long()` function but with some
+restrictions. Variant option systems (and there are lots of them) are
+not supported by reStructuredText option lists.
+
 Although long POSIX and DOS/VMS option words may be allowed to be
 truncated by the operating system or the application, reStructuredText
 option lists do not show or support this with any special syntax. The
@@ -854,16 +861,16 @@ truncation if and when applicable.
 
 Options may be followed by an argument placeholder, whose role and
 syntax should be explained in the description text. Either a space
-or (in most cases) an equals sign may be used as a separator between
+or (in most cases) an equals sign may be used as a delimiter between
 options and option argument placeholders. The following table details
-the valid combinations (empty cells are invalid):
+the valid combinations:
 
 +---------------+----------+-----------------------------+
-|               | Option   | Option & Argument Separator |
+|               | Option   | Option & Argument Delimiter |
 |               | With No  +--------------+--------------+
 |  Option Type  | Argument | Space (" ")  | Equals ("=") |
 +===============+==========+==============+==============+
-| Short POSIX   | -o       | -o arg       |              |
+| Short POSIX   | -o       | -o arg       | (not valid)  |
 +---------------+----------+--------------+--------------+
 | Long POSIX    | --option | --option arg | --option=arg |
 +---------------+----------+--------------+--------------+
@@ -889,6 +896,9 @@ last, but are optional between option entries. For example::
     /V         A DOS-style option.
     /DIRECTORY  A VMS-syle option. Note the adjustment for the required
                 two spaces.
+
+    --very-long-option
+               The description can also start on the next line.
 
     -p         This option has two paragraphs in the description.
                This is the first.
@@ -1015,7 +1025,7 @@ DTD element: doctest_block.
 
 Doctest blocks are interactive Python sessions cut-and-pasted into
 docstrings. They are meant to illustrate usage by example, and provide
-an elegant and powerful testing environment via the doctest module in
+an elegant and powerful testing environment via the doctest_ module in
 the Python standard library.
 
 Doctest blocks are text blocks which begin with ">>> ", the Python
@@ -2144,10 +2154,14 @@ Markup errors are handled according to the specification in `PEP
 .. _transforms:
    http://docstring.sourceforge.net/dps/transforms/__init__.py
 .. _DocTitle transform:
-.. _DocInfo transform:
-   http://docstring.sourceforge.net/dps/transforms/frontmatter.py
 .. _Grouch: http://www.mems-exchange.org/software/grouch/
 .. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
+.. _DocInfo transform:
+   http://docstring.sourceforge.net/dps/transforms/frontmatter.py
+.. _doctest: http://www.python.org/doc/current/lib/module-doctest.html
+.. _getopt.py: http://www.python.org/doc/current/lib/module-getopt.html
+.. _GNU libc getopt_long():
+   http://www.gnu.org/manual/glibc-2.2.3/html_node/libc_516.html
 .. _Index of WWW Addressing Schemes:
    http://www.w3.org/Addressing/schemes.html
 .. _World Wide Web Consortium: http://www.w3.org/

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/02/15 22:58:17 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/02/21 03:33:54 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -426,13 +426,17 @@ empty item above, no blank line
 ["""\
 Some edge cases:
 
+-longname         long option with only one hyphen
+
 --option=arg arg  too many arguments
 
 --option=arg=arg  too many arguments
 
--aletter arg2     too many arguments (-a letter)
+--option arg arg  too many arguments
 
-/A letter arg2    too many arguments (/A letter)
+-a letter arg2    too many arguments
+
+/A letter arg2    too many arguments
 
 -a=b              can't use = for short arguments
 
@@ -449,13 +453,17 @@ Some edge cases:
     <paragraph>
         Some edge cases:
     <paragraph>
+        -longname         long option with only one hyphen
+    <paragraph>
         --option=arg arg  too many arguments
     <paragraph>
         --option=arg=arg  too many arguments
     <paragraph>
-        -aletter arg2     too many arguments (-a letter)
+        --option arg arg  too many arguments
     <paragraph>
-        /A letter arg2    too many arguments (/A letter)
+        -a letter arg2    too many arguments
+    <paragraph>
+        /A letter arg2    too many arguments
     <paragraph>
         -a=b              can't use = for short arguments
     <paragraph>
