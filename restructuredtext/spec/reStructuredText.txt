@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.19 $
-:Date: $Date: 2001/09/28 04:59:27 $
+:Revision: $Revision: 1.20 $
+:Date: $Date: 2001/10/18 03:48:34 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -49,7 +49,7 @@ Here are examples of body elements:
       Paragraphs contain text and may contain inline markup:
       *emphasis*, **strong emphasis**, `interpreted text`, ``inline
       literals``, standalone hyperlinks (http://www.python.org),
-      indirect hyperlinks (Python_), internal cross-references
+      external hyperlinks (Python_), internal cross-references
       (example_), footnote references ([1]_).
 
       Paragraphs are separated by blank lines and are left-aligned.
@@ -195,21 +195,6 @@ Descriptions below list "DTD elements" (XML "generic identifiers")
 corresponding to syntax constructs.
 
 
-Document
-========
-
-DTD element: document.
-
-The top-level element of a parsed reStructuredText document is the
-"document" element. After initial parsing, the document element is a
-simple container for a document fragment, consisting of sections and
-body elements, but lacking a document title or other bibliographic
-elements. The code that calls the parser may choose to run one or more
-optional `post-parse transformations`_, rearranging the document
-fragment into a complete document with a title and possibly other
-metadata elements (author, date, etc.).
-
-
 Whitespace
 ==========
 
@@ -277,8 +262,35 @@ appear in Python docstrings is to use raw docstrings::
     r"""This is a raw docstring. Backslashes (\) are not touched."""
 
 
-Section Structure
-=================
+Document Structure
+==================
+
+Document
+--------
+
+DTD element: document.
+
+The top-level element of a parsed reStructuredText document is the
+"document" element. After initial parsing, the document element is a
+simple container for a document fragment, consisting of sections_,
+divisions_, and `body elements`_, but lacking a document title or
+other bibliographic elements. The code that calls the parser may
+choose to run one or more optional post-parse transformations_,
+rearranging the document fragment into a complete document with a
+title and possibly other metadata elements (author, date, etc.; see
+`Bibliographic Fields`_).
+
+Specifically, there is no way to specify a document title and subtitle
+explicitly in reStructuredText. Instead, a lone top-level section
+title (see Sections_ below) can be treated as the document
+title. Similarly, a lone second-level section title immediately after
+the "document title" can become the document subtitle. See "Section
+Promotion: Document Title & Subtitle" in `DPS Tree Transforms`_ for
+details.
+
+
+Sections
+--------
 
 DTD elements: section, title.
 
@@ -364,6 +376,42 @@ Each section title automatically generates a hyperlink target pointing
 to the section. The text of the hyperlink target is the same as that
 of the section title. See `Implicit Hyperlink Targets`_ for a complete
 description.
+
+Sections may contain `body elements`_, divisions_, and nested
+sections.
+
+
+Divisions
+---------
+
+DTD element: division.
+
+    Instead of subheads, extra space or a type ornament between
+    paragraphs may be used to mark text divisions or to signal
+    changes in subject or emphasis.
+
+    (The Chicago Manual of Style, 14th edition, section 1.80)
+
+Text divisions are commonly seen in novels and short fiction.  The
+syntax for the beginning of an untitled division is a horizontal line
+of 4 or more repeated punctuation characters, a division marker.  The
+syntax is the same as section title underlines without title text.
+Division markers require blank lines before and after::
+
+    Para.
+
+    ----------
+
+    Para.
+
+Unlike sections, divisions may not contain other divisions or
+sections, only body elements; they are not a recursive structure.  No
+hierarchy of division markers is enforced, although it is recommended
+that a single consistent style be used.
+
+The processing system is free to render division markers in output in
+any way it likes.  For example, horizontal rules (<HR>) in HTML output
+would be an obvious choice.
 
 
 Body Elements
@@ -574,8 +622,8 @@ For example::
 
 Applications of reStructuredText may recognize field names and
 transform fields or field bodies in certain contexts. See
-`Bibliographic Field Lists`_ below. Any untransformed fields remain in
-a generic field list.
+`Bibliographic Fields`_ below. Any untransformed fields remain in a
+generic field list.
 
 Syntax diagram (simplified)::
 
@@ -584,6 +632,70 @@ Syntax diagram (simplified)::
     +-------+----------------------+            |
             | (body elements)+                  |
             +-----------------------------------+
+
+
+Bibliographic Fields
+````````````````````
+
+DTD elements: docinfo, author, authors, organization, contact,
+version, status, date, copyright, abstract.
+
+When a field list is the first non-comment element in a document
+(after the document title, if there is one), it may have certain
+specific fields transformed to document bibliographic data. This
+bibliographic data corresponds to the front matter of a book, such as
+the title page and copyright page.
+
+Registered field names listed below are recognized and transformed to
+the corresponding DTD elements, becoming child elements of the
+"docinfo" element. No ordering is required of these fields, although
+they may be rearranged to fit the document structure, as noted. Unless
+otherwise indicated in the list below, each of the bibliographic
+elements' field bodies may contain a single paragraph only. Field
+bodies may be checked for `RCS keywords`_ and cleaned up.
+
+The registered bibliographic field names and their corresponding DTD
+elements are as follows:
+
+- Field name "Author": author element.
+- "Authors": authors. May contain either: a single paragraph
+  consisting of a list of authors, separated by ";" or ","; or a
+  bullet list whose elements each contain a single paragraph per
+  author.
+- "Organization": organization.
+- "Contact": contact.
+- "Version": version.
+- "Status": status.
+- "Date": date.
+- "Copyright": copyright.
+- "Abstract": abstract. May contain arbitrary body elements. The
+  abstract always becomes the last child of the docinfo element. Only
+  one abstract is allowed.
+
+This field-name-to-element mapping can be extended, or replaced for
+other languages. See the `DPS Tree Transforms`_ and parser
+implementation documentation for details.
+
+
+RCS Keywords
+````````````
+
+Normally [#]_, recognized `bibliographic fields`_ are checked for RCS
+[#]_ keywords and cleaned up. RCS keywords may be entered into source
+files as "$keyword$", and once stored under RCS or CVS [#]_, they are
+expanded to "$keyword: expansion text $". For example, a "Status"
+field will be transformed to a "status" element::
+
+    :Status: $keyword: expansion text $
+
+Processed, the "status" element's text will become simply "expansion
+text". The dollar signs and leading RCS keyword name are removed.
+
+.. [#] RCS keyword processing can be turned off.
+.. [#] Revision Control System.
+.. [#] Concurrent Versions System. CVS uses the same keywords as RCS.
+
+For details, see the `DPS Tree Transforms`_ document.
 
 
 Option Lists
@@ -597,37 +709,38 @@ descriptions. There are three types of options:
 
 - Short POSIX options consist of one dash and an option letter.
 - Long POSIX options consist of two dashes and an option word.
-- DOS options consist of a slash and an option letter.
-- VMS options consist of a slash and an option word.
+- Short DOS/VMS options consist of a slash and an option letter.
+- Long DOS/VMS options consist of a slash and an option word.
 
-(Please note that POSIX-style and VMS-style options may also be used
-by DOS or Windows software. The names above have been chosen for
-convenience only.)
+(Please note that both POSIX-style and DOS/VMS-style options may also
+be used by DOS or Windows software. The names above have been chosen
+for convenience only.)
 
-Although long POSIX option words and VMS option words may be allowed
-to be truncated by the operating system or the application,
-reStructuredText option lists do not show or support this with any
-special syntax. The complete option word should be given, supported by
-notes about truncation if and when applicable.
+Although long POSIX and DOS/VMS option words may be allowed to be
+truncated by the operating system or the application, reStructuredText
+option lists do not show or support this with any special syntax. The
+complete option word should be given, supported by notes about
+truncation if and when applicable.
 
 Options may be followed by an argument placeholder, whose role and
 syntax should be explained in the description text. A variety of
-separators may be used before argument placeholders. The following
-table details the valid combinations (empty cells are invalid):
+separators may be used between options and option argument
+placeholders. The following table details the valid combinations
+(empty cells are invalid):
 
-+-------------+----------+-------------------------------------------+
-|             | Option   | Separator (between option & argument)     |
-|             | With No  +--------------+--------------+-------------+
-| Option Type | Argument | Space (" ")  | Equals ("=") | Colon (":") |
-+=============+==========+==============+==============+=============+
-| Short POSIX | -o       | -o arg       |              |             |
-+-------------+----------+--------------+--------------+-------------+
-| Long POSIX  | --option | --option arg | --option=arg |             |
-+-------------+----------+--------------+--------------+-------------+
-| DOS         | /O       | /O arg       |              |             |
-+-------------+----------+--------------+--------------+-------------+
-| VMS         | /OPTION  | /OPTION arg  | /OPTION=arg  | /OPTION:arg |
-+-------------+----------+--------------+--------------+-------------+
++---------------+----------+-----------------------------+
+|               | Option   | Option & Argument Separator |
+|               | With No  +--------------+--------------+
+|  Option Type  | Argument | Space (" ")  | Equals ("=") |
++===============+==========+==============+==============+
+| Short POSIX   | -o       | -o arg       |              |
++---------------+----------+--------------+--------------+
+| Long POSIX    | --option | --option arg | --option=arg |
++---------------+----------+--------------+--------------+
+| Short DOS/VMS | /O       | /O arg       |              |
++---------------+----------+--------------+--------------+
+| Long DOS/VMS  | /OPTION  | /OPTION arg  | /OPTION=arg  |
++---------------+----------+--------------+--------------+
 
 Multiple variant option types may be listed for each option, separated
 by comma-space. There must be at least two spaces between the
@@ -838,7 +951,7 @@ An explicit markup block is a text block:
   "explicit markup start"),
 - whose second and subsequent lines (if any) are indented relative to
   the first, and
-- which ends with an unindented line.
+- which ends before an unindented line.
 
 Explicit markup blocks are analogous to bullet list items, with ".."
 as the bullet. Blank lines are required between explicit markup blocks
@@ -871,8 +984,10 @@ may begin on the same line as the footnote label. Other elements must
 begin on a new line, consistently indented and left-aligned.
 
 Footnotes may occur anywhere in the document, not only at the end.
-Where or how they appear in the processed output depends on the output
-formatter. Here is a footnote, referred to in `Footnote References`_::
+Where or how they appear in the processed output depends on the
+processing system.
+
+Here is a footnote, referred to in `Footnote References`_::
 
     .. [GVR2001] Python Documentation; van Rossum, Drake, et al.;
        http://www.python.org/doc/
@@ -945,14 +1060,18 @@ Hyperlink Targets
 
 DTD element: target.
 
-Hyperlink targets consist of an explicit markup start (".. "), an
-underscore, the hyperlink name (no trailing underscore), a colon,
-whitespace, and a link block. These are also called "explicit
-hyperlink targets", to differentiate them from `implicit hyperlink
-targets`_ defined below.
+These are also called "explicit hyperlink targets", to differentiate
+them from `implicit hyperlink targets`_ defined below.
 
-Hyperlink names are whitespace-neutral and case-insensitive. See
-`Hyperlink Names`_ below for details and examples.
+Hyperlink targets may be named or anonymous. Named hyperlink targets
+consist of an explicit markup start (".. "), an underscore, the
+hyperlink name (no trailing underscore), a colon, whitespace, and a
+link block. Hyperlink names are whitespace-neutral and
+case-insensitive. See `Hyperlink Names`_ for details and examples.
+
+Anonymous hyperlink targets consist of an explicit markup start
+(".. "), two underscores, a colon, whitespace, and a link block; there
+is no hyperlink name. See `Anonymous Hyperlinks`_ below.
 
 To differentiate hyperlink targets from footnotes:
 
@@ -960,27 +1079,103 @@ To differentiate hyperlink targets from footnotes:
 - hyperlink names may contain whitespace,
 - a colon is required after the hyperlink name.
 
-Hyperlink targets go together with `indirect hyperlinks`_ and
-`internal hyperlinks`_. Internal hyperlink targets have empty link
-blocks; they point to the next element. Indirect hyperlink targets
-have an absolute or relative URI in their link blocks.
+There are three types of hyperlink targets: internal, external, and
+indirect.
 
-An indirect hyperlink's URI may begin on the same line as the explicit
-markup start and target name, or it may begin in an indented text
-block immediately following, with no intervening blank lines. If there
-are multiple lines in the link block, they are stripped of leading and
-trailing whitespace and joined together. The following indirect
-hyperlink targets are equivalent::
+1. Internal hyperlink targets have empty link blocks. They provide an
+   end point allowing a hyperlink to connect one place to another
+   within a document. An internal hyperlink target points to the
+   element following the target. For example::
 
-    .. _one-liner: http://structuredtext.sourceforge.net
+       Clicking on this internal hyperlink will take us to the target_
+       below.
 
-    .. _starts-on-this-line: http://
-                             structuredtext.
-                             sourceforge.net
+       .. _target:
 
-    .. _entirely-below:
-       http://structuredtext.
-       sourceforge.net
+       The hyperlink target above points to this paragraph.
+
+   Internal hyperlink targets may be "chained". Multiple adjacent
+   internal hyperlink targets all point to the same element::
+
+       .. _target1:
+       .. _target2:
+
+       The targets "target1" and "target2" are synonyms; they both
+       point to this paragraph.
+
+   If the element "pointed to" is an external hyperlink target (with a
+   URI in its link block; see #2 below) the URI from the external
+   hyperlink target is propagated to the internal hyperlink targets;
+   they will all "point to" the same URI. There is no need to
+   duplicate a URI. For example, all three of the following hyperlink
+   targets refer to the same URI::
+
+       .. _Python DOC-SIG mailing list archive:
+       .. _archive:
+       .. _Doc-SIG: http://mail.python.org/pipermail/doc-sig/
+
+2. External hyperlink targets have an absolute or relative URI in
+   their link blocks. For example, take the following input::
+
+       See the Python_ home page for info.
+
+       .. _Python: http://www.python.org
+
+   After processing into HTML, the hyperlink might be expressed as::
+
+       See the <A HREF="http://www.python.org">Python</A> home page
+       for info.
+
+   An external hyperlink's URI may begin on the same line as the
+   explicit markup start and target name, or it may begin in an
+   indented text block immediately following, with no intervening
+   blank lines. If there are multiple lines in the link block, they
+   are stripped of leading and trailing whitespace and concatenated.
+   The following external hyperlink targets are equivalent::
+
+       .. _one-liner: http://structuredtext.sourceforge.net
+
+       .. _starts-on-this-line: http://
+                                structuredtext.
+                                sourceforge.net
+
+       .. _entirely-below:
+          http://structuredtext.
+          sourceforge.net
+
+   If an external hyperlink target's URI contains an underscore as its
+   last character, it must be escaped to avoid being mistaken for an
+   indirect hyperlink target::
+
+       This link_ refers to a file called ``underscore_``.
+
+       .. _link: underscore\_
+
+3. Indirect hyperlink targets have a hyperlink reference in their link
+   blocks. In the following example, target "one" indirectly
+   references whatever target "two" references, and target "two"
+   references target "three", an internal hyperlink target. In effect,
+   all three reference the same thing::
+
+       .. _one: two_
+       .. _two: three_
+       .. _three:
+
+   Just as with `hyperlink references`_ anywhere else in a document,
+   if a phrase-link is used it must be enclosed in backquotes. As with
+   external hyperlinks, the link block of an indirect hyperlink target
+   may begin on the same line as the explicit markup start or the next
+   line. It may also be split over multiple lines, in which case the
+   lines are joined with whitespace before being normalized.
+
+   For example, the following indirect hyperlink targets are
+   equivalent::
+
+       .. _one-liner: `A HYPERLINK`_
+       .. _entirely-below:
+          `a    hyperlink`_
+       .. _split: `A
+                  Hyperlink`_
 
 If a hyperlink name contains a colon followed by whitespace, either:
 
@@ -1007,37 +1202,34 @@ Syntax diagram::
             +----------------------+
 
 
-Implicit Hyperlink Targets
-``````````````````````````
+Anonymous Hyperlinks
+....................
 
-Implicit hyperlink targets are generated by section titles and
-footnotes, and may also be generated by extension constructs. Implicit
-hyperlink targets behave identically to explicit `hyperlink targets`_.
+The `World Wide Web Consortium`_ recommends in its `HTML Techniques
+for Web Content Accessibility Guidelines`_ that authors should
+"clearly identify the target of each link." Hyperlink references
+should be as verbose as possible, but duplicating a verbose hyperlink
+name in the target is onerous and error-prone. Anonymous hyperlinks
+are designed to allow convenient verbose hyperlink references, and are
+analogous to `Auto-Numbered Footnotes`_. They are particularly useful
+in short or one-off documents.
 
-Problems of ambiguity due to conflicting duplicate implicit and
-explicit hyperlink names are avoided because the reStructuredText
-parser follows these rules:
+Anonymous `hyperlink references`_ are specified with two underscores
+instead of one::
 
-1. Explicit hyperlink targets override any implicit targets having the
-   same hyperlink name. The implicit hyperlink targets are removed,
-   and level-0 system warnings are inserted.
+    See `the web site of my favorite programming language`__.
 
-2. If two or more sections have the same title (such as "Introduction"
-   subsections of a rigidly-structured document), there will be
-   duplicate implicit target hyperlink names. Solution: all duplicate
-   hyperlink targets are removed, and level-0 system warnings
-   inserted.
+Anonymous targets begin with ".. __:"; no hyperlink name is required
+or allowed::
 
-3. If there are duplicate explicit hyperlink target names which do not
-   refer to identical URIs, all duplicates are removed, and level-1
-   system warnings inserted.
+    .. __: http://www.python.org
 
-System warnings are inserted where target links have been removed. See
-"Error Handling" in `PEP 258`_.
-
-The parser must return a set of *unique* hyperlink targets. The
-calling software (such as the `Python Docstring Processing System`_)
-can warn of unresolvable links, giving reasons for the warnings.
+The hyperlink name of the reference is not used to match the reference
+to its target. Instead, the order of anonymous hyperlink references
+and targets within the document is significant: the first anonymous
+reference will link to the first anonymous target. The number of
+anonymous hyperlink references in a document must match the number of
+anonymous targets.
 
 
 Directives
@@ -1145,6 +1337,39 @@ Syntax diagram::
             +----------------------+
 
 
+Implicit Hyperlink Targets
+==========================
+
+Implicit hyperlink targets are generated by section titles and
+footnotes, and may also be generated by extension constructs. Implicit
+hyperlink targets behave identically to explicit `hyperlink targets`_.
+
+Problems of ambiguity due to conflicting duplicate implicit and
+explicit hyperlink names are avoided because the reStructuredText
+parser follows these rules:
+
+1. Explicit hyperlink targets override any implicit targets having the
+   same hyperlink name. The implicit hyperlink targets are removed,
+   and level-0 system warnings are inserted.
+
+2. If two or more sections have the same title (such as "Introduction"
+   subsections of a rigidly-structured document), there will be
+   duplicate implicit target hyperlink names. Solution: all duplicate
+   hyperlink targets are removed, and level-0 system warnings
+   inserted.
+
+3. If there are duplicate explicit hyperlink target names which do not
+   refer to identical URIs, all duplicates are removed, and level-1
+   system warnings inserted.
+
+System warnings are inserted where target links have been removed. See
+"Error Handling" in `PEP 258`_.
+
+The parser must return a set of *unique* hyperlink targets. The
+calling software (such as the `Python Docstring Processing System`_)
+can warn of unresolvable links, giving reasons for the warnings.
+
+
 Inline Markup
 =============
 
@@ -1154,10 +1379,9 @@ Inline markup cannot be nested.
 There are eight inline markup constructs. Four of the constructs
 (emphasis_, `strong emphasis`_, `interpreted text`_, and `inline
 literals`_) use identical start-strings and end-strings to indicate
-the markup. The `footnote references`_, `indirect hyperlinks`_, and
-`internal hyperlinks`_ use different start-strings and end-strings.
-`Standalone hyperlinks`_ are recognized implicitly, and use no extra
-markup.
+the markup. The `footnote references`_ and `hyperlink references`_ use
+different start-strings and end-strings.  `Standalone hyperlinks`_ are
+recognized implicitly, and use no extra markup.
 
 The inline markup start-string and end-string recognition rules are as
 follows:
@@ -1244,7 +1468,7 @@ Text enclosed by single backquote characters is interpreted::
 
 The semantics of interpreted text are domain-dependent. It can be used
 as implicit or explicit descriptive markup (such as for program
-identifiers, as in the `DPS Python Mode`_), for cross-reference
+identifiers, as in the `Python Source Reader`_), for cross-reference
 interpretation (such as index entries), or for other applications
 where context can be inferred.
 
@@ -1339,49 +1563,33 @@ For example, the following hyperlinks are equivalent::
       Hyperlink`_
 
 
-Indirect Hyperlinks
-```````````````````
+Hyperlink References
+````````````````````
 
 DTD element: link.
 
-- Start-string = "" (empty string), end-string: "_".
-- Start-string = "`", end-string: = "\`_". (Phrase links.)
+- Named hyperlink references:
 
-Indirect hyperlinks consist of two parts. In the text body, there is a
-source link, a hyperlink name with a trailing underscore::
+  - Start-string = "" (empty string), end-string = "_".
+  - Start-string = "`", end-string = "\`_". (Phrase links.)
+
+- Anonymous hyperlink references:
+
+  - Start-string = "" (empty string), end-string = "__".
+  - Start-string = "`", end-string = "\`__". (Phrase links.)
+
+Hyperlinks consist of two parts. In the text body, there is a source
+link, a hyperlink name with a trailing underscore (or two underscores
+for `anonymous hyperlinks`_)::
 
     See the Python_ home page for info.
 
-A target link containing a URI must exist somewhere else in the
-document (see `Hyperlink Targets`_ for a full description)::
+A target link with a matching hyperlink name must exist somewhere else
+in the document. See `Hyperlink Targets`_ for a full description).
 
-    .. _Python: http://www.python.org
-
-After processing into HTML, this might be expressed as::
-
-    See the <A HREF="http://www.python.org">Python</A> home page for
-    info.
-
-
-Internal Hyperlinks
-```````````````````
-
-DTD element: link.
-
-- Start-string = "" (empty string), end-string: "_".
-- Start-string = "`", end-string: = "\`_".
-
-Internal hyperlinks connect one point to another within a document.
-They are identical to `indirect hyperlinks`_ except that there is no
-URI in the target link. See `Hyperlink Targets`_ for a full
-description. For example::
-
-    Clicking on this internal hyperlink will take us to the target_
-    below.
-
-    .. _target:
-
-    The hyperlink target above points to this paragraph.
+`Anonymous hyperlinks`_ (which see) do not use hyperlink names to
+match references to targets, but otherwise behave similarly to named
+hyperlinks.
 
 
 Footnote References
@@ -1456,7 +1664,7 @@ Two forms of URI are recognized:
 
    With queries, fragments, and %-escape sequences, URIs can become
    quite complicated. A reStructuredText parser must be able to
-   recognize any absolute URI, as defined in RFC239_.
+   recognize any absolute URI, as defined in RFC2396_.
 
 2. Standalone email addresses, which are treated as if they were
    ablsolute URIs with a "mailto:" scheme. Example::
@@ -1477,212 +1685,24 @@ Markup errors are handled according to the specification in `PEP
 258`_.
 
 
-----------------------------
- Post-Parse Transformations
-----------------------------
-
-Each of the following transformations ties up certain "loose ends"
-that remain after the initial parsing of input reStructuredText. Each
-is an optional step that the DPS Reader may or may not choose to
-perform on the parsed document, depending on the input context. The
-DPS Reader may also perform context-specific transformations before
-performing these standard transformations.
-
-
-Section Promotion: Document Title & Subtitle
-============================================
-
-In reStructuredText, there is no way to specify a document title and
-subtitle explicitly. Instead, we can supply the document title (and
-possibly the subtitle as well) implicitly, and use this two-step
-transformation to "raise" or "promote" the title(s) (and their
-corresponding section contents) to the document level.
-
-1. If the document contains a single top-level section as its first
-   non-comment element, the top-level section's title becomes the
-   document's title, and the top-level section's contents become the
-   document's immediate contents. The lone top-level section header
-   must be the first non-comment element in the document.
-
-   For example, take this input text::
-
-       =================
-        Top-Level Title
-       =================
-
-       A paragraph.
-
-   Once parsed, it looks like this::
-
-       <document>
-           <section name="top-level title">
-               <title>
-                   Top-Level Title
-               <paragraph>
-                   A paragraph.
-
-   After running the Section Promotion transformation, we have::
-
-       <document name="top-level title">
-           <title>
-               Top-Level Title
-           <paragraph>
-               A paragraph.
-
-2. If step 1 successfully determines the document title, we continue
-   by checking for a subtitle.
-
-   If the lone top-level section itself contains a single second-level
-   section as its first non-comment element, that section's title is
-   promoted to the document's subtitle, and that section's contents
-   become the document's immediate contents. Given this input text::
-
-       =================
-        Top-Level Title
-       =================
-
-       Second-Level Title
-       ~~~~~~~~~~~~~~~~~~
-
-       A paragraph.
-
-   After parsing and running the Section Promotion transformation, the
-   result is::
-
-       <document name="top-level title">
-           <title>
-               Top-Level Title
-           <subtitle name="second-level title">
-               Second-Level Title
-           <paragraph>
-               A paragraph.
-
-   (Note that the implicit hyperlink target generated by the
-   "Second-Level Title" is preserved on the "subtitle" element itself.)
-
-Any comment elements occurring before the document title or subtitle
-are accumulated and inserted as the first body elements after the
-title(s)
-
-
-Bibliographic Field Lists
-=========================
-
-DTD elements: docinfo, author, authors, organization, contact,
-version, status, date, copyright, abstract.
-
-It is recommended that this transformation be run *after* the `Section
-Promotion: Document Title & Subtitle`_ transformation.
-
-When a field list is the first non-comment element in a document
-(after the document title, if there is one), it may have certain
-specific fields transformed to document bibliographic data. This
-bibliographic data corresponds to the front matter of a book, such as
-the title page and copyright page.
-
-Registered field names are recognized and transformed to the
-corresponding DTD elements, becoming child elements of the "docinfo"
-element. No ordering is required of these fields, although they may be
-rearranged to fit the document structure. Unless otherwise indicated
-in the list below, each of the bibliographic elements' field bodies
-may contain a single paragraph only.
-
-The registered bibliographic field names and their corresponding DTD
-elements are as follows:
-
-- Field name "Author": author element.
-- "Authors": authors. May contain either: a single paragraph
-  consisting of a list of authors, separated by ";" or ","; or a
-  bullet list whose elements each contain a single paragraph per
-  author.
-- "Organization": organization.
-- "Contact": contact.
-- "Version": version.
-- "Status": status.
-- "Date": date.
-- "Copyright": copyright.
-- "Abstract": abstract. May contain arbitrary body elements. The
-  abstract always becomes the last child of the docinfo element. Only
-  one abstract is allowed.
-
-This field-name-to-element mapping can be extended, or replaced for
-other languages. See the implementation documentation for details.
-
-
-RCS Keywords
-------------
-
-Normally [#]_, recognized bibliographic fields are checked for RCS
-[#]_ keywords and cleaned up. RCS keywords may be entered into source
-files as "$keyword$", and once stored under RCS or CVS [#]_, they are
-expanded to "$keyword: expansion text $". For example::
-
-    :status: $keyword: expansion text $
-
-Processed, the "status" element's text will simply be "expansion
-text". The dollar signs and leading RCS keyword name are removed.
-
-.. [#] RCS keyword processing can be turned off.
-.. [#] Revision Control System.
-.. [#] Concurrent Versions System. CVS uses the same keywords as RCS.
-
-The RCS Keywords transformation is run on registered bibliographic
-fields only. The sole contents of the field body must be an expanded
-RCS keyword, of the form "$keyword: expansion text $". Any RCS keyword
-can be processed in any bibliographic field. Extra processing is done
-for the following RCS keywords:
-
-- "RCSfile" expands to the name of the file in the RCS or CVS
-  repository, which is the name of the source file with a ",v" suffix
-  appended. The RCS Keywords transformation will remove the ",v"
-  suffix. For example::
-
-      :Status: $RCSfile: reStructuredText.txt,v $
-
-  The "status" element's text will be "reStructuredText.txt".
-
-- "Date" expands to the format "YYYY/MM/DD hh:mm:ss" (in the UTC time
-  zone). The RCS Keywords transformation will extract just the date
-  itself and transform it to an ISO 8601 format date, as in
-  "2000-12-31".
-
-  (Since the source file for this text is itself stored under CVS, we
-  can't show an example of the "Date" RCS keyword because we can't
-  prevent any RCS keywords used in this explanation from being
-  expanded. Only the "RCSfile" keyword is stable; its expansion text
-  changes only if the file name changes.)
-
-
-Footnote Numbering
-==================
-
-XXX
-
-
-Cross-Reference Resolution
-==========================
-
-XXX
-
-
-Indirect Hyperlink Resolution
-=============================
-
-XXX
-
-
 .. _reStructuredText: http://structuredtext.sourceforge.net
 .. _Python Docstring Processing System:
     http://docstring.sourceforge.net
 .. _Doc-SIG: http://www.python.org/sigs/doc-sig/
 .. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
+.. _transformations:
+.. _DPS Tree Transforms:
+    http://docstring.sourceforge.net/spec/transforms.txt
 .. _Grouch: http://www.mems-exchange.org/software/grouch/
 .. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
 .. _RFC2396: http://www.rfc-editor.org/rfc/rfc2396.txt
+.. _World Wide Web Consortium: http://www.w3.org/
+.. _HTML Techniques for Web Content Accessibility Guidelines:
+    http://www.w3.org/TR/WCAG10-HTML-TECHS/#link-text
 .. _reStructuredText Directives:
     http://structuredtext.sourceforge.net/spec/directives.txt
 .. _Python Source Reader:
-    http://docstring.sourceforge.net/spec/python-source.txt
+    http://docstring.sourceforge.net/spec/pysource.txt
 .. _PEP 258: http://docstring.sourceforge.net/spec/pep-0258.txt
 
 
