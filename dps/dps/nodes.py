@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.34 $
-:Date: $Date: 2002/03/04 04:47:06 $
+:Revision: $Revision: 1.35 $
+:Date: $Date: 2002/03/07 04:06:08 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -521,6 +521,9 @@ class document(Root, Element):
         self.footnote_refs = {}
         """Mapping of footnote labels to lists of footnote_reference nodes."""
 
+        self.citation_refs = {}
+        """Mapping of citation labels to lists of citation_reference nodes."""
+
         self.anonymous_targets = []
         """List of anonymous target nodes."""
 
@@ -533,11 +536,20 @@ class document(Root, Element):
         self.autofootnote_refs = []
         """List of auto-numbered footnote_reference nodes."""
 
+        self.symbol_footnotes = []
+        """List of symbol footnote nodes."""
+
+        self.symbol_footnote_refs = []
+        """List of symbol footnote_reference nodes."""
+
         self.anonymous_start = 1
         """Initial anonymous hyperlink number."""
 
         self.autofootnote_start = 1
         """Initial auto-numbered footnote number."""
+
+        self.symbol_footnote_start = 0
+        """Initial symbol footnote symbol index."""
 
         self.id_start = 1
         """Initial ID number."""
@@ -645,14 +657,24 @@ class document(Root, Element):
     def note_anonymous_ref(self, refnode):
         self.anonymous_refs.append(refnode)
 
-    def note_autofootnote(self, footnotenode):
-        self.autofootnotes.append(footnotenode)
+    def note_autofootnote(self, footnote):
+        self.autofootnotes.append(footnote)
 
     def note_autofootnote_ref(self, refnode):
         self.autofootnote_refs.append(refnode)
 
+    def note_symbol_footnote(self, footnote):
+        self.symbol_footnotes.append(footnote)
+
+    def note_symbol_footnote_ref(self, refnode):
+        self.symbol_footnote_refs.append(refnode)
+
     def note_footnote_ref(self, refnode):
         self.footnote_refs.setdefault(refnode['refname'], []).append(refnode)
+        self.note_refname(refnode)
+
+    def note_citation_ref(self, refnode):
+        self.citation_refs.setdefault(refnode['refname'], []).append(refnode)
         self.note_refname(refnode)
 
     def note_substitution_def(self, substitutiondefnode, msgnode=None):
@@ -703,7 +725,23 @@ class copyright(Bibliographic, TextElement): pass
 # =====================
 
 class section(Structural, Element): pass
-class topic(Structural, Element): pass
+
+class topic(Structural, Element):
+
+    """
+    Topics are terminal, "leaf" mini-sections, like block quotes with titles,
+    or textual figures. A topic is just like a section, except that it has no
+    subsections, and it doesn't have to conform to section placement rules.
+
+    Topics are allowed wherever body elements (list, table, etc.) are allowed,
+    but only at the top level of a section or document. Topics cannot nest
+    inside topics or body elements; you can't have a topic inside a table,
+    list, block quote, etc.
+    """
+
+    pass
+
+
 class transition(Structural, Element): pass
 
 
@@ -796,6 +834,44 @@ class system_message(Special, PreBibliographic, Element):
                                Element.astext(self))
 
 
+class pending(Special, PreBibliographic, Element):
+
+    """
+    The "pending" element is used to encapsulate a pending transform: the
+    transform, the point at which to apply it, and any data it requires.
+    
+    For example, say you want a table of contents in your reStructuredText
+    document. The easiest way to specify where to put it is from within the
+    document, with a directive::
+
+        .. contents::
+    
+    But the "contents" directive can't do its work until the entire document
+    has been parsed (and possibly transformed to some extent). So the
+    directive code leaves a placeholder behind that will trigger the second
+    phase of the its processing, something like this::
+
+        <pending directive="contents" ...other attributes...>
+            ...any directive data...
+
+    The "pending" node is also appended to `document.pending`, so that a later
+    stage of processing can easily run all pending transforms.
+    """
+
+    def __init__(self, transform, *children, **attributes):
+        self.transform = transform
+        """Contains the transform class..."""
+
+
+class raw(Special, Inline, PreBibliographic, TextElement):
+
+    """
+    Raw data that is to be passed untouched to the Writer.
+    """
+
+    pass
+
+
 # =================
 #  Inline Elements
 # =================
@@ -833,8 +909,8 @@ node_class_names = """
     note
     option option_argument option_group option_list option_list_item
         option_string organization
-    paragraph problematic
-    reference revision row
+    paragraph pending problematic
+    raw reference revision row
     section status strong substitution_definition
         substitution_reference subtitle system_message
     table target tbody term tgroup thead tip title topic transition
