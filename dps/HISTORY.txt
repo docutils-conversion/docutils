@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/22 04:18:23 $
+:Date: $Date: 2002/01/16 02:56:37 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -39,6 +39,8 @@ Changed contact email addresses.
 
 * setup.py: Modified for import by install.py.
 
+* dps/__init__.py: Added docstring.
+
 * dps/nodes.py:
 
   - Added 'vms_option'.
@@ -71,6 +73,8 @@ Changed contact email addresses.
   - Added "hint", "substitution", "substitution_reference" classes.
   - Added element hierarchy base classes.
   - Removed generic 'directive'.
+  - 'errorhandler' -> 'reporter'.
+  - Added document.languagecode.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -102,6 +106,7 @@ Changed contact email addresses.
   - Improved error stream handling.
   - Added some docstrings.
   - Added 'parseattributes()', associated functions and exceptions.
+  - Moved 'normname()' from restructuredtext.states.
 
 * dps/test_*.py: Moved to new test/ directory.
 
@@ -119,6 +124,10 @@ Changed contact email addresses.
   - Fixed ``__all__``.
   - Changed node class names to node classes.
   - Removed parser-specific data.
+  - Added 'bibliographic_fields' and 'author_separators' (transform
+    support).
+
+* dps/transforms: Subpackage added.
 
 * test: Subdirectory added. The top-level consists of a modular test
   framework begun by Garth Kidd.
