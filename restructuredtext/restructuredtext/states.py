@@ -1,38 +1,38 @@
 """
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.5 $
-Date: $Date: 2001/08/11 02:13:23 $
-Copyright: This module has been placed in the public domain.
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/08/14 03:49:25 $
+:Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
-reStructuredText parser. It defines the following classes:
+reStructuredText parser. It defines the following:
 
-- `RSTStateMachine`: reStructuredText's customized StateMachine.
-- `RSTState`: reStructuredText State superclass.
-- `Body`: Generic classifier of the first line of a block.
-- `BulletList`: Second and subsequent bullet_list list_items
-- `EnumeratedList`: Second and subsequent enumerated_list list_items.
-- `DefinitionList`: Second and subsequent definition_list_items.
-- `Explicit`: Second and subsequent explicit markup constructs.
-- `Text`: Classifier of second line of a text block.
-- `Definition`: Second line of potential definition_list_item.
-- `Stuff`: an auxilliary collection class.
+:Classes:
+    - `RSTStateMachine`: reStructuredText's customized StateMachine.
+    - `RSTState`: reStructuredText State superclass.
+    - `Body`: Generic classifier of the first line of a block.
+    - `BulletList`: Second and subsequent bullet_list list_items
+    - `DefinitionList`: Second and subsequent definition_list_items.
+    - `EnumeratedList`: Second and subsequent enumerated_list list_items.
+    - `FieldList`: Second and subsequent fields.
+    - `OptionList`: Second and subsequent option_list_items.
+    - `Explicit`: Second and subsequent explicit markup constructs.
+    - `Text`: Classifier of second line of a text block.
+    - `Definition`: Second line of potential definition_list_item.
+    - `Stuff`: an auxilliary collection class.
 
-Exception classes:
+:Exception classes:
+    - `MarkupError`
+    - `ParserError`
 
-- `MarkupError`
-- `ParserError`
+:Functions:
+    - `escape2null()`: Return a string, escape-backslashes converted to nulls.
+    - `unescape()`: Return a string, nulls removed or restored to backslashes.
+    - `normname()`: Return a case- and whitespace-normalized name.
 
-Functions:
-
-- `escape2null()`: Return a string with escape-backslashes converted to nulls.
-- `unescape()`: Return a string with nulls removed or restored to backslashes.
-- `normname()`: Return a case- and whitespace-normalized name.
-
-Attributes:
-
-- `stateclasses`: set of State classes used with `RSTStateMachine`.
+:Attributes:
+    - `stateclasses`: set of State classes used with `RSTStateMachine`.
 
 Parser Overview
 ===============
@@ -192,7 +192,8 @@ class RSTState(StateWS):
     def checksubsection(self, source, style, lineno):
         """
         Check for a valid subsection header. Return 1 (true) or None (false).
-        Raise `EOFError` when a sibling or supersection encountered.
+
+        :Exception: `EOFError` when a sibling or supersection encountered.
         """
         memo = self.statemachine.memo
         titlestyles = memo.titlestyles
@@ -660,8 +661,14 @@ class Body(RSTState):
     """Fragments of patterns used by transitions."""
 
     pats['nonAlphaNum7Bit'] = '[!-/:-@[-`{-~]'
+    pats['alphanum'] = '[a-zA-Z0-9]'
+    pats['alphanumplus'] = '[a-zA-Z0-9_-]'
     pats['enum'] = ('(%(arabic)s|%(loweralpha)s|%(upperalpha)s|%(lowerroman)s'
                     '|%(upperroman)s)' % enum.sequencepats)
+    pats['optarg'] = '%(alphanum)s%(alphanumplus)s*' % pats
+    pats['shortopt'] = '-%(alphanum)s( %(optarg)s|%(alphanumplus)s+)?' % pats
+    pats['longopt'] = '--%(alphanum)s%(alphanumplus)s*([ =]%(optarg)s)?' % pats
+    pats['option'] = '(%(shortopt)s|%(longopt)s)' % pats
 
     for format in enum.formats:
         pats[format] = '(?P<%s>%s%s%s)' % (
@@ -669,24 +676,25 @@ class Body(RSTState):
               pats['enum'], re.escape(enum.formatinfo[format].suffix))
 
     patterns = {'bullet': r'[-+*]( +|$)',
-                'enumerated': r'(%(parens)s|%(rparen)s|%(period)s)( +|$)'
+                'enumerator': r'(%(parens)s|%(rparen)s|%(period)s)( +|$)'
                 % pats,
-                'option': r'(-\w|--\w[\w-]*).*?  ',
+                'fieldmarker': r':[^: ]([^:]*[^: ])?:( +|$)',
+                'optionmarker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
                 'doctest': r'>>>( +|$)',
                 'table': r'\+-[-+]+-\+ *$',
                 'explicit_markup': r'\.\.( +|$)',
                 'overline': r'(%(nonAlphaNum7Bit)s)\1\1\1+ *$' % pats,
-                'firstfield': r'[!-9;-~]+:( +|$)',
+                'rfc822': r'[!-9;-~]+:( +|$)',
                 'text': r''}
     initialtransitions = ['bullet',
-                          'enumerated',
-                          'option',
+                          'enumerator',
+                          'fieldmarker',
+                          'optionmarker',
                           'doctest',
                           'table',
                           'explicit_markup',
                           'overline',
-                          #('firstfield', 'Field'),
-                          ('text', 'Text')]
+                          'text']
 
     def indent(self, match, context, nextstate):
         """Block quote."""
@@ -733,7 +741,21 @@ class Body(RSTState):
             pass
         return [], nextstate, []
 
-    def enumerated(self, match, context, nextstate):
+    def list_item(self, indent):
+        indented, lineoffset, blankfinish = \
+              self.statemachine.getknownindented(indent)
+        if self.debug:
+            print >>sys.stderr, ('\nstates.Body.list_item: indented=%r'
+                                 % indented)
+        i = nodes.list_item('\n'.join(indented))
+        if indented:
+            sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
+            sm.run(indented, inputoffset=lineoffset,
+                   memo=self.statemachine.memo, node=i, matchtitles=0)
+            sm.unlink()
+        return i, blankfinish
+
+    def enumerator(self, match, context, nextstate):
         """Enumerated List Item"""
         format, sequence, text, ordinal = self.parseenumerator(match)
         #print >>sys.stderr, 'Body.enumerated: format=%r, sequence=%r, text=%r, ordinal=%r' % (format, sequence, text, ordinal)
@@ -783,27 +805,44 @@ class Body(RSTState):
             pass
         return [], nextstate, []
 
-    def parseenumerator(self, match, trysequence=None):
+    def parseenumerator(self, match, expectedsequence=None):
+        """
+        Analyze an enumerator and return the results.
+
+        :Return:
+            - the enumerator format ('period', 'parens', or 'rparen'),
+            - the sequence used ('arabic', 'loweralpha', 'upperroman', etc.),
+            - the text of the enumerator, stripped of formatting, and
+            - the ordinal value of the enumerator ('a' -> 1, 'ii' -> 2, etc.;
+              ``None`` is returned for invalid enumerator text).
+
+        The enumerator format has already been determined by the regular
+        expression match. If `expectedsequence` is given, that sequence is
+        tried first. If not, we check for Roman numeral 1. This way,
+        single-character Roman numerals (which are also alphabetical) can be
+        matched. If no sequence has been matched, all sequences are checked in
+        order.
+        """
         groupdict = match.groupdict()
         sequence = ''
         for format in self.enum.formats:
-            if groupdict[format]:
-                break
+            if groupdict[format]:       # was this the format matched?
+                break                   # yes; keep `format`
         else:                           # shouldn't happen
             raise ParserError, 'enumerator format not matched'
         text = groupdict[format][self.enum.formatinfo[format].start
                                  :self.enum.formatinfo[format].end]
-        if not trysequence:
+        if expectedsequence:
+            try:
+                if self.enum.sequenceREs[expectedsequence].match(text):
+                    sequence = expectedsequence
+            except KeyError:            # shouldn't happen
+                raise ParserError, 'unknown sequence: %s' % sequence
+        else:
             if text == 'i':
                 sequence = 'lowerroman'
             elif text == 'I':
                 sequence = 'upperroman'
-        else:
-            try:
-                if self.enum.sequenceREs[trysequence].match(text):
-                    sequence = trysequence
-            except KeyError:            # shouldn't happen
-                raise ParserError, 'unknown sequence: %s' % sequence
         if not sequence:
             for sequence in self.enum.sequences:
                 if self.enum.sequenceREs[sequence].match(text):
@@ -816,8 +855,140 @@ class Body(RSTState):
             ordinal = None
         return format, sequence, text, ordinal
 
-    def option(self, match, context, nextstate):
-        return context, nextstate, []
+    def fieldmarker(self, match, context, nextstate):
+        """Field list item."""
+        l = nodes.field_list()
+        self.statemachine.node += l
+        f, blankfinish = self.field(match)
+        l += f
+        offset = self.statemachine.lineoffset + 1   # next line
+        kwargs = self.indentSMkwargs.copy()
+        kwargs['initialstate'] = 'FieldList'
+        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm.states['FieldList'].blankfinish = blankfinish
+        sm.run(self.statemachine.inputlines[offset:],
+               inputoffset=self.statemachine.abslineoffset() + 1,
+               memo=self.statemachine.memo, node=l, matchtitles=0)
+        if not sm.states['FieldList'].blankfinish:
+            self.statemachine.node += self.unindentwarning()
+        sm.unlink()
+        try:
+            self.statemachine.gotoline(sm.abslineoffset())
+        except IndexError:
+            pass
+        return [], nextstate, []
+
+    def field(self, match):
+        name, args = self.parsefieldmarker(match)
+        indented, indent, lineoffset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end())
+        if self.debug:
+            print >>sys.stderr, ('\nstates.Body.field_list_item: indented=%r'
+                                 % indented)
+        f = nodes.field()
+        f += nodes.field_name(name, name)
+        for arg in args:
+            f += nodes.field_argument(arg, arg)
+        b = nodes.field_body('\n'.join(indented))
+        f += b
+        if indented:
+            sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
+            sm.run(indented, inputoffset=lineoffset,
+                   memo=self.statemachine.memo, node=b, matchtitles=0)
+            sm.unlink()
+        return f, blankfinish
+
+    def parsefieldmarker(self, match):
+        """Extract & return name & argument list from a field marker match."""
+        field = match.string[1:]        # strip off leading ':'
+        field = field[:field.find(':')] # strip off trailing ':' etc.
+        tokens = field.split()
+        return tokens[0], tokens[1:]    # first == name, others == args
+
+    def optionmarker(self, match, context, nextstate):
+        """Option list item."""
+        l = nodes.option_list()
+        self.statemachine.node += l
+        try:
+            i, blankfinish = self.option_list_item(match)
+        except MarkupError, detail:     # shouldn't happen; won't match pattern
+            sw = self.statemachine.memo.errorist.system_warning(
+                  2, ('Invalid option list marker at line %s: %s'
+                      % (self.statemachine.abslineno(), detail)))
+            self.statemachine.node += sw
+            indented, indent, lineoffset, blankfinish = \
+                  self.statemachine.getfirstknownindented(match.end())
+            bq = self.block_quote(indented, lineoffset)
+            self.statemachine.node += bq
+            if not blankfinish:
+                self.statemachine.node += self.unindentwarning()
+            return [], nextstate, []
+        l += i
+        offset = self.statemachine.lineoffset + 1   # next line
+        kwargs = self.indentSMkwargs.copy()
+        kwargs['initialstate'] = 'OptionList'
+        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm.states['OptionList'].blankfinish = blankfinish
+        sm.run(self.statemachine.inputlines[offset:],
+               inputoffset=self.statemachine.abslineoffset() + 1,
+               memo=self.statemachine.memo, node=l, matchtitles=0)
+        if not sm.states['OptionList'].blankfinish:
+            self.statemachine.node += self.unindentwarning()
+        sm.unlink()
+        try:
+            self.statemachine.gotoline(sm.abslineoffset())
+        except IndexError:
+            pass
+        return [], nextstate, []
+
+    def option_list_item(self, match):
+        options = self.parseoptionmarker(match)
+        indented, indent, lineoffset, blankfinish = \
+              self.statemachine.getfirstknownindented(match.end())
+        if self.debug:
+            print >>sys.stderr, ('\nstates.Body.option_list_item: indented=%r'
+                                 % indented)
+        i = nodes.option_list_item('', *options)
+        d = nodes.description('\n'.join(indented))
+        i += d
+        if indented:
+            sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
+            sm.run(indented, inputoffset=lineoffset,
+                   memo=self.statemachine.memo, node=d, matchtitles=0)
+            sm.unlink()
+        return i, blankfinish
+
+    def parseoptionmarker(self, match):
+        """
+        Return a list of `node.option` objects from an option marker match.
+        
+        :Exception: `MarkupError` for invalid option markers.
+        """
+        optlist = []
+        options = match.group().rstrip().split(', ')
+        for optionstring in options:
+            o = nodes.option(optionstring)
+            tokens = optionstring.split()
+            if tokens[0][:2] == '--':
+                tokens[:1] = tokens[0].split('=')
+            elif tokens[0][:1] == '-':
+                if len(tokens[0]) > 2:
+                    tokens[:1] = [tokens[0][:2], tokens[0][2:]]
+            else:
+                raise MarkupError('not an option marker: %r' % optionstring)
+            if 0 < len(tokens) <= 2:
+                if tokens[0][:2] == '--':
+                    o += nodes.long_option(tokens[0], tokens[0])
+                elif tokens[0][:1] == '-':
+                    o += nodes.short_option(tokens[0], tokens[0])
+                if len(tokens) > 1:
+                    o += nodes.option_argument(tokens[1], tokens[1])
+                optlist.append(o)
+            else:
+                raise MarkupError('wrong numer of option tokens (=%s), '
+                                  'should be 1 or 2: %r' % (len(tokens),
+                                                            optionstring))
+        return optlist
 
     def doctest(self, match, context, nextstate):
         data = '\n'.join(self.statemachine.gettextblock())
@@ -825,6 +996,9 @@ class Body(RSTState):
         return [], nextstate, []
 
     def table(self, match, context, nextstate):
+        """Temporarily parse a table as a literal_block."""
+        data = '\n'.join(self.statemachine.gettextblock())
+        self.statemachine.node += nodes.literal_block(data, data)
         return context, nextstate, []
 
     explicit = Stuff()
@@ -1002,29 +1176,38 @@ class Body(RSTState):
             self.section(title.lstrip(), source, style, lineno + 1)
         return [], nextstate, []
 
-    def firstfield(self, match, context, nextstate):
-        return context, nextstate, []
-
     def text(self, match, context, nextstate):
         """Titles, definition lists, paragraphs."""
-        return [match.string], nextstate, []
-
-    def list_item(self, indent):
-        indented, lineoffset, blankfinish = \
-              self.statemachine.getknownindented(indent)
-        if self.debug:
-            print >>sys.stderr, ('\nstates.Body.list_item: indented=%r'
-                                 % indented)
-        i = nodes.list_item('\n'.join(indented))
-        if indented:
-            sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
-            sm.run(indented, inputoffset=lineoffset,
-                   memo=self.statemachine.memo, node=i, matchtitles=0)
-            sm.unlink()
-        return i, blankfinish
+        return [match.string], 'Text', []
 
 
-class BulletList(Body):
+class SpecializedBody(Body):
+
+    """
+    Superclass for second and subsequent compound element members.
+    
+    All transition methods are disabled. Override individual methods in
+    subclasses to re-enable.
+    """
+
+    def invalid_input(self, match=None, context=None, nextstate=None):
+        """Not a compound element member. Abort this state machine."""
+        self.statemachine.previousline()  # back up so parent SM can reassess
+        raise EOFError
+
+    indent = invalid_input
+    bullet = invalid_input
+    enumerator = invalid_input
+    fieldmarker = invalid_input
+    optionmarker = invalid_input
+    doctest = invalid_input
+    table = invalid_input
+    explicit_markup = invalid_input
+    overline = invalid_input
+    text = invalid_input
+
+
+class BulletList(SpecializedBody):
 
     """Second and subsequent bullet_list list_items."""
 
@@ -1032,50 +1215,14 @@ class BulletList(Body):
         """Bullet list item."""
         if match.string[0] != self.statemachine.node['bullet']:
             # different bullet: new list
-            self.not_list_item()
+            self.invalid_input()
         i, blankfinish = self.list_item(match.end())
         self.statemachine.node += i
         self.blankfinish = blankfinish
         return [], 'BulletList', []
 
-    def not_list_item(self, match=None, context=None, nextstate=None):
-        """Not a list item."""
-        self.statemachine.previousline()
-        raise EOFError
 
-    indent = enumerated = option = doctest = table = explicit_markup \
-             = overline = text = not_list_item
-
-
-class EnumeratedList(Body):
-
-    """Second and subsequent enumerated_list list_items."""
-
-    def enumerated(self, match, context, nextstate):
-        """Enumerated list item."""
-        format, sequence, text, ordinal = self.parseenumerator(
-              match, self.statemachine.node['enumtype'])
-        if (sequence != self.statemachine.node['enumtype'] or
-            format != self.format or
-            ordinal != self.lastordinal + 1):
-            # different enumeration: new list
-            self.not_list_item()
-        i, blankfinish = self.list_item(match.end())
-        self.statemachine.node += i
-        self.blankfinish = blankfinish
-        self.lastordinal = ordinal
-        return [], 'EnumeratedList', []
-
-    def not_list_item(self, match=None, context=None, nextstate=None):
-        """Not a list item."""
-        self.statemachine.previousline()
-        raise EOFError
-
-    indent = bullet = option = doctest = table = explicit_markup = overline \
-             = text = not_list_item
-
-
-class DefinitionList(Body):
+class DefinitionList(SpecializedBody):
 
     """Second and subsequent definition_list_items."""
 
@@ -1083,16 +1230,62 @@ class DefinitionList(Body):
         """Definition lists."""
         return [match.string], 'Definition', []
 
-    def not_definition_list_item(self, match, context, nextstate):
-        """Not a definition list item."""
-        self.statemachine.previousline()
-        raise EOFError
 
-    indent = bullet = enumerated = option = doctest = table = explicit_markup \
-             = overline = not_definition_list_item
+class EnumeratedList(SpecializedBody):
+
+    """Second and subsequent enumerated_list list_items."""
+
+    def enumerator(self, match, context, nextstate):
+        """Enumerated list item."""
+        format, sequence, text, ordinal = self.parseenumerator(
+              match, self.statemachine.node['enumtype'])
+        if (sequence != self.statemachine.node['enumtype'] or
+            format != self.format or
+            ordinal != self.lastordinal + 1):
+            # different enumeration: new list
+            self.invalid_input()
+        i, blankfinish = self.list_item(match.end())
+        self.statemachine.node += i
+        self.blankfinish = blankfinish
+        self.lastordinal = ordinal
+        return [], 'EnumeratedList', []
 
 
-class Explicit(Body):
+class FieldList(SpecializedBody):
+
+    """Second and subsequent field_list fields."""
+
+    def fieldmarker(self, match, context, nextstate):
+        """Field list field."""
+        f, blankfinish = self.field(match)
+        self.statemachine.node += f
+        self.blankfinish = blankfinish
+        return [], 'FieldList', []
+
+
+class OptionList(SpecializedBody):
+
+    """Second and subsequent option_list option_list_items."""
+
+    def optionmarker(self, match, context, nextstate):
+        """Option list item."""
+        try:
+            i, blankfinish = self.option_list_item(match)
+        except MarkupError, detail:
+            self.invalid_input()
+        self.statemachine.node += i
+        self.blankfinish = blankfinish
+        return [], 'OptionList', []
+
+
+class RFC822List(SpecializedBody):
+
+    """Second and subsequent RFC822 field_list fields."""
+
+    pass
+
+
+class Explicit(SpecializedBody):
 
     """Second and subsequent explicit markup construct."""
 
@@ -1102,14 +1295,6 @@ class Explicit(Body):
         self.statemachine.node.extend(nodelist)
         self.blankfinish = blankfinish
         return [], nextstate, []
-
-    def not_explicit(self, match, context, nextstate):
-        """Not an explicit construct."""
-        self.statemachine.previousline()
-        raise EOFError
-
-    indent = bullet = enumerated = option = doctest = table = overline = text \
-             = not_explicit
 
 
 class Text(RSTState):
@@ -1282,8 +1467,8 @@ class Definition(Text):
         return [], 'DefinitionList', []
 
 
-stateclasses = [Body, BulletList, EnumeratedList, DefinitionList, Explicit,
-                Text, Definition]
+stateclasses = [Body, BulletList, DefinitionList, EnumeratedList, FieldList,
+                OptionList, RFC822List, Explicit, Text, Definition]
 """Standard set of State classes used to start `RSTStateMachine`."""
 
 
