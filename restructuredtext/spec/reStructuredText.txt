@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.43 $
-:Date: $Date: 2002/03/13 02:35:15 $
+:Revision: $Revision: 1.44 $
+:Date: $Date: 2002/03/16 05:35:29 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -31,6 +31,9 @@ in the `Syntax Details`_ section.
 `Literal blocks`_ (in which no markup processing is done) are used for
 examples throughout this document, to illustrate the plain text
 markup.
+
+
+.. contents::
 
 
 -----------------------
@@ -1315,7 +1318,7 @@ marks [#]_:
 
 .. [#] This list was inspired by the list of symbols for "Note
    Reference Marks" in The Chicago Manual of Style, 14th edition,
-   section 12.51.  "Parallels" (``||``) were given in CMoS instead of
+   section 12.51.  "Parallels" ("\|\|") were given in CMoS instead of
    the pilcrow.  The last four symbols (the card suits) were added
    arbitrarily.
 
@@ -1341,7 +1344,7 @@ illustrative::
        It is the first auto-numbered footnote and no other footnote
        with label "1" exists.  The order of the footnotes is used to
        determine numbering, not the order of the footnote references.
-    
+
     .. [#] This footnote will be labeled "3".  It is the second
        auto-numbered footnote, but footnote label "2" is already used.
 
@@ -2178,7 +2181,7 @@ plus internal hyphens, underscores, and periods; no whitespace).
 
 For example::
 
-    Please refer to the fine manual [GVR2001]_.
+    Here is a citation reference: [CIT2002]_.
 
 See Citations_ for the citation itself.
 
@@ -2244,7 +2247,7 @@ Two forms of URI are recognized:
 
    - Hierarchical identifiers begin with one or two slashes and may
      use slashes to separate hierarchical components of the path.
-     Examples are web pages and FTP sites:
+     Examples are web pages and FTP sites::
 
          http://www.python.org
 

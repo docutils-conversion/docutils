@@ -3,8 +3,8 @@
 ==============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/01 15:47:42 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/16 05:35:15 $
 
 There are several problems, unresolved issues, and areas of
 controversy within StructuredText_ (Classic and Next Generation). In
@@ -125,13 +125,13 @@ markup-significant characters as the characters themselves. Currently
 there is no such mechanism (although ZWiki uses '!'). What are the
 candidates?
 
-1. ! (http://dev.zope.org/Members/jim/StructuredTextWiki/NGEscaping)
-2. \
-3. ~
+1. ``!`` (http://dev.zope.org/Members/jim/StructuredTextWiki/NGEscaping)
+2. ``\``
+3. ``~``
 4. doubling of characters
 
-The best choice for this is the backslash (\). It's "the single most
-popular escaping character in the world!", therefore familiar and
+The best choice for this is the backslash (``\``). It's "the single
+most popular escaping character in the world!", therefore familiar and
 unsurprising. Since characters only need to be escaped under special
 circumstances, which are typically those explaining technical
 programming issues, the use of the backslash is natural and
@@ -189,14 +189,14 @@ Bullet List Markup
 
 StructuredText_ includes 'o' as a bullet character. This is dangerous
 and counter to the language-independent nature of the markup. There
-are many languages in which 'o' is a word. For example, in Spanish:
+are many languages in which 'o' is a word. For example, in Spanish::
 
     Llamame a la casa
     o al trabajo.
 
     (Call me at home or at work.)
 
-And in Japanese (when romanized):
+And in Japanese (when romanized)::
 
     Senshuu no doyoubi ni tegami
     o kakimashita.
@@ -303,7 +303,9 @@ Thus, a section could begin with a literal block as follows::
 
     Section Title
     -------------
+
     ::
+
         print "this is example literal"
 
 
@@ -356,8 +358,10 @@ Alternatives:
    subsection titles. ::
 
        ============ ============ ============ ==============
+         Header 1     Header 2     Header 3     Header 4
+       ============ ============ ============ ==============
          Column 1     Column 2    Column 3 & 4 span (Row 1)
-       ============ ============ ===========================
+       ------------ ------------ ---------------------------
            Column 1 & 2 span       Column 3    - Column 4
        ------------------------- ------------  - Row 2 & 3
              1            2            3       - span
@@ -388,7 +392,7 @@ The `reStructuredText markup specification`_ allows for such
 constructs and disambiguates inline markup through a set of
 recognition rules. These recognition rules define the context of
 markup start-strings and end-strings, allowing markup characters to be
-used in non-markup contexts without a problem (or even a backslash).
+used in most non-markup contexts without a problem (or a backslash).
 So we can say, "Use asterisks (*) around words or phrases to
 *emphasisze* them." The '(*)' will not be recognized as markup. This
 reduces the need for markup escaping to the point where an escape
@@ -475,25 +479,28 @@ apostrophes. Each example should evaluate to the following HTML::
     12. Some ``code``, with a 'quote', "double", ain't it grand?
         Does ``a[b] = 'c' + "d" + `2^3\``` work?
 
-Backquotes (#9) are the best choice. They are unobtrusive and
+Backquotes (#9 & #12) are the best choice. They are unobtrusive and
 relatviely rarely used (more rarely than ' or ", anyhow). Backquotes
 have the connotation of 'quotes', which other options (like carets,
-#10) don't. When used within literals, they can be escaped (\`).
+#10) don't.
 
-Analogously with *emph* & **strong**, double-backquotes (#12) could be
-used for inline literals. If single-backquotes are used for
+Analogously with ``*emph*`` & ``**strong**``, double-backquotes (#12)
+could be used for inline literals. If single-backquotes are used for
 'interpreted text' (context-sensitive domain-specific descriptive
 markup) such as function name hyperlinks in Python docstrings, then
 double-backquotes could be used for absolute-literals, wherein no
 processing whatsoever takes place. An advantage of double-backquotes
 would be that backslash-escaping would no longer be necessary for
 embedded single-backquotes; however, embedded double-backquotes (in an
-end-string context) would be illegal.
+end-string context) would be illegal. See `Backquotes in
+Phrase-Links`__ in `Record of reStructuredText Syntax Alternatives`__.
+
+__ alternatives.html#backquotes-in-phrase-links
+__ alternatives.html
 
 Alternative choices are carets (#10) and TeX-style quotes (#11). For
-examples of TeX-style quoting, see:
-
-    http://www.zope.org/Members/jim/StructuredTextWiki/CustomizingTheDocumentProcessor
+examples of TeX-style quoting, see
+http://www.zope.org/Members/jim/StructuredTextWiki/CustomizingTheDocumentProcessor.
 
 Some existing uses of backquotes:
 
@@ -530,8 +537,11 @@ expressions involving the inline literal quote and/or the backslash
 will end up looking ugly. We can only choose the least often ugly
 option.
 
+reStructuredText will use double backquotes for inline literals, and
+single backqoutes for interpreted text.
 
-HyperLinks
+
+Hyperlinks
 ==========
 
 There are three forms of hyperlink currently in StructuredText_:
@@ -593,7 +603,7 @@ Alternatives:
 
        .. _hyperlink http://www.123.xyz
 
-   Setext used 'underscores_instead_of_spaces_' for phrase links.
+   Setext used ``underscores_instead_of_spaces_`` for phrase links.
 
 With some modification, alternative 3 best satisfies the design goals.
 It has the advantage of being readable and relatively unobtrusive.
@@ -625,9 +635,9 @@ underscore indicates the interpretation of the phrase, as a hyperlink.
 #3 also disambiguates hyperlinks from footnote references. Alternative
 #3 wins.
 
-The same trailing underscore markup can also be used for footnote
-references, removing the problem with ordinary bracketed text and
-Python lists::
+The same trailing underscore markup can also be used for footnote and
+citation references, removing the problem with ordinary bracketed text
+and Python lists::
 
     Please refer to the fine manual [GVR2000]_.
 
@@ -666,16 +676,16 @@ To summarize::
 
     This internal hyperlink will take us to the footnotes_ area below.
 
-    Here is a one-word_ indirect hyperlink.
+    Here is a one-word_ external hyperlink.
 
-    Here is `an indirect hyperlink phrase`_.
+    Here is `a hyperlink phrase`_.
 
     .. _footnotes:
     .. [1] Footnote text goes here.
 
-    .. indirect hyperlink target mappings:
+    .. external hyperlink target mappings:
     .. _one-word: http://www.123.xyz
-    .. _an indirect hyperlink phrase: http://www.123.xyz
+    .. _a hyperlink phrase: http://www.123.xyz
 
 The presence or absence of a colon after the target link
 differentiates an indirect hyperlink from a footnote, respectively. A

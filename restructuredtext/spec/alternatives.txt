@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2002/03/07 03:44:32 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2002/03/16 05:35:08 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -20,6 +20,9 @@ full details of the established syntax.
     http://structuredtext.sourceforge.net/spec/problems.txt
 .. _reStructuredText Markup Specification:
    http://structuredtext.sourceforge.net/spec/reStructuredText.txt
+
+
+.. contents::
 
 
 Field Lists
@@ -71,7 +74,8 @@ alternatives were proposed.
    Advantages: explicit and unambiguous, RFC822-compliant.
    Disadvantage: cumbersome.
 
-   Conclusion: rejected.
+   Conclusion: rejected for the general case (but such a directive
+   could certainly be written).
 
 4. Use Javadoc-style::
 
@@ -90,7 +94,7 @@ alternatives were proposed.
        :Version: 1
 
    Advantages: unambiguous, obvious (*almost* RFC822-compliant),
-   flexible, perhaps even elegant. Disadvantage: no precedent, not
+   flexible, perhaps even elegant. Disadvantages: no precedent, not
    quite RFC822-compliant.
 
    Conclusion: accepted!
@@ -336,7 +340,7 @@ usability.
    Origins:
 
    * Except for the colon (a delimiter necessary to allow for
-     phrase-links), hyperlink target ``.. _blah:" comes from Setext.
+     phrase-links), hyperlink target ``.. _blah:`` comes from Setext.
    * Comment syntax from Setext.
    * Footnote syntax from StructuredText ("named links").
    * Directives and anonymous hyperlinks original to reStructuredText.
@@ -631,7 +635,7 @@ Syntax alternatives for the reference:
 5. Redefine the trailing underscore syntax. See definition syntax
    alternative 4, below.
 
-Syntax alternatives for the definition::
+Syntax alternatives for the definition:
 
 1. Use the existing directive syntax, with a predefined directive such
    as "sub".  It contains a further embedded directive resolving to an
@@ -884,7 +888,7 @@ Syntax proposals:
     half-line might be used instead.  Page-oriented output formats
     would typically use the horizontal line for true footnotes.
 
-+ Footnote references::
++ Footnote references:
 
   - Current syntax::
 
