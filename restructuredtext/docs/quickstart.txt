@@ -2,7 +2,7 @@ A ReStructuredText Primer
 =========================
 
 :Author: Richard Jones
-:Version: $Revision: 1.5 $
+:Version: $Revision: 1.6 $
 
 Structure
 ---------
@@ -159,7 +159,7 @@ blank line.
 Preformatting (code samples)
 ----------------------------
 
-Finally, to just include a chunk of preformatted, never-to-be-fiddled-with
+To just include a chunk of preformatted, never-to-be-fiddled-with
 text, finish the prior paragraph with "``::``". The preformatted block is
 finished when the text falls back to the same indentation level as a
 paragraph prior to the preformatted block.
