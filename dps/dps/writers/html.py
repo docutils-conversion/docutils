@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/03/04 04:44:09 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/07 02:12:28 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -191,7 +191,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.depart_docinfo_item()
 
     def visit_definition(self, node):
-        self.body.append('</TERM>\n')
+        self.body.append('</DT>\n')
         self.body.append(self.starttag(node, 'dd'))
 
     def depart_definition(self, node):
