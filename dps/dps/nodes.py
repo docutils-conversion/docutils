@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.26 $
-:Date: $Date: 2002/02/06 02:44:42 $
+:Revision: $Revision: 1.27 $
+:Date: $Date: 2002/02/12 02:21:18 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -43,7 +43,8 @@ class Node:
     def walk(self, visitor):
         """
         Traverse a tree of `Node` objects, calling ``visit_*`` methods of
-        `visitor`.
+        `visitor`. If there is no ``visit_particular_node`` method for a node
+        of type ``particular_node``, the ``unknown_visit`` method is called.
 
         Doesn't handle arbitrary modification in-place during the traversal.
         Replacing one element with one element is OK.
@@ -51,7 +52,8 @@ class Node:
         Parameter `visitor`: A `NodeVisitor` object, containing a
         ``visit_...`` method for each `Node` subclass encountered.
         """
-        method = getattr(visitor, 'visit_' + self.__class__.__name__)
+        method = getattr(visitor, 'visit_' + self.__class__.__name__,
+                         visitor.unknown_visit)
         method(self)
         children = self.getchildren()
         for i in range(len(children)):
@@ -394,9 +396,15 @@ class ToBeResolved:
 
 class Root: pass
 
-class Title: pass
+class Titular: pass
 
 class Bibliographic: pass
+
+
+class PreBibliographic:
+    """Category of Node which may occur before Bibliographic Nodes."""
+    pass
+
 
 class Structural: pass
 
@@ -404,18 +412,22 @@ class Body: pass
 
 class General(Body): pass
 
-class List(Body): pass
+class Sequential(Body): pass
 
 class Admonition(Body): pass
 
-class Special(Body): pass
+
+class Special(Body):
+    """Special internal body elements, not true document components."""
+    pass
+
 
 class Component: pass
 
 class Inline: pass
 
 
-class Reference(ToBeResolved):
+class Referential(ToBeResolved):
 
     refnode = None
     """Resolved reference to a node."""
@@ -585,8 +597,8 @@ class document(Root, Element):
 #  Title Elements
 # ================
 
-class title(Title, TextElement): pass
-class subtitle(Title, TextElement): pass
+class title(Titular, PreBibliographic, TextElement): pass
+class subtitle(Titular, PreBibliographic, TextElement): pass
 
 
 # ========================
@@ -619,20 +631,20 @@ class transition(Structural, Element): pass
 # ===============
 
 class paragraph(General, TextElement): pass
-class bullet_list(List, Element): pass
-class enumerated_list(List, Element): pass
+class bullet_list(Sequential, Element): pass
+class enumerated_list(Sequential, Element): pass
 class list_item(Component, Element): pass
-class definition_list(List, Element): pass
+class definition_list(Sequential, Element): pass
 class definition_list_item(Component, Element): pass
 class term(Component, TextElement): pass
 class classifier(Component, TextElement): pass
 class definition(Component, Element): pass
-class field_list(List, Element): pass
+class field_list(Sequential, Element): pass
 class field(Component, Element): pass
 class field_name(Component, TextElement): pass
 class field_argument(Component, TextElement): pass
 class field_body(Component, Element): pass
-class option_list(List, Element): pass
+class option_list(Sequential, Element): pass
 class option_list_item(Component, Element): pass
 class option(Component, Element): pass
 class short_option(Component, TextElement): pass
@@ -652,7 +664,7 @@ class note(Admonition, Element): pass
 class tip(Admonition, Element): pass
 class hint(Admonition, Element): pass
 class warning(Admonition, Element): pass
-class comment(Special, TextElement): pass
+class comment(Special, PreBibliographic, TextElement): pass
 class substitution_definition(Special, TextElement): pass
 class target(Special, Inline, TextElement, ToBeResolved): pass
 class footnote(General, Element): pass
@@ -669,11 +681,9 @@ class row(Component, Element): pass
 class entry(Component, Element): pass
 
 
-class system_warning(Special, Element):
+class system_warning(Special, PreBibliographic, Element):
 
     def __init__(self, comment=None, *children, **attributes):
-        #print ('nodes.system_warning.__init__: comment=%r, children=%r, '
-        #       'attributes=%r' % (comment, children, attributes))
         if comment:
             p = paragraph('', comment)
             children = (p,) + children
@@ -690,11 +700,11 @@ class system_warning(Special, Element):
 
 class emphasis(Inline, TextElement): pass
 class strong(Inline, TextElement): pass
-class interpreted(Inline, Reference, TextElement): pass
+class interpreted(Inline, Referential, TextElement): pass
 class literal(Inline, TextElement): pass
-class reference(Inline, Reference, TextElement): pass
-class footnote_reference(Inline, Reference, TextElement): pass
-class substitution_reference(Inline, Reference, TextElement): pass
+class reference(Inline, Referential, TextElement): pass
+class footnote_reference(Inline, Referential, TextElement): pass
+class substitution_reference(Inline, Referential, TextElement): pass
 class image(General, Inline, TextElement): pass
 class problematic(Inline, TextElement): pass
 
@@ -747,6 +757,10 @@ class NodeVisitor:
     def __init__(self, doctree):
         self.doctree = doctree
 
+    def unknown_visit(self, node):
+        """Called for unknown `Node` types. Does nothing unless overridden."""
+        pass
+
     # Save typing with dynamic definitions.
     for name in node_class_names:
         exec """def visit_%s(self, node): pass\n""" % name
@@ -764,6 +778,8 @@ class GenericNodeVisitor(NodeVisitor):
     Define fully generic visitors by overriding ``default_visit()`` only.
     Define semi-generic visitors by overriding individual ``visit_*()``
     methods also.
+
+    `NodeVisitor.unknown_visit()` should be overridden for default behavior.
     """
 
     def default_visit(self, node):
