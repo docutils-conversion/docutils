@@ -3,34 +3,43 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/02/06 03:02:51 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/02/07 02:02:24 $
 :Copyright: This module has been placed in the public domain.
 
 
 """
 
-__docformat = 'reStructuredText'
+__docformat__ = 'reStructuredText'
 
-__all__ = ['Publisher', 'setup']
+__all__ = ['Publisher', 'publish']
 
 
-from dps import readers, parsers, writers
+import readers, parsers, writers, utils
 
 
 class Publisher:
 
-    def __init__(self, reader=None, parser=None, writer=None):
+    reporter = None
+    """A `utils.Reporter` instance used for all document processing."""
+
+    def __init__(self, reader=None, parser=None, writer=None, reporter=None,
+                 languagecode='en', warninglevel=2, errorlevel=4,
+                 warningstream=None, debug=0):
         self.reader = reader
         self.parser = parser
         self.writer = writer
+        if not reporter:
+            reporter = utils.Reporter(warninglevel, errorlevel, warningstream,
+                                      debug)
+        self.reporter = reporter
+        self.languagecode = languagecode
 
-    def setreader(self, readername, languagecode='en', warninglevel=2,
-                  errorlevel=4, warningstream=None, debug=0):
+    def setreader(self, readername, languagecode=None):
         """Set `self.reader` by name."""
         readerclass = readers.get_reader_class(readername)
-        self.reader = readerclass(languagecode, warninglevel, errorlevel,
-                                  warningstream, debug)
+        self.reader = readerclass(self.reporter,
+                                  languagecode or self.languagecode)
 
     def setparser(self, parsername):
         """Set `self.parser` by name."""
@@ -47,11 +56,14 @@ class Publisher:
         self.writer.write(document, destination)
 
 
-def convert(source=None, destination=None,
+def publish(source=None, destination=None,
             reader=None, readername='standalone',
             parser=None, parsername='restructuredtext',
-            writer=None, writername='pprint'):
-    pub = Publisher(reader, parser, writer)
+            writer=None, writername='pprint',
+            reporter=None, languagecode='en',
+            warninglevel=2, errorlevel=4, warningstream=None, debug=0):
+    pub = Publisher(reader, parser, writer, reporter, languagecode,
+                    warninglevel, errorlevel, warningstream, debug)
     if reader is None:
         pub.setreader(readername)
     if parser is None:
