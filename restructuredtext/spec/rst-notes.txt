@@ -1,14 +1,12 @@
 =======
  Notes
 =======
-Date: $Date: 2001/07/21 22:14:24 $
-Revision: $Revision: 1.1 $
+Date: $Date: 2001/07/29 16:00:48 $
+Revision: $Revision: 1.2 $
 
 
 To Do
 =====
-
-- set up CVS on SF!
 
 - implement a parser according to the markup implementation plan
 
