@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/13 02:21:13 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/09/26 03:35:47 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of
@@ -20,8 +20,6 @@ from dps import nodes
 
 
 bibliographic_fields = {
-      'title': nodes.title,
-      'subtitle': nodes.subtitle,
       'author': nodes.author,
       'authors': nodes.authors,
       'organization': nodes.organization,
