@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.36 $
-:Date: $Date: 2002/03/04 04:43:25 $
+:Revision: $Revision: 1.37 $
+:Date: $Date: 2002/03/07 03:53:53 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -116,14 +116,14 @@ resolve to either an internal or external reference.
     | attention | caution | danger | error | hint | important | note
     | tip | warning
     | target | substitution_definition | comment | pending
-    | system_message
+    | system_message | raw
     %additional.body.elements; ">
 
 <!ENTITY % additional.inline.elements "">
 <!ENTITY % inline.elements
   " emphasis | strong | interpreted | literal
     | reference | footnote_reference | citation_reference
-    | substitution_reference | target | image | problematic
+    | substitution_reference | target | image | problematic | raw
     %additional.inline.elements; ">
 
 <!-- Element Content Models
@@ -431,6 +431,13 @@ Table elements: table, tgroup, colspec, thead, tbody, row, entry.
     level     NMTOKEN   #IMPLIED
     type      CDATA     #IMPLIED>
 
+<!-- Used to pass raw data through the system. Also inline. -->
+<!ELEMENT raw %text.model;>
+<!ATTLIST raw
+    %basic.atts;
+    %fixedspace.att;
+    format    CDATA     #IMPLIED>
+
 
 <!--
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -445,8 +452,8 @@ following caveats:
   (e.g. <strong> may not contain another <strong>).
 - Nested inline elements may or may not be supported by individual
   applications using this DTD.
-- The inline elements <footnote_reference>, <literal>, and <image> do
-  not support nesting.
+- The inline elements <footnote_reference>, <citation_reference>,
+  <literal>, and <image> do not support nesting.
 -->
 
 <!ELEMENT emphasis (%text.model;)>
