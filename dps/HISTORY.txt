@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/01/28 02:22:34 $
+:Date: $Date: 2002/01/29 02:24:40 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -81,6 +81,9 @@ Changed contact email addresses.
   - Removed Python-specific element classes.
   - Reworked for hyperlink transforms.
   - Added support for footnote transform.
+  - Added 'problematic', inline relative of 'system_warning'.
+  - Added ``Node.parent`` back-reference for transforms.
+  - Added ``Element.index()`` and ``Element.replace()`` methods.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -192,6 +195,7 @@ Changed contact email addresses.
   - Changed content models of most inline elements to %text.model,
     allowing nested inline elements.
   - Removed generic 'directive'.
+  - Added 'problematic', inline relative of 'system_warning'.
 
 * spec/pdpi.dtd:
 
