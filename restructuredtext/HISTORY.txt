@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/22 02:14:54 $
+:Date: $Date: 2002/03/07 03:49:01 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -84,7 +84,7 @@ Changed contact email addresses.
   - Dropped brackets from footnotes' implicit hyperlink names.
   - Added check for whitespace in hyperlinks.
   - Added empty comment support.
-  - Added support for auto-numbered footnotes.
+  - Added support for auto-numbered footnotes, auto-symbol footnotes.
   - Dropped requirement for blank line between definition list items.
   - Added support for classifier after term in definition list items.
   - Fixed bugs with literal blocks.
@@ -129,7 +129,7 @@ Changed contact email addresses.
   - Added directive registry.
   - Added directive module & function import support.
 
-* restructuredtext/directives/directivetest.py: Implementation of a
+* restructuredtext/directives/misc.py: Implementation of a
   test directive, 'restructuredtext-test-directive'. Added to project.
 
 * restructuredtext/directives/admonitions.py: Implementation of
@@ -137,6 +137,9 @@ Changed contact email addresses.
 
 * restructuredtext/directives/images.py: Implementation of
   directives 'image' & 'figure'. Added to project.
+
+* restructuredtext/directives/html.py: Implementation of
+  HTML-specific directives 'meta' & 'imagemap'. Added to project.
 
 * restructuredtext/languages: Subpackage added to project. Contains
   modules for language-dependent language-dependent parser features.
@@ -238,7 +241,7 @@ Changed contact email addresses.
   - Added a note about backslashes in other contexts.
   - Reworked literal block section in a more logical and
     easy-to-remember way.
-  - Converted footnotes to auto-numbered.
+  - Converted footnotes in text to auto-numbered.
   - Standardized on double-quotes (").
   - Changed "indirect hyperlinks" to "external hyperlinks".
   - Added new "indrect hyperlinks".
@@ -253,6 +256,8 @@ Changed contact email addresses.
   - Added substitution definitions, substitution references (use cases
     contributed by Alan Jaffray).
   - Added to table description.
+  - Added citations & citation references.
+  - Reworked footnotes, adding a symbolic form.
 
 * spec/pyextensions.txt:
 

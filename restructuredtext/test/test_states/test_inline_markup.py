@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.15 $
-:Date: $Date: 2002/02/20 04:25:08 $
+:Revision: $Revision: 1.16 $
+:Date: $Date: 2002/03/07 03:46:21 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -447,32 +447,68 @@ And _`this`_ is just plain confusing.
 
 totest['footnote_reference'] = [
 ["""\
-[footnote]_
+[1]_
 """,
 """\
 <document>
     <paragraph>
-        <footnote_reference refname="footnote">
-            footnote
-"""],
-["""\
-[footnote]_ and [foot-note]_ and [foot.note]_ and [1]_ but not [foot note]_
-""",
-"""\
-<document>
-    <paragraph>
-        <footnote_reference refname="footnote">
-            footnote
-         and \n\
-        <footnote_reference refname="foot-note">
-            foot-note
-         and \n\
-        <footnote_reference refname="foot.note">
-            foot.note
-         and \n\
         <footnote_reference refname="1">
             1
-         but not [foot note]_
+"""],
+["""\
+[#]_
+""",
+"""\
+<document>
+    <paragraph>
+        <footnote_reference auto="1">
+"""],
+["""\
+[#label]_
+""",
+"""\
+<document>
+    <paragraph>
+        <footnote_reference auto="1" refname="label">
+"""],
+["""\
+[*]_
+""",
+"""\
+<document>
+    <paragraph>
+        <footnote_reference auto="*">
+"""],
+]
+
+totest['citation_reference'] = [
+["""\
+[citation]_
+""",
+"""\
+<document>
+    <paragraph>
+        <citation_reference refname="citation">
+            citation
+"""],
+["""\
+[citation]_ and [cit-ation]_ and [cit.ation]_ and [CIT1]_ but not [CIT 1]_
+""",
+"""\
+<document>
+    <paragraph>
+        <citation_reference refname="citation">
+            citation
+         and \n\
+        <citation_reference refname="cit-ation">
+            cit-ation
+         and \n\
+        <citation_reference refname="cit.ation">
+            cit.ation
+         and \n\
+        <citation_reference refname="cit1">
+            CIT1
+         but not [CIT 1]_
 """],
 ]
 

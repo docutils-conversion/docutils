@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2002/02/20 04:25:02 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/03/07 03:46:09 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -21,104 +21,92 @@ totest = {}
 
 totest['footnotes'] = [
 ["""\
-.. [footnote] This is a footnote.
+.. [1] This is a footnote.
 """,
 """\
 <document>
-    <footnote id="id1" name="footnote">
+    <footnote id="id1" name="1">
         <label>
-            footnote
+            1
         <paragraph>
             This is a footnote.
 """],
 ["""\
-.. [footnote] This is a footnote
+.. [1] This is a footnote
    on multiple lines.
 """,
 """\
 <document>
-    <footnote id="id1" name="footnote">
+    <footnote id="id1" name="1">
         <label>
-            footnote
+            1
         <paragraph>
             This is a footnote
             on multiple lines.
 """],
 ["""\
-.. [footnote1] This is a footnote
+.. [1] This is a footnote
      on multiple lines with more space.
 
-.. [footnote2] This is a footnote
+.. [2] This is a footnote
   on multiple lines with less space.
 """,
 """\
 <document>
-    <footnote id="id1" name="footnote1">
+    <footnote id="id1" name="1">
         <label>
-            footnote1
+            1
         <paragraph>
             This is a footnote
             on multiple lines with more space.
-    <footnote id="id2" name="footnote2">
+    <footnote id="id2" name="2">
         <label>
-            footnote2
+            2
         <paragraph>
             This is a footnote
             on multiple lines with less space.
 """],
 ["""\
-.. [footnote]
+.. [1]
    This is a footnote on multiple lines
    whose block starts on line 2.
 """,
 """\
 <document>
-    <footnote id="id1" name="footnote">
+    <footnote id="id1" name="1">
         <label>
-            footnote
+            1
         <paragraph>
             This is a footnote on multiple lines
             whose block starts on line 2.
 """],
 ["""\
-.. [footnote]
+.. [1]
 
 That was an empty footnote.
 """,
 """\
 <document>
-    <footnote id="id1" name="footnote">
+    <footnote id="id1" name="1">
         <label>
-            footnote
+            1
     <paragraph>
         That was an empty footnote.
 """],
 ["""\
-.. [footnote]
+.. [1]
 No blank line.
 """,
 """\
 <document>
-    <footnote id="id1" name="footnote">
+    <footnote id="id1" name="1">
         <label>
-            footnote
+            1
     <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 2.
     <paragraph>
         No blank line.
-"""],
-["""\
-.. [foot label with spaces] this isn't a footnote
-
-.. [*footlabelwithmarkup*] this isn't a footnote
-""",
-"""\
-<document>
-    <comment>
-        [foot label with spaces] this isn't a footnote
-    <comment>
-        [*footlabelwithmarkup*] this isn't a footnote
 """],
 ]
 
@@ -254,7 +242,90 @@ Mixed anonymous and labelled auto-numbered footnotes:
         <paragraph>
             Auto-numbered footnote 5 again (duplicate).
 """],
+["""\
+Mixed manually-numbered, anonymous auto-numbered,
+and labelled auto-numbered footnotes:
+
+[#four]_ should be 4, [#]_ should be 2,
+[1]_ is 1, [3]_ is 3,
+[#]_ should be 6, [#]_ is one too many,
+[#five]_ should be 5, and [#six]_ doesn't exist.
+
+.. [1] Manually-numbered footnote 1.
+.. [#] Auto-numbered footnote 2.
+.. [#four] Auto-numbered footnote 4.
+.. [3] Manually-numbered footnote 3
+.. [#five] Auto-numbered footnote 5.
+.. [#five] Auto-numbered footnote 5 again (duplicate).
+.. [#] Auto-numbered footnote 6.
+""",
+"""\
+<document>
+    <paragraph>
+        Mixed manually-numbered, anonymous auto-numbered,
+        and labelled auto-numbered footnotes:
+    <paragraph>
+        <footnote_reference auto="1" refname="four">
+         should be 4, \n\
+        <footnote_reference auto="1">
+         should be 2,
+        <footnote_reference refname="1">
+            1
+         is 1, \n\
+        <footnote_reference refname="3">
+            3
+         is 3,
+        <footnote_reference auto="1">
+         should be 6, \n\
+        <footnote_reference auto="1">
+         is one too many,
+        <footnote_reference auto="1" refname="five">
+         should be 5, and \n\
+        <footnote_reference auto="1" refname="six">
+         doesn't exist.
+    <footnote id="id1" name="1">
+        <label>
+            1
+        <paragraph>
+            Manually-numbered footnote 1.
+    <footnote auto="1">
+        <paragraph>
+            Auto-numbered footnote 2.
+    <footnote auto="1" id="id2" name="four">
+        <paragraph>
+            Auto-numbered footnote 4.
+    <footnote id="id3" name="3">
+        <label>
+            3
+        <paragraph>
+            Manually-numbered footnote 3
+    <footnote auto="1" dupname="five" id="id4">
+        <paragraph>
+            Auto-numbered footnote 5.
+    <footnote auto="1" dupname="five" id="id5">
+        <system_message level="2" type="WARNING">
+            <paragraph>
+                Duplicate explicit target name: "five"
+        <paragraph>
+            Auto-numbered footnote 5 again (duplicate).
+    <footnote auto="1">
+        <paragraph>
+            Auto-numbered footnote 6.
+"""],
 ]
+
+totest['auto_symbol_footnotes'] = [
+["""\
+.. [*] This is an auto-symbol footnote.
+""",
+"""\
+<document>
+    <footnote auto="*">
+        <paragraph>
+            This is an auto-symbol footnote.
+"""],
+]
+
 
 if __name__ == '__main__':
     import unittest

@@ -17,9 +17,9 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :organization: humankind
-:date: $Date: 2002/03/01 02:58:25 $
+:date: $Date: 2002/03/07 03:46:35 $
 :status: This is a "work in progress"
-:revision: $Revision: 1.4 $
+:revision: $Revision: 1.5 $
 :version: 1
 :copyright: This document has been placed in the public domain. You
             may do with it as you wish. You may copy, modify,
@@ -71,8 +71,9 @@ Paragraphs contain text and may contain inline markup: *emphasis*,
 **strong emphasis**, `interpreted text`, ``inline literals``,
 standalone hyperlinks (http://www.python.org), external hyperlinks
 (Python_), internal cross-references (example_), footnote references
-(manually numbered [1]_, auto-numbered [#]_, or labeled [label]_),
-substitution references (|example|), and _`inline hyperlink targets`.
+(manually numbered [1]_, auto-numbered [#]_, or symbolic [*]_),
+citation references ([CIT]_), substitution references (|example|), and
+_`inline hyperlink targets` (see Targets_ below for a reference).
 Problems are indicated by |problematic| text.
 
 Bullet Lists
@@ -213,14 +214,23 @@ Tables
 Footnotes
 ---------
 
-.. [label] A footnote contains body elements, consistently
-   indented by at least 3 spaces.
+.. [1] A footnote contains body elements, consistently indented by at
+   least 3 spaces.
 
    This is the footnote's second paragraph.
 
 .. [#] Footnotes may be numbered, either manually or automatically
-       using a "#" label. Manual and automatic footnotes may not be
-       mixed.
+   using a "#" label. Manual and automatic footnotes may not be mixed.
+
+.. [*] Footnotes may also use symbols, specified with a "*" label [*]_.
+
+.. [*] This is the next symbol in the sequence.
+
+Citations
+---------
+
+.. [CIT] Citations are text-labeled footnotes. They may be rendered
+   separately and differently from footnotes.
 
 Targets
 -------

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2002/02/20 04:25:58 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/03/07 03:46:31 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -254,7 +254,7 @@ Target
 
 Implicit section header target.
 
-.. [target] Footnote target.
+.. [target] Citation target.
 
 .. _target:
 
@@ -271,14 +271,14 @@ Explicit internal target.
             Target
         <paragraph>
             Implicit section header target.
-        <footnote dupname="target" id="id2">
+        <citation dupname="target" id="id2">
             <label>
                 target
             <system_message level="1" type="INFO">
                 <paragraph>
                     Duplicate implicit target name: "target"
             <paragraph>
-                Footnote target.
+                Citation target.
         <system_message level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "target"
