@@ -3,10 +3,18 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.21 $
-:Date: $Date: 2002/01/16 02:47:59 $
+:Revision: $Revision: 1.22 $
+:Date: $Date: 2002/01/25 23:58:09 $
 :Copyright: This module has been placed in the public domain.
 
+Classes in CamelCase are abstract base classes or auxiliary classes. The one
+exception is `Text`, for a text node; uppercase is used to differentiate from
+element classes.
+
+Classes in lower_case_with_underscores are element classes, matching the XML
+element generic identifiers in the DTD_.
+
+.. _DTD: http://docstring.sourceforge.net/spec/gpdi.dtd
 """
 
 import sys
@@ -20,6 +28,8 @@ from UserString import MutableString
 
 class Node:
 
+    """Abstract base class of nodes in a document tree."""
+
     def __nonzero__(self):
         """Node instances are always true."""
         return 1
@@ -27,17 +37,23 @@ class Node:
     def asdom(self, dom=xml.dom.minidom):
         return self._dom_node(dom)
 
-    def _dom_node(self, dom):
-        pass
-    
-    def _rooted_dom_node(self, domroot):
-        pass
+    def walk(self, visitor, ancestry=()):
+        """
+        Traverse a tree of `Node` objects, calling ``visit_*`` methods of
+        `visitor`.
 
-    def astext(self):
-        pass
+        Parameters:
 
-    def validate(self):
-        pass
+        - `visitor`: A `Visitor` object, containing a ``visit_...`` method for
+          each `Node` subclass encountered.
+        - `ancestry`: A list of (parent, index) pairs. `self`'s parent is the
+          last entry.
+        """
+        method = getattr(visitor, 'visit_' + self.__class__.__name__)
+        method(self, ancestry)
+        children = self.getchildren()
+        for i in range(len(children)):
+            children[i].walk(visitor, ancestry + ((self, i),))
 
 
 class Text(Node, MutableString):
@@ -50,9 +66,15 @@ class Text(Node, MutableString):
             data = repr(self.data[:64] + ' ...')
         return '<%s: %s>' % (self.tagname, data)
 
+    def shortrepr(self):
+        data = repr(self.data)
+        if len(data) > 20:
+            data = repr(self.data[:16] + ' ...')
+        return '<%s: %s>' % (self.tagname, data)
+
     def _dom_node(self, dom):
         return dom.Text(self.data)
-    
+
     def _rooted_dom_node(self, domroot):
         return domroot.createTextNode(self.data)
 
@@ -65,6 +87,10 @@ class Text(Node, MutableString):
         for line in self.data.splitlines():
             result.append(indent + line + '\n')
         return ''.join(result)
+
+    def getchildren(self):
+        """Text nodes have no children. Return []."""
+        return []
 
 
 class Element(Node):
@@ -98,16 +124,16 @@ class Element(Node):
     """The element generic identifier. If None, it is set as an instance
     attribute to the name of the class."""
 
-    childtextsep = '\n\n'
+    child_text_separator = '\n\n'
     """Separator for child nodes, used by `astext()` method."""
 
     def __init__(self, rawsource='', *children, **attributes):
         self.rawsource = rawsource
         """The raw text from which this element was constructed."""
-        
+
         self.children = list(children)
         """List of child nodes (elements and/or text)."""
-        
+
         self.attributes = attributes
         """Dictionary of attribute {name: value}."""
 
@@ -133,11 +159,22 @@ class Element(Node):
     def __repr__(self):
         data = ''
         for c in self.children:
-            data += '<%s...>' % c.tagname
+            data += c.shortrepr()
             if len(data) > 60:
                 data = data[:56] + ' ...'
                 break
-        return '<%s: %s>' % (self.__class__.__name__, data)
+        if self.hasattr('name'):
+            return '<%s "%s": %s>' % (self.__class__.__name__,
+                                      self.attributes['name'], data)
+        else:
+            return '<%s: %s>' % (self.__class__.__name__, data)
+
+    def shortrepr(self):
+        if self.hasattr('name'):
+            return '<%s "%s"...>' % (self.__class__.__name__,
+                                      self.attributes['name'])
+        else:
+            return '<%s...>' % self.tagname
 
     def __str__(self):
         if self.children:
@@ -214,8 +251,8 @@ class Element(Node):
         return self
 
     def astext(self):
-        return self.childtextsep.join([child.astext()
-                                       for child in self.children])
+        return self.child_text_separator.join(
+              [child.astext() for child in self.children])
 
     def attlist(self):
         attlist = self.attributes.items()
@@ -250,10 +287,14 @@ class Element(Node):
 
     def findclass(self, childclass, start=0, end=sys.maxint):
         """
-        Return the index of the first child whose class matches `childclass`.
+        Return the index of the first child whose class exactly matches.
 
-        `childclass` may also be a tuple of node classes, in which case any
-        of the classes may match.
+        Parameters:
+
+        - `childclass`: A `Node` subclass to search for, or a tuple of `Node`
+          classes. If a tuple, any of the classes may match.
+        - `start`: Initial index to check.
+        - `end`: Initial index to *not* check.
         """
         if not isinstance(childclass, TupleType):
             childclass = (childclass,)
@@ -265,17 +306,21 @@ class Element(Node):
 
     def findnonclass(self, childclass, start=0, end=sys.maxint):
         """
-        Return the index of the first child not matching `childclass`.
+        Return the index of the first child whose class does *not* match.
 
-        `childclass` may also be a tuple of node classes, in which case none
-        of the classes may match.
+        Parameters:
+
+        - `childclass`: A `Node` subclass to skip, or a tuple of `Node`
+          classes. If a tuple, none of the classes may match.
+        - `start`: Initial index to check.
+        - `end`: Initial index to *not* check.
         """
         if not isinstance(childclass, TupleType):
             childclass = (childclass,)
         for index in range(start, min(len(self), end)):
             match = 0
             for c in childclass:
-                if isinstance(self[index], c):
+                if isinstance(self.children[index], c):
                     match = 1
             if not match:
                 return index
@@ -283,8 +328,12 @@ class Element(Node):
 
     def pformat(self, indent='    ', level=0):
         return ''.join(['%s%s\n' % (indent * level, self.starttag())] +
-                           [child.pformat(indent, level+1)
-                            for child in self.children])
+                       [child.pformat(indent, level+1)
+                        for child in self.children])
+
+    def getchildren(self):
+        """Return this element's children."""
+        return self.children
 
 
 class TextElement(Element):
@@ -295,7 +344,7 @@ class TextElement(Element):
     Its children are all Text or TextElement nodes.
     """
 
-    childtextsep = ''
+    child_text_separator = ''
     """Separator for child nodes, used by `astext()` method."""
 
     def __init__(self, rawsource='', text='', *children, **attributes):
@@ -305,6 +354,15 @@ class TextElement(Element):
                               **attributes)
         else:
             Element.__init__(self, rawsource, *children, **attributes)
+
+
+# ========
+#  Mixins
+# ========
+
+class ToBeResolved:
+
+    resolved = 0
 
 
 # ====================
@@ -334,6 +392,12 @@ class Component: pass
 class Inline: pass
 
 
+class Reference(ToBeResolved):
+
+    refnode = None
+    """Resolved reference to a node."""
+
+
 # ==============
 #  Root Element
 # ==============
@@ -342,126 +406,149 @@ class document(Root, Element):
 
     def __init__(self, reporter, languagecode, *args, **kwargs):
         Element.__init__(self, *args, **kwargs)
+
         self.reporter = reporter
+        """System warning generator."""
+
         self.languagecode = languagecode
-        self.explicittargets = {}
-        self.implicittargets = {}
-        self.externaltargets = {}
-        self.indirecttargets = {}
-        self.substitutiondefs = {}
+        """ISO 639 2-letter language identifier."""
+
+        self.explicit_targets = {}
+        """Mapping of target names to lists of explicit target nodes."""
+
+        self.implicit_targets = {}
+        """Mapping of target names to lists of implicit (internal) target
+        nodes."""
+
+        self.external_targets = {}
+        """Mapping of target names to lists of external target nodes."""
+
+        self.indirect_targets = {}
+        """Mapping of target names to indirect target nodes."""
+
+        self.substitution_defs = {}
+        """Mapping of substitution names to substitution_definition nodes."""
+
         self.refnames = {}
-        self.substitutionrefs = {}
-        self.anonymoustargets = []
-        self.anonymousrefs = []
+        """Mapping of reference names to reference nodes."""
+
+        self.substitution_refs = {}
+        """Mapping of substitution names to substitution_reference nodes."""
+
+        self.anonymous_targets = []
+        """List of anonymous target nodes."""
+
+        self.anonymous_refs = []
+        """List of anonymous reference nodes."""
+
         self.autofootnotes = []
-        self.autofootnoterefs = []
+        """List of auto-numbered footnote nodes."""
+
+        self.autofootnote_refs = []
+        """List of auto-numbered footnote_reference nodes."""
+
+        self.anonymous_start = 1
+        """Initial anonymous hyperlink number."""
+
+        self.autofootnote_start = 1
+        """Initial auto-numbered footnote number."""
 
     def asdom(self, dom=xml.dom.minidom):
         domroot = dom.Document()
         domroot.appendChild(Element._rooted_dom_node(self, domroot))
         return domroot
 
-    def addimplicittarget(self, name, targetnode, innode=None):
+    def note_implicit_target(self, targetnode, innode=None):
         if innode == None:
-            innode = targetnode
-        if self.explicittargets.has_key(name) \
-              or self.externaltargets.has_key(name) \
-              or self.implicittargets.has_key(name):
+            innode = self
+        name = targetnode['name']
+        if self.explicit_targets.has_key(name) \
+              or self.external_targets.has_key(name) \
+              or self.implicit_targets.has_key(name):
             sw = self.reporter.information(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
-            self.cleartargetnames(name, self.implicittargets)
+            self.clear_target_names(name, self.implicit_targets)
+            del targetnode['name']
             targetnode['dupname'] = name
-            self.implicittargets.setdefault(name, []).append(targetnode)
-        else:
-            self.implicittargets[name] = [targetnode]
-            targetnode['name'] = name
+        self.implicit_targets.setdefault(name, []).append(targetnode)
 
-    def addexplicittarget(self, name, targetnode, innode=None):
+    def note_explicit_target(self, targetnode, innode=None):
         if innode == None:
-            innode = targetnode
-        if self.explicittargets.has_key(name):
-            sw = self.reporter.warning(
-                  'Duplicate explicit target name: "%s"' % name)
+            innode = self
+        name = targetnode['name']
+        if self.explicit_targets.has_key(name):
+            level = 1
+            if targetnode.has_key('refuri'): # external target, dups OK
+                refuri = targetnode['refuri']
+                for t in self.explicit_targets.get(name, []):
+                    if not t.has_key('refuri') or t['refuri'] != refuri:
+                        break
+                else:
+                    level = 0           # just inform if refuri's identical
+            sw = self.reporter.system_warning(
+                  level, 'Duplicate explicit target name: "%s"' % name)
             innode += sw
-            self.cleartargetnames(name, self.explicittargets,
-                                  self.implicittargets, self.externaltargets)
-            targetnode['dupname'] = name
-            self.explicittargets.setdefault(name, []).append(targetnode)
-            return
-        elif self.implicittargets.has_key(name):
+            self.clear_target_names(name, self.explicit_targets,
+                                    self.implicit_targets)
+            if level > 0:
+                del targetnode['name']
+                targetnode['dupname'] = name
+        elif self.implicit_targets.has_key(name):
             sw = self.reporter.information(
                   'Duplicate implicit target name: "%s"' % name)
             innode += sw
-            self.cleartargetnames(name, self.implicittargets)
-        self.explicittargets[name] = [targetnode]
-        targetnode['name'] = name
+            self.clear_target_names(name, self.implicit_targets)
+        self.explicit_targets.setdefault(name, []).append(targetnode)
 
-    def cleartargetnames(self, name, *targetdicts):
+    def clear_target_names(self, name, *targetdicts):
         for targetdict in targetdicts:
             for node in targetdict.get(name, []):
                 if node.has_key('name'):
                     node['dupname'] = node['name']
                     del node['name']
 
-    def addrefname(self, name, node):
-        self.refnames.setdefault(name, []).append(node)
+    def note_refname(self, node):
+        self.refnames.setdefault(node['refname'], []).append(node)
 
-    def addexternaltarget(self, name, reference, targetnode, innode):
-        if self.explicittargets.has_key(name):
-            level = 0
-            for t in self.explicittargets.get(name, []):
-                if not t.has_key('refuri') or t['refuri'] != reference:
-                    level = 1
-                    break
-            sw = self.reporter.system_warning(
-                  level, 'Duplicate external target name: "%s"' % name)
-            innode += sw
-            self.cleartargetnames(name, self.explicittargets,
-                                  self.externaltargets, self.implicittargets)
-        elif self.implicittargets.has_key(name):
-            sw = self.reporter.information(
-                  'Duplicate implicit target name: "%s"' % name)
-            innode += sw
-            self.cleartargetnames(name, self.implicittargets)
-        self.externaltargets.setdefault(name, []).append(targetnode)
-        self.explicittargets.setdefault(name, []).append(targetnode)
-        targetnode['name'] = name
-        targetnode['refuri'] = reference
+    def note_external_target(self, targetnode):
+        self.external_targets.setdefault(
+              targetnode['name'], []).append(targetnode)
 
-    def addindirecttarget(self, refname, targetnode):
-        targetnode['refname'] = refname
-        self.indirecttargets[refname] = targetnode
+    def note_indirect_target(self, targetnode):
+        self.indirect_targets.setdefault(
+              targetnode['name'], []).append(targetnode)
+        self.note_refname(targetnode)
 
-    def addanonymoustarget(self, targetnode):
-        targetnode['anonymous'] = 1
-        self.anonymoustargets.append(targetnode)
+    def note_anonymous_target(self, targetnode):
+        self.anonymous_targets.append(targetnode)
 
-    def addanonymousref(self, refnode):
-        refnode['anonymous'] = 1
-        self.anonymousrefs.append(refnode)
+    def note_anonymous_ref(self, refnode):
+        self.anonymous_refs.append(refnode)
 
-    def addautofootnote(self, name, footnotenode):
-        footnotenode['auto'] = 1
-        self.autofootnotes.append((name, footnotenode))
+    def note_autofootnote(self, footnotenode):
+        self.autofootnotes.append(footnotenode)
 
-    def addautofootnoteref(self, refname, refnode):
-        refnode['auto'] = 1
-        self.autofootnoterefs.append((refname, refnode))
+    def note_autofootnote_ref(self, refnode):
+        self.autofootnote_refs.append(refnode)
 
-    def addsubstitutiondef(self, name, substitutiondefnode, innode):
-        if self.substitutiondefs.has_key(name):
+    def note_substitution_def(self, substitutiondefnode, innode=None):
+        if innode == None:
+            innode = self
+        name = substitutiondefnode['name']
+        if self.substitution_defs.has_key(name):
             sw = self.reporter.error(
                   'Duplicate substitution definition name: "%s"' % name)
             innode += sw
-            oldnode = self.substitutiondefs[name]
+            oldnode = self.substitution_defs[name]
             oldnode['dupname'] = oldnode['name']
             del oldnode['name']
-        self.substitutiondefs[name] = substitutiondefnode
+        # keep only the last definition
+        self.substitution_defs[name] = substitutiondefnode
 
-    def addsubstitutionref(self, refname, subrefnode):
-        subrefnode['refname'] = refname
-        self.substitutionrefs.setdefault(refname, []).append(subrefnode)
+    def note_substitution_ref(self, subrefnode):
+        self.substitution_refs.setdefault(
+              subrefnode['refname'], []).append(subrefnode)
 
 
 # ================
@@ -495,26 +582,6 @@ class abstract(Bibliographic, Element): pass
 
 class section(Structural, Element): pass
 class transition(Structural, Element): pass
-
-class package_section(Structural, Element): pass
-class module_section(Structural, Element): pass
-class class_section(Structural, Element): pass
-class method_section(Structural, Element): pass
-class function_section(Structural, Element): pass
-class module_attribute_section(Structural, Element): pass
-class class_attribute_section(Structural, Element): pass
-class instance_attribute_section(Structural, Element): pass
-
-# Structural Support Elements
-# ---------------------------
-
-class inheritance_list(Component, Element): pass
-class parameter_list(Component, Element): pass
-class parameter_item(Component, Element): pass
-class optional_parameters(Component, Element): pass
-class parameter_tuple(Component, Element): pass
-class parameter_default(Component, TextElement): pass
-class initial_value(Component, TextElement): pass
 
 
 # ===============
@@ -557,7 +624,7 @@ class hint(Admonition, Element): pass
 class warning(Admonition, Element): pass
 class comment(Special, TextElement): pass
 class substitution_definition(Special, TextElement): pass
-class target(Special, Inline, TextElement): pass
+class target(Special, Inline, TextElement, ToBeResolved): pass
 class footnote(General, Element): pass
 class label(Component, TextElement): pass
 class figure(General, Element): pass
@@ -592,29 +659,90 @@ class system_warning(Special, Element):
 
 class emphasis(Inline, TextElement): pass
 class strong(Inline, TextElement): pass
-class interpreted(Inline, TextElement): pass
+class interpreted(Inline, Reference, TextElement): pass
 class literal(Inline, TextElement): pass
-class reference(Inline, TextElement): pass
-class footnote_reference(Inline, TextElement): pass
-class substitution_reference(Inline, TextElement): pass
+class reference(Inline, Reference, TextElement): pass
+class footnote_reference(Inline, Reference, TextElement): pass
+class substitution_reference(Inline, Reference, TextElement): pass
 class image(General, Inline, TextElement): pass
 
-class package(Component, Inline, TextElement): pass
-class module(Component, Inline, TextElement): pass
+
+# ========================================
+#  Auxiliary Classes, Functions, and Data
+# ========================================
+
+node_class_names = """
+    Text
+    abstract attention author authors
+    block_quote bullet_list
+    caption caution classifier colspec comment contact copyright
+    danger date definition definition_list definition_list_item
+        description docinfo doctest_block document
+    emphasis entry enumerated_list error
+    field field_argument field_body field_list field_name figure
+        footnote footnote_reference
+    hint
+    image important interpreted
+    label legend list_item literal literal_block long_option
+    note
+    option option_argument option_list option_list_item organization
+    paragraph
+    reference revision row
+    section short_option status strong substitution_definition
+        substitution_reference subtitle system_warning
+    table target tbody term tgroup thead tip title transition
+    version vms_option
+    warning""".split()
+"""A list of names of all concrete Node subclasses."""
 
 
-class inline_class(Component, Inline, TextElement):
+class Visitor:
 
-    tagname = 'class'
+    """
+    "Visitor" pattern [GoF95]_ abstract superclass implementation for document
+    tree traversals.
+
+    Each node class has corresponding methods, doing nothing by default;
+    override individual methods for specific and useful behaviour. The
+    "``visit_`` + node class name" method is called by `Node.walk()` upon
+    entering a node.
+    
+    .. [GoF95] Gamma, Helm, Johnson, Vlissides. *Design Patterns: Elements of
+       Reusable Object-Oriented Software*. Addison-Wesley, Reading, MA, USA,
+       1995.
+    """
+
+    def __init__(self, doctree):
+        self.doctree = doctree
+
+    def walk(self):
+        self.doctree.walk(self)
+
+    # Save typing with dynamic definitions.
+    for name in node_class_names:
+        exec """def visit_%s(self, node, ancestry): pass\n""" % name
+    del name
 
 
-class method(Component, Inline, TextElement): pass
-class function(Component, Inline, TextElement): pass
-class variable(Inline, TextElement): pass
-class parameter(Component, Inline, TextElement): pass
-class type(Inline, TextElement): pass
-class class_attribute(Component, Inline, TextElement): pass
-class module_attribute(Component, Inline, TextElement): pass
-class instance_attribute(Component, Inline, TextElement): pass
-class exception_class(Inline, TextElement): pass
-class warning_class(Inline, TextElement): pass
+class GenericVisitor(Visitor):
+
+    """
+    Generic "Visitor" abstract superclass, for simple traversals.
+
+    Unless overridden, each ``visit_*`` method calls `default_visit()`.
+    ``default_visit()`` must be overridden in subclasses.
+
+    Define fully generic visitors by overriding ``default_visit()`` only.
+    Define semi-generic visitors by overriding individual ``visit_*()``
+    methods also.
+    """
+
+    def default_visit(self, node, ancestry):
+        """Override for generic, uniform traversals."""
+        raise NotImplementedError
+
+    # Save typing with dynamic definitions.
+    for name in node_class_names:
+        exec """def visit_%s(self, node, ancestry):
+                    self.default_visit(node, ancestry)\n""" % name
+    del name
