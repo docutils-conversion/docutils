@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/01 03:14:36 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/04 04:40:28 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.frontmatter.DocInfo.
@@ -50,7 +50,9 @@ totest['bibliographic_field_lists'] = ((DocInfo,), [
             1
         <date>
             2001-08-11
-    <abstract>
+    <topic class="abstract">
+        <title>
+            Abstract
         <paragraph>
             There can only be one abstract.
         <paragraph>
@@ -90,7 +92,9 @@ totest['bibliographic_field_lists'] = ((DocInfo,), [
             1
         <date>
             2001-08-11
-    <abstract>
+    <topic class="abstract">
+        <title>
+            Abstract
         <paragraph>
             Abstract 1.
     <comment>
@@ -296,7 +300,7 @@ totest['bibliographic_field_lists'] = ((DocInfo,), [
 .. RCS keyword extraction.
 
 :Status: $RCSfile: test_docinfo.py,v $
-:Date: $Date: 2002/03/01 03:14:36 $
+:Date: $Date: 2002/03/04 04:40:28 $
 
 RCS keyword 'RCSfile' doesn't change unless the file name changes,
 so it's safe. The 'Date' keyword changes every time the file is
@@ -317,7 +321,7 @@ derived (hacked) in parallel in order to stay in sync.
         so it's safe. The 'Date' keyword changes every time the file is
         checked in to CVS, so the test's expected output text has to be
         derived (hacked) in parallel in order to stay in sync.
-""" % ('$Date: 2002/03/01 03:14:36 $'[7:17].replace('/', '-'),)],
+""" % ('$Date: 2002/03/04 04:40:28 $'[7:17].replace('/', '-'),)],
 ])
 
 
