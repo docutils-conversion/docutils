@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2002/03/28 04:29:06 $
-:Revision: $Revision: 1.40 $
+:Date: $Date: 2002/04/13 16:27:04 $
+:Revision: $Revision: 1.41 $
 
 .. contents::
 
@@ -145,6 +145,34 @@ To Do
   references to a single footnote?
 
 - Add RFC-822 header parsing (for PEP, email Readers).
+
+- Change ``.. meta::`` to use a "pending" element, only activated for
+  HTML writers.
+
+- Allow for variant styles by interpreting indented lists as if they
+  weren't indented?  For example, currently the list below will be
+  parsed as a list within a block quote::
+
+      paragraph
+
+        * list item 1
+        * list item 2
+
+  But a lot of people seem to write that way, and HTML browsers make
+  it look as if that's the way it should be.  The parser could check
+  the contents of block quotes, and if they contain only a single
+  list, remove the block quote wrapper.  There would be two problems:
+
+  1. What if we actually *do* want a list inside a block quote?
+
+  2. What if such a list comes immediately after an indented
+     construct, such as a literal block?
+
+  Both could be solved using empty comments (#2 already exists for a
+  block quote after a literal block).  But that's a hack.
+
+  See the Doc-SIG discussion starting 2001-04-18 with Ed Loper's
+  "Structuring: a summary; and an attempt at EBNF", item 4.
 
 
 Or Not To Do?

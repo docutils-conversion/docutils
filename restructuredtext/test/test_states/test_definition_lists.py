@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/16 05:28:33 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/04/13 16:27:11 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -262,25 +262,25 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
                     ``
                 too
             <definition>
-                <system_message id="id1" level="2" refid="id2" type="WARNING">
+                <system_message backrefs="id2" id="id1" level="2" type="WARNING">
                     <paragraph>
                         Inline interpreted text or phrase reference start-string without end-string at line 1.
-                <system_message id="id3" level="2" refid="id4" type="WARNING">
+                <system_message backrefs="id4" id="id3" level="2" type="WARNING">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 1.
-                <system_message id="id5" level="2" refid="id6" type="WARNING">
+                <system_message backrefs="id6" id="id5" level="2" type="WARNING">
                     <paragraph>
                         Inline literal start-string without end-string at line 1.
-                <system_message id="id7" level="2" refid="id8" type="WARNING">
+                <system_message backrefs="id8" id="id7" level="2" type="WARNING">
                     <paragraph>
                         Inline strong start-string without end-string at line 1.
-                <system_message id="id9" level="2" refid="id10" type="WARNING">
+                <system_message backrefs="id10" id="id9" level="2" type="WARNING">
                     <paragraph>
                         Inline interpreted text or phrase reference start-string without end-string at line 1.
-                <system_message id="id11" level="2" refid="id12" type="WARNING">
+                <system_message backrefs="id12" id="id11" level="2" type="WARNING">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 1.
-                <system_message id="id13" level="2" refid="id14" type="WARNING">
+                <system_message backrefs="id14" id="id13" level="2" type="WARNING">
                     <paragraph>
                         Inline literal start-string without end-string at line 1.
                 <paragraph>
@@ -297,16 +297,16 @@ Term `with *inline ``text **errors : classifier `with *errors ``too
                     <problematic id="id22" refid="id21">
                         **
                     markup errors.
-                <system_message id="id15" level="2" refid="id16" type="WARNING">
+                <system_message backrefs="id16" id="id15" level="2" type="WARNING">
                     <paragraph>
                         Inline interpreted text or phrase reference start-string without end-string at line 2.
-                <system_message id="id17" level="2" refid="id18" type="WARNING">
+                <system_message backrefs="id18" id="id17" level="2" type="WARNING">
                     <paragraph>
                         Inline emphasis start-string without end-string at line 2.
-                <system_message id="id19" level="2" refid="id20" type="WARNING">
+                <system_message backrefs="id20" id="id19" level="2" type="WARNING">
                     <paragraph>
                         Inline literal start-string without end-string at line 2.
-                <system_message id="id21" level="2" refid="id22" type="WARNING">
+                <system_message backrefs="id22" id="id21" level="2" type="WARNING">
                     <paragraph>
                         Inline strong start-string without end-string at line 2.
 """],

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/03/16 05:29:09 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/04/13 16:27:30 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for components.py contents directives.
@@ -27,9 +27,9 @@ totest['contents'] = [
 <document>
     <pending>
         .. internal attributes:
-             pending.transform: dps.transforms.components.Contents
-             pending.stage: 'last_reader'
-             pending.details:
+             .transform: dps.transforms.components.Contents
+             .stage: 'last_reader'
+             .details:
                title: None
 """],
 ["""\
@@ -39,9 +39,9 @@ totest['contents'] = [
 <document>
     <pending>
         .. internal attributes:
-             pending.transform: dps.transforms.components.Contents
-             pending.stage: 'last_reader'
-             pending.details:
+             .transform: dps.transforms.components.Contents
+             .stage: 'last_reader'
+             .details:
                title:
                  <title>
                      Table of Contents
@@ -54,9 +54,9 @@ totest['contents'] = [
 <document>
     <pending>
         .. internal attributes:
-             pending.transform: dps.transforms.components.Contents
-             pending.stage: 'last_reader'
-             pending.details:
+             .transform: dps.transforms.components.Contents
+             .stage: 'last_reader'
+             .details:
                title:
                  <title>
                      Table of Contents
@@ -70,9 +70,9 @@ totest['contents'] = [
 <document>
     <pending>
         .. internal attributes:
-             pending.transform: dps.transforms.components.Contents
-             pending.stage: 'last_reader'
-             pending.details:
+             .transform: dps.transforms.components.Contents
+             .stage: 'last_reader'
+             .details:
                title:
                  <title>
                      Table of Contents
@@ -84,9 +84,9 @@ totest['contents'] = [
 <document>
     <pending>
         .. internal attributes:
-             pending.transform: dps.transforms.components.Contents
-             pending.stage: 'last_reader'
-             pending.details:
+             .transform: dps.transforms.components.Contents
+             .stage: 'last_reader'
+             .details:
                title:
                  <title>
                      <emphasis>
@@ -104,9 +104,9 @@ totest['contents'] = [
 <document>
     <pending>
         .. internal attributes:
-             pending.transform: dps.transforms.components.Contents
-             pending.stage: 'last_reader'
-             pending.details:
+             .transform: dps.transforms.components.Contents
+             .stage: 'last_reader'
+             .details:
                depth: 2
                local: None
                title: None
@@ -120,9 +120,9 @@ totest['contents'] = [
 <document>
     <pending>
         .. internal attributes:
-             pending.transform: dps.transforms.components.Contents
-             pending.stage: 'last_reader'
-             pending.details:
+             .transform: dps.transforms.components.Contents
+             .stage: 'last_reader'
+             .details:
                depth: 2
                local: None
                title:

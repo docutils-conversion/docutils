@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.19 $
-:Date: $Date: 2002/03/28 04:20:55 $
+:Revision: $Revision: 1.20 $
+:Date: $Date: 2002/04/13 16:28:10 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -170,7 +170,7 @@ Duplicate external targets (different URIs):
     <paragraph>
         Duplicate external targets (different URIs):
     <target dupname="target" id="target" refuri="first">
-    <system_message level="2" refid="id1" type="WARNING">
+    <system_message backrefs="id1" level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "target".
     <target dupname="target" id="id1" refuri="second">
@@ -187,7 +187,7 @@ Duplicate external targets (same URIs):
     <paragraph>
         Duplicate external targets (same URIs):
     <target dupname="target" id="target" refuri="first">
-    <system_message level="1" refid="id1" type="INFO">
+    <system_message backrefs="id1" level="1" type="INFO">
         <paragraph>
             Duplicate explicit target name: "target".
     <target id="id1" name="target" refuri="first">
@@ -217,7 +217,7 @@ Paragraph.
     <section dupname="title" id="id1">
         <title>
             Title
-        <system_message level="1" refid="id1" type="INFO">
+        <system_message backrefs="id1" level="1" type="INFO">
             <paragraph>
                 Duplicate implicit target name: "title".
         <paragraph>
@@ -240,7 +240,7 @@ Paragraph.
     <section dupname="title" id="title">
         <title>
             Title
-        <system_message level="1" refid="id1" type="INFO">
+        <system_message backrefs="id1" level="1" type="INFO">
             <paragraph>
                 Duplicate implicit target name: "title".
         <target id="id1" name="title">
@@ -269,13 +269,13 @@ Third.
     <target dupname="title" id="title">
     <paragraph>
         First.
-    <system_message level="2" refid="id1" type="WARNING">
+    <system_message backrefs="id1" level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "title".
     <target dupname="title" id="id1">
     <paragraph>
         Second.
-    <system_message level="2" refid="id2" type="WARNING">
+    <system_message backrefs="id2" level="2" type="WARNING">
         <paragraph>
             Duplicate explicit target name: "title".
     <target dupname="title" id="id2">
@@ -312,24 +312,24 @@ Explicit internal target.
         <citation dupname="target" id="id1">
             <label>
                 target
-            <system_message level="1" refid="id1" type="INFO">
+            <system_message backrefs="id1" level="1" type="INFO">
                 <paragraph>
                     Duplicate implicit target name: "target".
             <paragraph>
                 Citation target.
         <footnote auto="1" dupname="target" id="id2">
-            <system_message level="2" refid="id2" type="WARNING">
+            <system_message backrefs="id2" level="2" type="WARNING">
                 <paragraph>
                     Duplicate explicit target name: "target".
             <paragraph>
                 Autonumber-labeled footnote target.
-        <system_message level="2" refid="id3" type="WARNING">
+        <system_message backrefs="id3" level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "target".
         <target dupname="target" id="id3">
         <paragraph>
             Explicit internal target.
-        <system_message level="2" refid="id4" type="WARNING">
+        <system_message backrefs="id4" level="2" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "target".
         <target dupname="target" id="id4" refuri="Explicit_external_target">
@@ -346,7 +346,7 @@ Anonymous external hyperlink target:
 <document>
     <paragraph>
         Anonymous external hyperlink target:
-    <target anonymous="1" refuri="http://w3c.org/">
+    <target anonymous="1" id="id1" refuri="http://w3c.org/">
 """],
 ["""\
 Anonymous external hyperlink target:
@@ -357,7 +357,7 @@ __ http://w3c.org/
 <document>
     <paragraph>
         Anonymous external hyperlink target:
-    <target anonymous="1" refuri="http://w3c.org/">
+    <target anonymous="1" id="id1" refuri="http://w3c.org/">
 """],
 ["""\
 Anonymous indirect hyperlink target:
@@ -368,7 +368,7 @@ Anonymous indirect hyperlink target:
 <document>
     <paragraph>
         Anonymous indirect hyperlink target:
-    <target anonymous="1" refname="reference">
+    <target anonymous="1" id="id1" refname="reference">
 """],
 ["""\
 Anonymous indirect hyperlink targets:
@@ -381,8 +381,8 @@ __ `a very long
 <document>
     <paragraph>
         Anonymous indirect hyperlink targets:
-    <target anonymous="1" refname="reference">
-    <target anonymous="1" refname="a very long reference">
+    <target anonymous="1" id="id1" refname="reference">
+    <target anonymous="1" id="id2" refname="a very long reference">
 """],
 ["""\
 Mixed anonymous & named indirect hyperlink targets:
@@ -403,9 +403,9 @@ no blank line
 <document>
     <paragraph>
         Mixed anonymous & named indirect hyperlink targets:
-    <target anonymous="1" refname="reference">
-    <target anonymous="1" refname="reference">
-    <target anonymous="1" refname="reference">
+    <target anonymous="1" id="id1" refname="reference">
+    <target anonymous="1" id="id2" refname="reference">
+    <target anonymous="1" id="id3" refname="reference">
     <target id="target1" name="target1" refname="reference">
     <system_message level="2" type="WARNING">
         <paragraph>
@@ -413,9 +413,9 @@ no blank line
     <paragraph>
         no blank line
     <target id="target2" name="target2" refname="reference">
-    <target anonymous="1" refname="reference">
-    <target anonymous="1" refname="reference">
-    <target anonymous="1" refname="reference">
+    <target anonymous="1" id="id4" refname="reference">
+    <target anonymous="1" id="id5" refname="reference">
+    <target anonymous="1" id="id6" refname="reference">
     <system_message level="2" type="WARNING">
         <paragraph>
             Unindent without blank line at line 13.

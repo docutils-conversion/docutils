@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.18 $
-:Date: $Date: 2002/03/16 05:29:19 $
+:Revision: $Revision: 1.19 $
+:Date: $Date: 2002/04/13 16:27:57 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -49,7 +49,7 @@ across lines*
         <problematic id="id2" refid="id1">
             *
         emphasis without closing asterisk
-    <system_message id="id1" level="2" refid="id2" type="WARNING">
+    <system_message backrefs="id2" id="id1" level="2" type="WARNING">
         <paragraph>
             Inline emphasis start-string without end-string at line 1.
 """],
@@ -76,7 +76,7 @@ what about *this**?
         <problematic id="id2" refid="id1">
             *
         args' will trigger a warning and may be problematic)
-    <system_message id="id1" level="2" refid="id2" type="WARNING">
+    <system_message backrefs="id2" id="id1" level="2" type="WARNING">
         <paragraph>
             Inline emphasis start-string without end-string at line 4.
     <paragraph>
@@ -130,7 +130,7 @@ totest['strong'] = [
         <problematic id="id2" refid="id1">
             **
         kwargs' will trigger a warning and may be problematic)
-    <system_message id="id1" level="2" refid="id2" type="WARNING">
+    <system_message backrefs="id2" id="id1" level="2" type="WARNING">
         <paragraph>
             Inline strong start-string without end-string at line 3.
 """],
@@ -207,7 +207,7 @@ and may be problematic)
             ``
         standalone TeX quotes'' will trigger a warning
         and may be problematic)
-    <system_message id="id1" level="2" refid="id2" type="WARNING">
+    <system_message backrefs="id2" id="id1" level="2" type="WARNING">
         <paragraph>
             Inline literal start-string without end-string at line 3.
 """],
@@ -394,7 +394,7 @@ Invalid phrase reference:
         <problematic id="id2" refid="id1">
             `
         phrase reference`_
-    <system_message id="id1" level="2" refid="id2" type="WARNING">
+    <system_message backrefs="id2" id="id1" level="2" type="WARNING">
         <paragraph>
             Mismatch: inline interpreted text start-string and role with phrase-reference end-string at line 3.
 """],
@@ -456,7 +456,7 @@ And _`this`_ is just plain confusing.
         <problematic id="id2" refid="id1">
             _`
         this`_ is just plain confusing.
-    <system_message id="id1" level="2" refid="id2" type="WARNING">
+    <system_message backrefs="id2" id="id1" level="2" type="WARNING">
         <paragraph>
             Inline target start-string without end-string at line 3.
 """],
@@ -469,7 +469,7 @@ totest['footnote_reference'] = [
 """\
 <document>
     <paragraph>
-        <footnote_reference refname="1">
+        <footnote_reference id="id1" refname="1">
             1
 """],
 ["""\
@@ -478,7 +478,7 @@ totest['footnote_reference'] = [
 """\
 <document>
     <paragraph>
-        <footnote_reference auto="1">
+        <footnote_reference auto="1" id="id1">
 """],
 ["""\
 [#label]_
@@ -486,7 +486,7 @@ totest['footnote_reference'] = [
 """\
 <document>
     <paragraph>
-        <footnote_reference auto="1" refname="label">
+        <footnote_reference auto="1" id="id1" refname="label">
 """],
 ["""\
 [*]_
@@ -494,7 +494,7 @@ totest['footnote_reference'] = [
 """\
 <document>
     <paragraph>
-        <footnote_reference auto="*">
+        <footnote_reference auto="*" id="id1">
 """],
 ]
 
@@ -505,7 +505,7 @@ totest['citation_reference'] = [
 """\
 <document>
     <paragraph>
-        <citation_reference refname="citation">
+        <citation_reference id="id1" refname="citation">
             citation
 """],
 ["""\
@@ -514,16 +514,16 @@ totest['citation_reference'] = [
 """\
 <document>
     <paragraph>
-        <citation_reference refname="citation">
+        <citation_reference id="id1" refname="citation">
             citation
          and \n\
-        <citation_reference refname="cit-ation">
+        <citation_reference id="id2" refname="cit-ation">
             cit-ation
          and \n\
-        <citation_reference refname="cit.ation">
+        <citation_reference id="id3" refname="cit.ation">
             cit.ation
          and \n\
-        <citation_reference refname="cit1">
+        <citation_reference id="id4" refname="cit1">
             CIT1
          but not [CIT 1]_
 """],
