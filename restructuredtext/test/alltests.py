@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/02 13:50:48 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/09/07 01:36:32 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -37,4 +37,4 @@ if __name__ == '__main__':
     suite = UnitTestFolder.loadModulesFromFolder(path, 'test_', subfolders=1)
     UnitTestFolder.main(suite)
     finish = time.time()
-    print 'Elapsed time: %s seconds' % (finish - start)
+    print 'Elapsed time: %.3f seconds' % (finish - start)
