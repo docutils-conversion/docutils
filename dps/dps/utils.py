@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/10 04:07:11 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/17 03:54:29 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -19,12 +19,19 @@ class SystemWarning(Exception):
         Exception.__init__(self, system_warning.astext())
 
 
-class Errorist:
+class Reporter:
 
     def __init__(self, warninglevel, errorlevel, warningstream=sys.stderr):
         self.warninglevel = warninglevel
+        """The level at or above which warning output will be sent to
+        `self.stream`."""
+
         self.errorlevel = errorlevel
+        """The level at or above which `SystemWarning` exceptions will be
+        raised."""
+ 
         self.stream = warningstream
+        """Where warning output is sent."""
 
     def system_warning(self, level, comment=None, children=[]):
         """
