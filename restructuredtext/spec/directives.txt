@@ -1,0 +1,113 @@
+=============================
+ reStructuredText Directives
+=============================
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Revision: $Revision: 1.1 $
+:Date: $Date: 2001/09/13 03:42:19 $
+
+This document describes the directives implemented in the reference
+reStructuredText parser.
+
+
+-------------
+ Admonitions
+-------------
+
+DTD elements: attention, caution, danger, error, important, note, tip,
+warning.
+
+Admonitions are specially marked 'topics' that can appear anywhere an
+ordinary body element can. They contain arbitrary body elements.
+Typically, an admonition is rendered as an offset block in a document,
+sometimes outlined or shaded, with a title matching the admonition
+type. For example::
+
+    .. DANGER::
+       Beware killer rabbits!
+
+This directive might be rendered something like this::
+
+    +------------------------+
+    |        !DANGER!        |
+    |                        |
+    | Beware killer rabbits! |
+    +------------------------+
+
+The following admonition directives have been implemented:
+
+- attention
+- caution
+- danger
+- error
+- important
+- note
+- tip
+- warning
+
+Any text immediately following the directive indicator (on the same
+line and/or indented on following lines) is interpreted as a directive
+block and is parsed for normal body elements. For example, the
+following 'note' admonition directive contains one paragraph and a
+bullet list consisting of two list items::
+
+    .. note:: This is a note admonition.
+       This is the second line of the first paragraph.
+
+       - The note contains all indented body elements
+         following.
+       - It includes this bullet list.
+
+
+------------------
+ Image Directives
+------------------
+
+DTD elements: image, figure, caption, legend.
+
+There are two image directives: 'image' and 'figure'. An 'image' is a
+simple picture::
+
+    .. image:: picture.png
+
+The URI for the image source file is specified in the directive data.
+
+A 'figure' consists of an image, an optional caption (a single
+paragraph), and an optional legend (arbitrary body elements)::
+
+    .. figure:: picture.png
+       This is the caption of the figure (a simple paragraph).
+
+       +-----------------------+-----------------------+
+       | Symbol                | Meaning               |
+       +=======================+=======================+
+       | .. image:: tent.png   | Campground            |
+       +-----------------------+-----------------------+
+       | .. image:: waves.png  | Lake                  |
+       +-----------------------+-----------------------+
+       | .. image:: peak.png   | Mountain              |
+       +-----------------------+-----------------------+
+                             
+To specify a legend without a caption, use an empty comment ('..') in
+place of the caption.
+
+
+--------------------------
+ Miscellaneous Directives
+--------------------------
+
+Test Directive
+==============
+
+DTD element: directive.
+
+'Restructuredtext-test-directive' is provided for test purposes.
+
+
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:
