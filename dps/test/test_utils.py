@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/13 02:40:04 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/16 05:48:22 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for utils.py.
@@ -236,7 +236,8 @@ class NameValueTests(unittest.TestCase):
 
 class ExtensionAttributeTests(unittest.TestCase):
 
-    attributespec = {'a': int, 'bbb': float, 'cdef': lambda x: x}
+    attributespec = {'a': int, 'bbb': float, 'cdef': (lambda x: x),
+                     'empty': (lambda x: x)}
 
     def test_assemble_attribute_dict(self):
         input = utils.extract_name_value('a=1 bbb=2.0 cdef=hol%s' % chr(224))
@@ -261,10 +262,62 @@ class ExtensionAttributeTests(unittest.TestCase):
         field_list += nodes.field(
               '', nodes.field_name('', 'cdef'),
               nodes.field_body('', nodes.paragraph('', 'hol%s' % chr(224))))
+        field_list += nodes.field(
+              '', nodes.field_name('', 'empty'), nodes.field_body())
         self.assertEquals(
               utils.extract_extension_attributes(field_list,
                                                  self.attributespec),
-              {'a': 1, 'bbb': 2.0, 'cdef': ('hol%s' % chr(224))})
+              {'a': 1, 'bbb': 2.0, 'cdef': ('hol%s' % chr(224)),
+               'empty': None})
+        self.assertRaises(KeyError, utils.extract_extension_attributes,
+                          field_list, {})
+        field_list += nodes.field(
+              '', nodes.field_name('', 'cdef'),
+              nodes.field_body('', nodes.paragraph('', 'one'),
+                               nodes.paragraph('', 'two')))
+        self.assertRaises(utils.BadAttributeDataError,
+                          utils.extract_extension_attributes,
+                          field_list, self.attributespec)
+        field_list[-1] = nodes.field(
+              '', nodes.field_name('', 'cdef'),
+              nodes.field_argument('', 'bad'),
+              nodes.field_body('', nodes.paragraph('', 'no arguments')))
+        self.assertRaises(utils.BadAttributeError,
+                          utils.extract_extension_attributes,
+                          field_list, self.attributespec)
+        field_list[-1] = nodes.field(
+              '', nodes.field_name('', 'cdef'),
+              nodes.field_body('', nodes.paragraph('', 'duplicate')))
+        self.assertRaises(utils.DuplicateAttributeError,
+                          utils.extract_extension_attributes,
+                          field_list, self.attributespec)
+        field_list[-2] = nodes.field(
+              '', nodes.field_name('', 'unkown'),
+              nodes.field_body('', nodes.paragraph('', 'unknown')))
+        self.assertRaises(KeyError, utils.extract_extension_attributes,
+                          field_list, self.attributespec)
+
+
+class MiscFunctionTests(unittest.TestCase):
+
+    names = [('a', 'a'), ('A', 'a'), ('A a A', 'a a a'),
+             ('A  a  A  a', 'a a a a'),
+             ('  AaA\n\r\naAa\tAaA\t\t', 'aaa aaa aaa')]
+
+    def test_normname(self):
+        for input, output in self.names:
+            normed = utils.normname(input)
+            self.assertEquals(normed, output)
+
+    ids = [('a', 'a'), ('A', 'a'), ('', ''), ('a b \n c', 'a-b-c'),
+           ('a.b.c', 'a-b-c'), (' - a - b - c - ', 'a-b-c'), (' - ', ''),
+           (u'\u2020\u2066', ''), (u'a \xa7 b \u2020 c', 'a-b-c'),
+           ('1', ''), ('1abc', 'abc')]
+
+    def test_id(self):
+        for input, output in self.ids:
+            normed = utils.id(input)
+            self.assertEquals(normed, output)
 
 
 if __name__ == '__main__':
