@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/25 23:59:12 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/06 02:51:25 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains modules for standard tree transforms available
@@ -44,4 +44,4 @@ class Transform:
     def setup_transform(self, doctree):
         """Initial setup, used by `self.transform()`."""
         self.doctree = doctree
-        self.language = languages.language(doctree.languagecode)
+        self.language = languages.getlanguage(doctree.languagecode)
