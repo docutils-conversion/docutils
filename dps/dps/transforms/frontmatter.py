@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/22 02:08:34 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/04 04:45:49 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms related to the front matter of a document (information
@@ -165,7 +165,7 @@ class DocInfo(Transform):
     document title and subtitle (if present), registered bibliographic
     field names are transformed to the corresponding DTD elements,
     becoming child elements of the "docinfo" element (except for the
-    "abstract" element, which comes after "docinfo").
+    abstract, which becomes a "topic" element after "docinfo").
 
     For example, given this document fragment after parsing::
 
@@ -178,7 +178,7 @@ class DocInfo(Transform):
                         Author
                     <field_body>
                         <paragraph>
-                            Kilgore Trout
+                            A. Name
                 <field>
                     <field_name>
                         Status
@@ -195,7 +195,7 @@ class DocInfo(Transform):
                 Document Title
             <docinfo>
                 <author>
-                    Kilgore Trout
+                    A. Name
                 <status>
                     frontmatter.py
             ...
@@ -265,12 +265,15 @@ class DocInfo(Transform):
                 else:                   # multiple body elements possible
                     if issubclass(biblioclass, nodes.authors):
                         self.extract_authors(field, name, docinfo)
-                    elif issubclass(biblioclass, nodes.abstract):
+                    elif issubclass(biblioclass, nodes.topic):
                         if abstract:
                             field[-1] += self.doctree.reporter.warning(
                                   'There can only be one abstract.')
                             raise TransformError
-                        abstract = nodes.abstract('', *field[1].children)
+                        title = nodes.title(
+                              name, self.language.labels['abstract'])
+                        abstract = nodes.topic('', title, CLASS='abstract',
+                                               *field[1].children)
                     else:
                         docinfo.append(biblioclass('', *field[1].children))
             except TransformError:
