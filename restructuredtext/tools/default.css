@@ -1,12 +1,34 @@
+/*
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:date: $Date: 2002/02/22 01:41:49 $
+:version: $Revision: 1.3 $
+:copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+*/
+
 h1.title { text-align: center }
 
 h2.subtitle { text-align: center }
+
+div.docinfo { margin: 5em }
 
 div.abstract { margin: 5em }
 
 div.abstract h3 { text-align: center }
 
+div.system_messages { margin: 5em }
+
+div.system_message {
+    border: medium outset;
+    padding: 1em }
+
+div.system_message h3 { color: red }
+
 dt { margin-bottom: -1em }
+
+hr { width: 75% }
 
 span.classifier {
     font-family: sans-serif;
