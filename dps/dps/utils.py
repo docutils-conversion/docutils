@@ -3,10 +3,11 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/01/30 04:47:02 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/02/06 02:53:53 $
 :Copyright: This module has been placed in the public domain.
 
+Miscellaneous utilities for the documentation utilities.
 """
 
 import sys
@@ -21,45 +22,84 @@ class SystemWarning(Exception):
 
 class Reporter:
 
-    def __init__(self, warninglevel, errorlevel, warningstream=None):
-        self.warninglevel = warninglevel
-        """The level at or above which warning output will be sent to
-        `self.stream`."""
+    """
+    The concept of "categories" was inspired by the log4j__ project.
 
-        self.errorlevel = errorlevel
-        """The level at or above which `SystemWarning` exceptions will be
-        raised."""
+    __ http://jakarta.apache.org/log4j/
+    """
+
+    levels = 'DEBUG INFO WARNING ERROR SEVERE'.split()
+    """List of names for system warning levels, indexed by level."""
+
+    def __init__(self, warninglevel, errorlevel, warningstream=None, debug=0):
+        """
+        Initialize the `Reporter`'s default logging category.
+        
+        Parameters:
+        
+        - `warninglevel`: The level at or above which warning output will be
+          sent to `warningstream`.
+        - `errorlevel`: The level at or above which `SystemWarning` exceptions
+          will be raised.
+        - `debug`: Show debug (level=0) system warnings?
+        - `warningstream`: Where warning output is sent (`None` implies
+          `sys.stderr`).
+        """
 
         if warningstream is None:
             warningstream = sys.stderr
  
-        self.stream = warningstream
-        """Where warning output is sent."""
+        self.categories = {'': (debug, warninglevel, errorlevel, warningstream)}
+        """Mapping of category names to levels. Default is ''."""
 
-    def system_warning(self, level, comment=None, children=[]):
+    def setcategory(self, category, warninglevel, errorlevel,
+                    warningstream=None, debug=0):
+        if warningstream is None:
+            warningstream = sys.stderr
+        self.categories[category] = (debug, warninglevel, errorlevel,
+                                     warningstream)
+
+    def unsetcategory(self, category):
+        if category and self.categories.has_key(category):
+            del self.categories[category]
+
+    def getcategory(self, category):
+        while not self.categories.has_key(category):
+            category = category[:category.rfind('.') + 1][:-1]
+        return self.categories[category]
+
+    def system_warning(self, level, comment=None, children=[], category=''):
         """
         Return a system_warning object.
 
         Raise an exception or generate a warning if appropriate.
         """
-        sw = nodes.system_warning(comment, level=level, *children)
-        if level >= self.errorlevel:
+        sw = nodes.system_warning(comment, level=level,
+                                  type=self.levels[level], *children)
+        debug, warninglevel, errorlevel, stream = self.getcategory(category)
+        if level >= warninglevel or debug and level == 0:
+            if category:
+                print >>stream, 'Reporter "%s":' % category, sw.astext()
+            else:
+                print >>stream, 'Reporter:', sw.astext()
+        if level >= errorlevel:
             raise SystemWarning(sw)
-        if level >= self.warninglevel:
-            print >>self.stream, 'Warning:', sw.astext()
         return sw
 
-    def information(self, comment=None, children=[]):
-        return self.system_warning(0, comment, children)
+    def debug(self, comment=None, children=[], category=''):
+        return self.system_warning(0, comment, children, category)
 
-    def warning(self, comment=None, children=[]):
-        return self.system_warning(1, comment, children)
+    def info(self, comment=None, children=[], category=''):
+        return self.system_warning(1, comment, children, category)
 
-    def error(self, comment=None, children=[]):
-        return self.system_warning(2, comment, children)
+    def warning(self, comment=None, children=[], category=''):
+        return self.system_warning(2, comment, children, category)
 
-    def severe(self, comment=None, children=[]):
-        return self.system_warning(3, comment, children)
+    def error(self, comment=None, children=[], category=''):
+        return self.system_warning(3, comment, children, category)
+
+    def severe(self, comment=None, children=[], category=''):
+        return self.system_warning(4, comment, children, category)
 
 
 class AttributeParsingError(Exception): pass
@@ -67,12 +107,6 @@ class BadAttributeLineError(AttributeParsingError): pass
 class BadAttributeDataError(AttributeParsingError): pass
 class DuplicateAttributeError(AttributeParsingError): pass
 
-
-def newdocument(languagecode='en', warninglevel=1, errorlevel=3,
-                warningstream=None):
-    reporter = Reporter(warninglevel, errorlevel)
-    document = nodes.document(languagecode='en', reporter=reporter)
-    return document
 
 def parseattributes(lines, attributespec):
     """
@@ -182,3 +216,9 @@ def assembleattributes(attlist, attributespec):
 def normname(name):
     """Return a case- and whitespace-normalized name."""
     return ' '.join(name.lower().split())
+
+def newdocument(languagecode='en', warninglevel=2, errorlevel=4,
+                warningstream=None, debug=0):
+    reporter = Reporter(warninglevel, errorlevel, warningstream, debug)
+    document = nodes.document(languagecode=languagecode, reporter=reporter)
+    return document
