@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/25 03:09:01 $
+:Date: $Date: 2001/09/26 03:33:06 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -60,6 +60,7 @@ Changed contact email addresses.
   - Changed footnote/footnote_reference 'auto' attribute to integer.
   - Moved 'abstract' into bibliographic elements section.
   - Changed 'graphic' to 'image'.
+  - Added 'docinfo', container for bibliographic elements.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -140,6 +141,7 @@ Changed contact email addresses.
   - Changed 'graphic' to 'image'.
   - Moved 'caption' to after 'image' in 'figure'.
   - Added 'error' admonishment element.
+  - Added 'docinfo' as container for bibliographic elements.
 
 * spec/pdpi.dtd:
 
