@@ -1,43 +1,72 @@
 /*
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:date: $Date: 2002/02/22 01:41:49 $
-:version: $Revision: 1.3 $
+:date: $Date: 2002/02/23 15:55:37 $
+:version: $Revision: 1.4 $
 :copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
 */
 
-h1.title { text-align: center }
+h1.title {
+  text-align: center }
 
-h2.subtitle { text-align: center }
+h2.subtitle {
+  text-align: center }
 
-div.docinfo { margin: 5em }
+div.docinfo {
+  margin: 5em }
 
-div.abstract { margin: 5em }
+div.abstract {
+  margin: 5em }
 
-div.abstract h3 { text-align: center }
+div.abstract h3 {
+  text-align: center }
 
-div.system_messages { margin: 5em }
+div.attention, div.caution, div.danger, div.error, dif.hint,
+div.important, div.note, div.tip, div.warning {
+  margin: 2em;
+  border: medium outset;
+  padding: 1em }
+
+div.attention h3 {
+  color: red;
+  font-weight: bold;
+  font-family: sans-serif }
+
+div.system_messages {
+  margin: 5em }
+
+div.system_messages h1 {
+  color: red }
 
 div.system_message {
-    border: medium outset;
-    padding: 1em }
+  border: medium outset;
+  padding: 1em }
 
-div.system_message h3 { color: red }
+div.system_message h3 {
+  color: red }
 
-dt { margin-bottom: -1em }
+dt {
+  margin-bottom: -1em }
 
-hr { width: 75% }
+hr {
+  width: 75% }
+
+.docinfo_name {
+  font-weight: bold;
+  text-align: right }
 
 span.classifier {
-    font-family: sans-serif;
-    font-style: oblique }
+  font-family: sans-serif;
+  font-style: oblique }
 
 span.classifier_delimiter {
-    font-family: sans-serif;
-    font-weight: bold }
+  font-family: sans-serif;
+  font-weight: bold }
 
-span.interpreted { font-family: sans-serif }
+span.interpreted {
+  font-family: sans-serif }
 
-span.problematic { color: red }
+span.problematic {
+  color: red }
