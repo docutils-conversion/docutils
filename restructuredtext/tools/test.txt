@@ -17,10 +17,17 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :organization: humankind
-:date: $Date: 2002/02/22 01:42:12 $
-:status: work in progress
-:version: $Revision: 1.2 $
-:copyright: This document has been placed in the public domain.
+:date: $Date: 2002/02/23 15:55:12 $
+:status: This is a "work in progress"
+:revision: $Revision: 1.3 $
+:version: 1
+:copyright: This document has been placed in the public domain. You
+            may do with it as you wish. You may copy, modify,
+            redistribute, reattribute, sell, buy, rent, lease,
+            destroy, or improve it, quote it at length, excerpt,
+            incorporate, collate, fold, staple, or mutilate it, or do
+            anything else to it that your or anyone else's heart
+            desires.
 
 :abstract:
 
@@ -38,7 +45,7 @@ Structural Elements
 Section Title
 -------------
 
-That's it, just above.
+That's it, the text just above this line.
 
 Transitions
 -----------
@@ -86,6 +93,9 @@ Enumerated Lists
 
       (i) lower roman
 
+          A. upper alpha
+
+             I) upper roman
 
 Definition Lists
 ----------------
@@ -202,9 +212,56 @@ Explicit external targets are interpolated into references such as
 Directives
 ----------
 
+Images
+``````
+
 An image directive:
 
 .. image:: ../docs/images/title.png
+
+A figure directive:
+
+.. figure:: ../docs/images/title.png
+   [alt="reStructuredText, the markup syntax"]
+
+   A figure is an image with a caption and/or a legend:
+
+   +------------+-----------------------------------------------+
+   | re         | Revised, revisited, based on 're' module.     |
+   +------------+-----------------------------------------------+
+   | Structured | Structure-enhanced text, structuredtext.      |
+   +------------+-----------------------------------------------+
+   | Text       | Well it is, isn't it?                         |
+   +------------+-----------------------------------------------+
+
+Admonitions
+```````````
+
+.. Attention:: Directives at large.
+
+.. Caution::
+
+   Don't take any wooden nickels.
+
+.. DANGER:: Mad scientist at work!
+
+.. Error:: Does not compute.
+
+.. Hint:: It's bigger than a bread box.
+
+.. Important::
+   - Wash behind your ears.
+   - Clean up your room.
+   - Call your mother.
+   - Back up your data.
+
+.. Note:: This is a note.
+
+.. Tip:: 15% if the service is good.
+
+.. WARNING:: Strong prose may provoke extreme mental exertion.
+   Reader discretion is strongly advised.
+
 
 Substitution Definitions
 ------------------------
