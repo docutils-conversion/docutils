@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/08/28 03:28:53 $
-:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/09/05 02:38:55 $
+:Revision: $Revision: 1.10 $
 
 
 To Do
@@ -12,11 +12,20 @@ To Do
 
   - Fill in the blanks in API details.
 
+  - Specify the nodes.py internal data structure implementation.
+
+        [Tibs:] Eventually we need to have direct documentation in
+        there on how it all hangs together - the DTD is not enough
+        (indeed, is it still meant to be correct?).
+
 - Rework PEP 257, separating style from spec from tools, wrt DPS. See
   Doc-SIG from 2001-06-19/20.
 
-- PEP 256: Draw the framework diagram properly as a graphic (once PEPs
-  support graphics !-).
+- PEP 256:
+
+  - Incorporate "modes" (one or two sets).
+  - Draw the framework diagram properly as a graphic (once PEPs
+    support graphics !-).
 
 - Document!
 
@@ -77,6 +86,93 @@ each of the above will also be required.
 
 See python-dev/docstring-develop thread "AST mining", started on
 2001-08-14.
+
+
+Modes and Styles
+================
+
+The Python docstring mode model that's evolving in my mind goes
+something like this:
+
+1. Extract the docstring/namespace tree from the module(s) and/or
+   package(s).
+
+2. Run the parser on each docstring in turn, producing a forest of
+   trees (internal data structure as per nodes.py).
+
+3. Run various transformations on the individual docstring trees.
+   Examples: resolving cross-references; resolving hyperlinks;
+   footnote auto-numbering; first field list -> bibliographic
+   elements.
+
+4. Join the docstring trees together into a single tree, running more
+   transformations (such as creating various sections like "Module
+   Attributes", "Functions", "Classes", "Class Attributes", etc.; see
+   the DPS spec/ppdi.dtd).
+
+5. Pass the resulting unified tree to the output formatter.
+
+I've had trouble reconciling the roles of input parser and output
+formatter with the idea of "modes". Does the mode govern the
+tranformation of the input, the output, or both? Perhaps the mode
+should be split into two.
+
+For example, say the source of our input is a Python module. Our
+"input mode" should be "Python Docstring Mode". It discovers (from
+``__docformat__``) that the input parser is "reStructuredText". If we
+want HTML, we'll specify the "HTML" output formatter. But there's a
+piece missing. What *kind* or *style* of HTML output do we want?
+PyDoc-style, LibRefMan style, etc. (many people will want to specify
+and control their own style). Is the output style specific to a
+particular output format (XML, HTML, etc.)? Is the style specific to
+the input mode? Or can/should they be independent?
+
+I envision interaction between the input parser, an "input mode"
+(would control steps 1, 2, & 3), a "transformation style" (would
+control step 4), and the output formatter. The same intermediate data
+format would be used between each of these, gaining detail as it
+progresses.
+
+This requires thought.
+
+Tony's contribution:
+
+    OK - my model is not dissimilar, but goes like:
+    
+    1. Parse the Python module(s) [remembering we may have a package]
+       This locates the docstrings, amongst other things.
+    
+    2. Trim the tree to lose stuff we didn't need (!).
+    
+    3. Parse the docstrings (this might, instead, be done at the time
+       that each docstring is "discovered").
+    
+    4. Integrate the docstring into the tree - this *may* be as simple
+       as having "thing.docstring = <docstring instance>"
+    
+    5. Perform internal resolutions on the docstring (footnotes, etc.)
+    
+    6. Perform intra-module/package resolutions on the docstring
+       (so this is when we work out that `Fred` in *this* docstring
+       refers to class Fred over here in the datastructure).
+    
+    7. Format.
+
+    ...
+
+    A mode needs to:
+    
+    1. Provide plugins for parsing - this *may* go so far as to
+       subsume the DPS functionality into a new program, as I'm doing
+       for Python. In this case the "plugin" for parsing may be
+       virtual - I just need to ferret around in the docstring looking
+       for things that are already there, perhaps.
+    
+    2. Provide plugins for formatting - again, these may subsume a
+       DPS parser process. In the Python case, I clearly want to *use*
+       the normal HTML parser for HTML output, but with extra support
+       "around it" for the Python specific infrastructure.
+
 
 
 Local Variables:
