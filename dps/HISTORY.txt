@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/17 04:15:23 $
+:Date: $Date: 2001/09/18 04:34:35 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -83,7 +83,10 @@ Changed contact email addresses.
   - Renamed error reporter class to 'Reporter' from 'Errorist'.
   - Added named methods (aliases to numbered system_warning calls) to
     Reporter.
+  - Removed Reporter.strong_system_warning (not needed).
   - Added some docstrings.
+
+* dps/test_*.py: Moved to new test/ directory.
 
 * dps/parsers/model.py:
 
