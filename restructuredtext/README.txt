@@ -2,15 +2,15 @@
  README: reStructuredText
 ==========================
 
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/07/29 15:55:11 $
-Web-site: http://structuredtext.sourceforge.net/
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Date: $Date: 2001/08/23 04:11:47 $
+:Web-site: http://structuredtext.sourceforge.net/
 
 Thank you for downloading the reStructuredText project archive. As
 this is a work in progress, please check the project web site for
 updated working files. The latest release archive is available at
-http://sf.net/project/showfiles.php?group_id=7050.
+http://sourceforge.net/project/showfiles.php?group_id=7050.
 
 reStructuredText is an input parser component of the `Python Docstring
 Processing System`_, and is installed as
@@ -51,7 +51,7 @@ Project Files & Directories
 * spec: The project specification directory. Contains the markup
   syntax spec and implementation notes.
 
-* doc: The project documentation directory.
+* docs: The project documentation directory.
 
 
 Installation

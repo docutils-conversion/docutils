@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.2 2001/07/28 04:55:29 goodger Exp $
+# $Id: setup.py,v 1.3 2001/08/23 04:08:49 goodger Exp $
 
 from distutils.core import setup
 
@@ -11,7 +11,7 @@ def do_setup():
           url = 'http://structuredtext.sourceforge.net/',
           version = '0.4',
           author = 'David Goodger',
-          author_email = 'dgoodger@bigfoot.com',
+          author_email = 'goodger@users.sourceforge.net',
           license = 'public domain',
           packages = ['dps.parsers.restructuredtext',
                       'dps.parsers.restructuredtext.directives'],
