@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.43 $
-:Date: $Date: 2002/02/21 03:38:03 $
+:Revision: $Revision: 1.44 $
+:Date: $Date: 2002/02/23 16:47:34 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -1025,7 +1025,7 @@ class Body(RSTState):
         optionlist = nodes.option_list()
         self.statemachine.node += optionlist
         try:
-            listitem, blankfinish = self.option_list_item(match)
+            listitem, blankfinish, delimiter = self.option_list_item(match)
         except MarkupError, detail:     # shouldn't happen; won't match pattern
             sw = self.statemachine.memo.reporter.error(
                   ('Invalid option list marker at line %s: %s'
@@ -1038,6 +1038,8 @@ class Body(RSTState):
             if not blankfinish:
                 self.statemachine.node += self.unindentwarning()
             return [], nextstate, []
+        if delimiter:
+            optionlist['optarg_delimiter'] = delimiter
         optionlist += listitem
         offset = self.statemachine.lineoffset + 1   # next line
         newlineoffset, blankfinish = self.nestedlistparse(
@@ -1051,7 +1053,7 @@ class Body(RSTState):
         return [], nextstate, []
 
     def option_list_item(self, match):
-        options = self.parseoptionmarker(match)
+        options, delimiter = self.parseoptionmarker(match)
         indented, indent, lineoffset, blankfinish = \
               self.statemachine.getfirstknownindented(match.end())
         optionlistitem = nodes.option_list_item('', *options)
@@ -1059,7 +1061,7 @@ class Body(RSTState):
         optionlistitem += description
         if indented:
             self.nestedparse(indented, inputoffset=lineoffset, node=description)
-        return optionlistitem, blankfinish
+        return optionlistitem, blankfinish, delimiter
 
     def parseoptionmarker(self, match):
         """
@@ -1069,31 +1071,37 @@ class Body(RSTState):
         """
         optlist = []
         options = match.group().rstrip().split(', ')
+        optarg_delimiter = None
         for optionstring in options:
             option = nodes.option(optionstring)
             tokens = optionstring.split()
-            #atts = {'delimiter': ' '}
+            delimiter = ' '
             firstopt = tokens[0].split('=')
             if len(firstopt) > 1:
                 tokens[:1] = firstopt
-                #atts['delimiter'] = '='
+                delimiter = '='
             if 0 < len(tokens) <= 2:
                 if tokens[0][:2] == '--':
                     option += nodes.long_option(tokens[0], tokens[0][2:])
                 elif tokens[0][:1] == '-':
                     option += nodes.short_option(tokens[0], tokens[0][1:])
-                    #del atts['delimiter']
+                    delimiter = ''      # ignore delimiter for short options
                 elif tokens[0][:1] == '/':
                     option += nodes.vms_option(tokens[0], tokens[0][1:])
                 if len(tokens) > 1:
                     option += nodes.option_argument(tokens[1], tokens[1])
-                                                    #**atts)
+                    if delimiter:
+                        if optarg_delimiter:
+                            if delimiter != optarg_delimiter:
+                                optarg_delimiter = "mixed"
+                        else:
+                            optarg_delimiter = delimiter
                 optlist.append(option)
             else:
                 raise MarkupError('wrong numer of option tokens (=%s), '
                                   'should be 1 or 2: %r' % (len(tokens),
                                                             optionstring))
-        return optlist
+        return optlist, optarg_delimiter
 
     def doctest(self, match, context, nextstate):
         data = '\n'.join(self.statemachine.gettextblock())
@@ -1666,10 +1674,18 @@ class OptionList(SpecializedBody):
     def optionmarker(self, match, context, nextstate):
         """Option list item."""
         try:
-            optionlistitem, blankfinish = self.option_list_item(match)
+            optionlistitem, blankfinish, delimiter = \
+                  self.option_list_item(match)
         except MarkupError, detail:
             self.invalid_input()
-        self.statemachine.node += optionlistitem
+        listnode = self.statemachine.node
+        if delimiter:
+            if listnode.has_key('optarg_delimiter'):
+                if listnode['optarg_delimiter'] != delimiter:
+                    listnode['optarg_delimiter'] = "mixed"
+            else:
+                listnode['optarg_delimiter'] = delimiter
+        listnode += optionlistitem
         self.blankfinish = blankfinish
         return [], 'OptionList', []
 
