@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2001/09/18 04:42:00 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2001/09/26 03:37:26 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -60,7 +60,7 @@ Here are examples of body elements:
 
          - This is a bullet list.
 
-         - Bullets can be '-', '*', or '+'.
+         - Bullets can be "-", "*", or "+".
 
   2. `Enumerated lists`_::
 
@@ -92,7 +92,7 @@ Here are examples of body elements:
 
   5. `Option lists`_, for listing command-line options::
 
-         -a            option 'a'
+         -a            option "a"
          -b file       options can have arguments
          --long        options can be long also
          --input=file  long options can also have arguments
@@ -104,7 +104,7 @@ Here are examples of body elements:
 - `Literal blocks`_::
 
       Literal blocks are indented, and indicated with a double-colon
-      ('::') at the end of the preceding paragraph (right here -->)::
+      ("::") at the end of the preceding paragraph (right here -->)::
 
           if literal_block:
               text = 'is left as-is'
@@ -148,7 +148,7 @@ Here are examples of body elements:
 
       .. _example:
 
-      The '_example' target above points to this paragraph.
+      The "_example" target above points to this paragraph.
 
 - Directives_::
 
@@ -191,8 +191,23 @@ further body elements, etc. ::
 
 For definitive element hierarchy details, see the "Generic Plaintext
 Document Interface DTD" XML document type definition, gpdi.dtd_.
-Descriptions below list 'DTD elements' (XML 'generic identifiers')
+Descriptions below list "DTD elements" (XML "generic identifiers")
 corresponding to syntax constructs.
+
+
+Document
+========
+
+DTD element: document.
+
+The top-level element of a parsed reStructuredText document is the
+"document" element. After initial parsing, the document element is a
+simple container for a document fragment, consisting of sections and
+body elements, but lacking a document title or other bibliographic
+elements. The code that calls the parser may choose to run one or more
+optional `post-parse transformations`_, rearranging the document
+fragment into a complete document with a title and possibly other
+metadata elements (author, date, etc.).
 
 
 Whitespace
@@ -203,9 +218,8 @@ Multiple successive blank lines are equivalent to a single blank line,
 except within literal blocks (where all whitespace is preserved).
 Blank lines may be omitted when the markup makes element separation
 unambiguous, in conjunction with indentation. The first line of a
-document is treated as if it is preceded by a blank line, and the
-last line of a document is treated as if it is followed by a blank
-line.
+document is treated as if it is preceded by a blank line, and the last
+line of a document is treated as if it is followed by a blank line.
 
 Indentation is used to indicate, and is only significant in
 indicating:
@@ -269,14 +283,14 @@ Section Structure
 DTD elements: section, title.
 
 Sections are identified through their titles, which are marked up with
-adornment: 'underlines' below the title text, and, in some cases,
-matching 'overlines' above the title. An underline/overline is a
+adornment: "underlines" below the title text, and, in some cases,
+matching "overlines" above the title. An underline/overline is a
 single repeated punctuation character that begins in column 1 and
 forms a line extending at least as far as the right edge of the title
 text. Specifically, an underline/overline character may be any
 non-alphanumeric printable 7-bit ASCII character [#]_. An
 underline/overline must be at least 4 characters long (to avoid
-mistaking ellipses ['...'] for overlines). When an overline is used,
+mistaking ellipses ["..."] for overlines). When an overline is used,
 the length and character used must match the underline. There may be
 any number of levels of section titles.
 
@@ -382,8 +396,8 @@ Bullet Lists
 
 DTD elements: bullet_list, list_item.
 
-A text block which begins with a '-', '*', or '+', followed by
-whitespace, is a bullet list item (a.k.a. 'unordered' list item). For
+A text block which begins with a "-", "*", or "+", followed by
+whitespace, is a bullet list item (a.k.a. "unordered" list item). For
 example::
 
     - This is the first bullet list item. The blank line above the
@@ -420,7 +434,7 @@ Here are examples of **incorrectly** formatted bullet lists::
 Syntax diagram::
 
     +------+-----------------------+
-    | '- ' | list item             |
+    | "- " | list item             |
     +------| (body elements)+      |
            +-----------------------+
 
@@ -430,7 +444,7 @@ Enumerated Lists
 
 DTD elements: enumerated_list, list_item.
 
-Enumerated lists (a.k.a. 'ordered' lists) are similar to bullet lists,
+Enumerated lists (a.k.a. "ordered" lists) are similar to bullet lists,
 but use enumerators instead of bullets. An enumerator consists of an
 enumeration sequence member and formatting, followed by whitespace.
 The following enumeration sequences are recognized:
@@ -443,26 +457,26 @@ The following enumeration sequences are recognized:
 
 The following formatting types are recognized:
 
-- suffixed with a period: '1.', 'A.', 'a.', 'I.', 'i.'.
-- surrounded by parentheses: '(1)', '(A)', '(a)', '(I)', '(i)'.
-- suffixed with a right-parenthesis: '1)', 'A)', 'a)', 'I)', 'i)'.
+- suffixed with a period: "1.", "A.", "a.", "I.", "i.".
+- surrounded by parentheses: "(1)", "(A)", "(a)", "(I)", "(i)".
+- suffixed with a right-parenthesis: "1)", "A)", "a)", "I)", "i)".
 
 A system warning will be generated for each of the following cases:
 
 1. The enumerators do not all have the same format and sequence type. 
 
-2. The enumerators are not in sequence (i.e., '1.', '3.' generates a
+2. The enumerators are not in sequence (i.e., "1.", "3." generates a
    warning).
 
 It is recommended that the enumerator of the first list item be
-ordinal-1 ('1', 'A', 'a', 'I', or 'i'). Although other start-values
+ordinal-1 ("1", "A", "a", "I", or "i"). Although other start-values
 will be recognized, they may not be supported by the output format.
 
-Lists using Roman numerals must begin with 'I'/'i' or a
-multi-character value, such as 'II' or 'XV'. Any other
-single-character Roman numeral ('V', 'X', etc.) will be interpreted as
+Lists using Roman numerals must begin with "I"/"i" or a
+multi-character value, such as "II" or "XV". Any other
+single-character Roman numeral ("V", "X", etc.) will be interpreted as
 a letter of the alphabet, not as a Roman numeral. Likewise, lists
-using letters of the alphabet may not begin with 'I'/'i', since these
+using letters of the alphabet may not begin with "I"/"i", since these
 are recognized as Roman numeral 1.
 
 Nested enumerated lists must be created with indentation. For
@@ -476,7 +490,7 @@ example::
 Example syntax diagram::
 
     +-------+----------------------+
-    | '1. ' | list item            |
+    | "1. " | list item            |
     +-------| (body elements)+     |
             +----------------------+
 
@@ -489,7 +503,7 @@ definition.
 
 Each definition list item contains a term and a definition. A term is
 a simple one-line word or phrase. An optional classifier may follow
-the term on the same line, after ' : ' (space, colon, space). A
+the term on the same line, after " : " (space, colon, space). A
 definition is a block indented relative to the term, and may contain
 multiple paragraphs and other body elements. There may be no blank
 line between a term and a definition (this distinguishes definition
@@ -511,7 +525,7 @@ For example::
 Syntax diagram::
 
     +---------------------------+
-    | term [ ' : ' classifier ] |
+    | term [ " : " classifier ] |
     +--+------------------------+--+
        | defninition               |
        | (body elements)+          |
@@ -526,7 +540,7 @@ field_body.
 
 Field lists are mappings from field names to field bodies, modeled on
 RFC822_ headers. A field name is made up of one or more letters,
-numbers, and punctuation, except colons (':') and whitespace. Field
+numbers, and punctuation, except colons (":") and whitespace. Field
 names are case-insensitive. There may be additional data separated
 from the field name, called field arguments. The field name and
 optional field argument(s) together form the field marker. The field
@@ -546,66 +560,17 @@ For example::
     :Parameter i: integer
 
 Applications of reStructuredText may recognize field names and
-transform fields or field bodies in certain contexts. Any
-untransformed fields remain in a generic field list.
+transform fields or field bodies in certain contexts. See
+`Bibliographic Field Lists`_ below. Any untransformed fields remain in
+a generic field list.
 
 Syntax diagram (simplified)::
 
     +------------------------------+------------+
-    | ':' name (' ' argument)* ':' | field body |
+    | ":" name (" " argument)* ":" | field body |
     +-------+----------------------+            |
             | (body elements)+                  |
             +-----------------------------------+
-
-
-Bibliographic Field Lists
-`````````````````````````
-
-One special context is defined for field lists. A field list as the
-very first non-comment element, or the second non-comment element
-immediately after a title, has its fields interpreted as document
-bibliographic data. The following field names are recognized and
-transformed to the corresponding DTD elements listed, child elements
-of the 'document' element. No ordering is imposed on these fields,
-although they may be rearranged to fit the document structure:
-
-- Title: title (only one allowed, and only if no title already exists)
-- Subtitle: subtitle (only one allowed)
-- Author: author
-- Authors: authors (a list of author elements, separated by ';' or
-  ',')
-- Organization: organization
-- Contact: contact
-- Version: version
-- Status: status
-- Date: date
-- Copyright: copyright
-- Abstract: abstract (only one allowed)
-
-This field-name-to-element mapping can be extended, or replaced for
-other languages. See the implementation documentation for details.
-
-
-RCS Keyword Recognition
-```````````````````````
-
-In the context of `bibliographic field lists`_, keywords from RCS
-(Revision Control System) [#CVS]_ are recognized and stripped of their
-excess text. For example::
-
-    :status: $RCSfile: reStructuredText.txt,v $
-
-The field body text will be simply 'reStructuredText.txt'. (The
-'RCSfile' keyword was used for this example because its expansion does
-not change; this file is under CVS [#CVS]_. The 'status' field name
-was used because none of the others fit any better.)
-
-For the 'Date' keyword, the date itself is extracted and transformed
-to an ISO 8601-format date, as in '2000-12-31'. All other RCS keywords
-simply have the leading keyword name and both dollar-signs removed.
-
-.. [#CVS] CVS (Concurrent Versions System) uses the same keywords as
-   RCS.
 
 
 Option Lists
@@ -643,7 +608,7 @@ example::
 Syntax diagram (simplified)::
 
     +--------------------------------+-------------+
-    | '-' letter [' ' argument] '  ' | description |
+    | "-" letter [" " argument] "  " | description |
     +-------+------------------------+             |
             | (body elements)+                     |
             +--------------------------------------+
@@ -654,7 +619,7 @@ Literal Blocks
 
 DTD element: literal_block.
 
-A paragraph consisting of two colons ('::') signifies that all
+A paragraph consisting of two colons ("::") signifies that all
 following **indented** text blocks comprise a literal block. No markup
 processing is done within a literal block. It is left as-is, and is
 typically rendered in a monospaced typeface::
@@ -672,14 +637,14 @@ typically rendered in a monospaced typeface::
     is outside of the literal block, and therefore treated as an
     ordinary paragraph.
 
-The paragraph containing only '::' will be completely removed from the
+The paragraph containing only "::" will be completely removed from the
 output; no empty paragraph will remain.
 
-As a convenience, the '::' is recognized at the end of any paragraph.
+As a convenience, the "::" is recognized at the end of any paragraph.
 If immediately preceded by whitespace, both colons will be removed
 from the output (this is the "partially minimized" form). When text
-immediately precedes the '::', *one* colon will be removed from the
-output, leaving only one (i.e., '::' will be replaced by ':'; the
+immediately precedes the "::", *one* colon will be removed from the
+output, leaving only one (i.e., "::" will be replaced by ":"; the
 "fully minimized" form).
 
 In other words, these are all equivalent (please pay attention to the
@@ -715,7 +680,7 @@ Syntax diagram::
 
     +------------------------------+
     | paragraph                    |
-    | (ends with '::')             |
+    | (ends with "::")             |
     +------------------------------+
        +---------------------------+
        | literal block             |
@@ -763,7 +728,7 @@ docstrings. They are meant to illustrate usage by example, and provide
 an elegant and powerful testing environment via the doctest module in
 the Python standard library.
 
-Doctest blocks are text blocks which begin with '>>> ', the Python
+Doctest blocks are text blocks which begin with ">>> ", the Python
 interactive interpreter main prompt, and end with a blank line.
 Doctest blocks are treated as a special case of literal blocks,
 without requiring the literal block syntax. If both are present, the
@@ -789,10 +754,10 @@ Tables
 DTD elements: table, tgroup, colspec, thead, tbody, row, entry.
 
 Tables are described with a visual outline made up of the characters
-'-', '=', '|', and '+'. The hyphen ('-') is used for horizontal lines
-(row separators). The equals sign ('=') may be used to separate
-optional header rows from the table body. The vertical bar ('|') is
-used for vertical lines (column separators). The plus sign ('+') is
+"-", "=", "|", and "+". The hyphen ("-") is used for horizontal lines
+(row separators). The equals sign ("=") may be used to separate
+optional header rows from the table body. The vertical bar ("|") is
+used for vertical lines (column separators). The plus sign ("+") is
 used for intersections of horizontal and vertical lines.
 
 Each table cell is treated as a miniature document; the top and
@@ -823,13 +788,13 @@ Explicit Markup Blocks
 
 An explicit markup block is a text block:
 
-- whose first line begins with '..' followed by whitespace (the
-  'explicit markup start'),
+- whose first line begins with ".." followed by whitespace (the
+  "explicit markup start"),
 - whose second and subsequent lines (if any) are indented relative to
   the first, and
 - which ends with an unindented line.
 
-Explicit markup blocks are analogous to bullet list items, with '..'
+Explicit markup blocks are analogous to bullet list items, with ".."
 as the bullet. Blank lines are required between explicit markup blocks
 and other elements, but are optional between explicit markup blocks
 where unambiguous.
@@ -843,7 +808,7 @@ Footnotes
 
 DTD elements: footnote, label.
 
-Footnotes consist of an explicit markup start ('.. '), a left square
+Footnotes consist of an explicit markup start (".. "), a left square
 bracket, the footnote label, a right square bracket, and whitespace,
 followed by body elements. Footnote labels can be:
 
@@ -851,9 +816,9 @@ followed by body elements. Footnote labels can be:
   of alphanumerics plus internal hyphens, underscores, and periods; no
   whitespace),
 
-- a single '#' (denoting `auto-numbered footnotes`_), or
+- a single "#" (denoting `auto-numbered footnotes`_), or
 
-- a '#' followed by a simple hyperlink name, an "autonumber label".
+- a "#" followed by a simple hyperlink name, an "autonumber label".
 
 If the first body element within a footnote is a simple paragraph, it
 may begin on the same line as the footnote label. Other elements must
@@ -875,7 +840,7 @@ Targets`_ for a complete description of the mechanism.
 Syntax diagram::
 
     +-------+-------------------------+
-    | '.. ' | '[' label ']' footnote  |
+    | ".. " | "[" label "]" footnote  |
     +-------+                         |
             | (body elements)+        |
             +-------------------------+
@@ -934,10 +899,10 @@ Hyperlink Targets
 
 DTD element: target.
 
-Hyperlink targets consist of an explicit markup start ('.. '), an
+Hyperlink targets consist of an explicit markup start (".. "), an
 underscore, the hyperlink name (no trailing underscore), a colon,
-whitespace, and a link block. These are also called 'explicit
-hyperlink targets', to differentiate them from `implicit hyperlink
+whitespace, and a link block. These are also called "explicit
+hyperlink targets", to differentiate them from `implicit hyperlink
 targets`_ defined below.
 
 Hyperlink names are whitespace-neutral and case-insensitive. See
@@ -980,7 +945,7 @@ If a hyperlink name contains a colon followed by whitespace, either:
 
 - or the colon(s) must be backslash-escaped in the link target::
 
-      .. _Chapter One\: 'Tadpole Days':
+      .. _Chapter One\: "Tadpole Days":
 
       It's not easy being green...
 
@@ -990,7 +955,7 @@ duplicate hyperlink names.
 Syntax diagram::
 
     +-------+----------------------+
-    | '.. ' | '_' name ':' link    |
+    | ".. " | "_" name ":" link    |
     +-------+              block   |
             |                      |
             +----------------------+
@@ -1022,7 +987,7 @@ parser follows these rules:
    system warnings inserted.
 
 System warnings are inserted where target links have been removed. See
-'Error Handling' in `PEP 258`_.
+"Error Handling" in `PEP 258`_.
 
 The parser must return a set of *unique* hyperlink targets. The
 calling software (such as the `Python Docstring Processing System`_)
@@ -1034,7 +999,7 @@ Directives
 
 DTD element: directive.
 
-Directives are indicated by an explicit markup start ('.. ') followed
+Directives are indicated by an explicit markup start (".. ") followed
 by the directive type, two colons, and whitespace. Directive types are
 case-insensitive single words (alphanumerics plus internal hyphens,
 underscores, and periods; no whitespace). Two colons are used after
@@ -1047,7 +1012,7 @@ the directive type for these reasons:
 - If an implementation of reStructuredText does not recognize a
   directive (i.e., the directive-handler is not installed), the entire
   directive block (including the directive itself) will be treated as
-  a literal block, and a warning generated. Thus '::' is a natural
+  a literal block, and a warning generated. Thus "::" is a natural
   choice.
 
 Any text on the first line after the directive indicator is directive
@@ -1091,7 +1056,7 @@ alternate syntax. There is no parser support for this functionality at
 present; if a reasonable need for pragma directives is found, they may
 be supported.
 
-Directives normally do not survive as 'directive' elements past the
+Directives normally do not survive as "directive" elements past the
 parsing stage; they are a *parser construct* only, and have no
 intrinsic meaning outside of reStructuredText. Instead, the parser
 will transform recognized directives into (possibly specialized)
@@ -1101,7 +1066,7 @@ system warnings.
 Syntax diagram::
 
     +-------+----------------------+
-    | '.. ' | type '::' directive  |
+    | ".. " | type "::" directive  |
     +-------+           block      |
             |                      |
             +----------------------+
@@ -1128,7 +1093,7 @@ empty comment in-between.
 Syntax diagram::
 
     +-------+----------------------+
-    | '.. ' | comment block        |
+    | ".. " | comment block        |
     +-------+                      |
             |                      |
             +----------------------+
@@ -1152,8 +1117,8 @@ The inline markup start-string and end-string recognition rules are as
 follows:
 
 1. Inline markup start-strings must start a text block or be
-   immediately preceded by whitespace, single or double quotes, '(',
-   '[', '{', or '<'.
+   immediately preceded by whitespace, single or double quotes, "(",
+   "[", "{", or "<".
 
 2. Inline markup start-strings must be immediately followed by
    non-whitespace.
@@ -1162,13 +1127,13 @@ follows:
    non-whitespace.
 
 4. Inline markup end-strings must end a text block or be immediately
-   followed by whitespace, single or double quotes, '.', ',', ':',
-   ';', '!', '?', '-', ')', ']', '}', or '>'.
+   followed by whitespace, single or double quotes, ".", ",", ":",
+   ";", "!", "?", "-", ")", "]", "}", or ">".
 
 5. If an inline markup start-string is immediately preceded by a
-   single or double quote, '(', '[', '{', or '<', it must not be
+   single or double quote, "(", "[", "{", or "<", it must not be
    immediately followed by the corresponding single or double quote,
-   ')', ']', '}', or '>'.
+   ")", "]", "}", or ">".
 
 6. An inline markup end-string must be separated by at least one
    character from the start-string.
@@ -1178,11 +1143,11 @@ follows:
    literals`_. See `escaping mechanism`_ above for details.
 
 For example, none of the following are recognized as containing inline
-markup start-strings: ' * ', '"*"', "'*'", '(*)', '(* ', '[*]', '{*}',
-'\*', ' ` ', etc.
+markup start-strings: " * ", '"*"', "'*'", "(*)", "(* ", "[*]", "{*}",
+"\*", " ` ", etc.
 
 The inline markup recognition rules were devised intentionally to
-allow 90% of legitimate uses of '*' and '`' *without* resorting to
+allow 90% of legitimate uses of "*" and "`" *without* resorting to
 backslashes. For 9 of the remaining 10%, use inline literals or
 literal blocks::
 
@@ -1197,7 +1162,7 @@ Emphasis
 
 DTD element: emphasis.
 
-Start-string = end-string = '*'.
+Start-string = end-string = "*".
 
 Text enclosed by single asterisk characters is emphasized::
 
@@ -1211,7 +1176,7 @@ Strong Emphasis
 
 DTD element: strong.
 
-Start-string = end-string = '**'.
+Start-string = end-string = "**".
 
 Text enclosed by double-asterisks is emphasized strongly::
 
@@ -1225,7 +1190,7 @@ Interpreted Text
 
 DTD element: interpreted.
 
-Start-string = end-string = '`'.
+Start-string = end-string = "`".
 
 Text enclosed by single backquote characters is interpreted::
 
@@ -1257,7 +1222,7 @@ Inline Literals
 
 DTD element: literal.
 
-Start-string = end-string = '``'.
+Start-string = end-string = "``".
 
 Text enclosed by double-backquotes is treated as inline literals::
 
@@ -1284,7 +1249,7 @@ Inline literals are useful for short code snippets. For example::
 Hyperlinks
 ----------
 
-Hyperlinks are indicated by a trailing underscore, '_', except for
+Hyperlinks are indicated by a trailing underscore, "_", except for
 `standalone hyperlinks`_ which are recognized independently. The
 underscore can be thought of as a right-pointing arrow. The trailing
 underscores point away from hyperlink references, and the leading
@@ -1300,7 +1265,7 @@ characters are allowed. Footnote labels and `interpreted text`_ roles
 have the same syntax as simple hyperlink names.
 
 Hyperlink names using punctuation or whose names are phrases (two or
-more space-separated words) are called 'phrase-links'. Phrase-links
+more space-separated words) are called "phrase-links". Phrase-links
 are expressed by enclosing the phrase in backquotes and treating
 the backquoted text as a link name::
 
@@ -1333,8 +1298,8 @@ Indirect Hyperlinks
 
 DTD element: link.
 
-- Start-string = '' (empty string), end-string: '_'.
-- Start-string = '`', end-string: = '\`_'. (Phrase links.)
+- Start-string = "" (empty string), end-string: "_".
+- Start-string = "`", end-string: = "\`_". (Phrase links.)
 
 Indirect hyperlinks consist of two parts. In the text body, there is a
 source link, a hyperlink name with a trailing underscore::
@@ -1357,8 +1322,8 @@ Internal Hyperlinks
 
 DTD element: link.
 
-- Start-string = '' (empty string), end-string: '_'.
-- Start-string = '`', end-string: = '\`_'.
+- Start-string = "" (empty string), end-string: "_".
+- Start-string = "`", end-string: = "\`_".
 
 Internal hyperlinks connect one point to another within a document.
 They are identical to `indirect hyperlinks`_ except that there is no
@@ -1378,7 +1343,7 @@ Footnote References
 
 DTD element: footnote_reference.
 
-Start-string = '[', end-string = ']_'.
+Start-string = "[", end-string = "]_".
 
 Footnote references consist of a square-bracketed label followed by a
 trailing underscore. Footnote labels are one of:
@@ -1387,9 +1352,9 @@ trailing underscore. Footnote labels are one of:
   of alphanumerics plus internal hyphens, underscores, and periods; no
   whitespace),
 
-- a single '#' (denoting `auto-numbered footnotes`_), or
+- a single "#" (denoting `auto-numbered footnotes`_), or
 
-- a '#' followed by a simple hyperlink name, an "autonumber label".
+- a "#" followed by a simple hyperlink name, an "autonumber label".
 
 For example::
 
@@ -1403,7 +1368,7 @@ Standalone Hyperlinks
 
 DTD element: link.
 
-Start-string = end-string = '' (empty string).
+Start-string = end-string = "" (empty string).
 
 A URI (absolute URI [#URI]_ or standalone email address) within a text
 block is treated as a general external hyperlink with the URI itself
@@ -1418,12 +1383,12 @@ would be marked up in HTML as::
 
 Two forms of URI are recognized:
 
-1. Absolute URIs. These consist of a scheme, a colon (':'), and a
+1. Absolute URIs. These consist of a scheme, a colon (":"), and a
    scheme-specific part whose interpretation depends on the scheme.
 
-   - The scheme is the name of the protocol, such as 'http', 'ftp',
-     'mailto', or 'telnet'. The scheme consists of an initial letter,
-     followed by letters, numbers, and/or '+', '-', '.'.
+   - The scheme is the name of the protocol, such as "http", "ftp",
+     "mailto", or "telnet". The scheme consists of an initial letter,
+     followed by letters, numbers, and/or "+", "-", ".".
 
    - The scheme-specific part of the resource identifier may be either
      hierarchical or opaque.
@@ -1448,7 +1413,7 @@ Two forms of URI are recognized:
    recognize any absolute URI, as defined in RFC239_.
 
 2. Standalone email addresses, which are treated as if they were
-   ablsolute URIs with a 'mailto:' scheme. Example::
+   ablsolute URIs with a "mailto:" scheme. Example::
 
        someone@somewhere.com
 
@@ -1464,6 +1429,200 @@ Punctuation at the end of a URI is not considered part of the URI.
 
 Markup errors are handled according to the specification in `PEP
 258`_.
+
+
+----------------------------
+ Post-Parse Transformations
+----------------------------
+
+Each of the following transformations ties up certain "loose ends"
+that remain after the initial parsing of input reStructuredText. Each
+is an optional step that the DPS Reader may or may not choose to
+perform on the parsed document, depending on the input context. The
+DPS Reader may also perform context-specific transformations before
+performing these standard transformations.
+
+
+Section Promotion: Document Title & Subtitle
+============================================
+
+In reStructuredText, there is no way to specify a document title and
+subtitle explicitly. Instead, we can supply the document title (and
+possibly the subtitle as well) implicitly, and use this two-step
+transformation to "raise" or "promote" the title(s) (and their
+corresponding section contents) to the document level.
+
+1. If the document contains a single top-level section as its first
+   non-comment element, the top-level section's title becomes the
+   document's title, and the top-level section's contents become the
+   document's immediate contents. The lone top-level section header
+   must be the first non-comment element in the document.
+
+   For example, take this input text::
+
+       =================
+        Top-Level Title
+       =================
+   
+       A paragraph.
+   
+   Once parsed, it looks like this::
+   
+       <document>
+           <section name="top-level title">
+               <title>
+                   Top-Level Title
+               <paragraph>        
+                   A paragraph.
+   
+   After running the Section Promotion transformation, we have::
+   
+       <document name="top-level title">
+           <title>
+               Top-Level Title
+           <paragraph>        
+               A paragraph.
+   
+2. If step 1 successfully determines the document title, we continue
+   by checking for a subtitle.
+
+   If the lone top-level section itself contains a single second-level
+   section as its first non-comment element, that section's title is
+   promoted to the document's subtitle, and that section's contents
+   become the document's immediate contents. Given this input text::
+   
+       =================
+        Top-Level Title
+       =================
+   
+       Second-Level Title
+       ~~~~~~~~~~~~~~~~~~
+   
+       A paragraph.
+   
+   After parsing and running the Section Promotion transformation, the
+   result is::
+   
+       <document name="top-level title">
+           <title>
+               Top-Level Title
+           <subtitle name="second-level title">
+               Second-Level Title
+           <paragraph>        
+               A paragraph.
+   
+   (Note that the implicit hyperlink target generated by the
+   "Second-Level Title" is preserved on the "subtitle" element itself.)
+
+Any comment elements occurring before the document title or subtitle
+are accumulated and inserted as the first body elements after the
+title(s)
+
+
+Bibliographic Field Lists
+=========================
+
+DTD elements: docinfo, author, authors, organization, contact,
+version, status, date, copyright, abstract.
+
+It is recommended that this transformation be run *after* the `Section
+Promotion: Document Title & Subtitle`_ transformation.
+
+When a field list is the first non-comment element in a document
+(after the document title, if there is one), it may have certain
+specific fields transformed to document bibliographic data. This
+bibliographic data corresponds to the front matter of a book, such as
+the title page and copyright page.
+
+Registered field names are recognized and transformed to the
+corresponding DTD elements, becoming child elements of the "docinfo"
+element. No ordering is required of these fields, although they may be
+rearranged to fit the document structure. Unless otherwise indicated
+in the list below, each of the bibliographic elements' field bodies
+may contain a single paragraph only.
+
+The registered bibliographic field names and their corresponding DTD
+elements are as follows:
+
+- Field name "Author": author element.
+- "Authors": authors. May contain either: a single paragraph
+  consisting of a list of authors, separated by ";" or ","; or a
+  bullet list whose elements each contain a single paragraph per
+  author.
+- "Organization": organization.
+- "Contact": contact.
+- "Version": version.
+- "Status": status.
+- "Date": date.
+- "Copyright": copyright.
+- "Abstract": abstract. May contain arbitrary body elements. The
+  abstract always becomes the last child of the docinfo element. Only
+  one abstract is allowed.
+
+This field-name-to-element mapping can be extended, or replaced for
+other languages. See the implementation documentation for details.
+
+
+RCS Keywords
+------------
+
+Normally [#]_, recognized bibliographic fields are checked for RCS
+[#]_ keywords and cleaned up. RCS keywords may be entered into source
+files as "$keyword$", and once stored under RCS or CVS [#]_, they are
+expanded to "$keyword: expansion text $". For example::
+
+    :status: $keyword: expansion text $
+
+Processed, the "status" element's text will simply be "expansion
+text". The dollar signs and leading RCS keyword name are removed.
+
+.. [#] RCS keyword processing can be turned off.
+.. [#] Revision Control System.
+.. [#] Concurrent Versions System. CVS uses the same keywords as RCS.
+
+The RCS Keywords transformation is run on registered bibliographic
+fields only. The sole contents of the field body must be an expanded
+RCS keyword, of the form "$keyword: expansion text $". Any RCS keyword
+can be processed in any bibliographic field. Extra processing is done
+for the following RCS keywords:
+
+- "RCSfile" expands to the name of the file in the RCS or CVS
+  repository, which is the name of the source file with a ",v" suffix
+  appended. The RCS Keywords transformation will remove the ",v"
+  suffix. For example::
+
+      :Status: $RCSfile: reStructuredText.txt,v $
+
+  The "status" element's text will be "reStructuredText.txt".
+
+- "Date" expands to the format "YYYY/MM/DD hh:mm:ss" (in the UTC time
+  zone). The RCS Keywords transformation will extract just the date
+  itself and transform it to an ISO 8601 format date, as in
+  "2000-12-31".
+
+  (Since the source file for this text is itself stored under CVS, we
+  can't show an example of the "Date" RCS keyword because we can't
+  prevent any RCS keywords used in this explanation from being
+  expanded. Only the "RCSfile" keyword is stable; its expansion text
+  changes only if the file name changes.)
+
+
+Footnote Numbering
+==================
+
+XXX
+
+
+Cross-Reference Resolution
+==========================
+
+XXX
+
+
+Indirect Hyperlink Resolution
+=============================
+
+XXX
 
 
 .. _reStructuredText: http://structuredtext.sourceforge.net
