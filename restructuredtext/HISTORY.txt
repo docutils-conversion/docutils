@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/01/28 02:14:58 $
+:Date: $Date: 2002/01/30 05:03:53 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -49,10 +49,11 @@ Changed contact email addresses.
 
   - Added docstrings.
   - Modified Parser.parse() for updated RSTStateMachine and
-    dps.parsers.model.
+    dps.parsers.Parser.
   - Added form feed & vertical tab conversion to spaces.
   - Added a ``Parser.statemachine`` instance attribute.
   - Added parser language module support.
+  - Updated for new root document Node creation protocol.
 
 * restructuredtext/states.py:
 
@@ -113,6 +114,7 @@ Changed contact email addresses.
   - Moved 'normname()' to dps/utils.py.
   - Updated for languagecode.
   - Updated for hyperlink, footnote transforms.
+  - Updated for new root document Node creation protocol.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
