@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/20 04:21:45 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/03/01 04:02:44 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for typically HTML-specific constructs.
@@ -51,14 +51,14 @@ class MetaBody(states.SpecializedBody):
         """HTML-specific "meta" element."""
         pass
 
-    def fieldmarker(self, match, context, nextstate):
+    def field_marker(self, match, context, nextstate):
         """Meta element."""
         node, blankfinish = self.parsemeta(match)
         self.statemachine.node += node
         return [], nextstate, []
 
     def parsemeta(self, match):
-        name, args = self.parsefieldmarker(match)
+        name, args = self.parse_field_marker(match)
         indented, indent, lineoffset, blankfinish = \
               self.statemachine.getfirstknownindented(match.end())
         node = self.meta()
