@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/09/13 02:41:42 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/13 22:34:09 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -531,6 +531,31 @@ No blank line after table.
                                         <entry>
                                             <paragraph>
                                                 A table within a table.
+"""],
+["""\
++------------------+--------+
+| A simple table   |        |
++------------------+--------+
+| with empty cells |        |
++------------------+--------+
+""",
+"""\
+<document>
+    <table>
+        <tgroup cols="2">
+            <colspec colwidth="18">
+            <colspec colwidth="8">
+            <tbody>
+                <row>
+                    <entry>
+                        <paragraph>
+                            A simple table
+                    <entry>
+                <row>
+                    <entry>
+                        <paragraph>
+                            with empty cells
+                    <entry>
 """],
 ]
 
