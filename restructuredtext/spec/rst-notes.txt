@@ -1,23 +1,29 @@
 =======
  Notes
 =======
-Date: $Date: 2001/07/29 16:00:48 $
-Revision: $Revision: 1.2 $
+Date: $Date: 2001/08/01 02:49:11 $
+Revision: $Revision: 1.3 $
 
 
 To Do
 =====
 
-- implement a parser according to the markup implementation plan
+- Document!
 
-- create a standalone reStructuredText -> HTML/XML converter (stdin ->
-  stdout filter)
+- Implement a parser according to the markup implementation plan.
+
+- Create a standalone reStructuredText -> HTML/XML converter (stdin ->
+  stdout filter). (Flesh out tools/quicktest.py.)
 
 - allow very long titles (on two or more lines)?
 
 - interpret RCS keywords in field lists? ``$keyword: value$`` could be
   interpreted as ``keyword: value``; ``$keyword$`` could be
   interpreted as ``keyword:`` (no value).
+
+- Figure out field lists better: syntax, directive or not, context.
+  Reply to issues raised in "usage docstrings and bibliographic field
+  lists (Garth Kidd)" (Doc-SIG 2001-07-27).
 
 
 Enumerated Lists
@@ -92,8 +98,9 @@ Another approach: Going back to the first draft of reStructuredText
     bullet, which precludes it from having a second paragraph.
 
 Change that to *require* a blank line above and below, to reduce
-ambiguity. This "loosening" may be added later, once the parser's
-been nailed down.
+ambiguity. This "loosening" may be added later, once the parser's been
+nailed down. However, a serious drawback of this approach is to limit
+the content of each list item to a single paragraph. Garth Kidd is 
 
 
 Horizontal Rules
