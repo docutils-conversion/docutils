@@ -19,51 +19,55 @@
 
     <p align="right"><em><a href="http://structuredtext.sourceforge.net/docs/quickref.html">http://structuredtext.sourceforge.net/docs/quickref.html</a></em>
 	<br align="right"><em>Being a cheat-sheet for reStructuredText</em>
-	<br align="right"><em>Version 0.6 of 2002-03-15</em>
+	<br align="right"><em>Version 0.7 of 2002-04-13</em>
 
 
     <p>The full details may be found on the
       <a href="http://structuredtext.sourceforge.net/">reStructuredText</a>
       page. This document is just intended as a reminder.
 
-    <p>Links that look like "(<a href="#details">details?</a>)" are currently not
-	  functional, but will eventually point into the HTML version of the
-	  full <a href="http://structuredtext.sourceforge.net/spec/reStructuredText.txt">reStructuredText specification</a> document.
+    <p>Links that look like "(<a href="#details">details?</a>)" point
+	  into the HTML version of the full <a
+	  href="../spec/reStructuredText.html">reStructuredText
+	  specification</a> document.  These are relative links; if they
+	  don't work, please use the <a
+	  href="http://structuredtext.sourceforge.net/docs/quickref.html"
+	  >master Quick reStructuredText</a> document.
 
     <h2><a name="contents">Contents</a></h2>
 
     <ul>
-    <li><a href="#InlineMarkup">Inline Markup</a></li>
-    <li><a href="#EscapingWithBashslashes">Escaping with Bashslashes</a></li>
-    <li><a href="#SectionStructure">Section Structure</a></li>
-    <li><a href="#Paragraphs">Paragraphs</a></li>
-    <li><a href="#BulletLists">Bullet Lists</a></li>
-    <li><a href="#EnumeratedLists">Enumerated Lists</a></li>
-    <li><a href="#DefinitionLists">Definition Lists</a></li>
-    <li><a href="#FieldLists">Field Lists</a></li>
-    <li><a href="#OptionLists">Option Lists</a></li>
-    <li><a href="#LiteralBlocks">Literal Blocks</a></li>
-    <li><a href="#BlockQuotes">Block Quotes</a></li>
-    <li><a href="#DoctestBlocks">Doctest Blocks</a></li>
-    <li><a href="#Tables">Tables</a></li>
-    <li><a href="#Transitions">Transitions</a></li>
-    <li><a href="#Footnotes">Footnotes</a></li>
-    <li><a href="#Citations">Citations</a></li>
-    <li><a href="#HyperlinkTargets">Hyperlink Targets</a></li>
+    <li><a href="#inline-markup">Inline Markup</a></li>
+    <li><a href="#escaping">Escaping with Bashslashes</a></li>
+    <li><a href="#section-structure">Section Structure</a></li>
+    <li><a href="#paragraphs">Paragraphs</a></li>
+    <li><a href="#bullet-lists">Bullet Lists</a></li>
+    <li><a href="#enumerated-lists">Enumerated Lists</a></li>
+    <li><a href="#definition-lists">Definition Lists</a></li>
+    <li><a href="#field-lists">Field Lists</a></li>
+    <li><a href="#option-lists">Option Lists</a></li>
+    <li><a href="#literal-blocks">Literal Blocks</a></li>
+    <li><a href="#block-quotes">Block Quotes</a></li>
+    <li><a href="#doctest-blocks">Doctest Blocks</a></li>
+    <li><a href="#tables">Tables</a></li>
+    <li><a href="#transitions">Transitions</a></li>
+    <li><a href="#footnotes">Footnotes</a></li>
+    <li><a href="#citations">Citations</a></li>
+    <li><a href="#hyperlink-targets">Hyperlink Targets</a></li>
     <ul>
-    <li><a href="#ExternalHyperlinkTargets">External Hyperlink Targets</a></li>
-    <li><a href="#InternalHyperlinkTargets">Internal Hyperlink Targets</a></li>
-    <li><a href="#IndirectHyperlinkTargets">Indirect Hyperlink Targets</a></li>
-    <li><a href="#ImplicitHyperlinkTargets">Implicit Hyperlink Targets</a></li>
+    <li><a href="#external-hyperlink-targets">External Hyperlink Targets</a></li>
+    <li><a href="#internal-hyperlink-targets">Internal Hyperlink Targets</a></li>
+    <li><a href="#indirect-hyperlink-targets">Indirect Hyperlink Targets</a></li>
+    <li><a href="#implicit-hyperlink-targets">Implicit Hyperlink Targets</a></li>
     </ul>
-    <li><a href="#Directives">Directives</a></li>
-    <li><a href="#SubstitutionReferencesAndDefinitions">Substitution References and Definitions</a></li>
-	<li><a href="#Comments">Comments</a></li>
+    <li><a href="#directives">Directives</a></li>
+    <li><a href="#substitution-references-and-definitions">Substitution References and Definitions</a></li>
+	<li><a href="#comments">Comments</a></li>
     </ul>
 
-    <h2><a href="#contents" name="InlineMarkup">Inline Markup</a></h2>
+    <h2><a href="#contents" name="inline-markup">Inline Markup</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#inline_markup">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#inline-markup">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -95,31 +99,31 @@
 
 	<tr valign="top">
 	  <td nowrap><samp>reference_</samp>
-	  <td><a href="#hyperlinkTargets">reference</a>
+	  <td><a href="#hyperlink-targets">reference</a>
 	  <td>A simple, one-word hyperlink reference.  See <a href="#hyperlinks">Hyperlinks</a>.
 
 	<tr valign="top">
 	  <td nowrap><samp>`phrase reference`_</samp>
-	  <td><a href="#hyperlinkTargets">phrase reference</a>
+	  <td><a href="#hyperlink-targets">phrase reference</a>
 	  <td>A hyperlink reference with spaces or punctuation needs to be quoted with backquotes.
-      See <a href="#hyperlinkTargets">Hyperlinks</a>.
+      See <a href="#hyperlink-targets">Hyperlinks</a>.
 
 	<tr valign="top">
 	  <td nowrap><samp>anonymous__</samp>
-	  <td><a href="#hyperlinkTargets">anonymous</a>
+	  <td><a href="#hyperlink-targets">anonymous</a>
 	  <td>Both simple and phrase references may be anonymous (two underscores).
-      See <a href="#hyperlinkTargets">Hyperlinks</a>.
+      See <a href="#hyperlink-targets">Hyperlinks</a>.
 
 	<tr valign="top">
 	  <td nowrap><samp>_`inline hyperlink target`</samp>
-	  <td><a name="inline_hyperlink_target">inline hyperlink target</a>
+	  <td><a name="inline-hyperlink-target">inline hyperlink target</a>
 	  <td>A crossreference target within text.
-      See <a href="#hyperlinkTargets">Hyperlinks</a>.
+      See <a href="#hyperlink-targets">Hyperlinks</a>.
 
 	<tr valign="top">
 	  <td nowrap><samp>|substitution reference|</samp>
 	  <td>(see note)
-	  <td>The result is substituted in from the <a href="#SubstitutionReferencesAndDefinitions">substitution definition</a>.
+	  <td>The result is substituted in from the <a href="#substitution-references-and-definitions">substitution definition</a>.
       It could be text, an image, a hyperlink, or a combination of these and others.
 
 	<tr valign="top">
@@ -175,10 +179,10 @@
       markup delimiter characters, but that doesn't count because
       nothing is processed).
 
-    <h2><a href="#contents" name="EscapingWithBashslashes"><a name="escaping">Escaping with Bashslashes</a></a></h2>
+    <h2><a href="#contents" name="escaping">Escaping with Bashslashes</a></h2>
 
     <p>(<a
-    href="http://structuredtext.sourceforge.net/spec/pep257.html#backslashes">details?</a>)
+    href="../spec/reStructuredText.html#backslashes">details?</a>)
 
     <p>reStructuredText uses backslashes ("\") to override the special
     meaning given to markup characters and get the literal characters
@@ -223,9 +227,9 @@
 	  <td><em>escape</em> with ""
     </table>
 
-    <h2><a href="#contents" name="SectionStructure">Section Structure</a></h2>
+    <h2><a href="#contents" name="section-structure">Section Structure</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#titles">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#sections">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -256,9 +260,9 @@
 	      are "<samp>= - ` : ' " ~ ^ _ * + # &lt; &gt;</samp>".
     </table>
 
-    <h2><a href="#contents" name="Paragraphs">Paragraphs</a></h2>
+    <h2><a href="#contents" name="paragraphs">Paragraphs</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#paragraphs">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#paragraphs">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -283,9 +287,9 @@
 
     </table>
 
-    <h2><a href="#contents" name="BulletLists">Bullet Lists</a></h2>
+    <h2><a href="#contents" name="bullet-lists">Bullet Lists</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#bullet_lists">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#bullet-lists">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -320,9 +324,9 @@
 	      item and after the last, but is optional between items.
     </table>
 
-    <h2><a href="#contents" name="EnumeratedLists">Enumerated Lists</a></h2>
+    <h2><a href="#contents" name="enumerated-lists">Enumerated Lists</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#enumerated_lists">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#enumerated-lists">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -355,9 +359,9 @@
 	    </ol>
     </table>
 
-    <h2><a href="#contents" name="DefinitionLists">Definition Lists</a></h2>
+    <h2><a href="#contents" name="definition-lists">Definition Lists</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#definition_lists">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#definition-lists">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -395,9 +399,9 @@
 	    </dl>
     </table>
 
-    <h2><a href="#contents" name="FieldLists">Field Lists</a></h2>
+    <h2><a href="#contents" name="field-lists">Field Lists</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#field_lists">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#field-lists">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -428,9 +432,9 @@
 	    </table>
     </table>
 
-    <h2><a href="#contents" name="OptionLists">Option Lists</a></h2>
+    <h2><a href="#contents" name="option-lists">Option Lists</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#option_lists">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#option-lists">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -475,9 +479,9 @@
     <p>There must be at least two spaces between the option and the
     description.
 
-    <h2><a href="#contents" name="LiteralBlocks">Literal Blocks</a></h2>
+    <h2><a href="#contents" name="literal-blocks">Literal Blocks</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#literal_blocks">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#literal-blocks">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -553,9 +557,9 @@ This means that something like:
         <p>is possible.
     </table>
 
-    <h2><a href="#contents" name="BlockQuotes">Block Quotes</a></h2>
+    <h2><a href="#contents" name="block-quotes">Block Quotes</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#block_quotes">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#block-quotes">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -581,9 +585,9 @@ This means that something like:
 	    </blockquote>
     </table>
 
-    <h2><a href="#contents" name="DoctestBlocks">Doctest Blocks</a></h2>
+    <h2><a href="#contents" name="doctest-blocks">Doctest Blocks</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#doctest_blocks">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#doctest-blocks">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -616,9 +620,9 @@ This means that something like:
     interactive Python session, then executes all such sessions to
     verify they still work exactly as shown." (From the doctest docs.)
 
-    <h2><a href="#contents" name="Tables">Tables</a></h2>
+    <h2><a href="#contents" name="tables">Tables</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#tables">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#tables">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -667,9 +671,9 @@ This means that something like:
 	    </table>
     </table>
 
-    <h2><a href="#contents" name="Transitions">Transitions</a></h2>
+    <h2><a href="#contents" name="transitions">Transitions</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#transitions">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#transitions">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -707,9 +711,9 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
     gap spanning one or more lines, marking text divisions or
     signaling changes in subject, time, point of view, or emphasis.
 
-    <h2><a href="#contents" name="Footnotes">Footnotes</a></h2>
+    <h2><a href="#contents" name="footnotes">Footnotes</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#footnotes">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#footnotes">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -799,9 +803,9 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
     same relative order. Similarly for auto-symbol footnotes
     ("<samp>[*]_</samp>").
 
-    <h2><a href="#contents" name="Citations">Citations</a></h2>
+    <h2><a href="#contents" name="citations">Citations</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#citations">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#citations">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -851,11 +855,11 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
 
     </table>
 
-    <h2><a href="#contents" name="HyperlinkTargets">Hyperlink Targets</a></h2>
+    <h2><a href="#contents" name="hyperlink-targets">Hyperlink Targets</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#hyperlink_targets">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#hyperlink-targets">details?</a>)
 
-    <h3><a href="#contents" name="ExternalHyperlinkTargets">External Hyperlink Targets</a></h3>
+    <h3><a href="#contents" name="external-hyperlink-targets">External Hyperlink Targets</a></h3>
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -893,7 +897,7 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
       printed documents, where the link needs to be presented explicitly, for
       example as a footnote.
 
-    <h3><a href="#contents" name="InternalHyperlinkTargets">Internal Hyperlink Targets</a></h3>
+    <h3><a href="#contents" name="internal-hyperlink-targets">Internal Hyperlink Targets</a></h3>
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -928,9 +932,9 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
 
     </table>
 
-    <h3><a href="#contents" name="IndirectHyperlinkTargets">Indirect Hyperlink Targets</a></h3>
+    <h3><a href="#contents" name="indirect-hyperlink-targets">Indirect Hyperlink Targets</a></h3>
 
-	<p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#indirect_hyperlink_targets">details?</a>)
+	<p>(<a href="../spec/reStructuredText.html#indirect-hyperlink-targets">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -963,9 +967,9 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
     target</b>. In the text, a double-underscore suffix is used to
     indicate an <b>anonymous hyperlink reference</b>.
 
-    <h3><a href="#contents" name="ImplicitHyperlinkTargets">Implicit Hyperlink Targets</a></h3>
+    <h3><a href="#contents" name="implicit-hyperlink-targets">Implicit Hyperlink Targets</a></h3>
 
-	<p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#implicit_hyperlink_targets">details?</a>)
+	<p>(<a href="../spec/reStructuredText.html#implicit-hyperlink-targets">details?</a>)
 
     <p>Section titles, footnotes, and citations automatically generate
     hyperlink targets (the title text or footnote/citation label is
@@ -984,14 +988,14 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
 	    <br><samp>Implict&nbsp;references,&nbsp;like&nbsp;`Titles&nbsp;are</samp>
 	    <br><samp>targets,&nbsp;too`_.</samp>
 	  <td>
-	    <font size="+2"><strong><a name="Title">Titles are targets, too</a></strong></font>
+	    <font size="+2"><strong><a name="title">Titles are targets, too</a></strong></font>
 	    <p>Implict references, like <a href="#Title">Titles are
 		targets, too</a>.
     </table>
 
-    <h2><a href="#contents" name="Directives">Directives</a></h2>
+    <h2><a href="#contents" name="directives">Directives</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#directives">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#directives">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -1010,9 +1014,9 @@ A&nbsp;transition&nbsp;marker&nbsp;is&nbsp;a&nbsp;horizontal&nbsp;line
 	    <p><img src="images/ball1.gif" alt="ball1">
     </table>
 
-    <h2><a href="#contents" name="SubstitutionReferencesAndDefinitions">Substitution References and Definitions</a></h2>
+    <h2><a href="#contents" name="substitution-references-and-definitions">Substitution References and Definitions</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#substitution_definitions">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#substitution-definitions">details?</a>)
 
     <p>Substitutions are like inline directives, allowing graphics and
     arbitrary constructs within text.
@@ -1040,9 +1044,9 @@ dispose&nbsp;of&nbsp;medical&nbsp;waste.</samp>
 
     </table>
 
-	<h2><a href="#contents" name="Comments">Comments</a></h2>
+	<h2><a href="#contents" name="comments">Comments</a></h2>
 
-    <p>(<a href="http://structuredtext.sourceforge.net/spec/reStructuredText.html#comments">details?</a>)
+    <p>(<a href="../spec/reStructuredText.html#comments">details?</a>)
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
       <thead>
@@ -1088,7 +1092,7 @@ dispose&nbsp;of&nbsp;medical&nbsp;waste.</samp>
     </address>
     <!-- Created: Fri Aug 03 09:11:57 GMT Daylight Time 2001 -->
     <!-- hhmts start -->
-Last modified: Fri Mar 15 21:44 EST 2002
+Last modified: Sat Apr 13 12:52 EST 2002
 <!-- hhmts end -->
   </body>
 </html>
