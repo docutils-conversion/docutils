@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.22 $
-:Date: $Date: 2001/09/18 21:27:24 $
+:Revision: $Revision: 1.23 $
+:Date: $Date: 2001/09/22 02:41:39 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -218,14 +218,14 @@ class RSTStateMachine(StateMachineWS):
             try:
                 name = field[0][0].astext()
                 normedname = normname(name)
-                if len(field) != 2 or not bibliofields.has_key(normedname) \
-                      or self.checkemptybibliofield(field, name):
+                if not (len(field) == 2 and bibliofields.has_key(normedname)
+                        and self.checkemptybibliofield(field, name)):
                     raise TransformationError
                 biblioclass = bibliofields[normedname]
                 if issubclass(biblioclass, nodes._TextElement):
-                    if self.checkcompoundbibliofield(field, name):
+                    if not self.checkcompoundbibliofield(field, name):
                         raise TransformationError
-                    self.filterrcskeywords(field[1][0][0])
+                    self.filterrcskeywords(field[1][0])
                     if issubclass(biblioclass, nodes.title):
                         self.extracttitle(field, name, title, nodelist)
                         title = 1
@@ -234,7 +234,7 @@ class RSTStateMachine(StateMachineWS):
                                              nodelist)
                         subtitle = 1
                     else:
-                        nodelist.append(biblioclass('', '', field[1][0][0]))
+                        nodelist.append(biblioclass('', '', *field[1][0]))
                 else:                   # multiple body elements possible
                     if issubclass(biblioclass, nodes.authors):
                         self.extractauthors(field, name, nodelist)
@@ -261,23 +261,21 @@ class RSTStateMachine(StateMachineWS):
         if len(field[1]) < 1:
             field[-1] += self.memo.reporter.error(
                   'Cannot extract empty bibliographic field "%s".' % name)
-            return 1
-        return None
+            return None
+        return 1
 
     def checkcompoundbibliofield(self, field, name):
         if len(field[1]) > 1:
             field[-1] += self.memo.reporter.error(
                   'Cannot extract compound bibliographic field "%s".' % name)
-            return 1
-        if not isinstance(field[1][0], nodes.paragraph) \
-              or len(field[1][0]) != 1 \
-              or not isinstance(field[1][0][0], nodes.Text):
+            return None
+        if not isinstance(field[1][0], nodes.paragraph):
             field[-1] += self.memo.reporter.error(
                   'Cannot extract bibliographic field "%s" containing anything '
-                  'other than a simple, unformatted paragraph.'
+                  'other than a single paragraph.'
                   % name)
-            return 1
-        return None
+            return None
+        return 1
 
     def extracttitle(self, field, name, title, nodelist):
         if title:
@@ -307,12 +305,14 @@ class RSTStateMachine(StateMachineWS):
                       re.IGNORECASE), r'\1'),
           (re.compile(r'\$[a-zA-Z]+: (.+) \$$'), r'\1'),]
 
-    def filterrcskeywords(self, textnode):
-        for pattern, substitution in self.rcskeywordsubstitutions:
-            match = pattern.match(textnode.data)
-            if match:
-                textnode.data = pattern.sub(substitution, textnode.data)
-                break
+    def filterrcskeywords(self, paragraph):
+        if len(paragraph) == 1 and isinstance(paragraph[0], nodes.Text):
+            textnode = paragraph[0]
+            for pattern, substitution in self.rcskeywordsubstitutions:
+                match = pattern.match(textnode.data)
+                if match:
+                    textnode.data = pattern.sub(substitution, textnode.data)
+                    return
 
     def extractauthors(self, field, name, nodelist):
         try:
