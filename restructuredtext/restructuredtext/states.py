@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.48 $
-:Date: $Date: 2002/03/12 03:27:17 $
+:Revision: $Revision: 1.49 $
+:Date: $Date: 2002/03/16 05:38:29 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -1500,6 +1500,38 @@ class Body(RSTState):
               'Unknown directive type "%s" at line %s.' % (typename, lineno),
               '', nodes.literal_block(text, text))
         return [error], blankfinish
+
+    def parse_extension_attributes(self, attribute_spec, datalines, blankfinish):
+        """
+        Parse `datalines` for a field list containing extension attributes
+        matching `attribute_spec`.
+
+        :Parameters:
+            - `attribute_spec`: a mapping of attribute name to conversion
+              function, which should raise an exception on bad input.
+            - `datalines`: a list of input strings.
+            - `blankfinish`:
+
+        :Return:
+            - Success value, 1 or 0.
+            - An attribute dictionary on success, an error string on failure.
+            - Updated `blankfinish` flag.
+        """
+        node = nodes.field_list()
+        newlineoffset, blankfinish = self.nestedlistparse(
+              datalines, 0, node, initialstate='FieldList',
+              blankfinish=blankfinish)
+        if newlineoffset != len(datalines): # incomplete parse of block
+            return 0, 'invalid attribute block', blankfinish
+        try:
+            attributes = utils.extract_extension_attributes(node, attribute_spec)
+        except KeyError, detail:
+            return 0, ('unknown attribute: "%s"' % detail), blankfinish
+        except (ValueError, TypeError), detail:
+            return 0, ('invalid attribute value:\n%s' % detail), blankfinish
+        except utils.ExtensionAttributeError, detail:
+            return 0, ('invalid attribute data: %s' % detail), blankfinish
+        return 1, attributes, blankfinish
 
     def comment(self, match):
         if not match.string[match.end():].strip() \
