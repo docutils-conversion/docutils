@@ -1,14 +1,18 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/10/18 04:10:20 $
-:Revision: $Revision: 1.20 $
+:Date: $Date: 2001/10/19 03:06:58 $
+:Revision: $Revision: 1.21 $
 
 
 To Do
 =====
 
 - Document!
+
+  - Keep the quickref up to date.
+  - Internal module documentation.
+  - User docs.
 
 - Implement a parser according to the markup implementation plan.
 
@@ -41,6 +45,13 @@ To Do
 - To avoid mistakenly marking up text like ``signal:noise`` as URIs,
   limit standalone hyperlink URI recognition to known schemes, as per
   http://www.w3.org/Addressing/schemes.html.
+
+- Alan Jaffray suggested (and I agree) that it would be sensible to:
+
+  - have a directive to specify a default role for interpreted text
+  - allow the reST processor to take an argument for the default role
+  - issue a warning when processing documents with no default role
+    which contain interpreted text with no explicitly specified role
 
 
 Or Not To Do?
@@ -243,48 +254,6 @@ keeping track of the indentation while writing difficult and
 error-prone. However, these problems may be acceptable for Wikis and
 email mode, where we may be able to rely on less complex structure
 (few nested lists, for example).
-
-
-Horizontal Rules
-----------------
-
-Wolfgang Lipp suggested adding horizontal rules (HTML <HR>) to the
-syntax.  A line of punctuation with a blank line before and after::
-
-    Para.
-
-    ------------------------------------------------------------
-
-    Para.
-
-The problem is, HRs are purely presentational.  What structural
-significance do they have?
-
-Hmm. Stories are often broken up into "segments" with vertical
-whitespace, sometimes with a horizontal line or a group of symbols
-(e.g. three widely-separated asterisks). This could be modeled by
-horizontal rules.
-
-HRs could be allowed to be indented without generating a block quote::
-
-    Para.
-
-        --------
-
-    Para.
-
-Tony Ibbs' mention of HRs on 2001-10-16 triggered an idea from the
-nether regions of my cerebrum, relating to constructs commonly seen in
-novels and short fiction.  Rummaging around in my copy of The Chicago
-Manual of Style, 14th ed., I found this confirmation (sect. 1.80):
-
-    Instead of subheads, extra space or a type ornament between
-    paragraphs may be used to mark text divisions or to signal
-    changes in subject or emphasis.
-
-In other words, "anonymous sections"! *There's* the structural
-significance. An HTML Writer could render these text divisions as
-horizontal rules if it likes.
 
 
 ..
