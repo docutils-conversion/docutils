@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/22 01:59:22 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/23 16:51:31 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -41,7 +41,7 @@ class HTMLTranslator(nodes.NodeVisitor):
     def __init__(self, doctree):
         nodes.NodeVisitor.__init__(self, doctree)
         self.language = languages.getlanguage(doctree.languagecode)
-        self.head = ['<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"'
+        self.head = ['<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"\n'
                      ' "http://www.w3.org/TR/html4/strict.dtd">\n',
                      '<HTML LANG="%s">\n<HEAD>\n' % doctree.languagecode,
                      '<LINK REL="StyleSheet" HREF="default.css"'
@@ -87,26 +87,29 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_abstract(self, node):
-        self.body.append(self.starttag(node, 'div', CLASS='abstract'))
-        self.body.append('<H3>'
-                         + self.language.bibliographic_labels['abstract']
-                         + '</H3>\n')
+        self.visit_admonition(node, 'abstract')
 
     def depart_abstract(self, node):
+        self.depart_admonition()
+
+    def visit_admonition(self, node, name):
+        self.body.append(self.starttag(node, 'div', CLASS=name))
+        self.body.append('<H3>' + self.language.labels[name] + '</H3>\n')
+
+    def depart_admonition(self):
         self.body.append('</DIV>\n')
 
     def visit_attention(self, node):
-        pass
+        self.visit_admonition(node, 'attention')
 
     def depart_attention(self, node):
-        pass
+        self.depart_admonition()
 
     def visit_author(self, node):
-        self.head.append(self.starttag(node, 'meta', name='author',
-                                       content=node.astext()))
+        self.visit_docinfo_item(node, 'author')
 
     def depart_author(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_authors(self, node):
         pass
@@ -159,17 +162,16 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append(' -->\n')
 
     def visit_contact(self, node):
-        pass
+        self.visit_docinfo_item(node, 'contact')
 
     def depart_contact(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_copyright(self, node):
-        self.head.append(self.starttag(node, 'meta', name='copyright',
-                                       content=node.astext()))
+        self.visit_docinfo_item(node, 'copyright')
 
     def depart_copyright(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_danger(self, node):
         pass
@@ -178,11 +180,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_date(self, node):
-        self.head.append(self.starttag(node, 'meta', name='date',
-                                       content=node.astext()))
+        self.visit_docinfo_item(node, 'date')
 
     def depart_date(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_definition(self, node):
         self.body.append('</TERM>\n')
@@ -210,11 +211,25 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_docinfo(self, node):
-        # @@@ as a table?
         self.body.append(self.starttag(node, 'DIV', CLASS='docinfo'))
+        self.body.append('<TABLE FRAME="void" RULES="none">\n'
+                         '<COL CLASS="docinfo_name">\n'
+                         '<COL CLASS="docinfo_content">\n'
+                         '<TBODY VALIGN="top">\n')
 
     def depart_docinfo(self, node):
-        self.body.append('</DIV>\n')
+        self.body.append('</TABLE>\n</TBODY>\n</DIV>\n')
+
+    def visit_docinfo_item(self, node, name):
+        self.head.append(self.starttag(node, 'meta', name=name,
+                                       content=node.astext()))
+        self.body.append('<TR><TD>\n'
+                         '<P>%s:</P>\n'
+                         '</TD><TD>\n'
+                         '<P>' % self.language.labels[name])
+
+    def depart_docinfo_item(self):
+        self.body.append('</P></TD>\n</TR>\n')
 
     def visit_doctest_block(self, node):
         pass
@@ -402,10 +417,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_organization(self, node):
-        pass
+        self.visit_docinfo_item(node, 'organization')
 
     def depart_organization(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_paragraph(self, node):
         self.body.append(self.starttag(node, 'p', ''))
@@ -426,10 +441,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_revision(self, node):
-        pass
+        self.visit_docinfo_item(node, 'revision')
 
     def depart_revision(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_row(self, node):
         pass
@@ -452,10 +467,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_status(self, node):
-        pass
+        self.visit_docinfo_item(node, 'status')
 
     def depart_status(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_strong(self, node):
         self.body.append('<STRONG>')
@@ -483,7 +498,8 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_system_message(self, node):
         self.body.append(self.starttag(node, 'DIV', CLASS='system_message'))
-        self.body.append('<H3>%s (%s)</H3>\n' % (node['type'], node['level']))
+        self.body.append('<H3>%s (level %s system message)</H3>\n'
+                         % (node['type'], node['level']))
 
     def depart_system_message(self, node):
         self.body.append('</DIV>\n')
@@ -552,10 +568,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_version(self, node):
-        pass
+        self.visit_docinfo_item(node, 'version')
 
     def depart_version(self, node):
-        pass
+        self.depart_docinfo_item()
 
     def visit_vms_option(self, node):
         pass
