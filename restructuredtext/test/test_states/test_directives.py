@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/02 14:02:43 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/10 04:50:53 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -21,42 +21,43 @@ totest = {}
 
 totest['directives'] = [
 ["""\
-.. directive::
+.. reStructuredText-test-directive::
 
 Paragraph.
 """,
 """\
 <document>
-    <directive type="directive"/>
+    <directive type="reStructuredText-test-directive"/>
     <paragraph>
         Paragraph.
     </paragraph>
 </document>
 """],
 ["""\
-.. directive:: argument
+.. reStructuredText-test-directive:: argument
 
 Paragraph.
 """,
 """\
 <document>
-    <directive data="argument" type="directive"/>
+    <directive data="argument" type="reStructuredText-test-directive"/>
     <paragraph>
         Paragraph.
     </paragraph>
 </document>
 """],
 ["""\
-.. directive::
-   block
+.. reStructuredText-test-directive::
+
+   Directive block contains one paragraph, with a blank line before.
 
 Paragraph.
 """,
 """\
 <document>
-    <directive type="directive">
+    <directive type="reStructuredText-test-directive">
         <literal_block>
-            block
+            Directive block contains one paragraph, with a blank line before.
         </literal_block>
     </directive>
     <paragraph>
@@ -65,17 +66,16 @@ Paragraph.
 </document>
 """],
 ["""\
-.. directive::
-
-   block
+.. reStructuredText-test-directive::
+   Directive block contains one paragraph, no blank line before.
 
 Paragraph.
 """,
 """\
 <document>
-    <directive type="directive">
+    <directive type="reStructuredText-test-directive">
         <literal_block>
-            block
+            Directive block contains one paragraph, no blank line before.
         </literal_block>
     </directive>
     <paragraph>
@@ -84,7 +84,7 @@ Paragraph.
 </document>
 """],
 ["""\
-.. directive::
+.. reStructuredText-test-directive::
    block
 no blank line.
 
@@ -92,7 +92,7 @@ Paragraph.
 """,
 """\
 <document>
-    <directive type="directive">
+    <directive type="reStructuredText-test-directive">
         <literal_block>
             block
         </literal_block>
