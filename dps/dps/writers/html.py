@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2002/03/16 05:53:22 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/03/28 04:41:03 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -15,8 +15,6 @@ contains a minimum of formatting information. A cascading style sheet
 """
 
 __docformat__ = 'reStructuredText'
-
-__all__ = ['Writer']
 
 
 import time
@@ -52,6 +50,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.foot = ['</BODY>\n</HTML>\n']
         self.sectionlevel = 0
         self.context = []
+        self.topic_class = ''
 
     def astext(self):
         return ''.join(self.head + self.body + self.foot)
@@ -67,7 +66,7 @@ class HTMLTranslator(nodes.NodeVisitor):
     def starttag(self, node, tagname, suffix='\n', **attributes):
         atts = {}
         for (name, value) in attributes.items():
-            atts[name.lower()] = value
+            atts[name] = value
         for att in ('class',):          # append to node attribute
             if node.has_key(att):
                 if atts.has_key(att):
@@ -77,11 +76,18 @@ class HTMLTranslator(nodes.NodeVisitor):
                 atts[att] = node[att]
         attlist = atts.items()
         attlist.sort()
-        return '<%s>%s' % (' '.join([tagname.upper()]
-                                    + ['%s="%s"' % (name.upper(),
-                                                    self.encode(str(value)))
-                                       for name, value in attlist]),
-                           suffix)
+        parts = [tagname.upper()]
+        for name, value in attlist:
+            if value is None:           # boolean attribute
+                parts.append(name.upper())
+            elif isinstance(value, ListType):
+                values = [str(v) for v in value]
+                parts.append('%s="%s"' % (name.upper(),
+                                          self.encode(' '.join(values))))
+            else:
+                parts.append('%s="%s"' % (name.upper(),
+                                          self.encode(str(value))))
+        return '<%s>%s' % (' '.join(parts), suffix)
 
     def visit_Text(self, node):
         self.body.append(self.encode(node.astext()))
@@ -91,7 +97,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_admonition(self, node, name):
         self.body.append(self.starttag(node, 'div', CLASS=name))
-        self.body.append('<H3>' + self.language.labels[name] + '</H3>\n')
+        self.body.append('<P CLASS="admonition-title">' + self.language.labels[name] + '</P>\n')
 
     def depart_admonition(self):
         self.body.append('</DIV>\n')
@@ -121,7 +127,10 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</BLOCKQUOTE>\n')
 
     def visit_bullet_list(self, node):
-        self.body.append(self.starttag(node, 'ul'))
+        if self.topic_class == 'contents':
+            self.body.append(self.starttag(node, 'ul', compact=None))
+        else:
+            self.body.append(self.starttag(node, 'ul'))
 
     def depart_bullet_list(self, node):
         self.body.append('</UL>\n')
@@ -151,10 +160,10 @@ class HTMLTranslator(nodes.NodeVisitor):
                          '</TBODY>\n</TABLE>\n')
 
     def visit_citation_reference(self, node):
-        href = ''
-        if node.has_key('refname'):
-            href = '#' + self.doctree.nameids[node['refname']]
-        self.body.append(self.starttag(node, 'a', '[', href=href,
+        #href = ''
+        #if node.has_key('refname'):
+        #    href = '#' + self.doctree.nameids[node['refname']]
+        self.body.append(self.starttag(node, 'a', '[', href=node['refid'],
                                        CLASS='citation-reference'))
 
     def depart_citation_reference(self, node):
@@ -264,10 +273,10 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def depart_document(self, node):
         self.body.append('</DIV>\n')
-        self.body.append(
-              '<P CLASS="credits">HTML generated from <CODE>%s</CODE> on %s '
-              'by <A HREF="http://docutils.sourceforge.net/">Docutils</A>.'
-              '</P>\n' % (node['source'], time.strftime('%Y-%m-%d')))
+        #self.body.append(
+        #      '<P CLASS="credits">HTML generated from <CODE>%s</CODE> on %s '
+        #      'by <A HREF="http://docutils.sourceforge.net/">Docutils</A>.'
+        #      '</P>\n' % (node['source'], time.strftime('%Y-%m-%d')))
 
     def visit_emphasis(self, node):
         self.body.append('<EM>')
@@ -378,12 +387,12 @@ class HTMLTranslator(nodes.NodeVisitor):
                          '</TBODY>\n</TABLE>\n')
 
     def visit_footnote_reference(self, node):
-        href = ''
-        if node.has_key('refid'):
-            href = '#' + node['refid']
-        elif node.has_key('refname'):
-            href = '#' + self.doctree.nameids[node['refname']]
-        self.body.append(self.starttag(node, 'a', '', href=href,
+        #href = ''
+        #if node.has_key('refid'):
+        #    href = '#' + node['refid']
+        #elif node.has_key('refname'):
+        #    href = '#' + self.doctree.nameids[node['refname']]
+        self.body.append(self.starttag(node, 'a', '', href=node['refid'],
                                        CLASS='footnote-reference'))
 
     def depart_footnote_reference(self, node):
@@ -548,6 +557,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         if node.has_key('refuri'):
             href = node['refuri']
         elif node.has_key('refid'):
+        #else:
             href = '#' + node['refid']
         elif node.has_key('refname'):
             # @@@ Check for non-existent mappings. Here or in a transform?
@@ -597,10 +607,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         pass
 
     def visit_substitution_reference(self, node):
-        pass
-
-    def depart_substitution_reference(self, node):
-        pass
+        self.unimplemented_visit(node)
 
     def visit_subtitle(self, node):
         self.body.append(self.starttag(node, 'H2', '', CLASS='subtitle'))
@@ -612,12 +619,13 @@ class HTMLTranslator(nodes.NodeVisitor):
         if node['level'] < self.doctree.reporter['writer'].warninglevel:
             raise nodes.SkipNode
         self.body.append(self.starttag(node, 'div', CLASS='system-message'))
+        self.body.append('<P CLASS="system-message-title">')
         if node.hasattr('refid'):
-            self.body.append('<H3><A HREF="#%s">%s</A> '
-                             '(level %s system message)</H3>\n'
+            self.body.append('<A HREF="#%s">%s</A> '
+                             '(level %s system message)</P>\n'
                              % (node['refid'], node['type'], node['level']))
         else:
-            self.body.append('<H3>%s (level %s system message)</H3>\n'
+            self.body.append('%s (level %s system message)</P>\n'
                              % (node['type'], node['level']))
 
     def depart_system_message(self, node):
@@ -634,9 +642,12 @@ class HTMLTranslator(nodes.NodeVisitor):
         if not (node.has_key('refuri') or node.has_key('refid')
                 or node.has_key('refname')):
             self.body.append(self.starttag(node, 'a', '', CLASS='target'))
+            self.context.append('</A>')
+        else:
+            self.context.append('')
 
     def depart_target(self, node):
-        self.body.append('</A>')
+        self.body.append(self.context.pop())
 
     def visit_tbody(self, node):
         self.body.append(self.context.pop()) # '</COLGROUP>\n' or ''
@@ -701,9 +712,12 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_topic(self, node):
         self.body.append(self.starttag(node, 'div', CLASS='topic'))
+        if node.hasattr('class'):
+            self.topic_class = topic['class']
 
     def depart_topic(self, node):
         self.body.append('</DIV>\n')
+        self.topic_class = ''
 
     def visit_transition(self, node):
         self.body.append(self.starttag(node, 'hr'))
@@ -722,3 +736,7 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def depart_warning(self, node):
         self.depart_admonition()
+
+    def unimplemented_visit(self, node):
+        raise NotImplementedError('visiting unimplemented node type: %s'
+                                  % node.__class__.__name__)
