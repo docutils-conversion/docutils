@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/10/31 05:48:12 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/01/25 23:43:41 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -487,10 +487,10 @@ Paragraph.
 <document>
     <section name="title containing inline markup">
         <title>
-            Title containing 
+            Title containing \n\
             <emphasis>
                 inline
-             
+             \n\
             <literal>
                 markup
         <paragraph>

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/13 02:40:31 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/01/25 23:43:15 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -142,7 +142,7 @@ A paragraph::
     <literal_block>
           A wonky literal block.
         Literal line 2.
-        
+        \n\
           Literal line 3.
 """],
 ["""\

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/11/19 04:33:03 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/01/25 23:43:03 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -66,7 +66,7 @@ what about *this**?
         <emphasis>
             emphasis
         ' but not '*' or '"*"' or  x*2* or 2*x* or *args or *
-        or 
+        or \n\
         <emphasis>
             the* *stars\\* *inside
     <paragraph>
@@ -75,7 +75,7 @@ what about *this**?
         <paragraph>
             Inline emphasis start-string without end-string at line 4.
     <paragraph>
-        what about 
+        what about \n\
         <emphasis>
             this*
         ?
@@ -88,11 +88,11 @@ Emphasized double asterisk: *\\***
 """\
 <document>
     <paragraph>
-        Emphasized asterisk: 
+        Emphasized asterisk: \n\
         <emphasis>
             *
     <paragraph>
-        Emphasized double asterisk: 
+        Emphasized double asterisk: \n\
         <emphasis>
             **
 """],
@@ -134,11 +134,11 @@ Strong double asterisk: ******
 """\
 <document>
     <paragraph>
-        Strong asterisk: 
+        Strong asterisk: \n\
         <strong>
             *
     <paragraph>
-        Strong double asterisk: 
+        Strong double asterisk: \n\
         <strong>
             **
 """],
@@ -206,7 +206,7 @@ Find the ```interpreted text``` in this paragraph!
 """\
 <document>
     <paragraph>
-        Find the 
+        Find the \n\
         <literal>
             `interpreted text`
          in this paragraph!
@@ -277,13 +277,13 @@ totest['interpreted'] = [
     <paragraph>
         <interpreted>
             interpreted
-        -text 
+        -text \n\
         <interpreted>
             interpreted
-        : text 
+        : text \n\
         <interpreted>
             interpreted
-        :text 
+        :text \n\
         <interpreted>
             text
         's interpreted
@@ -317,13 +317,13 @@ ref_, r_, r_e-f_, and anonymousref__, but not _ref_ or -ref_
     <paragraph>
         <reference refname="ref">
             ref
-        , 
+        , \n\
         <reference refname="r">
             r
-        , 
+        , \n\
         <reference refname="r_e-f">
             r_e-f
-        , and 
+        , and \n\
         <reference anonymous="1">
             anonymousref
         , but not _ref_ or -ref_
@@ -415,10 +415,10 @@ _`Here is  a    TaRgeT` with case and spacial difficulties.
         <target name="target">
             target
     <paragraph>
-        Here is 
+        Here is \n\
         <target name="another target">
             another target
-         in some text. And 
+         in some text. And \n\
         <target name="yet another target">
             yet
             another target
@@ -463,13 +463,13 @@ totest['footnote_reference'] = [
     <paragraph>
         <footnote_reference refname="footnote">
             footnote
-         and 
+         and \n\
         <footnote_reference refname="foot-note">
             foot-note
-         and 
+         and \n\
         <footnote_reference refname="foot.note">
             foot.note
-         and 
+         and \n\
         <footnote_reference refname="1">
             1
          but not [foot note]_
@@ -495,7 +495,7 @@ totest['substitution_references'] = [
         <reference refname="subref">
             <substitution_reference refname="subref">
                 subref
-         and 
+         and \n\
         <reference anonymous="1">
             <substitution_reference refname="subref">
                 subref
@@ -552,7 +552,7 @@ ftp://ends.with.a.period.
         <reference refuri="news:comp.lang.python">
             news:comp.lang.python
     <paragraph>
-        An email address in a sentence: 
+        An email address in a sentence: \n\
         <reference refuri="mailto:someone@somewhere.com">
             someone@somewhere.com
         .

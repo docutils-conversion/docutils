@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/13 02:41:00 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/01/25 23:43:34 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -69,7 +69,7 @@ This paragraph ends the bullet list item before a block quote.
                 bullet
     <comment>
         Comments swallow up all indented text following.
-        
+        \n\
         (Therefore this is not a) block quote.
     <bullet_list bullet="-">
         <list_item>

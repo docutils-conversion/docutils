@@ -3,8 +3,8 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/11/22 04:21:23 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/01/25 23:43:53 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -93,7 +93,10 @@ def escape(text):
     """
     Return `text` in a form compatible with triple-double-quoted Python strings.
     """
-    return text.replace('\\', '\\\\').replace('"""', '""\\"')
+    text = text.replace('\\', '\\\\')   # escape backslashes
+    text = text.replace('"""', '""\\"') # break up triple-double-quotes
+    text = text.replace(' \n', ' \\n\\\n') # protect trailing whitespace
+    return text
 
 _outputFormatters = {
     'rawxml': _rawxml,
