@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2001/09/12 03:54:33 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2001/09/13 02:25:32 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -22,7 +22,6 @@ reStructuredText parser. It defines the following:
     - `Text`: Classifier of second line of a text block.
     - `Definition`: Second line of potential definition_list_item.
     - `Stuff`: An auxilliary collection class.
-    - `TableParser`: Parses tables.
 
 :Exception classes:
     - `MarkupError`
@@ -103,6 +102,7 @@ import sys, re, string
 from dps import nodes, statemachine, utils, roman
 from dps.statemachine import StateMachineWS, StateWS
 import directives
+from tableparser import TableParser, TableMarkupError
 
 
 __all__ = ['RSTStateMachine', 'MarkupError', 'ParserError',
@@ -368,10 +368,10 @@ class RSTState(StateWS):
 
     """reStructuredText State superclass."""
 
-    indentSM = NestedStateMachine
+    nestedSM = NestedStateMachine
 
     def __init__(self, statemachine, debug=0):
-        self.indentSMkwargs = {'stateclasses': stateclasses,
+        self.nestedSMkwargs = {'stateclasses': stateclasses,
                                'initialstate': 'Body'}
         StateWS.__init__(self, statemachine, debug)
 
@@ -381,9 +381,9 @@ class RSTState(StateWS):
     def nestedparse(self, block, lineoffset, node, matchtitles=0,
                       statemachineclass=None, statemachinekwargs=None):
         if statemachineclass is None:
-            statemachineclass = self.indentSM
+            statemachineclass = self.nestedSM
         if statemachinekwargs is None:
-            statemachinekwargs = self.indentSMkwargs
+            statemachinekwargs = self.nestedSMkwargs
         statemachine = statemachineclass(debug=self.debug, **statemachinekwargs)
         statemachine.run(
               block, inputoffset=lineoffset, memo=self.statemachine.memo,
@@ -463,7 +463,7 @@ class RSTState(StateWS):
         s += titlenode
         s += warnings
         memo.document.addimplicitlink(normname(titlenode.astext()), s)
-        sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
+        sm = self.nestedSM(debug=self.debug, **self.nestedSMkwargs)
         offset = self.statemachine.lineoffset + 1
         absoffset = self.statemachine.abslineoffset() + 1
         sm.run(self.statemachine.inputlines[offset:], inputoffset=absoffset,
@@ -858,186 +858,6 @@ class RSTState(StateWS):
                   % (self.statemachine.abslineno() + 1)))
 
 
-class TableParser:
-
-    """
-    Parse a table structure using `parse()`
-    """
-
-    headbodyseparatorpat = re.compile(r'\+=[=+]+=\+$')
-
-    def init(self, block):
-        self.block = block[:]           # make a copy; it may be modified
-        self.bottom = len(block) - 1
-        self.right = len(block[0]) - 1
-        self.headbodysep = None
-        self.done = [-1] * len(block[0])
-        self.cells = []
-        self.rowseps = {0: [0]}
-        self.colseps = {0: [0]}
-
-    def parse(self, block):
-        self.init(block)
-        self.findheadbodysep()
-        self.parsegrid()
-        structure = self.structurefromcells()
-        return structure
-
-    def findheadbodysep(self):
-        for i in range(len(self.block)):
-            line = self.block[i]
-            if self.headbodyseparatorpat.match(line):
-                if self.headbodysep:
-                    raise MarkupError, ('Multiple head/body row separators '
-                          'in table (at line offset %s and %s); only one '
-                          'allowed.' % (self.headbodysep, i))
-                else:
-                    self.headbodysep = i
-                    self.block[i] = line.replace('=', '-')
-
-    def parsegrid(self):
-        corners = [(0, 0)]
-        while corners:
-            top, left = corners.pop(0)
-            if top == self.bottom or left == self.right \
-                  or top <= self.done[left]:
-                continue
-            result = self.scancell(top, left)
-            if not result:
-                continue
-            bottom, right, rowseps, colseps = result
-            update_dictoflists(self.rowseps, rowseps)
-            update_dictoflists(self.colseps, colseps)
-            self.markdone(top, left, bottom, right)
-            cellblock = self.getcellblock(top, left, bottom, right)
-            self.cells.append((top, left, bottom, right, cellblock))
-            corners.extend([(top, right), (bottom, left)])
-            corners.sort()
-        if not self.checkparsecomplete():
-            raise MarkupError, 'Malformed table; parse incomplete.'
-
-    def markdone(self, top, left, bottom, right):
-        before = top - 1
-        after = bottom - 1
-        for col in range(left, right):
-            assert self.done[col] == before
-            self.done[col] = after
-
-    def checkparsecomplete(self):
-        last = self.bottom - 1
-        for col in range(self.right):
-            if self.done[col] != last:
-                return None
-        return 1
-
-    def getcellblock(self, top, left, bottom, right):
-        cellblock = []
-        margin = right
-        for lineno in range(top + 1, bottom):
-            line = self.block[lineno][left + 1 : right].rstrip()
-            cellblock.append(line)
-            if line:
-                margin = margin and min(margin, len(line) - len(line.lstrip()))
-        if 0 < margin < right:
-            cellblock = [line[margin:] for line in cellblock]
-        return cellblock
-
-    def scancell(self, top, left):
-        assert self.block[top][left] == '+'
-        result = self.scanright(top, left)
-        return result
-
-    def scanright(self, top, left):
-        colseps = {}
-        line = self.block[top]
-        for i in range(left + 1, self.right + 1):
-            if line[i] == '+':
-                colseps[i] = [top]
-                result = self.scandown(top, left, i)
-                if result:
-                    bottom, rowseps, newcolseps = result
-                    update_dictoflists(colseps, newcolseps)
-                    return bottom, i, rowseps, colseps
-            elif line[i] != '-':
-                return None
-        return None
-
-    def scandown(self, top, left, right):
-        rowseps = {}
-        for i in range(top + 1, self.bottom + 1):
-            if self.block[i][right] == '+':
-                rowseps[i] = [right]
-                result = self.scanleft(top, left, i, right)
-                if result:
-                    newrowseps, colseps = result
-                    update_dictoflists(rowseps, newrowseps)
-                    return i, rowseps, colseps
-            elif self.block[i][right] != '|':
-                return None
-        return None
-
-    def scanleft(self, top, left, bottom, right):
-        colseps = {}
-        line = self.block[bottom]
-        for i in range(right - 1, left, -1):
-            if line[i] == '+':
-                colseps[i] = [bottom]
-            elif line[i] != '-':
-                return None
-        if line[left] != '+':
-            return None
-        result = self.scanup(top, left, bottom, right)
-        if result is not None:
-            rowseps = result
-            return rowseps, colseps
-        return None
-
-    def scanup(self, top, left, bottom, right):
-        rowseps = {}
-        for i in range(bottom - 1, top, -1):
-            if self.block[i][left] == '+':
-                rowseps[i] = [left]
-            elif self.block[i][left] != '|':
-                return None
-        return rowseps
-
-    def structurefromcells(self):
-        rowseps = self.rowseps.keys()
-        rowseps.sort()
-        rowindex = {}
-        for i in range(len(rowseps)):
-            rowindex[rowseps[i]] = i
-        colseps = self.colseps.keys()
-        colseps.sort()
-        colindex = {}
-        for i in range(len(colseps)):
-            colindex[colseps[i]] = i
-        colspecs = [(colseps[i] - colseps[i - 1] - 1)
-                    for i in range(1, len(colseps))]
-        onerow = [None for i in range(len(colseps) - 1)]
-        rows = [onerow[:] for i in range(len(rowseps) - 1)]
-        remaining = (len(rowseps) - 1) * (len(colseps) - 1)
-        for top, left, bottom, right, block in self.cells:
-            rownum = rowindex[top]
-            colnum = colindex[left]
-            assert rows[rownum][colnum] is None, \
-                  'Cell (row %s, column %s) already used.' % (rownum + 1,
-                                                              colnum + 1)
-            morerows = rowindex[bottom] - rownum - 1
-            morecols = colindex[right] - colnum - 1
-            remaining -= (morerows + 1) * (morecols + 1)
-            rows[rownum][colnum] = (morerows, morecols, top + 1, block)
-        assert remaining == 0, 'Unused cells remaining.'
-        if self.headbodysep:
-            numheadrows = rowindex[self.headbodysep]
-            headrows = rows[:numheadrows]
-            bodyrows = rows[numheadrows:]
-        else:
-            headrows = []
-            bodyrows = rows
-        return (colspecs, headrows, bodyrows)
-
-
 class Body(RSTState):
 
     """
@@ -1147,9 +967,9 @@ class Body(RSTState):
         i, blankfinish = self.list_item(match.end())
         l += i
         offset = self.statemachine.lineoffset + 1   # next line
-        kwargs = self.indentSMkwargs.copy()
+        kwargs = self.nestedSMkwargs.copy()
         kwargs['initialstate'] = 'BulletList'
-        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm = self.nestedSM(debug=self.debug, **kwargs)
         sm.states['BulletList'].blankfinish = blankfinish
         sm.run(self.statemachine.inputlines[offset:],
                inputoffset=self.statemachine.abslineoffset() + 1,
@@ -1211,9 +1031,9 @@ class Body(RSTState):
         i, blankfinish = self.list_item(match.end())
         l += i
         offset = self.statemachine.lineoffset + 1   # next line
-        kwargs = self.indentSMkwargs.copy()
+        kwargs = self.nestedSMkwargs.copy()
         kwargs['initialstate'] = 'EnumeratedList'
-        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm = self.nestedSM(debug=self.debug, **kwargs)
         sm.states['EnumeratedList'].blankfinish = blankfinish
         sm.states['EnumeratedList'].lastordinal = ordinal
         sm.states['EnumeratedList'].format = format
@@ -1286,9 +1106,9 @@ class Body(RSTState):
         f, blankfinish = self.field(match)
         l += f
         offset = self.statemachine.lineoffset + 1   # next line
-        kwargs = self.indentSMkwargs.copy()
+        kwargs = self.nestedSMkwargs.copy()
         kwargs['initialstate'] = 'FieldList'
-        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm = self.nestedSM(debug=self.debug, **kwargs)
         sm.states['FieldList'].blankfinish = blankfinish
         sm.run(self.statemachine.inputlines[offset:],
                inputoffset=self.statemachine.abslineoffset() + 1,
@@ -1349,9 +1169,9 @@ class Body(RSTState):
             return [], nextstate, []
         l += i
         offset = self.statemachine.lineoffset + 1   # next line
-        kwargs = self.indentSMkwargs.copy()
+        kwargs = self.nestedSMkwargs.copy()
         kwargs['initialstate'] = 'OptionList'
-        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm = self.nestedSM(debug=self.debug, **kwargs)
         sm.states['OptionList'].blankfinish = blankfinish
         sm.run(self.statemachine.inputlines[offset:],
                inputoffset=self.statemachine.abslineoffset() + 1,
@@ -1441,7 +1261,7 @@ class Body(RSTState):
                 tableline = self.statemachine.abslineno() - len(block) + 1
                 t = self.buildtable(tabledata, tableline)
                 nodelist = [t] + warnings
-            except MarkupError, detail:
+            except TableMarkupError, detail:
                 nodelist = self.malformedtable(block, str(detail)) + warnings
         else:
             nodelist = warnings
@@ -1524,7 +1344,7 @@ class Body(RSTState):
                 attributes['morecols'] = morecols
             entry = nodes.entry(**attributes)
             row += entry
-            sm = self.indentSM(debug=self.debug, **self.indentSMkwargs)
+            sm = self.nestedSM(debug=self.debug, **self.nestedSMkwargs)
             sm.run(cellblock, inputoffset=tableline+offset,
                    memo=self.statemachine.memo, node=entry, matchtitles=0)
             sm.unlink()
@@ -1668,19 +1488,19 @@ class Body(RSTState):
           (directive,
            re.compile(r"""
                       \.\.[ ]+          # explicit markup start
-                      ([\w-]+)          # directive name
+                      (%s)              # directive name
                       ::                # directive delimiter
                       (?:[ ]+|$)        # whitespace or end of line
-                      """, re.VERBOSE))]
+                      """ % RSTState.inline.simplename, re.VERBOSE))]
 
     def explicit_markup(self, match, context, nextstate):
         """Footnotes, hyperlink targets, directives, comments."""
         nodelist, blankfinish = self.explicit_construct(match)
         self.statemachine.node += nodelist
         offset = self.statemachine.lineoffset + 1   # next line
-        kwargs = self.indentSMkwargs.copy()
+        kwargs = self.nestedSMkwargs.copy()
         kwargs['initialstate'] = 'Explicit'
-        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm = self.nestedSM(debug=self.debug, **kwargs)
         sm.states['Explicit'].blankfinish = blankfinish
         sm.run(self.statemachine.inputlines[offset:],
                inputoffset=self.statemachine.abslineoffset() + 1,
@@ -1916,9 +1736,9 @@ class Text(RSTState):
         l += i
         self.statemachine.node += l
         offset = self.statemachine.lineoffset + 1   # next line
-        kwargs = self.indentSMkwargs.copy()
+        kwargs = self.nestedSMkwargs.copy()
         kwargs['initialstate'] = 'DefinitionList'
-        sm = self.indentSM(debug=self.debug, **kwargs)
+        sm = self.nestedSM(debug=self.debug, **kwargs)
         sm.states['Definition'].blankfinish = blankfinish
         sm.run(self.statemachine.inputlines[offset:],
                inputoffset=self.statemachine.abslineoffset() + 1,
@@ -2100,7 +1920,3 @@ def unescape(text, restorebackslashes=0):
 def normname(name):
     """Return a case- and whitespace-normalized name."""
     return ' '.join(name.lower().split())
-
-def update_dictoflists(master, newdata):
-    for key, values in newdata.items():
-        master.setdefault(key, []).extend(values)
