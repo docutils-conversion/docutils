@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/11/06 01:07:59 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/11/19 04:01:39 $
 
 This document describes the internal data structure representing
 document trees in the Python Docstring Processing System. The data
@@ -28,7 +28,7 @@ further body elements, etc. ::
   | [body elements:]                                      | (sections) |
   |         | - literal | - lists  |       | - hyperlink  +------------+
   |         |   blocks  | - tables |       |   targets    |
-  | para-   | - doctest | - block  | foot- | - directives |
+  | para-   | - doctest | - block  | foot- | - sub. defs  |
   | graphs  |   blocks  |   quotes | notes | - comments   |
   +---------+-----------+----------+-------+--------------+
   | [text]+ | [text]    | (body elements)  | [text]       |
@@ -70,7 +70,7 @@ following groups:
   - _`Admonitions`: note_, tip_, warning_, error_, caution_, danger_,
     important_
 
-  - _`Special body elements`: target_, directive_, substitution_
+  - _`Special body elements`: target_, substitution_definition_,
     comment_, system_warning_
 
 - _`Inline elements`: emphasis_, strong_, interpreted_, literal_,

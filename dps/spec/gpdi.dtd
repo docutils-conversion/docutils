@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.25 $
-:Date: $Date: 2001/11/15 02:54:04 $
+:Revision: $Revision: 1.26 $
+:Date: $Date: 2001/11/19 04:02:02 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -109,7 +109,7 @@ Attributes shared by all elements in this DTD:
     | option_list
     | note | tip | hint | warning | error | caution | danger
     | important
-    | target | substitution | directive | comment | system_warning
+    | target | substitution_definition | comment | system_warning
     %additional.body.elements; ">
 
 <!ENTITY % additional.inline.elements "">
@@ -370,13 +370,6 @@ http://www.oasis-open.org/html/tm9901.htm).
 
 <!ELEMENT substitution (%text.model;)>
 <!ATTLIST substitution %basic.atts;>
-
-<!ELEMENT directive (#PCDATA)>
-<!ATTLIST directive
-    %basic.atts;
-    %fixedspace.att;
-    type      CDATA     #IMPLIED
-    data      CDATA     #IMPLIED>
 
 <!ELEMENT comment (#PCDATA)>
 <!ATTLIST comment
