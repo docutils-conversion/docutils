@@ -1,29 +1,11 @@
 #!/usr/bin/env python
 
-"""\
-quicktest.py: quickly test the restructuredtext parser.
-
-Usage::
-
-    quicktest.py [-p|-r|-t|-x] [filename]
-
-``filename`` is the name of the file to use as input (default is stdin).
-
-Options:
-
--p, --pretty  output pretty pseudo-xml: no '&abc;' entities (default)
--r, --rawxml  output raw xml
--t, --test    output in test format as per test_states.py
--x, --xml     output pretty xml (indented)
-"""
-
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/09/08 03:30:08 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/09/10 04:25:59 $
 :Copyright: This module has been placed in the public domain.
-
 """
 
 import sys, os, getopt
@@ -34,8 +16,34 @@ try:
 except ImportError:
     from dps.parsers.restructuredtext import Parser
 
+
+usage_header = """\
+quicktest.py: quickly test the restructuredtext parser.
+
+Usage::
+
+    quicktest.py [options] [filename]
+
+``filename`` is the name of the file to use as input (default is stdin).
+
+Options:
+"""
+
+options = [#(long option, short option, description)
+           ('pretty', 'p',
+            'output pretty pseudo-xml: no "&abc;" entities (default)'),
+           ('rawxml', 'r', 'output raw xml'),
+           ('test', 't', 'output parser test data (input & expected output)'),
+           ('xml', 'x', 'output pretty xml (indented)'),
+           ('help', 'h', 'show help text')]
+
 def usage():
-    print __doc__
+    print usage_header
+    for longopt, shortopt, description in options:
+        print '-%s, --%-9s' % (shortopt, longopt),
+        if len(longopt) > 8:
+            print '%-16s' % '\n',
+        print description
 
 def _pretty(input, document):
     return document.pformat()
@@ -78,21 +86,23 @@ def format(outputFormat, input, document):
     return formatter(input, document)
 
 def getArgs():
-	if os.name == 'mac' and len(sys.argv) <= 1:
-		return macGetArgs()
-	else:
-		return posixGetArgs()
+    if os.name == 'mac' and len(sys.argv) <= 1:
+        return macGetArgs()
+    else:
+        return posixGetArgs(sys.argv[1:])
 
-def posixGetArgs():
+def posixGetArgs(argv):
+    print 'posixGetArgs: argv=%r' % (argv,)
     outputFormat = 'pretty'
+    shortopts = ''.join([option[1] for option in options])
+    longopts = [option[0] for option in options]
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "rxpth",
-            [ "rawxml", "xml", "pretty", "test", "help" ])
+        opts, args = getopt.getopt(argv, shortopts, longopts)
     except getopt.GetoptError:
         usage()
         sys.exit(2)
     for o, a in opts:
-        if o in ['-h', '--help']: # undocumented!
+        if o in ['-h', '--help']:
             usage()
             sys.exit()
         elif o in ['-r', '--rawxml']:
@@ -104,8 +114,8 @@ def posixGetArgs():
         elif o in ['-t', '--test']:
             outputFormat = 'test'
         else:
-            raise AssertionError, "getopt should have saved us!"
-    if len(args)>1:
+            raise getopt.GetoptError, "getopt should have saved us!"
+    if len(args) > 1:
         print "Only one file at a time, thanks."
         usage()
         sys.exit(1)
@@ -114,6 +124,21 @@ def posixGetArgs():
     else:
         inputFile = sys.stdin
     return inputFile, outputFormat
+
+def macGetArgs():
+    import EasyDialogs
+    EasyDialogs.Message("""\
+In the following window, please:
+
+1. Choose an output format from the "Option" list.
+2. Click "Add" (if you don't, the default format will
+   be "pretty").
+3. Click "Add existing file..." and choose an input file.
+4. Click "OK".""")
+    optionlist = [(longopt, description)
+                  for (longopt, shortopt, description) in options]
+    argv = EasyDialogs.GetArgv(optionlist=optionlist, addnewfile=0, addfolder=0)
+    return posixGetArgs(argv)
 
 def main():
     inputFile, outputFormat = getArgs() # process cmdline arguments
