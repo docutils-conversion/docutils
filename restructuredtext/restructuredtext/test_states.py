@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 """
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.5 $
-Date: $Date: 2001/08/11 02:08:02 $
-Copyright: This module has been placed in the public domain.
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/08/14 03:41:14 $
+:Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
 """
@@ -252,7 +252,8 @@ Here is a paragraph.
 
     Indent 4 spaces.
 
-XXX Is this correct? Should it generate a warning?
+Is this correct? Should it generate a warning?
+Yes, it is correct, no warning necessary.
 """,
 """\
 <document>
@@ -270,7 +271,8 @@ XXX Is this correct? Should it generate a warning?
         </paragraph>
     </block_quote>
     <paragraph>
-        XXX Is this correct? Should it generate a warning?
+        Is this correct? Should it generate a warning?
+        Yes, it is correct, no warning necessary.
     </paragraph>
 </document>
 """],
@@ -3533,7 +3535,7 @@ Nested enumerated lists:
        III) Item III).
 
    (b) Item (b).
-   
+
    (c) Item (c).
 
        (i) Item (i).
@@ -3632,6 +3634,1118 @@ Nested enumerated lists:
             </paragraph>
         </list_item>
     </enumerated_list>
+</document>
+"""],
+]
+
+    proven['field_lists'] = [
+["""\
+One-liners:
+
+:Author: Me
+
+:Version: 1
+
+:Date: 2001-08-11
+
+:Parameter i: integer
+""",
+"""\
+<document>
+    <paragraph>
+        One-liners:
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                Author
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Me
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Version
+            </field_name>
+            <field_body>
+                <paragraph>
+                    1
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Date
+            </field_name>
+            <field_body>
+                <paragraph>
+                    2001-08-11
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    integer
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+One-liners, no blank lines:
+
+:Author: Me
+:Version: 1
+:Date: 2001-08-11
+:Parameter i: integer
+""",
+"""\
+<document>
+    <paragraph>
+        One-liners, no blank lines:
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                Author
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Me
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Version
+            </field_name>
+            <field_body>
+                <paragraph>
+                    1
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Date
+            </field_name>
+            <field_body>
+                <paragraph>
+                    2001-08-11
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    integer
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+Field bodies starting on the next line:
+
+:Author:
+  Me
+:Version:
+  1
+:Date:
+  2001-08-11
+:Parameter i:
+  integer
+""",
+"""\
+<document>
+    <paragraph>
+        Field bodies starting on the next line:
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                Author
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Me
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Version
+            </field_name>
+            <field_body>
+                <paragraph>
+                    1
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Date
+            </field_name>
+            <field_body>
+                <paragraph>
+                    2001-08-11
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    integer
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+One-paragraph, multi-liners:
+
+:Authors: Me,
+          Myself,
+          and I
+:Version: 1
+          or so
+:Date: 2001-08-11
+       (Saturday)
+:Parameter i: counter
+              (integer)
+""",
+"""\
+<document>
+    <paragraph>
+        One-paragraph, multi-liners:
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Me,
+                    Myself,
+                    and I
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Version
+            </field_name>
+            <field_body>
+                <paragraph>
+                    1
+                    or so
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Date
+            </field_name>
+            <field_body>
+                <paragraph>
+                    2001-08-11
+                    (Saturday)
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    counter
+                    (integer)
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+One-paragraph, multi-liners, not lined up:
+
+:Authors: Me,
+  Myself,
+  and I
+:Version: 1
+  or so
+:Date: 2001-08-11
+  (Saturday)
+:Parameter i: counter
+  (integer)
+""",
+"""\
+<document>
+    <paragraph>
+        One-paragraph, multi-liners, not lined up:
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Me,
+                    Myself,
+                    and I
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Version
+            </field_name>
+            <field_body>
+                <paragraph>
+                    1
+                    or so
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Date
+            </field_name>
+            <field_body>
+                <paragraph>
+                    2001-08-11
+                    (Saturday)
+                </paragraph>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    counter
+                    (integer)
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+Multiple body elements:
+
+:Authors: - Me
+          - Myself
+          - I
+
+:Abstract:
+    This is a field list item's body,
+    containing multiple elements.
+
+    Here's a literal block::
+
+        def f(x):
+            return x**2 + x
+
+    Even nested field lists are possible:
+
+    :Date: 2001-08-11
+    :Day: Saturday
+    :Time: 15:07
+""",
+"""\
+<document>
+    <paragraph>
+        Multiple body elements:
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                Authors
+            </field_name>
+            <field_body>
+                <bullet_list bullet="-">
+                    <list_item>
+                        <paragraph>
+                            Me
+                        </paragraph>
+                    </list_item>
+                    <list_item>
+                        <paragraph>
+                            Myself
+                        </paragraph>
+                    </list_item>
+                    <list_item>
+                        <paragraph>
+                            I
+                        </paragraph>
+                    </list_item>
+                </bullet_list>
+            </field_body>
+        </field>
+        <field>
+            <field_name>
+                Abstract
+            </field_name>
+            <field_body>
+                <paragraph>
+                    This is a field list item's body,
+                    containing multiple elements.
+                </paragraph>
+                <paragraph>
+                    Here's a literal block:
+                </paragraph>
+                <literal_block>
+                    def f(x):
+                        return x**2 + x
+                </literal_block>
+                <paragraph>
+                    Even nested field lists are possible:
+                </paragraph>
+                <field_list>
+                    <field>
+                        <field_name>
+                            Date
+                        </field_name>
+                        <field_body>
+                            <paragraph>
+                                2001-08-11
+                            </paragraph>
+                        </field_body>
+                    </field>
+                    <field>
+                        <field_name>
+                            Day
+                        </field_name>
+                        <field_body>
+                            <paragraph>
+                                Saturday
+                            </paragraph>
+                        </field_body>
+                    </field>
+                    <field>
+                        <field_name>
+                            Time
+                        </field_name>
+                        <field_body>
+                            <paragraph>
+                                15:07
+                            </paragraph>
+                        </field_body>
+                    </field>
+                </field_list>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+:Parameter i j k: multiple arguments
+""",
+"""\
+<document>
+    <field_list>
+        <field>
+            <field_name>
+                Parameter
+            </field_name>
+            <field_argument>
+                i
+            </field_argument>
+            <field_argument>
+                j
+            </field_argument>
+            <field_argument>
+                k
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    multiple arguments
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+</document>
+"""],
+["""\
+Some edge cases:
+
+:Empty:
+:Author: Me
+No blank line before this paragraph.
+
+:*Field* `with` **inline** ``markup``: inline markup shouldn't be recognized.
+
+: Field: marker must not begin with whitespace.
+
+:Field : marker must not end with whitespace.
+
+Field: marker is missing its open-colon.
+
+:Field marker is missing its close-colon.
+""",
+"""\
+<document>
+    <paragraph>
+        Some edge cases:
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                Empty
+            </field_name>
+            <field_body/>
+        </field>
+        <field>
+            <field_name>
+                Author
+            </field_name>
+            <field_body>
+                <paragraph>
+                    Me
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+    <system_warning level="1">
+        <paragraph>
+            Unindent without blank line at line 4.
+        </paragraph>
+    </system_warning>
+    <paragraph>
+        No blank line before this paragraph.
+    </paragraph>
+    <field_list>
+        <field>
+            <field_name>
+                *Field*
+            </field_name>
+            <field_argument>
+                `with`
+            </field_argument>
+            <field_argument>
+                **inline**
+            </field_argument>
+            <field_argument>
+                ``markup``
+            </field_argument>
+            <field_body>
+                <paragraph>
+                    inline markup shouldn't be recognized.
+                </paragraph>
+            </field_body>
+        </field>
+    </field_list>
+    <paragraph>
+        : Field: marker must not begin with whitespace.
+    </paragraph>
+    <paragraph>
+        :Field : marker must not end with whitespace.
+    </paragraph>
+    <paragraph>
+        Field: marker is missing its open-colon.
+    </paragraph>
+    <paragraph>
+        :Field marker is missing its close-colon.
+    </paragraph>
+</document>
+"""],
+]
+
+    proven['option_lists'] = [
+["""\
+Short options:
+
+-a       option a
+
+-b file  option b
+
+-cname   option c
+""",
+"""\
+<document>
+    <paragraph>
+        Short options:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -a
+                </short_option>
+            </option>
+            <description>
+                <paragraph>
+                    option a
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -b
+                </short_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option b
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -c
+                </short_option>
+                <option_argument>
+                    name
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option c
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Long options:
+
+--aaaa       option aaaa
+--bbbb=file  option bbbb
+--cccc name  option cccc
+--d-e-f-g    option d-e-f-g
+--h_i_j_k    option h_i_j_k
+""",
+"""\
+<document>
+    <paragraph>
+        Long options:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --aaaa
+                </long_option>
+            </option>
+            <description>
+                <paragraph>
+                    option aaaa
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --bbbb
+                </long_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option bbbb
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --cccc
+                </long_option>
+                <option_argument>
+                    name
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option cccc
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --d-e-f-g
+                </long_option>
+            </option>
+            <description>
+                <paragraph>
+                    option d-e-f-g
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --h_i_j_k
+                </long_option>
+            </option>
+            <description>
+                <paragraph>
+                    option h_i_j_k
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Mixed short and long options:
+
+-a           option a
+--bbbb=file  option bbbb
+--cccc name  option cccc
+-d string    option d
+""",
+"""\
+<document>
+    <paragraph>
+        Mixed short and long options:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -a
+                </short_option>
+            </option>
+            <description>
+                <paragraph>
+                    option a
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --bbbb
+                </long_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option bbbb
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <long_option>
+                    --cccc
+                </long_option>
+                <option_argument>
+                    name
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option cccc
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -d
+                </short_option>
+                <option_argument>
+                    string
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option d
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Aliased options:
+
+-a, --aaaa            option aaaa
+-b file, --bbbb=file  option bbbb
+""",
+"""\
+<document>
+    <paragraph>
+        Aliased options:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -a
+                </short_option>
+            </option>
+            <option>
+                <long_option>
+                    --aaaa
+                </long_option>
+            </option>
+            <description>
+                <paragraph>
+                    option aaaa
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -b
+                </short_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <option>
+                <long_option>
+                    --bbbb
+                </long_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option bbbb
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Multiple lines in descriptions, aligned:
+
+-a       option a, line 1
+         line 2
+-b file  option b, line 1
+         line 2
+""",
+"""\
+<document>
+    <paragraph>
+        Multiple lines in descriptions, aligned:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -a
+                </short_option>
+            </option>
+            <description>
+                <paragraph>
+                    option a, line 1
+                    line 2
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -b
+                </short_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option b, line 1
+                    line 2
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Multiple lines in descriptions, not aligned:
+
+-a  option a, line 1
+    line 2
+-b file  option b, line 1
+    line 2
+""",
+"""\
+<document>
+    <paragraph>
+        Multiple lines in descriptions, not aligned:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -a
+                </short_option>
+            </option>
+            <description>
+                <paragraph>
+                    option a, line 1
+                    line 2
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -b
+                </short_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option b, line 1
+                    line 2
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Descriptions begin on next line:
+
+-a
+    option a, line 1
+    line 2
+-b file
+    option b, line 1
+    line 2
+""",
+"""\
+<document>
+    <paragraph>
+        Descriptions begin on next line:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -a
+                </short_option>
+            </option>
+            <description>
+                <paragraph>
+                    option a, line 1
+                    line 2
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -b
+                </short_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option b, line 1
+                    line 2
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Multiple body elements in descriptions:
+
+-a  option a, para 1
+
+    para 2
+-b file
+    option b, para 1
+
+    para 2
+""",
+"""\
+<document>
+    <paragraph>
+        Multiple body elements in descriptions:
+    </paragraph>
+    <option_list>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -a
+                </short_option>
+            </option>
+            <description>
+                <paragraph>
+                    option a, para 1
+                </paragraph>
+                <paragraph>
+                    para 2
+                </paragraph>
+            </description>
+        </option_list_item>
+        <option_list_item>
+            <option>
+                <short_option>
+                    -b
+                </short_option>
+                <option_argument>
+                    file
+                </option_argument>
+            </option>
+            <description>
+                <paragraph>
+                    option b, para 1
+                </paragraph>
+                <paragraph>
+                    para 2
+                </paragraph>
+            </description>
+        </option_list_item>
+    </option_list>
+</document>
+"""],
+["""\
+Some edge cases:
+
+--option=arg arg  too many arguments
+
+--option=arg=arg  too many arguments
+
+-aletter arg      too many arguments (-a letter)
+
+-a=b              can't use = for short arguments
+
+--option=         argument missing
+
+--=argument       option missing
+
+--                everything missing
+
+-                 this should be a bullet list item
+""",
+"""\
+<document>
+    <paragraph>
+        Some edge cases:
+    </paragraph>
+    <paragraph>
+        --option=arg arg  too many arguments
+    </paragraph>
+    <paragraph>
+        --option=arg=arg  too many arguments
+    </paragraph>
+    <paragraph>
+        -aletter arg      too many arguments (-a letter)
+    </paragraph>
+    <paragraph>
+        -a=b              can't use = for short arguments
+    </paragraph>
+    <paragraph>
+        --option=         argument missing
+    </paragraph>
+    <paragraph>
+        --=argument       option missing
+    </paragraph>
+    <paragraph>
+        --                everything missing
+    </paragraph>
+    <bullet_list bullet="-">
+        <list_item>
+            <paragraph>
+                this should be a bullet list item
+            </paragraph>
+        </list_item>
+    </bullet_list>
+</document>
+"""],
+]
+
+    totest['tables'] = [
+["""\
+XXX Temporarily parse a table as a literal_block:
+
++------------------------+------------+----------+----------+
+| Header row, column 1   | Header 2   | Header 3 | Header 4 |
+| (header rows optional) |            |          |          |
++========================+============+==========+==========+
+| body row 1, column 1   | column 2   | column 3 | column 4 |
++------------------------+------------+----------+----------+
+| body row 2             | Cells may span columns.          |
++------------------------+------------+---------------------+
+| body row 3             | Cells may  | - Table cells       |
++------------------------+ span rows. | - contain           |
+| body row 4             |            | - body elements.    |
++------------------------+------------+---------------------+
+""",
+"""\
+<document>
+    <paragraph>
+        XXX Temporarily parse a table as a literal_block:
+    </paragraph>
+    <literal_block>
+        +------------------------+------------+----------+----------+
+        | Header row, column 1   | Header 2   | Header 3 | Header 4 |
+        | (header rows optional) |            |          |          |
+        +========================+============+==========+==========+
+        | body row 1, column 1   | column 2   | column 3 | column 4 |
+        +------------------------+------------+----------+----------+
+        | body row 2             | Cells may span columns.          |
+        +------------------------+------------+---------------------+
+        | body row 3             | Cells may  | - Table cells       |
+        +------------------------+ span rows. | - contain           |
+        | body row 4             |            | - body elements.    |
+        +------------------------+------------+---------------------+
+    </literal_block>
 </document>
 """],
 ]
