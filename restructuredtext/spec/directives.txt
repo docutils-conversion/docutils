@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/03/16 05:34:19 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/04/04 05:42:35 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -173,9 +173,9 @@ attributes.
 The "contents" directive inserts a table of contents (TOC) in two
 passes: initial parse and transform.  During the initial parse, a
 "pending" element is generated which acts as a placeholder, storing
-the TOC title and any attributes in a field list.  At a later stage in
-the processing, the "pending" element is replaced by a "topic"
-element, a title and the table of contents proper.
+the TOC title and any attributes internally.  At a later stage in the
+processing, the "pending" element is replaced by a "topic" element, a
+title and the table of contents proper.
 
 The directive in its simplest form::
 
@@ -310,7 +310,7 @@ Non-standard element: imagemap.
 Raw Data Pass-Through
 =====================
 
-DTD element: raw.
+DTD element: pending.
 
 Directive block: the directive data is interpreted as an output format
 type, and all following indented text is stored verbatim,
@@ -318,22 +318,22 @@ uninterpreted.
 
 The "raw" directive indicates non-reStructuredText data that is to be
 passed untouched to the Writer.  The name of the output format is
-given in the directive data.  The interpretation of the code is up to
-the Writer.  A Writer may ignore any raw output not matching its
-format.
+given in the directive data.  During the initial parse, a "pending"
+element is generated which acts as a placeholder, storing the format
+and raw data internally.  The interpretation of the code is up to the
+Writer.  A Writer may ignore any raw output not matching its format.
 
-For example, given the following input::
+For example, the following input would be passed untouched by an HTML
+Writer::
+
+    .. raw:: html
+       <hr width=50 size=10>
+
+A LaTeX Writer could insert the following raw content into its
+output stream::
 
     .. raw:: latex
        \documentclass[twocolumn]{article}
-
-The following XML would be generated::
-
-    <raw format="latex">
-    \documentclass[twocolumn]{article}
-    </raw>
-
-A LaTeX Writer could insert the raw content into its output.
 
 
 Restructuredtext-Test-Directive
