@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/11/06 00:53:40 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/11/15 03:07:17 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for figures and simple images.
@@ -17,8 +17,12 @@ __all__ = ['image', 'figure']
 
 import sys
 from restructuredtext import states
-from dps import nodes
+from dps import nodes, utils
 
+def unchanged(arg):
+    return arg
+
+imageattributes = {'alt': unchanged, 'height': int, 'width': int, 'scale': int}
 
 def image(match, typename, data, state, statemachine):
     lineno = statemachine.abslineno()
@@ -32,46 +36,39 @@ def image(match, typename, data, state, statemachine):
         return [error], blankfinish
     blocktext = '\n'.join(statemachine.inputlines[lineoffset:
                                                   lineoffset+len(datablock)])
-    tokens = []
-    if datablock[-1][0] == '[' and datablock[-1][-1] == ']':
-        tokens = datablock.pop()[1:-1].split()
+    for i in range(len(datablock)):
+        if datablock[i][:1] == '[' and datablock[i].rstrip()[-1:] == ']':
+            attlines = datablock[i:]
+            datablock = datablock[:i]
+            break
+    else:
+        attlines = []
     reference = ''.join([line.strip() for line in datablock])
     if reference.find(' ') != -1:
-        warning = statemachine.memo.reporter.warning(
+        error = statemachine.memo.reporter.error(
               'Image URI at line %s contains whitespace.' % lineno)
-        warning += nodes.literal_block(blocktext, blocktext)
-        return [warning], blankfinish
-    attributes = {'uri': reference}
-    for token in tokens:
-        parts = token.split('=')
-        if parts[0].lower() not in ('height', 'width', 'scale'):
-            error = statemachine.memo.reporter.error(
-                  'Unknown image attribute "%s" at line %s.'
-                  % (parts[0], lineno),
-                  [nodes.literal_block(match.string, match.string)])
-            return [error], blankfinish
-        if len(parts) != 2:
-            error = statemachine.memo.reporter.error(
-                  'Invalid image attribute expression at line %s: "%s".'
-                  % (lineno, token),
-                  [nodes.literal_block(match.string, match.string)])
-            return [error], blankfinish
-        name = parts[0].lower()
-        if attributes.has_key(name):
-            error = statemachine.memo.reporter.error(
-                  'Duplicate image attribute name at line %s: "%s"'
-                  % (lineno, name),
-                  [nodes.literal_block(match.string, match.string)])
-            return [error], blankfinish
-        try:
-            value = int(parts[1])
-        except:
-            error = statemachine.memo.reporter.error(
-                  'Invalid image attribute value for "%s" at line %s: "%s" is '
-                  'not an integer.' % (name, lineno, parts[1]),
-                  [nodes.literal_block(match.string, match.string)])
-            return [error], blankfinish
-        attributes[name.lower()] = value
+        error += nodes.literal_block(blocktext, blocktext)
+        return [error], blankfinish
+    try:
+        attributes = utils.parseattributes(attlines, imageattributes)
+    except KeyError, detail:
+        error = statemachine.memo.reporter.error(
+              'Unknown image attribute at line %s: "%s".' % (lineno, detail))
+        error += nodes.literal_block(blocktext, blocktext)
+        return [error], blankfinish
+    except ValueError, detail:
+        error = statemachine.memo.reporter.error(
+              'Invalid image attribute value at line %s: %s.'
+              % (lineno, detail))
+        error += nodes.literal_block(blocktext, blocktext)
+        return [error], blankfinish
+    except utils.AttributeParsingError, detail:
+        error = statemachine.memo.reporter.error(
+              'Invalid image attribute data at line %s: %s.'
+              % (lineno, detail))
+        error += nodes.literal_block(blocktext, blocktext)
+        return [error], blankfinish
+    attributes['uri'] = reference
     imagenode = nodes.image(data, **attributes)
     return [imagenode], blankfinish
 
