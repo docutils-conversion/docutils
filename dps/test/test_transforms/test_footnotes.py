@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/29 02:17:52 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/01/30 04:43:05 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Footnotes.
@@ -20,8 +20,7 @@ except ImportError:
 
 
 def suite():
-    parser = Parser(warninglevel=4, errorlevel=4, languagecode='en',
-                    debug=UnitTestFolder.debug)
+    parser = Parser(debug=UnitTestFolder.debug)
     s = DPSTestSupport.TransformTestSuite(parser)
     s.generateTests(totest)
     return s
