@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.15 $
-:Date: $Date: 2002/01/25 23:44:41 $
+:Revision: $Revision: 1.16 $
+:Date: $Date: 2002/03/01 03:02:46 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -329,7 +329,7 @@ usability.
        .. blah: http://somewhere     comment
 
    .. Note::
-   
+
       The comment text was intentionally made to look like a hyperlink
       target.
 
@@ -532,7 +532,7 @@ contribution to "Documentation markup & processing / PEPs" (Doc-SIG
 
 Substitutions allow the power and flexibility of directives to be
 shared by inline text.  They are a way to allow arbitrarily complex
-inline objects, while keeping the details out of the flow of text. 
+inline objects, while keeping the details out of the flow of text.
 They are the equivalent of SGML/XML's named entities.  For example, an
 inline image (using reference syntax alternative 4d (vertical bars)
 and definition alternative 3, the alternatives chosen for inclusion in
@@ -579,16 +579,16 @@ Syntax alternatives for the reference:
 3. Use interpreted text syntax with a fixed internal format::
 
        (a) `:name:`
-       (b) `name:` 
-       (c) `name::` 
-       (d) `::name::` 
-       (e) `%name%` 
-       (f) `#name#` 
+       (b) `name:`
+       (c) `name::`
+       (d) `::name::`
+       (e) `%name%`
+       (f) `#name#`
        (g) `/name/`
-       (h) `&name&` 
-       (i) `|name|` 
-       (j) `[name]` 
-       (k) `<name>` 
+       (h) `&name&`
+       (i) `|name|`
+       (j) `[name]`
+       (k) `<name>`
        (l) `&name;`
        (m) `'name'`
 
@@ -792,6 +792,143 @@ replaced by another.
 Which brings us back to "substitution".  The overall best names are
 "substitution reference" (1a) and "substitution definition" (2v).  A
 long way to go to add one word!
+
+
+Reworking Footnotes
+===================
+
+As a further wrinkle (see `Reworking Explicit Markup`_ above), in the
+wee hours of 2002-02-28 I posted several ideas for changes to footnote
+syntax:
+
+    - Change footnote syntax from ``.. [1]`` to ``_[1]``? ...
+    - Differentiate (with new DTD elements) author-date "citations"
+      (``[GVR2002]``) from numbered footnotes? ...
+    - Render footnote references as superscripts without "[]"? ...
+
+These ideas are all related, and suggest changes in the
+reStructuredText syntax as well as the docutils tree model.
+
+The footnote has been used for both true footnotes (asides expanding
+on points or defining terms) and for citations (references to external
+works). Rather than dealing with one amalgam construct, we could
+separate the current footnote concept into strict footnotes and
+citations.  Citations could be interpreted and treated differently
+from footnotes.  Footnotes would be limited to numerical labels:
+manual ("1") and auto-numbered (anonymous "#", named "#label").
+
+The footnote is the only explicit markup construct (starts with ".. ")
+that directly translates to a visible body element.  I've always been
+a little bit uncomfortable with the ".. " marker for footnotes because
+of this; ".. " has a connotation of "special", but footnotes aren't
+especially "special".  Printed texts often put footnotes at the bottom
+of the page where the reference occurs (thus "foot note").  Some HTML
+designs would leave footnotes to be rendered the same positions where
+they're defined.  Other online and printed designs will gather
+footnotes into a section near the end of the document, converting them
+to "endnotes" (perhaps using a directive in our case); but this
+"special processing" is not an intrinsic property of the footnote
+itself, but a decision made by the document author or processing
+system.
+
+Citations are almost invariably collected in a section at the end of a
+document or section.  Citations "disappear" from where they are
+defined and are magically reinserted at some well-defined point.
+There's more of a connection to the "special" connotation of the ".. "
+syntax.  The point at which the list of citations is inserted could be
+defined manually by a directive (e.g., ".. citations::"), and/or have
+default behavior (e.g., a section automatically inserted at the end of
+the document) that might be influenced by options to the Writer.
+
+Syntax proposals:
+
++ Footnotes:
+
+  - Current syntax::
+
+        .. [1] Footnote 1
+        .. [#] Auto-numbered footnote.
+        .. [#label] Auto-labeled footnote.
+
+  - The syntax proposed in the original 2002-02-28 Doc-SIG post:
+    remove the ".. ", prefix a "_"::
+
+        _[1] Footnote 1
+        _[#] Auto-numbered footnote.
+        _[#label] Auto-labeled footnote.
+
+    The leading underscore syntax (earlier dropped because
+    ``.. _[1]:`` was too verbose) is a useful reminder that footnotes
+    are hyperlink targets.
+
+  - Minimal syntax: remove the ".. [" and "]", prefix a "_", and
+    suffix a "."::
+
+        _1. Footnote 1.
+        _#. Auto-numbered footnote.
+        _#label. Auto-labeled footnote.
+
+                 ``_1.``, ``_#.``, and ``_#label.`` are markers,
+                 like list markers.
+
+    Footnotes could be rendered something like this in HTML
+    
+        | 1. This is a footnote.  The brackets could be dropped
+        |    from the label, and a vertical bar could set them
+        |    off from the rest of the document in the HTML.
+  
+    Two-way hyperlinks on the footnote marker ("1." above) would also
+    help to differentiate footnotes from enumerated lists.
+  
+    If converted to endnotes (by a directive/transform), a horizontal
+    half-line might be used instead.  Page-oriented output formats
+    would typically use the horizontal line for true footnotes.
+
++ Footnote references::
+
+  - Current syntax::
+
+        [1]_, [#]_, [#label]_
+
+  - Minimal syntax to match the minimal footnote syntax above::
+
+        1_, #_, #label_
+
+    As a consequence, pure-numeric hyperlink references would not be
+    possible; they'd be interpreted as footnote references.
+
++ Citation references: no change is proposed from the current footnote
+  reference syntax::
+
+      [GVR2001]_
+
++ Citations:
+
+  - Current syntax (footnote syntax)::
+
+        .. _[GVR2001] Python Documentation; van Rossum, Drake, et al.;
+           http://www.python.org/doc/
+
+  - Possible new syntax::
+
+        _[GVR2001] Python Documentation; van Rossum, Drake, et al.;
+                   http://www.python.org/doc/
+
+        _[DJG2002]
+            Docutils: Python Documentation Utilities project; Goodger et
+            al.; http://docutils.sourceforge.net/
+
+    Without the ".. " marker, subsequent lines would either have to
+    align as in one of the above, or we'd have to allow loose alignment
+    (I'd rather not)::
+
+        _[GVR2001] Python Documentation; van Rossum, Drake, et al.;
+            http://www.python.org/doc/
+
+I propose adopting the "minimal" syntax for footnotes and footnote
+references, and adding citations and citation references to
+reStructuredText's repertoire. The current footnote syntax for
+citations is better than the alternatives given.
 
 
 ..
