@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.13 $
-:Date: $Date: 2002/01/25 23:58:36 $
+:Revision: $Revision: 1.14 $
+:Date: $Date: 2002/04/18 02:56:54 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -27,6 +27,7 @@ Exception classes:
 - `TransitionPatternNotFound`
 - `TransitionMethodNotFound`
 - `UnexpectedIndentationError`
+- `TransitionCorrection`: Raised to switch to another transition.
 
 Functions:
 
@@ -103,13 +104,6 @@ How To Use This Module
 """
 
 __docformat__ = 'restructuredtext'
-
-__all__ = ['StateMachine', 'StateMachineWS', 'SearchStateMachine',
-           'SearchStateMachineWS', 'State', 'StateWS',
-           'UnknownStateError', 'DuplicateStateError',
-           'UnknownTransitionError', 'DuplicateTransitionError',
-           'TransitionPatternNotFound', 'TransitionMethodNotFound',
-           'UnexpectedIndentationError', 'string2lines', 'extractindented']
 
 import sys, re, string
 
@@ -356,24 +350,30 @@ class StateMachine:
         - the result output of the transition, a list (empty if no match).
         """
         if self.debug:
-            print >>sys.stderr, ('\nStateMachine.matchtransition: state "%s",'
-                                 ' transitions "%s"' %
-                                 (state.__class__.__name__,
-                                  [t for t in state.transitionorder]))
+            print >>sys.stderr, (
+                  '\nStateMachine.matchtransition: state="%s", transitions=%r.'
+                  % (state.__class__.__name__, state.transitionorder))
         for name in state.transitionorder:
-            pattern, method, nextstate = state.transitions[name]
-            if self.debug:
-                print >>sys.stderr, ('\nStateMachine.matchtransition: '
-                                     'Trying transition "%s" in state "%s".' %
-                                     (name, state.__class__.__name__))
-            match = self.match(pattern)
-            if match:
+            while 1:
+                pattern, method, nextstate = state.transitions[name]
                 if self.debug:
-                    print >>sys.stderr, ('\nStateMachine.matchtransition: '
-                                         'Matched transition "%s" in state '
-                                         '"%s".' % (name,
-                                                    state.__class__.__name__))
-                return method(match, context, nextstate)
+                    print >>sys.stderr, (
+                          '\nStateMachine.matchtransition: Trying transition '
+                          '"%s" in state "%s".'
+                          % (name, state.__class__.__name__))
+                match = self.match(pattern)
+                if match:
+                    if self.debug:
+                        print >>sys.stderr, (
+                              '\nStateMachine.matchtransition: Matched '
+                              'transition "%s" in state "%s".'
+                              % (name, state.__class__.__name__))
+                    try:
+                        return method(match, context, nextstate)
+                    except TransitionCorrection, detail:
+                        name = str(detail)
+                        continue        # try again with new transition name
+                break
         else:
             return context, None, []    # no match
 
@@ -982,6 +982,13 @@ class DuplicateTransitionError(Exception): pass
 class TransitionPatternNotFound(Exception): pass
 class TransitionMethodNotFound(Exception): pass
 class UnexpectedIndentationError(Exception): pass
+
+
+class TransitionCorrection(Exception):
+
+    """
+    Raise from within a transition method to switch to another transition.
+    """
 
 
 _whitespace_conversion_table = string.maketrans('\v\f', '  ')
