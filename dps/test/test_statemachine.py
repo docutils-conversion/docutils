@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/17 04:06:05 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/11/23 03:19:43 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for statemachine.py.
@@ -38,15 +38,15 @@ First paragraph.
 Last paragraph.""")
 expected = ('StateMachine1 text1 blank1 bullet1 knownindent1 '
             'StateMachine2 text2 text2 blank2 text2 blank2 indent2 '
-            'StateMachine3 text3 finished3 finished2 '
+            'StateMachine3 text3 blank3 finished3 finished2 '
             'bullet1 knownindent1 '
             'StateMachine2 text2 blank2 literalblock2(4) finished2 '
             'text1 finished1').split()
 para1 = testtext[:2]
-item1 = [line[2:] for line in testtext[2:8]]
-item2 = [line[2:] for line in testtext[9:-2]]
+item1 = [line[2:] for line in testtext[2:9]]
+item2 = [line[2:] for line in testtext[9:-1]]
 lbindent = 6
-literalblock = [line[lbindent:] for line in testtext[11:-2]]
+literalblock = [line[lbindent:] for line in testtext[11:-1]]
 para2 = testtext[-1]
 
 
@@ -169,7 +169,7 @@ class SMWSTests(unittest.TestCase):
         self.sm.nextline()
         indented, offset, good = self.sm.getknownindented(2)
         self.assertEquals(indented, item2)
-        self.assertEquals(offset, len(para1) + len(item1) + 1)
+        self.assertEquals(offset, len(para1) + len(item1))
         self.failUnless(good)
         self.sm.previousline(3)
         if self.sm.debug:
@@ -179,7 +179,7 @@ class SMWSTests(unittest.TestCase):
             print '\ntest_getindented: indented:\n', indented
         self.assertEquals(indent, lbindent)
         self.assertEquals(indented, literalblock)
-        self.assertEquals(offset, (len(para1) + len(item1) + len(item2) + 1
+        self.assertEquals(offset, (len(para1) + len(item1) + len(item2)
                                    - len(literalblock)))
         self.failUnless(good)
 
