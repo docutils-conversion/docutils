@@ -3,8 +3,8 @@
 ======================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/10/18 03:35:21 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/03/28 04:33:05 $
 
 This document details Python-specific interpretations of the
 `reStructuredText Markup Specification`_, part of the
@@ -69,8 +69,8 @@ when necessary::
 To classify identifiers explicitly, the role is given along with the
 identifier in either prefix or suffix form::
 
-    Use method:`Keeper.storedata` to store the object's data in the
-    `Keeper.data`:instance_attribute.
+    Use :method:`Keeper.storedata` to store the object's data in
+    `Keeper.data`:instance_attribute:.
 
 The role may be one of 'package', 'module', 'class', 'method',
 'function', 'module_attribute', 'class_attribute',
