@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/15 22:45:58 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/03/11 03:26:16 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Substitutions.
@@ -49,10 +49,10 @@ Here's an |unknown| substitution.
 <document>
     <paragraph>
         Here's an 
-        <problematic>
+        <problematic id="id2" refid="id1">
             unknown
          substitution.
-    <system_message level="3" type="ERROR">
+    <system_message id="id1" level="3" refid="id2" type="ERROR">
         <paragraph>
             Undefined substitution referenced: "unknown".
 """],

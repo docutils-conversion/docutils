@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/08 04:26:07 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/11 03:25:46 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Footnotes.
@@ -186,7 +186,7 @@ Mixed anonymous and labelled auto-numbered footnotes:
         <footnote_reference auto="1" refname="3">
             3
          should be 3, \n\
-        <problematic>
+        <problematic refid="id7">
             [#]_
          is one too many,
         <footnote_reference auto="1" refname="two">
@@ -222,12 +222,12 @@ Mixed anonymous and labelled auto-numbered footnotes:
     <footnote auto="1" dupname="five" id="id4">
         <label>
             6
-        <system_message level="2" type="WARNING">
+        <system_message level="2" refid="id4" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "five"
         <paragraph>
             Auto-numbered footnote 5 again (duplicate).
-    <system_message level="3" type="ERROR">
+    <system_message id="id7" level="3" type="ERROR">
         <paragraph>
             Too many autonumbered footnote references: only 2 corresponding footnotes available.
 """],
@@ -331,7 +331,7 @@ and labelled auto-numbered footnotes:
         <footnote_reference auto="1" refname="6">
             6
          should be 6, \n\
-        <problematic>
+        <problematic refid="id8">
             [#]_
          is one too many,
         <footnote_reference auto="1" refname="five">
@@ -371,12 +371,12 @@ and labelled auto-numbered footnotes:
     <footnote auto="1" dupname="five" id="id5">
         <label>
             7
-        <system_message level="2" type="WARNING">
+        <system_message level="2" refid="id5" type="WARNING">
             <paragraph>
                 Duplicate explicit target name: "five"
         <paragraph>
             Auto-numbered footnote 5 again (duplicate).
-    <system_message level="3" type="ERROR">
+    <system_message id="id8" level="3" type="ERROR">
         <paragraph>
             Too many autonumbered footnote references: only 2 corresponding footnotes available.
 """],

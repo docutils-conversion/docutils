@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/03/08 04:26:22 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/03/11 03:26:05 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.universal.Messages.
@@ -41,7 +41,7 @@ doctree by the test framework.)
 <document>
     <paragraph>
         This \n\
-        <problematic>
+        <problematic id="id2" refid="id1">
             unknown substitution
          will generate a system message, thanks to
         the \n\
@@ -58,12 +58,9 @@ doctree by the test framework.)
     <section class="system-messages">
         <title>
             Docutils System Messages
-        <system_message level="3" type="ERROR">
+        <system_message id="id1" level="3" refid="id2" type="ERROR">
             <paragraph>
                 Undefined substitution referenced: "unknown substitution".
-    <system_message level="3" type="ERROR">
-        <paragraph>
-            Undefined substitution referenced: "unknown substitution".
 """],
 ])
 

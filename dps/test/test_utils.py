@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/21 03:39:10 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/11 03:26:25 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for utils.py.
@@ -137,26 +137,29 @@ class ReporterCategoryTests(unittest.TestCase):
         self.stream.seek(0)
         self.stream.truncate()
         self.reporter = utils.Reporter(2, 4, self.stream, 1)
-        self.reporter.setcategory('lemon', 1, 3, self.stream, 0)
+        self.reporter.setconditions('lemon', 1, 3, self.stream, 0)
 
     def test_getset(self):
-        self.reporter.setcategory('test', 5, 5, None, 0)
-        self.assertEquals(self.reporter.getcategory('other'),
+        self.reporter.setconditions('test', 5, 5, None, 0)
+        self.assertEquals(self.reporter.getconditions('other').astuple(),
                           (1, 2, 4, self.stream))
-        self.assertEquals(self.reporter.getcategory('test'),
+        self.assertEquals(self.reporter.getconditions('test').astuple(),
                           (0, 5, 5, sys.stderr))
-        self.assertEquals(self.reporter.getcategory('test.dummy'),
+        self.assertEquals(self.reporter.getconditions('test.dummy').astuple(),
                           (0, 5, 5, sys.stderr))
-        self.reporter.setcategory('test.dummy.spam', 1, 2, self.stream, 1)
-        self.assertEquals(self.reporter.getcategory('test.dummy.spam'),
-                          (1, 1, 2, self.stream))
-        self.assertEquals(self.reporter.getcategory('test.dummy'),
+        self.reporter.setconditions('test.dummy.spam', 1, 2, self.stream, 1)
+        self.assertEquals(
+              self.reporter.getconditions('test.dummy.spam').astuple(),
+              (1, 1, 2, self.stream))
+        self.assertEquals(self.reporter.getconditions('test.dummy').astuple(),
                           (0, 5, 5, sys.stderr))
-        self.assertEquals(self.reporter.getcategory('test.dummy.spam.eggs'),
-                          (1, 1, 2, self.stream))
-        self.reporter.unsetcategory('test.dummy.spam')
-        self.assertEquals(self.reporter.getcategory('test.dummy.spam.eggs'),
-                          (0, 5, 5, sys.stderr))
+        self.assertEquals(
+              self.reporter.getconditions('test.dummy.spam.eggs').astuple(),
+              (1, 1, 2, self.stream))
+        self.reporter.unsetconditions('test.dummy.spam')
+        self.assertEquals(
+              self.reporter.getconditions('test.dummy.spam.eggs').astuple(),
+              (0, 5, 5, sys.stderr))
 
     def test_debug(self):
         sw = self.reporter.debug('debug output', category='lemon.curry')
