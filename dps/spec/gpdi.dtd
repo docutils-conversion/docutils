@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2001/09/26 03:21:15 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2001/10/18 03:32:58 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -109,7 +109,8 @@ Hyperlink attributes.
 ================================================================== -->
 
 <!ENTITY % structure.model
-  " ( ((%body.elements;)+, (%structural.elements;)*)
+  " ( ((%body.elements;)+, division*, (%structural.elements;)*)
+    | (division+, (%structural.elements;)*)
     | (%structural.elements;)+ ) ">
 
 <!ENTITY % text.model
@@ -207,6 +208,9 @@ http://www.oasis-open.org/html/tm9901.htm).
 
 <!ELEMENT section (title, %structure.model;)>
 <!ATTLIST section %basic.atts;>
+
+<!ELEMENT division (%body.elements;)+>
+<!ATTLIST division %basic.atts;>
 
 
 <!--
