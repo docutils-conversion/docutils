@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.17 $
-:Date: $Date: 2001/11/06 02:09:44 $
+:Revision: $Revision: 1.18 $
+:Date: $Date: 2001/11/09 23:13:22 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -554,7 +554,7 @@ class tip(Admonition, Element): pass
 class hint(Admonition, Element): pass
 class warning(Admonition, Element): pass
 class comment(Special, TextElement): pass
-class directive(Special, Element): pass
+class directive(Special, TextElement): pass
 class substitution(Special, TextElement): pass
 class target(Special, Inline, TextElement): pass
 class footnote(General, Element): pass
