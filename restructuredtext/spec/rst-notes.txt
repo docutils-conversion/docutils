@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-Date: $Date: 2001/08/11 02:11:59 $
-Revision: $Revision: 1.6 $
+Date: $Date: 2001/08/11 23:20:51 $
+Revision: $Revision: 1.7 $
 
 
 To Do
@@ -132,6 +132,100 @@ nailed down. However, a serious drawback of this approach is to limit
 the content of each list item to a single paragraph. Garth Kidd is
 attempting to work out a consistent set of rules for "lazy
 indentation".
+
+
+David's Idea for Lazy Indentation
+`````````````````````````````````
+
+Consider a paragraph in a word processor. It is a single logical line
+of text which ends with a newline, soft-wrapped arbitrarily at the
+right edge of the page or screen. We can think of a plaintext
+paragraph in the same way, as a single logical line of text, ending
+with two newlines (a blank line) instead of one, and which may contain
+arbitrary line breaks (newlines) where it was accidentally
+hard-wrapped by an application. We can compensate for the accidental
+hard-wrapping by "unwrapping" every unindented second and subsequent
+line. The indentation of the first line of a paragraph or list item
+would determine the indentation for the entire element. Blank lines
+would be required between list items when using lazy indentation.
+
+The following example shows the lazy indentation of multiple body
+elements::
+
+    - This is the first paragraph
+    of the first list item.
+
+      Here is the second paragraph
+    of the first list item.
+
+    - This is the first paragraph
+    of the second list item.
+
+      Here is the second paragraph
+    of the second list item.
+
+A more complex example shows the limitations of lazy indentation::
+
+    - This is the first paragraph
+    of the first list item.
+
+      Next is a definition list item:
+
+      Term
+          Definition. The indentation of the term is
+    required, as is the indentation of the definition's
+    first line.
+    
+          When the definition extends to more than
+    one line, lazy indentation may occur. (This is the second
+    paragraph of the definition.)
+
+    - This is the first paragraph
+    of the second list item.
+
+      - Here is the first paragraph of
+    the first item of a nested list.
+
+      So this paragraph would be outside of the nested list,
+    but inside the second list item of the outer list.
+
+    But this paragraph is not part of the list at all.
+
+And the ambiguity remains::
+
+    - Look at the hyphen at the beginning of the next line
+    - is it a second list item marker, or a dash in the text?
+    
+    Similarly, we may want to refer to numbers inside enumerated
+    lists:
+    
+    1. How many socks in a pair? There are
+    2. How many pants in a pair? Exactly
+    1. Go figure.
+
+Literal blocks and block quotes would still require consistent
+indentation for all their lines. For block quotes, we might be able to
+get away with only requiring that the first line of each contained
+element be indented. For example::
+
+    Here's a paragraph.
+
+        This is a paragraph inside a block quote.
+    Second and subsequent lines need not be indented at all.
+
+        - A bullet list inside
+    the block quote.
+
+          Second paragraph of the
+    bullet list inside the block quote.
+
+Although feasible, this form of lazy indentation has problems. The
+document structure and hierarchy is not obvious from the indentation,
+making the source plaintext difficult to read. This will also make
+keeping track of the indentation while writing difficult and
+error-prone. However, these problems may be acceptable for Wikis and
+email mode, where we may be able to rely on less complex structure
+(few nested lists, for example).
 
 
 Horizontal Rules
