@@ -1,17 +1,22 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.1 2001/07/21 22:14:04 goodger Exp $
+# $Id: setup.py,v 1.2 2001/07/28 04:55:29 goodger Exp $
 
 from distutils.core import setup
 
-if __name__ == '__main__' :
-
-    setup(name = 'restructuredtext',
+def do_setup():
+    dist = setup(
+          name = 'restructuredtext',
           description = 'reStructuredText parser for Python DPS',
           #long_description = '',
-          url = 'http://structuredtext.sf.net/',
-          version = '0.1',
+          url = 'http://structuredtext.sourceforge.net/',
+          version = '0.4',
           author = 'David Goodger',
           author_email = 'dgoodger@bigfoot.com',
-          license = '',
-          packages = ['dps.parsers.restructuredtext'],
+          license = 'public domain',
+          packages = ['dps.parsers.restructuredtext',
+                      'dps.parsers.restructuredtext.directives'],
           package_dir = {'dps.parsers.restructuredtext': 'restructuredtext'})
+    return dist
+
+if __name__ == '__main__' :
+    do_setup()
