@@ -4,8 +4,8 @@
 ======================================================================
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.4 $
-Date: $Date: 2001/07/27 04:07:56 $
+Revision: $Revision: 1.5 $
+Date: $Date: 2001/08/14 03:52:29 $
 Copyright: This DTD has been placed in the public domain.
 Filename: gpdi.dtd
 
@@ -250,7 +250,7 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ATTLIST field_name %basic.atts;>
 
 <!-- Support for Javadoc-style tags with arguments. -->
-<!ELEMENT field_argument %text.model;>
+<!ELEMENT field_argument (#PCDATA)>
 <!ATTLIST field_argument %basic.atts;>
 
 <!ELEMENT field_body (%body.elements;)+>
