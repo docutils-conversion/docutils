@@ -6,7 +6,7 @@
 ================================
 
 .. Above is the document title, and below is the subtitle.
-   They are transformed from section titles after parsing. 
+   They are transformed from section titles after parsing.
 
 --------------------------------
  Examples of Syntax Constructs
@@ -17,9 +17,9 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :organization: humankind
-:date: $Date: 2002/03/11 03:14:29 $
+:date: $Date: 2002/03/16 05:27:02 $
 :status: This is a "work in progress"
-:revision: $Revision: 1.7 $
+:revision: $Revision: 1.8 $
 :version: 1
 :copyright: This document has been placed in the public domain. You
             may do with it as you wish. You may copy, modify,
@@ -40,6 +40,10 @@
    :keywords: reStructuredText, test, parser
    :description lang=en: A test document, containing at least one
        example of each reStructuredText construct.
+
+.. _table of contents:
+
+.. contents::
 
 Structural Elements
 ===================
@@ -268,6 +272,15 @@ __ Targets_
 Directives
 ----------
 
+.. contents:: :local:
+
+Document Components
+```````````````````
+
+An example of the "contents" directive can be seen above this section
+(local, untitled table of contents) and at the beginning of the
+document (document-wide `table of contents`_).
+
 Images
 ``````
 
@@ -278,7 +291,7 @@ An image directive:
 A figure directive:
 
 .. figure:: ../docs/images/title.png
-   [alt="reStructuredText, the markup syntax"]
+   :alt: reStructuredText, the markup syntax
 
    A figure is an image with a caption and/or a legend:
 
