@@ -19,7 +19,7 @@
 
     <p align="right"><em><a href="http://structuredtext.sourceforge.net/docs/quickref.html">http://structuredtext.sourceforge.net/docs/quickref.html</a></em>
 	<br align="right"><em>Being a cheat-sheet for reStructuredText</em>
-	<br align="right"><em>Version 0.4.7 of 2001/08/23</em>
+	<br align="right"><em>Version 0.4.8 of 2001/08/24</em>
 
 
     <p>The full details may be found on the
@@ -201,12 +201,12 @@
 		  <a href="http://www.python.org">Python</a>.
 	      <tr bgcolor="#99CCFF"><td><em>Call-out form</em>
 	      <tr><td>Indirect hyperlinks, like
-		  <a href="#labPython">[Python]</a>.
+		  <a href="#labPython"><i>Python</i></a>.
 
 		  <p><table>
 		    <tr><td colspan="2"><hr>
 			<!-- <tr><td colspan="2">Footnotes: -->
-		    <tr><td><a name="labPython"><strong>[Python]</strong></a>
+		    <tr><td><a name="labPython"><i>Python:</i></a>
 		      <td> <a href="http://www.python.org/">http://www.python.org/</a>
 		  </table>
 	    </table>
@@ -526,12 +526,12 @@
 	<tr valign="top">
 	  <td>
 <samp>Definition&nbsp;lists:</samp>
-
-<p>what
+<br>
+<br><samp>what</samp>
 <br><samp>&nbsp;&nbsp;Definition&nbsp;lists&nbsp;associate&nbsp;a&nbsp;term&nbsp;with</samp>
 <br><samp>&nbsp;&nbsp;a&nbsp;definition.</samp>
-
-<p>how
+<br>
+<br><samp>how</samp>
 <br><samp>&nbsp;&nbsp;The&nbsp;term&nbsp;is&nbsp;a&nbsp;one-line&nbsp;phrase,&nbsp;and&nbsp;the</samp>
 <br><samp>&nbsp;&nbsp;definition&nbsp;is&nbsp;one&nbsp;or&nbsp;more&nbsp;paragraphs&nbsp;or</samp>
 <br><samp>&nbsp;&nbsp;body&nbsp;elements,&nbsp;indented&nbsp;relative&nbsp;to&nbsp;the</samp>
@@ -565,7 +565,7 @@
       <tbody>
 	<tr valign="top">
 	  <td>
-:Authors:
+<samp>:Authors:</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;Guido&nbsp;van&nbsp;Rossum,</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;Tim&nbsp;Peters</samp>
 
@@ -579,7 +579,7 @@
 		<td><strong>Authors:</strong>
 		<td>Guido van Rossum,
 		  Tim Peters
-		  <br>(and sundry other good-natured folks)
+		  <p>(and sundry other good-natured folks)
 	      <tr><td><strong>Version:</strong><td>1.0 of 2001/08/08
 	      <tr><td><strong>Dedication:</strong><td>To my father.
 	    </table>
@@ -598,69 +598,69 @@
       <tbody>
 	<tr valign="top">
 	  <td>
-<samp>Literal&nbsp;blocks&nbsp;are&nbsp;preceded&nbsp;by&nbsp;a</samp>
-<br><samp>paragraph&nbsp;ending&nbsp;in&nbsp;two&nbsp;colons,</samp>
-<br><samp>which&nbsp;is&nbsp;*shown*&nbsp;as&nbsp;just&nbsp;one&nbsp;in</samp>
-<br><samp>the&nbsp;output::</samp>
-
-<p><samp>&nbsp;&nbsp;And&nbsp;are&nbsp;indented&nbsp;relative&nbsp;to</samp>
-<br><samp>&nbsp;&nbsp;said&nbsp;paragraph.</samp>
-
-<p><samp>&nbsp;&nbsp;They&nbsp;may&nbsp;contain&nbsp;blank&nbsp;lines,&nbsp;which</samp>
-<br><samp>&nbsp;&nbsp;are&nbsp;preserved.</samp>
-
-<p><samp>A&nbsp;space&nbsp;before&nbsp;the&nbsp;``::``&nbsp;causes&nbsp;it&nbsp;to</samp>
-<br><samp>be&nbsp;omitted,&nbsp;like&nbsp;this&nbsp;::</samp>
-
-<p><samp>&nbsp;&nbsp;A&nbsp;``::``&nbsp;by&nbsp;itself&nbsp;(as&nbsp;a</samp>
-<br><samp>&nbsp;&nbsp;paragraph)&nbsp;is&nbsp;allowed</samp>
-
-<p><samp>::</samp>
-
-<p><samp>&nbsp;&nbsp;but&nbsp;will&nbsp;be&nbsp;omitted.</samp>
-
-<p><samp>They&nbsp;end&nbsp;when&nbsp;something&nbsp;returns&nbsp;to&nbsp;the</samp>
-<br><samp>preceding&nbsp;paragraph's&nbsp;indentation.&nbsp;This</samp>
-<br><samp>means&nbsp;that&nbsp;something&nbsp;like::</samp>
-
-<p><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;We&nbsp;start&nbsp;here</samp>
+<samp>A&nbsp;paragraph&nbsp;containing&nbsp;only&nbsp;two&nbsp;colons</samp>
+<br><samp>indicates&nbsp;that&nbsp;the&nbsp;following&nbsp;indented</samp>
+<br><samp>text&nbsp;is&nbsp;a&nbsp;literal&nbsp;block.</samp>
+<br>
+<br><samp>::</samp>
+<br>
+<br><samp>&nbsp;&nbsp;Whitespace,&nbsp;newlines,&nbsp;blank&nbsp;lines,&nbsp;and</samp>
+<br><samp>&nbsp;&nbsp;all&nbsp;kinds&nbsp;of&nbsp;markup&nbsp;(like&nbsp;*this*&nbsp;or</samp>
+<br><samp>&nbsp;&nbsp;\this)&nbsp;is&nbsp;preserved&nbsp;by&nbsp;literal&nbsp;blocks.</samp>
+<br>
+<br><samp>&nbsp;&nbsp;The&nbsp;paragraph&nbsp;containing&nbsp;only&nbsp;'::'</samp>
+<br><samp>&nbsp;&nbsp;will&nbsp;be&nbsp;omitted&nbsp;from&nbsp;the&nbsp;result.</samp>
+<br>
+<br><samp>The&nbsp;``::``&nbsp;may&nbsp;be&nbsp;tacked&nbsp;onto&nbsp;the&nbsp;very</samp>
+<br><samp>end&nbsp;of&nbsp;any&nbsp;paragraph.&nbsp;The&nbsp;``::``&nbsp;will&nbsp;be</samp>
+<br><samp>omitted&nbsp;if&nbsp;it&nbsp;is&nbsp;preceded&nbsp;by&nbsp;whitespace.</samp>
+<br><samp>The&nbsp;``::``&nbsp;will&nbsp;be&nbsp;converted&nbsp;to&nbsp;a&nbsp;single</samp>
+<br><samp>colon&nbsp;if&nbsp;preceded&nbsp;by&nbsp;text,&nbsp;like&nbsp;this::</samp>
+<br>
+<br><samp>&nbsp;&nbsp;It's&nbsp;very&nbsp;convenient&nbsp;to&nbsp;use&nbsp;this&nbsp;form.</samp>
+<br>
+<br><samp>Literal&nbsp;blocks&nbsp;end&nbsp;when&nbsp;text&nbsp;returns&nbsp;to</samp>
+<br><samp>the&nbsp;preceding&nbsp;paragraph's&nbsp;indentation.</samp>
+<br><samp>This&nbsp;means&nbsp;that&nbsp;something&nbsp;like::</samp>
+<br>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;We&nbsp;start&nbsp;here</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;continue&nbsp;here</samp>
 <br><samp>&nbsp;&nbsp;and&nbsp;end&nbsp;here.</samp>
+<br>
+<br><samp>is&nbsp;possible.</samp>
 
-<p><samp>is&nbsp;possible.</samp>
 	  <td>
-	    Literal blocks are preceded by a
-	    paragraph ending in two colons,
-	    which is <em>shown</em> as just one in
-	    the output:
+        <p>A paragraph containing only two colons
+indicates that the following indented
+text is a literal block.
 
-	    <pre>
-  And are indented relative to
-  said paragraph.
+        <pre>
+  Whitespace, newlines, blank lines, and
+  all kinds of markup (like *this* or
+  \this) is preserved by literal blocks.
 
-  They may contain blank lines, which
-  are preserved.</pre>
+  The paragraph containing only '::'
+  will be omitted from the result.</pre>
 
-	    <p>A space before the <samp>::</samp> causes it to
-	      be omitted, like this
+        <p>The <samp>::</samp> may be tacked onto the very
+end of any paragraph. The <samp>::</samp> will be
+omitted if it is preceded by whitespace.
+The <samp>::</samp> will be converted to a single
+colon if preceded by text, like this:
 
-	    <pre>
-  A ``::`` by itself (as a
-  paragraph) is allowed</pre>
+        <pre>
+  It's very convenient to use this form.</pre>
 
-	    <pre>
-  but will be omitted.</pre>
+        <p>Literal blocks end when text returns to
+the preceding paragraph's indentation.
+This means that something like:
 
-	    <p>They end when something returns to the
-	      preceding paragraph's indentation. This
-	      means that something like:
-
-	    <pre>
+        <pre>
       We start here
     and continue here
   and end here.</pre>
 
-	    <p>is possible.
+        <p>is possible.
     </table>
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
@@ -752,7 +752,7 @@
     </address>
     <!-- Created: Fri Aug 03 09:11:57 GMT Daylight Time 2001 -->
     <!-- hhmts start -->
-Last modified: Thu Aug 23 23:56 EDT 2001
+Last modified: Thu Aug 24 22:00 EDT 2001
 <!-- hhmts end -->
   </body>
 </html>
