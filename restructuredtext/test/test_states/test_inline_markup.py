@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/01/25 23:43:03 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/01/30 05:03:17 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -509,6 +509,17 @@ totest['substitution_references'] = [
         <substitution_reference refname="substitution reference">
             substitution reference
 """],
+["""\
+|substitution
+reference|
+""",
+"""\
+<document>
+    <paragraph>
+        <substitution_reference refname="substitution reference">
+            substitution
+            reference
+"""],
 ]
 
 totest['standalone_hyperlink'] = [
@@ -577,6 +588,18 @@ are not recognized): signal:noise, a:b.
         are not recognized): signal:noise, a:b.
 """],
 ]
+
+totest['miscellaneous'] = [
+["""\
+__This__ should be left alone.
+""",
+"""\
+<document>
+    <paragraph>
+        __This__ should be left alone.
+"""],
+]
+
 
 if __name__ == '__main__':
     import unittest
