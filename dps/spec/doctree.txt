@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/10/26 04:31:06 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/10/27 05:38:27 $
 
 This document describes the internal data structure representing
 document trees in the Python Docstring Processing System. The data
@@ -25,10 +25,8 @@ further body elements, etc. ::
   |                             +--------------------------------------+
   |                             | sections  [each begins with a title] |
   +-----------------------------+-------------------------+------------+
-  | divisions                                             | (sections) |
-  +-------------------------------------------------------+------------+
-  | [body elements:]                                      |
-  |         | - literal | - lists  |       | - hyperlink  |
+  | [body elements:]                                      | (sections) |
+  |         | - literal | - lists  |       | - hyperlink  +------------+
   |         |   blocks  | - tables |       |   targets    |
   | para-   | - doctest | - block  | foot- | - directives |
   | graphs  |   blocks  |   quotes | notes | - comments   |
@@ -54,12 +52,12 @@ following groups:
   organization_, contact_, version_, revision_, status_, date_,
   copyright_, abstract_
 
-- _`Structural elements`: section_
+- _`Structural elements`: section_, transition_
 
 - _`Body elements`:
 
   - _`General body elements`: paragraph_, literal_block_,
-    block_quote_, doctest_block_, table_, figure_, footnote_
+    block_quote_, doctest_block_, table_, figure_, image_, footnote_
 
   - _`Lists`: bullet_list_, enumerated_list_, definition_list_,
     field_list_, option_list_
@@ -71,7 +69,7 @@ following groups:
     system_warning_
 
 - _`Inline elements`: emphasis_, strong_, interpreted_, literal_,
-  link_, footnote_reference_, image_
+  link_, target_, footnote_reference_, image_
 
 
 ``document``
@@ -114,52 +112,52 @@ source_.
 
 ``anonymous``
 -------------
-The ``anonymous`` attribute 
+The ``anonymous`` attribute
 
 
 ``auto``
 --------
-The ``auto`` attribute 
+The ``auto`` attribute
 
 
 ``dupname``
 -----------
-The ``dupname`` attribute 
+The ``dupname`` attribute
 
 
 ``id``
 ------
-The ``id`` attribute 
+The ``id`` attribute
 
 
 ``name``
 --------
-The ``name`` attribute 
+The ``name`` attribute
 
 
 ``refid``
 ---------
-The ``refid`` attribute 
+The ``refid`` attribute
 
 
 ``refname``
 -----------
-The ``refname`` attribute 
+The ``refname`` attribute
 
 
 ``refuri``
 ----------
-The ``refuri`` attribute 
+The ``refuri`` attribute
 
 
 ``source``
 ----------
-The ``source`` attribute 
+The ``source`` attribute
 
 
 ``xml:space``
 -------------
-The ``xml:space`` attribute 
+The ``xml:space`` attribute
 
 
 Internal Attributes
@@ -181,27 +179,27 @@ elements. See `Common Attributes`_.
 
 ``%body.elements;``
 ===================
-The ``%body.elements;`` parameter entity 
+The ``%body.elements;`` parameter entity
 
 
 ``%inline.elements;``
 ====================
-The ``%inline.elements;`` parameter entity 
+The ``%inline.elements;`` parameter entity
 
 
 ``%link.atts;``
 ===============
-The ``%link.atts;`` parameter entity 
+The ``%link.atts;`` parameter entity
 
 
 ``%structure.model;``
 =====================
-The ``%structure.model;`` parameter entity 
+The ``%structure.model;`` parameter entity
 
 
 ``%text.model;``
 ================
-The ``%text.model;`` parameter entity 
+The ``%text.model;`` parameter entity
 
 
 --------------------------------
@@ -259,7 +257,7 @@ was chosen.
    appear to be at different levels. There's really an invisible
    "first division". The horizontal rule splits the document body into
    two segments, which should be treated uniformly.
-   
+
 2. Treating "divisions" uniformly brings us to the second
    possibility::
 
@@ -281,7 +279,7 @@ was chosen.
    contained within a division element. This makes the document tree
    deeper. This is similar to the way HTML treats document contents:
    grouped within a <BODY> element.
-   
+
    This solution has been chosen.
 
 3. Implement them as "transitions", empty elements::
@@ -301,7 +299,7 @@ was chosen.
    the document tree flatter, but the idea of a "point element" like
    "transition" smells bad. A transition isn't a thing itself, it's
    the space between two divisions.
-   
+
 
 .. _Generic Plaintext Document Interface DTD:
 .. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
