@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger; Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/02/06 03:01:40 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/02/07 01:59:51 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Reader modules.
@@ -15,6 +15,7 @@ __docformat__ = 'reStructuredText'
 __all__ = ['Reader', 'get_reader_class']
 
 
+import sys
 from dps import nodes, utils
 
 
@@ -27,8 +28,11 @@ class Reader:
     `parse()`, and `transform()`. Call `read()` to process a document.
     """
 
-    def __init__(self, languagecode='en', warninglevel=2, errorlevel=4,
-                 warningstream=None, debug=0):
+    transforms = ()
+    """Ordered list of transform classes (each with a ``transform()`` method).
+    Populated by subclasses. `Reader.transform()` instantiates & runs them."""
+
+    def __init__(self, reporter, languagecode):
         """
         Initialize the Reader instance.
 
@@ -39,8 +43,7 @@ class Reader:
         self.languagecode = languagecode
         """Default language for new documents."""
 
-        self.reporter = utils.Reporter(warninglevel, errorlevel, warningstream,
-                                       debug)
+        self.reporter = reporter
         """A `utils.Reporter` instance shared by all doctrees."""
 
         self.source = None
@@ -50,36 +53,59 @@ class Reader:
         """Raw text input; either a single string or, for more complex cases,
         a collection of strings."""
 
+        self.transforms = list(self.transforms)
+        """Instance copy of `Reader.transforms`; may be modified by client."""
+
     def read(self, source, parser):
         self.source = source
-        self.scan()
-        self.parse(parser)              # parser may vary depending on input
+        self.parser = parser
+        self.scan(self.source)          # may modify self.parser,
+                                        # depending on input
+        self.parse(self.parser)
         self.transform()
-        return self.getdocument()
+        return self.document
 
     def scan(self, source):
         """Override to read `self.input` from `source`."""
         raise NotImplementedError('subclass must override this method')
 
+    def scanfile(self, source):
+        """
+        Scan a single file, store data in `self.input`.
+
+        Parameter `source` may be:
+
+        (a) a file-like object, which is read directly;
+        (b) a path to a file, which is opened and then read; or
+        (c) `None`, which implies `sys.stdin`.
+        """
+        if hasattr(source, 'read'):
+            self.input = source.read()
+        elif self.source:
+            self.input = open(source).read()
+        else:
+            self.input = sys.stdin.read()
+
     def parse(self, parser):
-        """Override to parse `self.input` into one or more document trees."""
-        raise NotImplementedError('subclass must override this method')
+        """Parse `self.input` into a document tree."""
+        self.document = self.newdocument()
+        parser.parse(self.input, self.document)
 
     def transform(self):
-        """Override to run document tree transforms."""
-        raise NotImplementedError('subclass must override this method')
+        """Run all of the transforms defined for this Reader."""
+        for xclass in self.transforms:
+            xclass().transform(self.document)
 
     def newdocument(self, languagecode=None):
         """Create and return a new empty document tree (root node)."""
-        if not languagecode:
-            languagecode = self.languagecode
-        document = nodes.document(languagecode=languagecode,
-                                  reporter=self.reporter)
+        document = nodes.document(
+              languagecode=(languagecode or self.languagecode),
+              reporter=self.reporter)
         return document
 
 
 _reader_aliases = {'rtxt': 'standalone',
-            'restructuredtext': 'standalone'}
+                   'restructuredtext': 'standalone'}
 
 def get_reader_class(readername):
     """Return the Reader class from the `readername` module."""

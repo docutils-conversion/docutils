@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/02/06 02:56:21 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/02/07 01:58:29 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Writer modules.
@@ -15,6 +15,9 @@ __docformat__ = 'reStructuredText'
 __all__ = ['Writer', 'get_writer_class']
 
 
+import sys
+
+
 class Writer:
 
     """
@@ -23,6 +26,38 @@ class Writer:
     Call `write()` to process a document.
     """
 
+    def write(self, document, destination):
+        self.document = document
+        self.destination = destination
+        self.transform()
+        self.record(self.document, self.destination)
+
+    def transform(self):
+        """Override to run document tree transforms."""
+        raise NotImplementedError('subclass must override this method')
+
+    def record(self, document, destination):
+        """Override to record `document` to `destination`."""
+        raise NotImplementedError('subclass must override this method')
+
+    def recordfile(self, output, destination):
+        """
+        Write `output` to a single file.
+
+        Parameters:
+        - `output`: Data to write.
+        - `destination`: one of:
+
+          (a) a file-like object, which is written directly;
+          (b) a path to a file, which is opened and then written; or
+          (c) `None`, which implies `sys.stdout`.
+        """
+        if hasattr(self.destination, 'write'):
+            destination.write(output)
+        elif self.destination:
+            open(self.destination, 'w').write(output)
+        else:
+            sys.stdout.write(output)
     pass
 
 
