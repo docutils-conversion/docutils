@@ -1,22 +1,17 @@
 #!/usr/bin/env python
-#
-# I used to have a much prettier version of this script, but
-# inadvertently deleted it. Oops. Here's a quick, ugly, grotty hack
-# as a temporary replacement. --gtk
 
 """\
 quicktest.py: quickly test the restructuredtext parser.
 
 Usage::
 
-    quicktest.py [-p|-q|-r|-t|-x] [-q] [filename]
+    quicktest.py [-p|-r|-t|-x] [filename]
 
 ``filename`` is the name of the file to use as input (default is stdin).
 
 Options:
 
 -p, --pretty  output pretty pseudo-xml: no '&abc;' entities (default)
--q, --quiet   don't print delimeters (except test wrappers)
 -r, --rawxml  output raw xml
 -t, --test    output in test format as per test_states.py
 -x, --xml     output pretty xml (indented)
@@ -25,14 +20,13 @@ Options:
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/08/25 02:14:30 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/08 03:30:08 $
 :Copyright: This module has been placed in the public domain.
 
 """
 
-import sys
-import getopt
+import sys, os, getopt
 from StringIO import StringIO
 
 try:
@@ -44,18 +38,13 @@ def usage():
     print __doc__
 
 def _pretty(input, document):
-    return document.pprint()
-
-def _xml(document, indent):
-    writer = StringIO()
-    document.asdom().writexml(writer, '', indent, '\n')
-    return writer.getvalue()
+    return document.pformat()
 
 def _rawxml(input, document):
-    return _xml(document, '')
+    return document.asdom().toprettyxml('', '\n')
 
 def _prettyxml(input, document):
-    return _xml(document, '    ')
+    return document.asdom().toprettyxml('    ', '\n')
 
 def _test(input, document):
     tq = '"""'
@@ -88,17 +77,20 @@ def format(outputFormat, input, document):
     formatter = _outputFormatters[outputFormat]
     return formatter(input, document)
 
-def main():
-    outputFormat = 'pretty'
-    isQuiet = 0
+def getArgs():
+	if os.name == 'mac' and len(sys.argv) <= 1:
+		return macGetArgs()
+	else:
+		return posixGetArgs()
 
+def posixGetArgs():
+    outputFormat = 'pretty'
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "rxptq",
-            [ "rawxml", "xml", "pretty", "test", "quiet" ])
+        opts, args = getopt.getopt(sys.argv[1:], "rxpth",
+            [ "rawxml", "xml", "pretty", "test", "help" ])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
-
     for o, a in opts:
         if o in ['-h', '--help']: # undocumented!
             usage()
@@ -111,28 +103,22 @@ def main():
             outputFormat = 'pretty'
         elif o in ['-t', '--test']:
             outputFormat = 'test'
-        elif o in ['-q', '--quiet']:
-            isQuiet = 1
         else:
             raise AssertionError, "getopt should have saved us!"
-
     if len(args)>1:
         print "Only one file at a time, thanks."
         usage()
         sys.exit(1)
-
     if len(args) == 1:
         inputFile = open(args[0])
     else:
         inputFile = sys.stdin
+    return inputFile, outputFormat
 
-    # All of that hard work getting the options, when doing the work
-    # couldn't possibly be simpler:
-
+def main():
+    inputFile, outputFormat = getArgs() # process cmdline arguments
     parser = Parser()                   # create a parser
     input = inputFile.read()            # gather input
-    if not isQuiet:                     # print a delimiter
-        print '=>'
     document = parser.parse(input)      # parse the input
     print format(outputFormat, input, document), # format & print
 
