@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/22 03:59:21 $
+:Date: $Date: 2001/08/23 04:20:02 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -64,6 +64,7 @@ Changed contact email addresses.
   - Changed underlines/overlines to require at least 4 characters
     (avoids '...', '???', etc.).
   - Factored SpecializedBody out of Body subclasses.
+  - Factored SpecializedText out of Text subclass.
   - Added support for field lists, option lists.
   - Added temporary support for tables.
   - Changed interpreted text roles to ':role:' syntax, outside of
@@ -75,8 +76,7 @@ Changed contact email addresses.
   - Added empty comment support.
   - Began adding auto-numbered footnote support.
   - Dropped requirement for blank line between definition list items.
-  - Fixed a bug with literal blocks (but the fix may have to be
-    fixed).
+  - Fixed a bug with literal blocks.
 
 * restructuredtext/test_states.py:
 
@@ -146,6 +146,7 @@ Changed contact email addresses.
   - Clarified handling of duplicate explicit hyperlink target names
     with identical URIs.
   - Added two escapes where needed.
+  - Added a note about backslashes in other contexts.
 
 * spec/pyextensions.txt:
 
