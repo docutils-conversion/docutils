@@ -1,17 +1,20 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.1 2001/07/22 22:36:35 goodger Exp $
+# $Id: setup.py,v 1.2 2001/07/28 04:48:21 goodger Exp $
 
 from distutils.core import setup
 
-if __name__ == '__main__' :
-
-    setup(name = 'dps',
+def do_setup():
+    dist = setup(name = 'dps',
           description = 'Python Docstring Processing System',
           #long_description = '',
-          url = 'http://docstring.sf.net/',
-          version = '0.1',
+          url = 'http://docstring.sourceforge.net/',
+          version = '0.4',
           author = 'David Goodger',
           author_email = 'dgoodger@bigfoot.com',
-          license = '',
+          license = 'public domain',
           packages = ['dps', 'dps.parsers', 'dps.formatters',
                       'dps.languages'])
+    return dist
+
+if __name__ == '__main__' :
+    do_setup()
