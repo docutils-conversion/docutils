@@ -2,14 +2,19 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/03/16 05:58:54 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/03/28 04:42:29 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms needed by most or all documents:
 
 - `Messages`: Placement of system messages stored in
   `nodes.document.messages`.
+- `TestMessages`: Like `Messages`, used on test runs.
+- `FinalReferences`: Resolve remaining references.
+- `Pending`: Execute pending transforms (abstract base class;
+  `FirstReaderPending`, `LastReaderPending`, `FirstWriterPending`, and
+  `LastWriterPending` are its concrete subclasses).
 """
 
 __docformat__ = 'reStructuredText'
@@ -27,6 +32,7 @@ class Messages(Transform):
     """
 
     def transform(self):
+        # @@@ filter out msgs below threshold?
         if len(self.doctree.messages) > 0:
             section = nodes.section(CLASS='system-messages')
             # @@@ get this from the language module?
@@ -44,6 +50,16 @@ class TestMessages(Transform):
 
     def transform(self):
         self.doctree += self.doctree.messages.getchildren()
+
+
+class FinalReferences(Transform):
+
+    """
+    Resolve any remaining references, check for dangling.
+    """
+
+    def transform(self):
+        pass
 
 
 class Pending(Transform):
@@ -84,18 +100,17 @@ class LastWriterPending(Pending):
     stage = 'last_writer'
 
 
-
 test_transforms = (TestMessages,)
 """Universal transforms to apply to the raw doctree when testing."""
 
 first_reader_transforms = (FirstReaderPending,)
 """Universal transforms to apply before any other Reader transforms."""
 
-last_reader_transforms = (LastReaderPending, Messages)
+last_reader_transforms = (LastReaderPending,)
 """Universal transforms to apply after all other Reader transforms."""
 
 first_writer_transforms = (FirstWriterPending,)
 """Universal transforms to apply before any other Writer transforms."""
 
-last_writer_transforms = (LastWriterPending,)
+last_writer_transforms = (LastWriterPending, FinalReferences, Messages)
 """Universal transforms to apply after all other Writer transforms."""
