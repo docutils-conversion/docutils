@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.40 $
-:Date: $Date: 2002/03/28 04:38:48 $
+:Revision: $Revision: 1.41 $
+:Date: $Date: 2002/04/13 17:01:20 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -65,8 +65,8 @@ Attributes shared by all elements in this DTD:
   " refid     IDREF     #IMPLIED ">
 
 <!-- Space-separated list of id references, for backlinks. -->
-<!ENTITY % refids.att
-  " refids    IDREFS    #IMPLIED ">
+<!ENTITY % backrefs.att
+  " backrefs  IDREFS    #IMPLIED ">
 
 <!--
 Internal reference to the `name` attribute of an element. On a
@@ -378,13 +378,13 @@ either the string separating it from the `option` (typically either
 <!ELEMENT footnote (label?, (%body.elements;)+)>
 <!ATTLIST footnote
     %basic.atts;
-    %refids.att;
+    %backrefs.att;
     %auto.att;>
 
 <!ELEMENT citation (label, (%body.elements;)+)>
 <!ATTLIST citation
     %basic.atts;
-    %refids.att;>
+    %backrefs.att;>
 
 <!ELEMENT label (#PCDATA)>
 <!ATTLIST label %basic.atts;>
@@ -435,7 +435,7 @@ Table elements: table, tgroup, colspec, thead, tbody, row, entry.
 <!ELEMENT system_message (%body.elements;)+>
 <!ATTLIST system_message
     %basic.atts;
-    %refids.att;
+    %backrefs.att;
     level     NMTOKEN   #IMPLIED
     type      CDATA     #IMPLIED>
 
