@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.29 $
-:Date: $Date: 2002/02/15 22:42:44 $
+:Revision: $Revision: 1.30 $
+:Date: $Date: 2002/02/20 04:17:36 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -55,10 +55,16 @@ class Node:
         """
         method = getattr(visitor, 'visit_' + self.__class__.__name__,
                          visitor.unknown_visit)
-        method(self)
-        children = self.getchildren()
-        for i in range(len(children)):
-            children[i].walk(visitor)
+        try:
+            method(self)
+            children = self.getchildren()
+            try:
+                for i in range(len(children)):
+                    children[i].walk(visitor)
+            except SkipSiblings:
+                pass
+        except (SkipChildren, SkipDeparture):
+            pass
 
     def walkabout(self, visitor):
         """
@@ -72,10 +78,18 @@ class Node:
         """
         method = getattr(visitor, 'visit_' + self.__class__.__name__,
                          visitor.unknown_visit)
-        method(self)
-        children = self.getchildren()
-        for i in range(len(children)):
-            children[i].walkabout(visitor)
+        try:
+            method(self)
+            children = self.getchildren()
+            try:
+                for i in range(len(children)):
+                    children[i].walkabout(visitor)
+            except SkipSiblings:
+                pass
+        except SkipChildren:
+            pass
+        except SkipDeparture:
+            return
         method = getattr(visitor, 'depart_' + self.__class__.__name__,
                          visitor.unknown_departure)
         method(self)
@@ -488,6 +502,12 @@ class document(Root, Element):
         self.refnames = {}
         """Mapping of reference names to lists of reference nodes."""
 
+        self.nameids = {}
+        """Mapping of names to unique id's."""
+
+        self.ids = {}
+        """Mapping of ids to nodes."""
+
         self.substitution_refs = {}
         """Mapping of substitution names to lists of substitution_reference
         nodes."""
@@ -513,25 +533,55 @@ class document(Root, Element):
         self.autofootnote_start = 1
         """Initial auto-numbered footnote number."""
 
+        self.id_start = 1
+        """Initial ID number."""
+
     def asdom(self, dom=xml.dom.minidom):
         domroot = dom.Document()
         domroot.appendChild(Element._rooted_dom_node(self, domroot))
         return domroot
 
-    def note_implicit_target(self, targetnode, innode=None):
+    def set_id(self, node, innode=None):
         if innode == None:
             innode = self
+        if node.has_key('id'):
+            id = node['id']
+            if self.ids.has_key(id) and self.ids[id] is not node:
+                msg = self.reporter.error('Duplicate ID: "%s"' % id)
+                innode += msg
+        else:
+            while 1:
+                id = 'id%s' % self.id_start
+                self.id_start += 1
+                if not self.ids.has_key(id):
+                    break
+            node['id'] = id
+        self.ids[id] = node
+        if node.has_key('name'):
+            name = node['name']
+            if self.nameids.has_key(name) \
+                  and self.ids[self.nameids[name]].has_key('name'):
+                msg = self.reporter.info(
+                      'Multiple IDs for name "%s": "%s", "%s"'
+                      % (name, self.nameids[name], id))
+                innode += msg
+            self.nameids[name] = id
+
+    def note_implicit_target(self, targetnode, innode=None):
         name = targetnode['name']
         if self.explicit_targets.has_key(name) \
               or self.external_targets.has_key(name) \
               or self.implicit_targets.has_key(name):
             sw = self.reporter.info(
                   'Duplicate implicit target name: "%s"' % name)
+            if innode == None:
+                innode = self
             innode += sw
             self.clear_target_names(name, self.implicit_targets)
             del targetnode['name']
             targetnode['dupname'] = name
         self.implicit_targets[name] = targetnode
+        self.set_id(targetnode)
 
     def note_explicit_target(self, targetnode, innode=None):
         if innode == None:
@@ -559,6 +609,7 @@ class document(Root, Element):
             innode += sw
             self.clear_target_names(name, self.implicit_targets)
         self.explicit_targets[name] = targetnode
+        self.set_id(targetnode)
 
     def clear_target_names(self, name, *targetdicts):
         for targetdict in targetdicts:
@@ -596,12 +647,12 @@ class document(Root, Element):
         self.note_refname(refnode)
 
     def note_substitution_def(self, substitutiondefnode, innode=None):
-        if innode == None:
-            innode = self
         name = substitutiondefnode['name']
         if self.substitution_defs.has_key(name):
             sw = self.reporter.error(
                   'Duplicate substitution definition name: "%s"' % name)
+            if innode == None:
+                innode = self
             innode += sw
             oldnode = self.substitution_defs[name]
             oldnode['dupname'] = oldnode['name']
@@ -837,3 +888,9 @@ class GenericNodeVisitor(NodeVisitor):
         exec """def depart_%s(self, node):
                     self.default_departure(node)\n""" % name
     del name
+
+
+class VisitorException(Exception): pass
+class SkipChildren(VisitorException): pass
+class SkipSiblings(VisitorException): pass
+class SkipDeparture(VisitorException): pass
