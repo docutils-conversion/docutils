@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/09/07 02:08:41 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/09/10 04:17:38 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -38,13 +38,13 @@ class _Node:
 
 class Text(_Node, MutableString):
 
-    tagName = '#text'
+    tagname = '#text'
 
     def __repr__(self):
         data = repr(self.data)
         if len(data) > 70:
             data = repr(self.data[:64] + ' ...')
-        return '<%s: %s>' % (self.tagName, data)
+        return '<%s: %s>' % (self.tagname, data)
 
     def _dom_node(self, dom):
         return dom.Text(self.data)
@@ -89,7 +89,11 @@ class _Element(_Node):
 
         element += [node1, node2]
     """
-    
+
+    tagname = None
+    """The element generic identifier. If None, it is set as an instance
+    attribute to the name of the class."""
+
     childtextsep = '\n\n'
     """Separator for child nodes, used by `astext()` method."""
 
@@ -103,21 +107,21 @@ class _Element(_Node):
         self.attributes = attributes
         """Dictionary of attribute {name: value}."""
 
-        self.tagName = self.__class__.__name__
-        """The element generic identifier, usually the class name."""
+        if self.tagname is None:
+            self.tagname = self.__class__.__name__
 
     def _dom_node(self, dom):
-        element = dom.Element(self.tagName)
+        element = dom.Element(self.tagname)
         for attribute, value in self.attributes.items():
-            element.setAttribute(attribute, value)
+            element.setAttribute(attribute, str(value))
         for child in self.children:
             element.appendChild(child._dom_node(dom))
         return element
 
     def _rooted_dom_node(self, domroot):
-        element = domroot.createElement(self.tagName)
+        element = domroot.createElement(self.tagname)
         for attribute, value in self.attributes.items():
-            element.setAttribute(attribute, value)
+            element.setAttribute(attribute, str(value))
         for child in self.children:
             element.appendChild(child._rooted_dom_node(domroot))
         return element
@@ -125,7 +129,7 @@ class _Element(_Node):
     def __repr__(self):
         data = ''
         for c in self.children:
-            data += '<%s...>' % c.tagName
+            data += '<%s...>' % c.tagname
             if len(data) > 60:
                 data = data[:56] + ' ...'
                 break
@@ -140,15 +144,15 @@ class _Element(_Node):
             return self.emptytag()
 
     def starttag(self):
-        return '<%s>' % ' '.join([self.tagName] +
+        return '<%s>' % ' '.join([self.tagname] +
                                  ['%s="%s"' % (n, v)
                                   for n, v in self.attlist()])
 
     def endtag(self):
-        return '</%s>' % self.tagName
+        return '</%s>' % self.tagname
 
     def emptytag(self):
-        return '<%s/>' % ' '.join([self.tagName] +
+        return '<%s/>' % ' '.join([self.tagname] +
                                   ['%s="%s"' % (n, v)
                                    for n, v in self.attlist()])
 
@@ -393,11 +397,11 @@ class document(_Element):
         linknode['name'] = name
 
     def addautofootnote(self, name, footnotenode):
-        footnotenode['auto'] = '1'
+        footnotenode['auto'] = 1
         self.autofootnotes.append((name, footnotenode))
 
     def addautofootnoteref(self, refname, refnode):
-        refnode['auto'] = '1'
+        refnode['auto'] = 1
         self.autofootnoterefs.append((refname, refnode))
 
 
@@ -416,13 +420,13 @@ class revision(_TextElement): pass
 class status(_TextElement): pass
 class date(_TextElement): pass
 class copyright(_TextElement): pass
+class abstract(_Element): pass
 
 
 # =====================
 #  Structural Elements
 # =====================
 
-class abstract(_Element): pass
 class section(_Element): pass
 
 class package_section(_Element): pass
@@ -524,7 +528,7 @@ class interpreted(_TextElement): pass
 class literal(_TextElement): pass
 class link(_TextElement): pass
 class footnote_reference(_TextElement): pass
-class graphic(_TextElement): pass
+class image(_TextElement): pass
 
 class package(_TextElement): pass
 class module(_TextElement): pass
@@ -532,9 +536,7 @@ class module(_TextElement): pass
 
 class inline_class(_TextElement):
 
-    def __init__(self, *args, **kwargs):
-        _TextElement.__init__(self, *args, **kwargs)
-        self.tagName = 'class'
+    tagname = 'class'
 
 
 class method(_TextElement): pass
