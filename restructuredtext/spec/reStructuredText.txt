@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: dgoodger@bigfoot.com
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2001/08/16 02:34:18 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2001/08/17 02:16:21 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -54,7 +54,7 @@ Here are examples of body elements:
 
       Paragraphs are separated by blank lines and are left-aligned.
 
-- Three types of lists:
+- Five types of lists:
 
   1. `Bullet lists`_::
 
@@ -79,6 +79,28 @@ Here are examples of body elements:
              or more paragraphs or body elements, indented relative to
              the term.
 
+  4. `Field lists`_::
+
+         :what: Field lists map field names to field bodies, like
+                database records.
+
+         :how: The field marker is a colon, the field name, optional
+               field arguments, and a colon.
+
+               The field body may contain one or more body elements,
+               indented relative to the field marker.
+
+  5. `Option lists`_, for listing command-line options::
+
+         -a            option 'a'
+         -b file       options can have arguments
+         --long        options can be long also
+         --input=file  long options can also have arguments
+         /V            DOS/VMS-style arguments too
+
+     There must be at least two spaces between the option and the
+     description.
+
 - `Literal blocks`_::
 
       Literal blocks are indented, and indicated with a double-colon
@@ -97,6 +119,13 @@ Here are examples of body elements:
 
           Anne Elk (Miss)
 
+- `Doctest blocks`_::
+
+      >>> print 'Python-specific usage examples; begun with ">>>"'
+      Python-specific usage examples; begun with ">>>"
+      >>> print '(cut and pasted from interactive Python sessions)'
+      (cut and pasted from interactive Python sessions)
+
 - Tables_::
 
       +------------------------+------------+----------+
@@ -109,9 +138,9 @@ Here are examples of body elements:
 
 - Footnotes_::
 
-      .. _[1] A footnote contains indented body elements.
+      .. [1] A footnote contains indented body elements.
 
-          It is a form of hyperlink target.
+         It is a form of hyperlink target.
 
 - `Hyperlink targets`_::
 
@@ -142,21 +171,21 @@ Element types in parentheses indicate recursive or one-to-many
 relationships: sections may contain (sub)sections, tables contain
 further body elements, etc. ::
 
-    +------------------------------------------------------------------+
-    | document                                                         |
-    |                           +--------------------------------------+
-    | [root element]            |                           +-------+  |
-    |                           | sections  [begin with one | title |] |
-    |                           |                           +-------+  |
-    |---------------------------+-------------------------+------------|
-    | [body elements:]                                    | (sections) |
-    |         |         | - lists  |       | - hyperlink  +------------+
-    |         |         | - tables |       |   targets    |
-    | para-   | literal | - block  | foot- | - directives |
-    | graphs  | blocks  |   quotes | notes | - comments   |
-    +---------+---------+----------+-------+--------------+
-    | [text]+ | [text]  | (body elements)  | [text]       |
-    | (inline +---------+------------------+--------------+
+    +--------------------------------------------------------------------+
+    | document                                                           |
+    |                             +--------------------------------------+
+    | [root element]              |                           +-------+  |
+    |                             | sections  [begin with one | title |] |
+    |                             |                           +-------+  |
+    |-----------------------------+-------------------------+------------|
+    | [body elements:]                                      | (sections) |
+    |         | - literal | - lists  |       | - hyperlink  +------------+
+    |         |   blocks  | - tables |       |   targets    |
+    | para-   | - doctest | - block  | foot- | - directives |
+    | graphs  |   blocks  |   quotes | notes | - comments   |
+    +---------+-----------+----------+-------+--------------+
+    | [text]+ | [text]    | (body elements)  | [text]       |
+    | (inline +-----------+------------------+--------------+
     | markup) |
     +---------+
 
@@ -236,7 +265,7 @@ mistaking ellipses ['...'] for overlines). When an overline is used,
 the length and character used must match the underline. There may be
 any number of levels of section titles.
 
-.. _[1] The following are all valid section header underline/overline
+.. [1] The following are all valid section header underline/overline
    characters::
 
        ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
@@ -429,7 +458,7 @@ example::
        a) Item 1a.
        b) Item 1b.
 
-Syntax diagram::
+Example syntax diagram::
 
     +-------+----------------------+
     | '1. ' | list item            |
@@ -445,10 +474,10 @@ DTD elements: definition_list, definition_list_item, term, definition.
 Each definition list item contains a term and a definition. A term is
 a simple one-line paragraph. A definition is a block indented relative
 to the term, and may contain multiple paragraphs and other body
-elements. Blank lines are required before the term and after the
-definition, but there may be no blank line between a term and a
-definition (this distinguishes definition lists from `block quotes`_).
-::
+elements. There may be no blank line between a term and a definition
+(this distinguishes definition lists from `block quotes`_). Blank
+lines are required before the first and after the last definition list
+item, but are optional in-between. For example::
 
     term 1
         Definition 1.
@@ -477,20 +506,35 @@ field_body.
 Field lists are mappings from field names to field bodies, modeled on
 RFC822_ headers. A field name is made up of one or more letters,
 numbers, and punctuation, except colons (':') and whitespace. Field
-names are case-insensitive. The field name is preceded by a single
-colon, and followed by a single colon and whitespace; this is followed
-by the field body. The field body may contain multiple body elements.
+names are case-insensitive. There may be additional data separated
+from the field name, called field arguments. The field name and
+optional field argument(s) together form the field marker. The field
+marker is preceded by a single colon, and followed by a single colon
+and whitespace; this is followed by the field body. The field body may
+contain multiple body elements, indented relative to the field marker.
+For example::
+
+    :Date: 2001-08-16
+    :Version: 1
+    :Authors: - Me
+              - Myself
+              - I
+    :Indentation: Since the field marker may be quite long, the second
+       and subsequent lines of the field body do not have to line up
+       with the first line, but must line up with each other.
+    :Parameter i: integer
 
 Applications of reStructuredText may recognize field names and
 transform fields or field bodies in certain contexts. Any
-untransformed fields remain as a generic field list.
+untransformed fields remain in a generic field list.
 
 One special context is defined for field lists. A field list as the
 very first non-comment element, or the second non-comment element
 immediately after a title, has its fields interpreted as document
 bibliographic data. The following field names are recognized and
 transformed to the corresponding DTD elements listed, child elements
-of the 'document' element. No ordering is imposed on these fields:
+of the 'document' element. No ordering is imposed on these fields,
+although they may be rearranged to fit the document structure:
 
 - Title: title
 - Subtitle: subtitle
@@ -502,9 +546,58 @@ of the 'document' element. No ordering is imposed on these fields:
 - Status: status
 - Date: date
 - Copyright: copyright
+- Abstract: abstract
 
 This field-name-to-element mapping can be extended, or replaced for
 other languages. See the implementation documentation for details.
+
+Syntax diagram (simplified)::
+
+    +------------------------------+------------+
+    | ':' name (' ' argument)* ':' | field body |
+    +-------+----------------------+            |
+            | (body elements)+                  |
+            +-----------------------------------+
+
+
+Option Lists
+------------
+
+DTD elements: option_list, option_list_item, option, short_option,
+long_option, option_argument, description.
+
+Option lists are two-column lists of command-line options and
+descriptions. There are two types of options: short and long. Short
+options consist of one dash or slash and an option letter. Long
+options consist of two dashes and an option word. Both short and long
+options may be followed by a single space and an argument placeholder.
+Multiple command-line options may be listed, separated by comma-space.
+There must be at least two spaces between the option(s) and the
+description. The description may contain multiple body elements. As
+with other types of lists, blank lines are required before the first
+option list item and after the last, but are optional between option
+entries. For example::
+
+    -a         Output all.
+    -b         Output both (this description is
+               quite long).
+    -c arg     Output just arg.
+    --long     Output all day long.
+    -2, --two  This option has two variants.
+    /V         A VMS/DOS-style option.
+
+    -p         This option has two paragraphs in the description.
+               This is the first.
+
+               This is the second.
+
+Syntax diagram (simplified)::
+
+    +--------------------------------+-------------+
+    | '-' letter [' ' argument] '  ' | description |
+    +-------+------------------------+             |
+            | (body elements)+                     |
+            +--------------------------------------+
 
 
 Literal Blocks
@@ -604,6 +697,36 @@ Syntax diagram::
        +---------------------------+
 
 
+Doctest Blocks
+--------------
+
+DTD element: doctest_block.
+
+Doctest blocks are interactive Python sessions cut-and-pasted into
+docstrings. They are meant to illustrate usage by example, and provide
+an elegant and powerful testing environment via the doctest module in
+the Python standard library.
+
+Doctest blocks are text blocks which begin with '>>> ', the Python
+interactive interpreter main prompt, and end with a blank line.
+Doctest blocks are treated as a special case of literal blocks,
+without requiring the literal block syntax. If both are present, the
+literal block syntax takes priority over Doctest block syntax::
+
+    This is an ordinary paragraph.
+
+    >>> print 'this is a Doctest block'
+    this is a Doctest block
+
+    The following is a literal block::
+
+        >>> This is not recognized as a doctest block by
+        reStructuredText. It *will* be recognized by the doctest
+        module, though! 
+
+Indentation is not required for doctest blocks.
+
+
 Tables
 ------
 
@@ -664,9 +787,9 @@ Footnotes
 
 DTD elements: footnote, label.
 
-Footnotes consist of an explicit markup start ('.. '), an underscore,
-a left square bracket, the footnote label, a right square bracket, and
-whitespace, followed by body elements. Footnote labels can be:
+Footnotes consist of an explicit markup start ('.. '), a left square
+bracket, the footnote label, a right square bracket, and whitespace,
+followed by body elements. Footnote labels can be:
 
 - simple `hyperlink names`_ (case-insensitive single words consisting
   of alphanumerics plus hyphens, underscores, and periods; no
@@ -674,7 +797,7 @@ whitespace, followed by body elements. Footnote labels can be:
 
 - a single '#' (denoting `auto-numbered footnotes`_), or
 
-- a '#' followed by a simple hyperlink name.
+- a '#' followed by a simple hyperlink name, an "autonumber label".
 
 If the first body element within a footnote is a simple paragraph, it
 may begin on the same line as the footnote label. Other elements must
@@ -684,13 +807,19 @@ Footnotes may occur anywhere in the document, not only at the end.
 Where or how they appear in the processed output depends on the output
 formatter. Here is a footnote, referred to in `Footnote References`_::
 
-    .. _[GVR2001] Python Documentation; van Rossum, Drake, et al.;
+    .. [GVR2001] Python Documentation; van Rossum, Drake, et al.;
        http://www.python.org/doc/
+
+Each footnote automatically generates a hyperlink target pointing to
+itself. The text of the hyperlink target name is the same as that of
+the footnote label. `Auto-numbered footnotes`_ generate a number as
+their footnote label and hyperlink name. See `Implicit Hyperlink
+Targets`_ for a complete description of the mechanism.
 
 Syntax diagram::
 
     +-------+-------------------------+
-    | '.. ' | '_[' label ']' footnote |
+    | '.. ' | '[' label ']' footnote  |
     +-------+                         |
             | (body elements)+        |
             +-------------------------+
@@ -699,7 +828,49 @@ Syntax diagram::
 Auto-Numbered Footnotes
 .......................
 
-XXX
+A number sign ("#") may be used as the first character of a footnote
+label to request automatic numbering of the footnote or footnote
+reference.
+
+The first footnote to request automatic numbering is assigned the
+label "1", the second is assigned the label "2", and so on. Automatic
+footnote numbering may not be mixed with manual footnote numbering; it
+would cause numbering and referencing conflicts. Footnotes using
+non-numeric labels, such as ``[note]`` or ``[GVR2001]`` may be used
+together with automatic numbering. A footnote which has automatically
+received a label "1" generates an implicit hyperlink target with name
+"1", just as if the label was explicitly specified.
+
+A footnote may specify a label explicitly while at the same time
+requesting automatic numbering: ``[#label]``. These labels are called
+"autonumber labels". Autonumber labels do two things:
+
+- On the footnote itself, they generate a hyperlink target whose name
+  is the autonumber label (doesn't include the "#").
+
+- They allow an automatically numbered footnote to be referred to more
+  than once, as a footnote reference or hyperlink. For example::
+
+    If [#note]_ is the first footnote reference, it will show up as
+    "[1]". We can refer to it again as [#note]_ and again see "[1]".
+    We can also refer to it as note_ (an ordinary internal hyperlink).
+
+    .. [#note] This is the footnote "note".
+
+The numbering is determined by the order of the footnotes, not by the
+order of the references. For footnote references without autonumber
+labels (``[#]_``), the footnotes and footnote references must be in
+the same relative order but need not alternate in lock-step. For
+example::
+
+    [#]_ is a reference to footnote 1, and [#]_ is a reference to
+    footnote 2.
+
+    .. [#] This is footnote 1.
+    .. [#] This is footnote 2.
+    .. [#] This is footnote 3.
+
+    [#]_ is a reference to footnote 3.
 
 
 Hyperlink Targets
@@ -772,9 +943,9 @@ Syntax diagram::
 Implicit Hyperlink Targets
 ``````````````````````````
 
-Implicit hyperlink targets are generated by section titles, and may
-also be generated by extension constructs. Implicit hyperlink targets
-behave identically to explicit `hyperlink targets`_.
+Implicit hyperlink targets are generated by section titles and
+footnotes, and may also be generated by extension constructs. Implicit
+hyperlink targets behave identically to explicit `hyperlink targets`_.
 
 Problems of ambiguity due to conflicting duplicate implicit and
 explicit hyperlink names are avoided because the reStructuredText
@@ -790,8 +961,9 @@ parser follows these rules:
    hyperlink targets are removed, and level-0 system warnings
    inserted.
 
-3. If there are duplicate explicit hyperlink target names, all
-   duplicates are removed, and level-1 system warnings inserted.
+3. If there are duplicate explicit hyperlink target names which do not
+   refer to identical URIs, all duplicates are removed, and level-1
+   system warnings inserted.
 
 System warnings are inserted where target links have been removed. See
 'Error Handling' in `PEP 258`_.
@@ -972,21 +1144,22 @@ Text enclosed by single backquote characters is interpreted::
 
 The semantics of interpreted text are domain-dependent. It can be used
 as implicit or explicit descriptive markup (such as for program
-identifiers, as in the `Python Extensions to reStructuredText`_), for
-cross-reference interpretation (such as index entries), or for other
-applications where context can be inferred.
+identifiers, as in the `DPS Python Mode`_), for cross-reference
+interpretation (such as index entries), or for other applications
+where context can be inferred.
 
-The role of the interpreted text may be inferred implicitly. The role
-of the interpreted text may also be indicated explicitly, using either
-a prefix (role + colon + space) or a suffix (space + colon + role),
-depending on which reads better::
+The role of the interpreted text is normally inferred implicitly. The
+role of the interpreted text may also be indicated explicitly, using
+either a prefix (role + colon) or a suffix (colon + role) to the
+interpreted text, depending on which reads better::
 
-    `role: interpreted text`
+    role:`interpreted text`
 
-    `interpreted text :role`
+    `interpreted text`:role
 
-A role name may contain arbitrary text, except colons. Interpreted
-text may contain at most one colon in a role-indicating context.
+A role name is a single word consisting of alphanumerics plus internal
+hypens, underscores, and periods; no whitespace or other characters
+are allowed.
 
 
 Inline Literals
@@ -1033,8 +1206,8 @@ Hyperlink Names
 
 Simple hyperlink names are single words consisting of alphanumerics
 plus internal hypens, underscores, and periods; no whitespace or other
-characters are allowed. Footnote labels must be simple hyperlink
-names.
+characters are allowed. Footnote labels and `interpreted text`_ roles
+have the same syntax as simple hyperlink names.
 
 Hyperlink names using punctuation or whose names are phrases (two or
 more space-separated words) are called 'phrase-links'. Phrase-links
@@ -1118,10 +1291,17 @@ DTD element: footnote_reference.
 Start-string = '[', end-string = ']_'.
 
 Footnote references consist of a square-bracketed label followed by a
-trailing underscore. Footnote labels are simple `hyperlink names`_
-(case-insensitive single words, consisting of alphanumerics plus
-internal hyphens, underscores, and periods; no whitespace). For
-example::
+trailing underscore. Footnote labels are one of:
+
+- simple `hyperlink names`_ (case-insensitive single words, consisting
+  of alphanumerics plus internal hyphens, underscores, and periods; no
+  whitespace),
+
+- a single '#' (denoting `auto-numbered footnotes`_), or
+
+- a '#' followed by a simple hyperlink name, an "autonumber label".
+
+For example::
 
     Please refer to the fine manual [GVR2001]_.
 
@@ -1184,8 +1364,8 @@ Two forms of URI are recognized:
 
 Punctuation at the end of a URI is not considered part of the URI.
 
-.. _[URI] Uniform Resource Identifier. URIs are a general form of URLs
-    (Uniform Resource Locators). For the syntax of URIs see RFC2396_.
+.. [URI] Uniform Resource Identifier. URIs are a general form of URLs
+   (Uniform Resource Locators). For the syntax of URIs see RFC2396_.
 
 
 ----------------
@@ -1203,8 +1383,8 @@ Markup errors are handled according to the specification in `PEP
 .. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
 .. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
 .. _RFC2396: http://www.rfc-editor.org/rfc/rfc2396.txt
-.. _Python Extensions to reStructuredText:
-    http://structuredtext.sourceforge.net/spec/pyextensions.txt
+.. _DPS Python Mode:
+    http://docstring.sourceforge.net/spec/python-mode.txt
 .. _PEP 258: http://docstring.sourceforge.net/spec/pep-0258.txt
 
 
