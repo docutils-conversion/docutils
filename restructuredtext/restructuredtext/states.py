@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.24 $
-:Date: $Date: 2001/09/26 03:42:06 $
+:Revision: $Revision: 1.25 $
+:Date: $Date: 2001/10/18 03:53:42 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -381,7 +381,7 @@ class RSTState(StateWS):
                                %s             # no whitespace after
                              |              # *OR*
                                (              # whole constructs (group 5):
-                                   (%s)(_)      # link name, end-string (6,7)
+                                   (%s)(__?)    # link name, end-string (6,7)
                                  |
                                    \[           # footnote_reference start,
                                    (            # footnote label (group 8):
@@ -406,9 +406,9 @@ class RSTState(StateWS):
           strong=re.compile(inline.non_whitespace_escape_before
                             + r'(\*\*)' + inline.end_string_suffix),
           interpreted_or_phrase_link=re.compile(
-                '%s(`(:%s:|_)?)%s' % (inline.non_whitespace_escape_before,
-                                      inline.simplename,
-                                      inline.end_string_suffix)),
+                '%s(`(:%s:|__?)?)%s' % (inline.non_whitespace_escape_before,
+                                        inline.simplename,
+                                        inline.end_string_suffix)),
           literal=re.compile(inline.non_whitespace_before + '(``)'
                              + inline.end_string_suffix),
           uri=re.compile(
@@ -525,13 +525,16 @@ class RSTState(StateWS):
             text = unescape(escaped, 0)
             rawsource = unescape(
                   string[match.start():matchend+endmatch.end()], 1)
-            if rawsource[-1] == '_':
+            if rawsource[-1:] == '_':
                 if role:
                     sw = self.statemachine.memo.reporter.warning(
                           'Mismatch: inline interpreted text start-string '
                           'and role with phrase-link end-string at line %s.'
                           % lineno)
                     return (string[:matchend], [], string[matchend:], [sw])
+                if rawsource[-2:] == '__':
+                    # @@@
+                    pass
                 return self.phrase_link(
                       string[:matchstart], string[matchend:][endmatch.end():],
                       text, rawsource)
@@ -601,6 +604,17 @@ class RSTState(StateWS):
         matchend = match.end(self.inline.groups.initial.whole)
         return (string[:matchstart], [linknode], string[matchend:], [])
 
+    def anonymous_link(self, match, lineno, pattern=None):
+        # @@@
+        linkname = match.group(self.inline.groups.initial.linkname)
+        refname = normname(linkname)
+        linknode = nodes.link(linkname + '_', linkname, refname=refname)
+        self.statemachine.memo.document.addrefname(refname, linknode)
+        string = match.string
+        matchstart = match.start(self.inline.groups.initial.whole)
+        matchend = match.end(self.inline.groups.initial.whole)
+        return (string[:matchstart], [linknode], string[matchend:], [])
+
     def standalone_uri(self, text, lineno, pattern=inline.patterns.uri,
                        whole=inline.groups.uri.whole,
                        email=inline.groups.uri.email):
@@ -633,7 +647,8 @@ class RSTState(StateWS):
                        '`': interpreted_or_phrase_link,
                        '``': literal,
                        ']_': footnote_reference,
-                       '_': link}
+                       '_': link,
+                       '__': anonymous_link}
 
     def inline_text(self, text, lineno):
         """
