@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/07 01:58:32 $
+:Date: $Date: 2001/09/10 04:52:37 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -49,7 +49,7 @@ Changed contact email addresses.
     dps.parsers.model.
   - Added form feed & vertical tab conversion to spaces.
   - Added a ``Parser.statemachine`` instance attribute.
-  - Language module support.
+  - Added parser language module support.
 
 * restructuredtext/states.py:
 
@@ -89,9 +89,24 @@ Changed contact email addresses.
   - Added 1-section -> document promotion transformation.
   - Added bibliographic field list transformations.
   - Changed numbered errorist.system_warning calls to named methods.
+  - Name changes (lowercased, updated, improved).
+  - Integer attributes on elements as appropriate.
+  - Beginnings of directive functionality.
 
 * restructuredtext/test_states.py: Refactored to test directory. This
   file removed.
+
+* restructuredtext/directives/__init__.py:
+
+  - Added directive registry.
+  - Added directive module & function import support.
+
+* restructuredtext/directives/directivetest.py: Implementation of a
+  test directive, 'restructuredtext-test-directive'. Added to project.
+
+* restructuredtext/languages: Subpackage added to project. Contains
+  modules for language-dependent language-dependent parser features.
+  Includes en.py for English.
 
 * test: Subdirectory added. The top-level consists of a modular test
   framework begun by Garth Kidd.
