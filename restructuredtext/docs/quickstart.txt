@@ -2,7 +2,7 @@ A ReStructuredText Primer
 =========================
 
 :Author: Richard Jones
-:Version: $Revision: 1.4 $
+:Version: $Revision: 1.5 $
 
 Structure
 ---------
@@ -14,54 +14,27 @@ patterns. These patterns are interpreted by a HTML converter to produce
 
 The most basic pattern recognised is a **paragraph**. That's a chunk
 of text that is separated by blank lines (one is enough). Paragraphs must
-have the same indentation - that is, line up at their left edge.
+have the same indentation - that is, line up at their left edge. Paragraphs
+that start indented will result in indented quote paragraphs. For example::
 
-To break text up into sections, you use **section headers**. These are a
-single line of text (one or more words) with an underline (and optionally
-an overline) in dashes
-"``-----``", equals  "``======``", tildes "``~~~~~~``" or any of the
-non-alphanumeric characters ``= - ` : ' " ~ ^ _ * + # < >`` that you feel
-comfortable with. Be consistent though, since all sections marked with the
-same underline style are deemed to be at the same level::
+  This is a paragraph. It's quite
+  short.
 
-  Chapter 1 Title
-  ===============
+     This paragraph will result in an indented block of
+     text, typically used for quoting other text.
 
-  Section 1.1 Title
-  -----------------
+  This is another one.
 
-  Subsection 1.1.1 Title
-  ~~~~~~~~~~~~~~~~~~~~~~
+Results in:
 
-  Section 1.2 Title
-  -----------------
+  This is a paragraph. It's quite
+  short.
 
-  Chapter 2 Title
-  ===============
+     This paragraph will result in an indented block of
+     text, typically used for quoting other text.
 
-results in:
+  This is another one.
 
-.. sorry, I change the heading style here, but it's only an example :)
-
-Chapter 1 Title
-~~~~~~~~~~~~~~~
-
-Section 1.1 Title
-'''''''''''''''''
-
-Subsection 1.1.1 Title
-""""""""""""""""""""""
-
-Section 1.2 Title
-'''''''''''''''''
-
-Chapter 2 Title
-~~~~~~~~~~~~~~~
-
-Note that section headers are available as link targets, just using their
-name. To link to the Lists_ heading, I write "``Lists_``". If the heading
-has a space in it like `text styles`_, we need to quote the heading
-"```text styles`_``".
 
 Text styles
 -----------
@@ -215,4 +188,54 @@ Results in:
 ::
 
     This is preformatted text, and the last "::" paragraph is removed
+
+Sections
+--------
+
+To break longer text up into sections, you use **section headers**. These
+are a single line of text (one or more words) with an underline (and
+optionally an overline) in dashes
+"``-----``", equals  "``======``", tildes "``~~~~~~``" or any of the
+non-alphanumeric characters ``= - ` : ' " ~ ^ _ * + # < >`` that you feel
+comfortable with. Be consistent though, since all sections marked with the
+same underline style are deemed to be at the same level::
+
+  Chapter 1 Title
+  ===============
+
+  Section 1.1 Title
+  -----------------
+
+  Subsection 1.1.1 Title
+  ~~~~~~~~~~~~~~~~~~~~~~
+
+  Section 1.2 Title
+  -----------------
+
+  Chapter 2 Title
+  ===============
+
+results in:
+
+.. sorry, I change the heading style here, but it's only an example :)
+
+Chapter 1 Title
+~~~~~~~~~~~~~~~
+
+Section 1.1 Title
+'''''''''''''''''
+
+Subsection 1.1.1 Title
+""""""""""""""""""""""
+
+Section 1.2 Title
+'''''''''''''''''
+
+Chapter 2 Title
+~~~~~~~~~~~~~~~
+
+Note that section headers are available as link targets, just using their
+name. To link to the Lists_ heading, I write "``Lists_``". If the heading
+has a space in it like `text styles`_, we need to quote the heading
+"```text styles`_``".
 
