@@ -4,13 +4,13 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/04/18 02:49:03 $
+:Date: $Date: 2002/04/19 01:49:16 $
 :Web-site: http://structuredtext.sourceforge.net/
 
-Thank you for downloading the reStructuredText project archive.  As
-this is a work in progress, please check the project web site for
-updated working files.  The latest release archive is available at
-http://sourceforge.net/project/showfiles.php?group_id=7050.
+Thank you for downloading the reStructuredText project archive.
+Development has been transferred to the Docutils_ project.  As this is
+a work in progress, please check the project web site for updated
+working files.
 
 reStructuredText is an input parser component of the `Python Docstring
 Processing System`_, and is installed as
@@ -20,6 +20,7 @@ To run the code, Python 2.0 or later must already be installed.  You
 can get Python from http://www.python.org/.  You will also need the
 latest DPS package, available from http://docstring.sourceforge.net/.
 
+.. _Docutils: http://docutils.sourceforge.net/
 .. _Python Docstring Processing System:
    http://docstring.sourceforge.net/
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.7 2002/04/18 02:43:20 goodger Exp $
+# $Id: setup.py,v 1.8 2002/04/19 01:49:25 goodger Exp $
 
 from distutils.core import setup
 
@@ -12,7 +12,7 @@ def do_setup():
           version = '0.4',
           author = 'David Goodger',
           author_email = 'goodger@users.sourceforge.net',
-          license = 'public domain',
+          license = 'public domain, Python (see COPYING.txt)',
           packages = ['dps.parsers.restructuredtext',
                       'dps.parsers.restructuredtext.directives',
                       'dps.parsers.restructuredtext.languages'],

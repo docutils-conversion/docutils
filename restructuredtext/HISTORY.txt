@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/04/18 02:48:48 $
+:Date: $Date: 2002/04/19 01:49:04 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -31,8 +31,14 @@ forgotten anyone or misspelled any names; apologies (and please let me
 know!) if I have.
 
 
-Release 0.4 (2002-04-??)
+Release 0.4 (2002-04-18)
 ========================
+
+This is the final release of reStructuredText as an independent
+package.  Development is being transferred to the Docutils_ project
+immediately.
+
+.. _Docutils: http://docutils.sourceforge.net/
 
 General: updated docstrings for new field list syntax (bibliographic
 info); changed contact email addresses.
@@ -43,6 +49,8 @@ info); changed contact email addresses.
 
   - Modified for import by install.py.
   - Added 'restructuredtext.languages' subpackage.
+
+* COPYING.txt: Added to project.
 
 * docs: Subdirectory added. Contains quickref.html by Tony Ibbs and
   quickstart.txt by Richard Jones.

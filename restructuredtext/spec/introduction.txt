@@ -3,8 +3,8 @@
 =====================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.11 $
-:Date: $Date: 2002/04/18 03:11:14 $
+:Revision: $Revision: 1.12 $
+:Date: $Date: 2002/04/19 01:49:37 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system.  It is useful for in-line
@@ -251,7 +251,7 @@ docstrings, PEPs, and other files.  It was first posted to
 comp.lang.python_ and the Python-dev_ mailing list on 2002-04-02.
 
 Version 0.4 of the reStructuredText_ and `Docstring Processing
-System`_ projects were released on 2002-04-??.  The two projects were
+System`_ projects were released in April 2002.  The two projects were
 immediately merged, renamed to "Docutils_", and a 0.1 release soon
 followed.
 
