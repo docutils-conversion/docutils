@@ -3,13 +3,14 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2002/03/07 03:40:15 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/03/16 05:34:19 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
 
-.. contents:: :depth: 2
+
+.. contents::
 
 
 -------------
@@ -186,7 +187,7 @@ English default title text is "Contents".
 An explicit title, may be specified::
 
     .. contents:: Table of Contents
-    
+
 The title may span lines, although it is not recommended::
 
     .. contents:: Here's a very long Table of
@@ -207,6 +208,10 @@ The following attributes are recognized:
 ``depth`` : integer
     The number of section levels that are collected in the table of
     contents.
+``local`` : empty
+    Generate a local table of contents.  Entries will only include
+    subsections of the section in which the directive is given.  If no
+    explicit title is given, the table of contents will not be titled.
 
 
 Footnotes
