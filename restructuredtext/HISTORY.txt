@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/25 02:22:42 $
+:Date: $Date: 2001/08/28 03:29:05 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -75,8 +75,9 @@ Changed contact email addresses.
   - Dropped brackets from footnotes' implicit hyperlink names.
   - Added check for whitespace in hyperlinks.
   - Added empty comment support.
-  - Began adding auto-numbered footnote support.
+  - Added support for auto-numbered footnotes.
   - Dropped requirement for blank line between definition list items.
+  - Added support for classifier after term in definition list items.
   - Fixed a bug with literal blocks.
   - Changed ``element.extend(nodelist)`` to ``element += nodelist``.
 
@@ -94,6 +95,10 @@ Changed contact email addresses.
   - Added tests for field lists, option lists.
   - Added temporary test for tables.
   - New tests for literal_block edge cases.
+  - Added tests for empty list items.
+  - New test for comment edge case.
+  - Added 'term : classifier' tests.
+  - Added auto-numbered footnote tests.
 
 * restructuredtext/difflib.py: Added to project. Modified version of
   standard library module, contributed back to Python.
