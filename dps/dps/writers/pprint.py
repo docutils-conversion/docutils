@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/02/07 01:58:44 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/12 02:13:51 $
 :Copyright: This module has been placed in the public domain.
 
 Simple internal document tree Writer, writes indented pseudo-XML.
@@ -20,9 +20,11 @@ from dps import writers
 
 class Writer(writers.Writer):
 
-    def transform(self):
-        pass
+    output = None
+    """Final translated form of `document`."""
 
-    def record(self, document, destination):
-        output = document.pformat()
-        self.recordfile(output, destination)
+    def translate(self):
+        self.output = self.document.pformat()
+
+    def record(self):
+        self.recordfile(self.output, self.destination)
