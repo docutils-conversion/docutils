@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/18 04:46:20 $
+:Date: $Date: 2001/09/18 21:28:32 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -101,8 +101,7 @@ Changed contact email addresses.
     code to methods.
   - Removed debug code.
   - Updated: 'errorist' -> 'reporter'.
-  - Added RCS keyword handling to bibliographic field lists; almost
-    done.
+  - Added RCS keyword filtering to bibliographic field lists.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
