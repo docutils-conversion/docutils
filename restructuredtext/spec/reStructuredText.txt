@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.16 $
-:Date: $Date: 2001/09/13 03:39:51 $
+:Revision: $Revision: 1.17 $
+:Date: $Date: 2001/09/18 04:42:00 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -274,13 +274,13 @@ matching 'overlines' above the title. An underline/overline is a
 single repeated punctuation character that begins in column 1 and
 forms a line extending at least as far as the right edge of the title
 text. Specifically, an underline/overline character may be any
-non-alphanumeric printable 7-bit ASCII character [1]_. An
+non-alphanumeric printable 7-bit ASCII character [#]_. An
 underline/overline must be at least 4 characters long (to avoid
 mistaking ellipses ['...'] for overlines). When an overline is used,
 the length and character used must match the underline. There may be
 any number of levels of section titles.
 
-.. [1] The following are all valid section header underline/overline
+.. [#] The following are all valid section header underline/overline
    characters::
 
        ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
@@ -549,6 +549,18 @@ Applications of reStructuredText may recognize field names and
 transform fields or field bodies in certain contexts. Any
 untransformed fields remain in a generic field list.
 
+Syntax diagram (simplified)::
+
+    +------------------------------+------------+
+    | ':' name (' ' argument)* ':' | field body |
+    +-------+----------------------+            |
+            | (body elements)+                  |
+            +-----------------------------------+
+
+
+Bibliographic Field Lists
+`````````````````````````
+
 One special context is defined for field lists. A field list as the
 very first non-comment element, or the second non-comment element
 immediately after a title, has its fields interpreted as document
@@ -557,28 +569,43 @@ transformed to the corresponding DTD elements listed, child elements
 of the 'document' element. No ordering is imposed on these fields,
 although they may be rearranged to fit the document structure:
 
-- Title: title
-- Subtitle: subtitle
+- Title: title (only one allowed, and only if no title already exists)
+- Subtitle: subtitle (only one allowed)
 - Author: author
-- Authors: authors (a list of author elements)
+- Authors: authors (a list of author elements, separated by ';' or
+  ',')
 - Organization: organization
 - Contact: contact
 - Version: version
 - Status: status
 - Date: date
 - Copyright: copyright
-- Abstract: abstract
+- Abstract: abstract (only one allowed)
 
 This field-name-to-element mapping can be extended, or replaced for
 other languages. See the implementation documentation for details.
 
-Syntax diagram (simplified)::
 
-    +------------------------------+------------+
-    | ':' name (' ' argument)* ':' | field body |
-    +-------+----------------------+            |
-            | (body elements)+                  |
-            +-----------------------------------+
+RCS Keyword Recognition
+```````````````````````
+
+In the context of `bibliographic field lists`_, keywords from RCS
+(Revision Control System) [#CVS]_ are recognized and stripped of their
+excess text. For example::
+
+    :status: $RCSfile: reStructuredText.txt,v $
+
+The field body text will be simply 'reStructuredText.txt'. (The
+'RCSfile' keyword was used for this example because its expansion does
+not change; this file is under CVS [#CVS]_. The 'status' field name
+was used because none of the others fit any better.)
+
+For the 'Date' keyword, the date itself is extracted and transformed
+to an ISO 8601-format date, as in '2000-12-31'. All other RCS keywords
+simply have the leading keyword name and both dollar-signs removed.
+
+.. [#CVS] CVS (Concurrent Versions System) uses the same keywords as
+   RCS.
 
 
 Option Lists
@@ -1037,8 +1064,9 @@ following indented text.
 
 No directives are defined in the core reStructuredText
 specification. Directives which have been implemented and registered
-are described in the `reStructuredText Directives`_ document. Below
-are examples of implemented directives.
+in the reference reStructuredText parser are described in the
+`reStructuredText Directives`_ document. Below are examples of
+implemented directives.
 
 Directives can be used as an extension mechanism for reStructuredText,
 a way of adding support for new constructs without adding new syntax.
@@ -1377,7 +1405,7 @@ DTD element: link.
 
 Start-string = end-string = '' (empty string).
 
-A URI (absolute URI [URI]_ or standalone email address) within a text
+A URI (absolute URI [#URI]_ or standalone email address) within a text
 block is treated as a general external hyperlink with the URI itself
 as the link's text. For example::
 
@@ -1426,7 +1454,7 @@ Two forms of URI are recognized:
 
 Punctuation at the end of a URI is not considered part of the URI.
 
-.. [URI] Uniform Resource Identifier. URIs are a general form of URLs
+.. [#URI] Uniform Resource Identifier. URIs are a general form of URLs
    (Uniform Resource Locators). For the syntax of URIs see RFC2396_.
 
 
