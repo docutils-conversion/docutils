@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/01 03:19:41 $
+:Date: $Date: 2002/03/04 04:50:17 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -46,7 +46,6 @@ Changed contact email addresses.
 
 * dps/nodes.py:
 
-  - Added 'vms_option'.
   - Added 'classifier'.
   - Added 'error', 'attention'.
   - Fixed link bookkeeping.
@@ -63,7 +62,6 @@ Changed contact email addresses.
   - Improved auto-tagname generation.
   - Added string-conversion to attribute values in DOM-conversion.
   - Changed footnote/footnote_reference 'auto' attribute to integer.
-  - Moved 'abstract' into bibliographic elements section.
   - Changed 'graphic' to 'image'.
   - Added 'docinfo', container for bibliographic elements.
   - Added 'transition'.
@@ -92,6 +90,8 @@ Changed contact email addresses.
   - Modified post-parse system message storage.
   - Added 'id' attribute support to ``document``.
   - Reworked option lists.
+  - Removed "abstract"
+  - Added "topic", "pending", "citation" and "citation_reference".
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -201,7 +201,6 @@ Changed contact email addresses.
   - Moved 'caption' to after 'image' in 'figure'.
   - Added 'error' and 'hint' admonition elements.
   - Added 'docinfo' as container for bibliographic elements.
-  - Made 'abstract' a structural element, after 'docinfo'.
   - Added 'transition'.
   - Changed %link.atts to %reference.atts.
   - Separated out %reference.atts into constituent parts.
@@ -222,6 +221,10 @@ Changed contact email addresses.
   - Added 'type' attribute to 'system_warning', removed 'warning'.
   - Changed "system_warning" to "system_message".
   - Reworked option lists.
+  - Removed "abstract"
+  - Added "topic".
+  - Added "pending".
+  - Added "citation" and "citation_reference".
 
 * spec/pdpi.dtd:
 

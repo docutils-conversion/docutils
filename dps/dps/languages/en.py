@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/02/23 16:53:30 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/03/04 04:47:52 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of the Python
@@ -52,7 +52,7 @@ bibliographic_fields = {
       'status': nodes.status,
       'date': nodes.date,
       'copyright': nodes.copyright,
-      'abstract': nodes.abstract}
+      'abstract': nodes.topic}
 """Field name (lowcased) to node class name mapping for bibliographic fields
 (field_list)."""
 
