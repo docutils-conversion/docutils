@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/22 04:28:43 $
+:Date: $Date: 2002/01/16 06:19:32 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -110,6 +110,8 @@ Changed contact email addresses.
   - Modified ``RSTState.inlineobj()`` to return end-string.
   - Added support for multi-line label text for hyperlink targets &
     substitution definitions.
+  - Moved 'normname()' to dps/utils.py.
+  - Updated for languagecode.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.

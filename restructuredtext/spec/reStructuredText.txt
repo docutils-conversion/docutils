@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.31 $
-:Date: $Date: 2002/01/08 02:44:09 $
+:Revision: $Revision: 1.32 $
+:Date: $Date: 2002/01/16 06:20:40 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -383,7 +383,7 @@ The top-level element of a parsed reStructuredText document is the
 simple container for a document fragment, consisting of `body
 elements`_, transitions_, and sections_, but lacking a document title
 or other bibliographic elements. The code that calls the parser may
-choose to run one or more optional post-parse transformations_,
+choose to run one or more optional post-parse transforms_,
 rearranging the document fragment into a complete document with a
 title and possibly other metadata elements (author, date, etc.; see
 `Bibliographic Fields`_).
@@ -392,9 +392,8 @@ Specifically, there is no way to specify a document title and subtitle
 explicitly in reStructuredText. Instead, a lone top-level section
 title (see Sections_ below) can be treated as the document
 title. Similarly, a lone second-level section title immediately after
-the "document title" can become the document subtitle. See "Section
-Promotion: Document Title & Subtitle" in `DPS Tree Transforms`_ for
-details.
+the "document title" can become the document subtitle. See the
+`DocTitle transform`_ for details.
 
 
 Sections
@@ -788,8 +787,8 @@ elements are as follows:
   one abstract is allowed.
 
 This field-name-to-element mapping can be extended, or replaced for
-other languages. See the `DPS Tree Transforms`_ and parser
-implementation documentation for details.
+other languages. See the `DocInfo transform`_ implementation
+documentation for details.
 
 
 RCS Keywords
@@ -809,8 +808,6 @@ text". The dollar signs and leading RCS keyword name are removed.
 .. [#] RCS keyword processing can be turned off.
 .. [#] Revision Control System.
 .. [#] Concurrent Versions System. CVS uses the same keywords as RCS.
-
-For details, see the `DPS Tree Transforms`_ document.
 
 
 Option Lists
@@ -2125,9 +2122,11 @@ Markup errors are handled according to the specification in `PEP
    http://docstring.sourceforge.net/spec/doctree.txt
 .. _Generic Plaintext Document Interface DTD:
 .. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
-.. _transformations:
-.. _DPS Tree Transforms:
-   http://docstring.sourceforge.net/spec/transforms.txt
+.. _transforms:
+   http://docstring.sourceforge.net/dps/transforms/__init__.py
+.. _DocTitle transform:
+.. _DocInfo transform:
+   http://docstring.sourceforge.net/dps/transforms/frontmatter.py
 .. _Grouch: http://www.mems-exchange.org/software/grouch/
 .. _RFC822: http://www.rfc-editor.org/rfc/rfc822.txt
 .. _Index of WWW Addressing Schemes:
