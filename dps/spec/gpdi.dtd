@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.21 $
-:Date: $Date: 2001/10/31 05:56:04 $
+:Revision: $Revision: 1.22 $
+:Date: $Date: 2001/11/06 01:05:33 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -103,20 +103,20 @@ Attributes shared by all elements in this DTD:
 
 <!ENTITY % additional.body.elements "">
 <!ENTITY % body.elements
-  " paragraph
+  " paragraph | literal_block | block_quote | doctest_block| table
+    | figure | image | footnote 
     | bullet_list | enumerated_list | definition_list | field_list
     | option_list
-    | literal_block | block_quote | doctest_block | table
-    | figure | image
-    | note | tip | warning | error | caution | danger | important
-    | footnote | target | directive | comment
-    | system_warning
+    | note | tip | hint | warning | error | caution | danger
+    | important
+    | target | substitution | directive | comment | system_warning
     %additional.body.elements; ">
 
 <!ENTITY % additional.inline.elements "">
 <!ENTITY % inline.elements
   " emphasis | strong | interpreted | literal
-    | reference | target | footnote_reference | image
+    | reference | footnote_reference | substitution_reference
+    | target | image
     %additional.inline.elements; ">
 
 <!-- Element Content Models
@@ -335,6 +335,9 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT tip (%body.elements;)+>
 <!ATTLIST tip %basic.atts;>
 
+<!ELEMENT hint (%body.elements;)+>
+<!ATTLIST hint %basic.atts;>
+
 <!ELEMENT warning (%body.elements;)+>
 <!ATTLIST warning %basic.atts;>
 
@@ -364,6 +367,9 @@ http://www.oasis-open.org/html/tm9901.htm).
     %basic.atts;
     %reference.atts;
     %anonymous.att;>
+
+<!ELEMENT substitution (%text.model;)>
+<!ATTLIST substitution %basic.atts;>
 
 <!ELEMENT directive (%body.elements;)*>
 <!ATTLIST directive
@@ -429,7 +435,7 @@ Inline elements occur within the PCDATA of body elements.
 <!ELEMENT literal (#PCDATA)>
 <!ATTLIST literal %basic.atts;>
 
-<!ELEMENT reference (#PCDATA)>
+<!ELEMENT reference (%text.model;)>
 <!ATTLIST reference
     %basic.atts;
     %reference.atts;
@@ -440,6 +446,12 @@ Inline elements occur within the PCDATA of body elements.
     %basic.atts;
     %reference.atts;
     %auto.att;>
+
+<!ELEMENT substitution_reference (#PCDATA)>
+<!ATTLIST substitution_reference
+    %basic.atts;
+    %refname.att;>
+
 
 <!--
 Local Variables:
