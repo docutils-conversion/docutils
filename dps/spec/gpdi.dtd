@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/08/23 03:52:51 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/08/25 01:45:27 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -233,11 +233,14 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT definition_list (definition_list_item+)>
 <!ATTLIST definition_list %basic.atts;>
 
-<!ELEMENT definition_list_item (term, definition)>
+<!ELEMENT definition_list_item (term, classifier?, definition)>
 <!ATTLIST definition_list_item %basic.atts;>
 
 <!ELEMENT term %text.model;>
 <!ATTLIST term %basic.atts;>
+
+<!ELEMENT classifier %text.model;>
+<!ATTLIST classifier %basic.atts;>
 
 <!ELEMENT definition (%body.elements;)+>
 <!ATTLIST definition %basic.atts;>
