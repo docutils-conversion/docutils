@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/10/30 05:18:03 $
+:Date: $Date: 2001/10/31 05:56:52 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -66,6 +66,7 @@ Changed contact email addresses.
   - Renamed ``*links?`` -> ``*targets?``.
   - Added support for indirect & anonymous targets.
   - External targets' URIs now in "refuri" attribute, not data.
+  - Changed "link" to "reference".
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -159,6 +160,7 @@ Changed contact email addresses.
   - Added 'image' as body element; 'target' as inline element.
   - Expanded 'authors' content.
   - Clarified 'figure' content.
+  - Changed "link" to "reference".
 
 * spec/pdpi.dtd:
 
