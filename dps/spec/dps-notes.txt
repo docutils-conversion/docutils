@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/09/26 03:33:21 $
-:Revision: $Revision: 1.13 $
+:Date: $Date: 2001/10/18 03:36:12 $
+:Revision: $Revision: 1.14 $
 
 
 To Do
@@ -50,7 +50,8 @@ To Do
 
   - Resolving auto-numbered footnotes & references.
   - Resolving internal cross-references and indirect hyperlinks.
-  
+  - Propagating URIs to chained hyperlink targets.
+
   These transformations may be turned on or off by individual modes.
 
 - Ask Python-dev for opinions (GvR for a pronouncement) on special

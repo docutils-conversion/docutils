@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/26 03:33:06 $
+:Date: $Date: 2001/10/18 03:35:50 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -142,14 +142,14 @@ Changed contact email addresses.
   - Moved 'caption' to after 'image' in 'figure'.
   - Added 'error' admonishment element.
   - Added 'docinfo' as container for bibliographic elements.
+  - Added 'division'.
 
 * spec/pdpi.dtd:
 
   - Fixed typos; now validates.
   - Moved option_list and doctest_block from gpdi.dtd.
 
-* spec/python-docstring-mode.txt: Added to project (from
-  reStructuredText).
+* spec/pysource-reader.txt: Added to project (from reStructuredText).
 
 
 Release 0.3 (2001-07-19)
