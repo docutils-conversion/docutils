@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/11/22 04:10:50 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/01/16 02:45:22 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -172,3 +172,7 @@ def assembleattributes(attlist, attributespec):
             raise DuplicateAttributeError('duplicate attribute "%s"' % name)
         attributes[name] = convertor(value) # raises ValueError if invalud
     return attributes
+
+def normname(name):
+    """Return a case- and whitespace-normalized name."""
+    return ' '.join(name.lower().split())
