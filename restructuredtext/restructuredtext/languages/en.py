@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/02/12 02:27:47 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/07 03:25:20 $
 :Copyright: This module has been placed in the public domain.
 
 English-language mappings for language-dependent features of
@@ -20,19 +20,24 @@ from dps import nodes
 
 
 directives = {
-      'restructuredtext-test-directive': 'restructuredtext-test-directive',
-      'image': 'image',
-      'figure': 'figure',
       'attention': 'attention',
       'caution': 'caution',
       'danger': 'danger',
       'error': 'error',
+      'hint': 'hint',
       'important': 'important',
       'note': 'note',
       'tip': 'tip',
-      'hint': 'hint',
       'warning': 'warning',
+      'image': 'image',
+      'figure': 'figure',
+      'contents': 'contents',
+      'footnotes': 'footnotes',
+      'citations': 'citations',
+      'topic': 'topic',
       'meta': 'meta',
-      'imagemap': 'imagemap'}
+      'imagemap': 'imagemap',
+      'raw': 'raw',
+      'restructuredtext-test-directive': 'restructuredtext-test-directive'}
 """English name to registered (in directives/__init__.py) directive name
 mapping."""
