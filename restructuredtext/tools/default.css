@@ -1,8 +1,8 @@
 /*
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:date: $Date: 2002/03/01 02:59:03 $
-:version: $Revision: 1.5 $
+:date: $Date: 2002/03/04 04:34:34 $
+:version: $Revision: 1.6 $
 :copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
@@ -22,7 +22,8 @@ col.field_name {
 div.abstract {
   margin: 2em 5em }
 
-div.abstract h3 {
+div.abstract h6 {
+  font-size: larger;
   text-align: center }
 
 div.attention, div.caution, div.danger, div.error, div.hint,
