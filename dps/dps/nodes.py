@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 """
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1 $
-Date: $Date: 2001/07/22 22:35:51 $
-Copyright: This module has been placed in the public domain.
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/08/22 04:10:11 $
+:Copyright: This module has been placed in the public domain.
 
 """
 
@@ -242,7 +242,7 @@ class document(_Element):
                   0, 'duplicate implicit link name: "%s"' % name)
             innode += sw
             self.clearlinknames(name, self.implicitlinks)
-            self.implicitlinks[name].append(linknode)
+            self.implicitlinks.setdefault(name, []).append(linknode)
         else:
             self.implicitlinks[name] = [linknode]
             linknode['name'] = name
@@ -250,12 +250,13 @@ class document(_Element):
     def addexplicitlink(self, name, linknode, innode=None):
         if innode == None:
             innode = linknode
-        if self.explicitlinks.has_key(name) or self.indirectlinks.has_key(name):
+        if self.explicitlinks.has_key(name):
             sw = self.errorhandler.system_warning(
                   1, 'duplicate explicit link name: "%s"' % name)
             innode += sw
-            self.clearlinknames(name, self.explicitlinks, self.implicitlinks)
-            self.explicitlinks[name].append(linknode)
+            self.clearlinknames(name, self.explicitlinks, self.implicitlinks,
+                                self.indirectlinks)
+            self.explicitlinks.setdefault(name, []).append(linknode)
             return
         elif self.implicitlinks.has_key(name):
             sw = self.errorhandler.system_warning(
@@ -275,13 +276,29 @@ class document(_Element):
         self.refnames.setdefault(name, []).append(node)
 
     def addindirectlink(self, name, reference, linknode, innode):
-        if self.explicitlinks.has_key(name) \
-              or self.indirectlinks.has_key(name) \
-              or self.implicitlinks.has_key(name):
+        #print >>sys.stderr, 'Adding indirect link: %s -> %s' % (name, reference)
+        #print >>sys.stderr, 'self.indirectlinks=%r' % self.indirectlinks
+        #print >>sys.stderr, 'self.explicitlinks=%r' % self.explicitlinks
+        if self.explicitlinks.has_key(name):
+            #print >>sys.stderr, "already has explicit link"
+            level = 0
+            for t in self.explicitlinks.get(name, []):
+                if len(t) != 1 or str(t[0]) != reference:
+                    level = 1
+                    break
             sw = self.errorhandler.system_warning(
-                  1, 'duplicate indirect link name: "%s"' % name)
+                  level, 'duplicate indirect link name: "%s"' % name)
             innode += sw
-        self.indirectlinks[name] = reference
+            self.clearlinknames(name, self.explicitlinks, self.indirectlinks,
+                                self.implicitlinks)
+        elif self.implicitlinks.has_key(name):
+            print >>sys.stderr, "already has explicit link"
+            sw = self.errorhandler.system_warning(
+                  0, 'duplicate implicit link name: "%s"' % name)
+            innode += sw
+            self.clearlinknames(name, self.implicitlinks)
+        self.indirectlinks.setdefault(name, []).append(linknode)
+        self.explicitlinks.setdefault(name, []).append(linknode)
         linknode['name'] = name
 
 
@@ -391,6 +408,7 @@ class option_list_item(_Element): pass
 class option(_Element): pass
 class short_option(_TextElement): pass
 class long_option(_TextElement): pass
+class vms_option(_TextElement): pass
 class option_argument(_TextElement): pass
 class description(_Element): pass
 class doctest_block(_TextElement): pass
