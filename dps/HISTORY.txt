@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/10 04:22:57 $
+:Date: $Date: 2001/09/12 03:48:44 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -18,10 +18,10 @@ contributions, and related projects:
 
     David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
     Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel Larsson, Marc-Andre
-    Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Michel
-    Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim, Tavis Rudd, Bob
-    Tolbert, Laurence Tratt, Guido van Rossum, Barry Warsaw, Edward
-    Welbourne, Ka-Ping Yee, Moshe Zadka
+    Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Paul Moore,
+    Michel Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim, Tavis
+    Rudd, Bob Tolbert, Laurence Tratt, Guido van Rossum, Barry Warsaw,
+    Edward Welbourne, Ka-Ping Yee, Moshe Zadka
 
 (I'm still waiting for contributions of tasty snacks, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten
@@ -41,8 +41,9 @@ Changed contact email addresses.
 
 * dps/nodes.py:
 
-  - Added vms_option.
-  - Added classifier.
+  - Added 'vms_option'.
+  - Added 'classifier'.
+  - Added 'error'.
   - Fixed link bookkeeping.
   - Added docstrings to _Element.
   - Extended _Element.__iadd__ (``+=``) to lists of nodes.
@@ -71,6 +72,7 @@ Changed contact email addresses.
   - Cleaned up & updated.
   - Fixed bug in StateMachine.getunindented().
   - Added form feed & vertical tab conversion to string2lines.
+  - Added StateMachine.nextlineblank().
 
 * dps/utils.py:
 
@@ -121,6 +123,8 @@ Changed contact email addresses.
   - Made document subtitle dependent on the existence of a title.
   - Moved 'abstract' into the bibliographic elements section.
   - Changed 'graphic' to 'image'.
+  - Moved 'caption' to after 'image' in 'figure'.
+  - Added 'error' admonishment element.
 
 * spec/pdpi.dtd:
 
