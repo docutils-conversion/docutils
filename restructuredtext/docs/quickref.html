@@ -11,16 +11,16 @@
     <!-- beware that it was hand-generated, not by DPS/reST   -->
 
     <p align="right"><em>Being a cheat-sheet for reStructuredText</em>
-    <br align="right"><em>Version 0.4 of 2001/08/14</em>
+    <br align="right"><em>Version 0.4.1 of 2001/08/14</em>
 
-    <p>The full details of reST may be found on the
+    <p>The full details may be found on the
       <a href="http://structuredtext.sourceforge.net/">reStructuredText</a>
       page. This document is just intended as a reminder.
 
     <p><table bgcolor="#aaffaa" width="60%" align="center">
       <tr><td>Links that look like <a href="this">this?</a> are currently not
 	  functional, but will eventually point into the HTML version of the
-	  full reST document.
+	  full reStructuredText document.
     </table>
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
@@ -57,12 +57,13 @@
 	<td>Spaces should be preserved, but line breaks will not be.
 
       <tr valign="top">
-	<td nowrap><samp>\*escape*&nbsp;\'with'&nbsp;"\\"</samp>
-	<td>*escape* 'with' "\"
-	<td>Escaped space (<samp>\&nbsp;</samp>) may, in future, mean non-breaking space.
+	<td nowrap><samp>\*escape*&nbsp;\`with`&nbsp;"\\"</samp>
+	<td>*escape* `with` "\"
+	<td>Escaped space ("<samp>\&nbsp;</samp>") may, in future, mean non-breaking space.
     </table>
 
-    <p>In detail, the reST specifications says that in inline markup:
+    <p>In detail, the reStructuredText specifications says that in 
+       inline markup:
     <ol>
       <li>The start-string must start a text block or be
 	immediately preceded by whitespace,&nbsp;
@@ -274,7 +275,7 @@
 		Note there's no colon after the <samp>]</samp>.
 	    <tr><td><a name="RM98"><strong>[RM98]</strong></a><td> And a reference
 	       (as often used in journals).
-	    <tr><td><a name="like this"><strong>[this]</strong></a><td> here.
+	    <tr><td><a name="this"><strong>[this]</strong></a><td> here.
 	  </table>
     </table>
 
@@ -322,33 +323,33 @@
 	   <br><samp>..&nbsp;_[#]&nbsp;This&nbsp;is&nbsp;the&nbsp;second&nbsp;one.</samp>
 
 	   <p><samp>They&nbsp;may&nbsp;be&nbsp;assigned&nbsp;'autonumber</samp>
-	  <br><samp>labels'&nbsp;-&nbsp;for&nbsp;instance,&nbsp;[#a],&nbsp;[#b]</samp>
-          <br><samp>and&nbsp;[#a],&nbsp;[#b].</samp>
+	  <br><samp>labels'&nbsp;-&nbsp;for&nbsp;instance,
+      <br>[#fourth]_&nbsp;and&nbsp;[#third]_.</samp>
 
-	   <p><samp>..&nbsp;_[#a]&nbsp;First&nbsp;"a"</samp>
-	  <br><samp>..&nbsp;_[#b]&nbsp;First&nbsp;"b"</samp>
-
-	   <p><samp>..&nbsp;_[#a]&nbsp;Second&nbsp;"a"</samp>
-	  <br><samp>..&nbsp;_[#b]&nbsp;Second&nbsp;"b"</samp>
+	   <p><samp>..&nbsp;_[#third]&nbsp;a.k.a.&nbsp;third_</samp>
+	   <p><samp>..&nbsp;_[#fourth]&nbsp;a.k.a.&nbsp;fourth_</samp>
 	<td>
 	  Also, autonumbered footnotes are
 	  possible, like using <a href="#auto1">[1]</a>
 	  and <a href="#auto2">[2]</a>.
 
 	   <p>They may be assigned 'autonumber labels' - for
-	    instance, <a href="#auto3">[3]</a>, <a href="#auto4">[4]</a>
-	    and <a href="#auto5">[5]</a>, <a href="#auto6">[6]</a>.
+	    instance, <a href="#auto4">[4]</a> and <a href="#auto3">[3]</a>.
+         
 	  <p><table>
 	    <tr><td colspan="2"><hr>
 	    <!-- <tr><td colspan="2">Footnotes: -->
 	    <tr><td><a name="auto1"><strong>[1]</strong></a><td> This is the first one.
 	    <tr><td><a name="auto2"><strong>[2]</strong></a><td> This is the second one.
-	    <tr><td><a name="auto3"><strong>[3]</strong></a><td> First "a"
-	    <tr><td><a name="auto4"><strong>[4]</strong></a><td> First "b"
-	    <tr><td><a name="auto5"><strong>[5]</strong></a><td> Second "a"
-	    <tr><td><a name="auto6"><strong>[6]</strong></a><td> Second "b"
+	    <tr><td><a name="third"><strong>[3]</strong></a><td> a.k.a. <a href="#third">third</a>
+	    <tr><td><a name="fourth"><strong>[4]</strong></a><td> a.k.a. <a href="#fourth">fourth</a>
 	  </table>
     </table>
+
+    <p>The numbering of auto-numbered footnotes is determined by the
+       order of the footnotes, not of the references. For footnote
+       references without autonumber labels ("<samp>[#]_</samp>"), the
+       references and footnotes must be in the same relative order.
 
 
     <p><table border="1" width="100%" bgcolor="#ffffcc" cellpadding="3">
