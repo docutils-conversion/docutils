@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/03/04 04:50:17 $
+:Date: $Date: 2002/03/07 04:06:54 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -57,7 +57,7 @@ Changed contact email addresses.
   - Changed .pprint() to .pformat(); removed endtags from output.
   - Added slice support to elements.
   - Added .findclass() & .findnonclass() methods.
-  - Added support for auto-numbered footnotes.
+  - Added support for auto-numbered and symbolic footnotes.
   - Changed 'tagName' to 'tagname'.
   - Improved auto-tagname generation.
   - Added string-conversion to attribute values in DOM-conversion.
@@ -225,6 +225,7 @@ Changed contact email addresses.
   - Added "topic".
   - Added "pending".
   - Added "citation" and "citation_reference".
+  - Added "raw".
 
 * spec/pdpi.dtd:
 
