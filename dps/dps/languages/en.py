@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# $Id: en.py,v 1.1 2001/07/22 22:35:42 goodger Exp $
+# $Id: en.py,v 1.2 2001/08/17 02:31:39 goodger Exp $
 # by David Goodger (dgoodger@bigfoot.com)
 
 """
@@ -7,7 +7,7 @@ This module contains English-language mappings for language-dependent
 features.
 """
 
-__all__ = [parser, formatter]
+__all__ = ['parser', 'formatter']
 __docformat__ = 'reStructuredText'
 
 
