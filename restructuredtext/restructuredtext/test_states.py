@@ -3,8 +3,8 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.3 $
-Date: $Date: 2001/08/02 02:20:13 $
+Revision: $Revision: 1.4 $
+Date: $Date: 2001/08/04 15:13:54 $
 Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -242,6 +242,35 @@ no blank line
     </system_warning>
     <paragraph>
         no blank line
+    </paragraph>
+</document>
+"""],
+["""\
+Here is a paragraph.
+
+        Indent 8 spaces.
+
+    Indent 4 spaces.
+
+XXX Is this correct? Should it generate a warning?
+""",
+"""\
+<document>
+    <paragraph>
+        Here is a paragraph.
+    </paragraph>
+    <block_quote>
+        <block_quote>
+            <paragraph>
+                Indent 8 spaces.
+            </paragraph>
+        </block_quote>
+        <paragraph>
+            Indent 4 spaces.
+        </paragraph>
+    </block_quote>
+    <paragraph>
+        XXX Is this correct? Should it generate a warning?
     </paragraph>
 </document>
 """],
@@ -588,7 +617,7 @@ empty item (space after hyphen)
 -
 empty item, no blank line, but no space after hyphen
 
-XXX is this correct behavior?
+XXX Is this correct behavior?
 """,
 """\
 <document>
@@ -597,7 +626,7 @@ XXX is this correct behavior?
         empty item, no blank line, but no space after hyphen
     </paragraph>
     <paragraph>
-        XXX is this correct behavior?
+        XXX Is this correct behavior?
     </paragraph>
 </document>
 """],
@@ -1688,32 +1717,27 @@ Paragraph.
 </document>
 """],
 ["""\
-.. _[footnote] This is a footnote
+.. _[footnote1] This is a footnote
      on multiple lines with more space.
 
-.. _[footnote] This is a footnote
+.. _[footnote2] This is a footnote
   on multiple lines with less space.
 """,
 """\
 <document>
-    <footnote>
+    <footnote name="[footnote1]">
         <label>
-            footnote
+            footnote1
         </label>
         <paragraph>
             This is a footnote
             on multiple lines with more space.
         </paragraph>
     </footnote>
-    <footnote>
+    <footnote name="[footnote2]">
         <label>
-            footnote
+            footnote2
         </label>
-        <system_warning level="1">
-            <paragraph>
-                duplicate explicit link name: "[footnote]"
-            </paragraph>
-        </system_warning>
         <paragraph>
             This is a footnote
             on multiple lines with less space.
@@ -2654,6 +2678,8 @@ paragraph used to end a bullet before a blockquote
    (if you can't think of what to write in the paragraph)
 
   blockquote
+
+XXX Is this correct? Perhaps comments should be one-liners only.
 """,
 """\
 <document>
@@ -2673,7 +2699,168 @@ paragraph used to end a bullet before a blockquote
             blockquote
         </paragraph>
     </block_quote>
+    <paragraph>
+        XXX Is this correct? Perhaps comments should be one-liners only.
+    </paragraph>
 </document>
+"""],
+]
+
+    notyet['enumerated_list'] = [
+["""\
+1. Item one.
+
+2. Item two.
+
+3. Item three.
+""",
+"""\
+"""],
+["""\
+No blank lines betwen items:
+
+1. Item one.
+2. Item two.
+3. Item three.
+""",
+"""\
+"""],
+["""\
+Scrambled:
+
+3. Item three.
+2. Item two.
+1. Item one.
+""",
+"""\
+"""],
+["""\
+Skipping item 3:
+
+1. Item three.
+2. Item two.
+4. Item four.
+""",
+"""\
+"""],
+["""\
+Start with non-ordinal-1:
+
+0. Item zero.
+1. Item one.
+2. Item two.
+3. Item three.
+
+And again:
+
+2. Item two.
+3. Item three.
+""",
+"""\
+"""],
+["""\
+1. Item one: line 1,
+   line 2.
+2. Item two: line 1,
+   line 2.
+3. Item three: paragraph 1, line 1,
+   line 2.
+
+   Paragraph 2.
+""",
+"""\
+"""],
+["""\
+Different enumeration sequences:
+
+1. First item.
+2. Second item.
+3. Third item.
+
+A. First item.
+B. Second item.
+C. Third item.
+
+a. First item.
+b. Second item.
+c. Third item.
+
+I. First item.
+II. Second item.
+III. Third item.
+
+i. First item.
+ii. Second item.
+iii. Third item.
+""",
+"""\
+"""],
+["""\
+Potentially ambiguous cases:
+
+A. First item.
+B. Second item.
+C. Third item.
+
+I. First item.
+II. Second item.
+III. Third item.
+
+a. First item.
+b. Second item.
+c. Third item.
+
+i. First item.
+ii. Second item.
+iii. Third item.
+""",
+"""\
+"""],
+["""\
+Definitely ambiguous:
+
+A. First item.
+B. Second item.
+C. Third item.
+D. Fourth item.
+E. Fifth item.
+F. Sixth item.
+G. Seventh item.
+H. Eighth item.
+I. First item.
+II. Second item.
+III. Third item.
+
+a. First item.
+b. Second item.
+c. Third item.
+d. Fourth item.
+e. Fifth item.
+f. Sixth item.
+g. Seventh item.
+h. Eighth item.
+i. First item.
+ii. Second item.
+iii. Third item.
+""",
+"""\
+"""],
+["""\
+Different enumeration formats:
+
+1. First item.
+2. Second item.
+3. Third item.
+
+1) First item.
+2) Second item.
+3) Third item.
+
+(1) First item.
+(2) Second item.
+(3) Third item.
+""",
+"""\
 """],
 ]
 
