@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2002/03/11 23:49:35 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/03/13 02:40:42 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -604,8 +604,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body.append('</H1>\n')
 
     def visit_system_message(self, node):
-        if node['level'] < self.doctree.reporter['output'].warninglevel:
-            # @@@ need another threshold for writer? gotta fix that
+        if node['level'] < self.doctree.reporter['writer'].warninglevel:
             raise nodes.SkipNode
         self.body.append(self.starttag(node, 'div', CLASS='system-message'))
         if node.hasattr('refid'):
