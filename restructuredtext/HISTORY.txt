@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/11/01 04:12:28 $
+:Date: $Date: 2001/11/06 00:56:29 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -235,6 +235,7 @@ Changed contact email addresses.
   - Removed element hierarchy diagram to dps/spec/doctree.txt.
   - Added inline hyperlink targets.
   - Changed "hyperlink names" to "reference names".
+  - Added substitutions, substitution references.
 
 * spec/pyextensions.txt:
 

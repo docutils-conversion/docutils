@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/17 04:26:56 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/11/06 00:53:40 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for figures and simple images.
@@ -97,7 +97,7 @@ def figure(match, typename, data, state, statemachine):
     figurenode = nodes.figure('', imagenode)
     if not text:
         return [figurenode], blankfinish
-    node = nodes._Element()
+    node = nodes.Element()              # anonymous container for parsing
     state.nestedparse(indented, lineoffset, node)
     firstnode = node[0]
     if isinstance(firstnode, nodes.paragraph):
