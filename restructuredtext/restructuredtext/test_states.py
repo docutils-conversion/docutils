@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/08/25 04:01:35 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/08/28 03:26:15 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -311,31 +311,6 @@ one line::
     <literal_block>
         A literal block.
     </literal_block>
-</document>
-"""],
-["""\
-A paragraph::
-    A literal block without a blank line first?
-""",
-"""\
-<document>
-    <definition_list>
-        <definition_list_item>
-            <term>
-                A paragraph::
-            </term>
-            <definition>
-                <system_warning level="0">
-                    <paragraph>
-                        Blank line missing before literal block? Interpreted as a definition list item. At line 2.
-                    </paragraph>
-                </system_warning>
-                <paragraph>
-                    A literal block without a blank line first?
-                </paragraph>
-            </definition>
-        </definition_list_item>
-    </definition_list>
 </document>
 """],
 ["""\
@@ -771,6 +746,31 @@ no blank line
 </document>
 """],
 ["""\
+A paragraph::
+    A literal block without a blank line first?
+""",
+"""\
+<document>
+    <definition_list>
+        <definition_list_item>
+            <term>
+                A paragraph::
+            </term>
+            <definition>
+                <system_warning level="0">
+                    <paragraph>
+                        Blank line missing before literal block? Interpreted as a definition list item. At line 2.
+                    </paragraph>
+                </system_warning>
+                <paragraph>
+                    A literal block without a blank line first?
+                </paragraph>
+            </definition>
+        </definition_list_item>
+    </definition_list>
+</document>
+"""],
+["""\
 term 1
   definition 1
 
@@ -899,6 +899,153 @@ paragraph
     <paragraph>
         paragraph
     </paragraph>
+</document>
+"""],
+["""\
+Term : classifier
+    The ' : ' indicates a classifier in
+    definition list item terms only.
+""",
+"""\
+<document>
+    <definition_list>
+        <definition_list_item>
+            <term>
+                Term
+            </term>
+            <classifier>
+                classifier
+            </classifier>
+            <definition>
+                <paragraph>
+                    The ' : ' indicates a classifier in
+                    definition list item terms only.
+                </paragraph>
+            </definition>
+        </definition_list_item>
+    </definition_list>
+</document>
+"""],
+["""\
+Term: not a classifier
+    Because there's no space before the colon.
+Term :not a classifier
+    Because there's no space after the colon.
+Term \: not a classifier
+    Because the colon is escaped.
+""",
+"""\
+<document>
+    <definition_list>
+        <definition_list_item>
+            <term>
+                Term: not a classifier
+            </term>
+            <definition>
+                <paragraph>
+                    Because there's no space before the colon.
+                </paragraph>
+            </definition>
+        </definition_list_item>
+        <definition_list_item>
+            <term>
+                Term :not a classifier
+            </term>
+            <definition>
+                <paragraph>
+                    Because there's no space after the colon.
+                </paragraph>
+            </definition>
+        </definition_list_item>
+        <definition_list_item>
+            <term>
+                Term : not a classifier
+            </term>
+            <definition>
+                <paragraph>
+                    Because the colon is escaped.
+                </paragraph>
+            </definition>
+        </definition_list_item>
+    </definition_list>
+</document>
+"""],
+["""\
+Term `with *inline ``text **errors : classifier `with *errors ``too
+    Definition `with *inline ``text **markup errors.
+""",
+"""\
+<document>
+    <definition_list>
+        <definition_list_item>
+            <term>
+                Term `with *inline ``text **errors
+            </term>
+            <classifier>
+                classifier `with *errors ``too
+            </classifier>
+            <definition>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline interpreted text or phrase link start-string without end-string at line 1.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline emphasis start-string without end-string at line 1.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline literal start-string without end-string at line 1.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline strong start-string without end-string at line 1.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline interpreted text or phrase link start-string without end-string at line 1.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline emphasis start-string without end-string at line 1.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline literal start-string without end-string at line 1.
+                    </paragraph>
+                </system_warning>
+                <paragraph>
+                    Definition `with *inline ``text **markup errors.
+                </paragraph>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline interpreted text or phrase link start-string without end-string at line 2.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline emphasis start-string without end-string at line 2.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline literal start-string without end-string at line 2.
+                    </paragraph>
+                </system_warning>
+                <system_warning level="1">
+                    <paragraph>
+                        Inline strong start-string without end-string at line 2.
+                    </paragraph>
+                </system_warning>
+            </definition>
+        </definition_list_item>
+    </definition_list>
 </document>
 """],
 ]
@@ -1544,9 +1691,9 @@ Paragraph.
 """\
 <document>
     <comment>
-         A comment consisting of multiple lines
-         starting on the line after the
-         explicit markup start.
+        A comment consisting of multiple lines
+        starting on the line after the
+        explicit markup start.
     </comment>
 </document>
 """],
@@ -1706,6 +1853,78 @@ term 2
             </definition>
         </definition_list_item>
     </definition_list>
+</document>
+"""],
+["""\
++ bullet paragraph 1
+
+  bullet paragraph 2
+
+  .. comment between bullet paragraphs 2 and 3
+
+  bullet paragraph 3
+""",
+"""\
+<document>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet paragraph 1
+            </paragraph>
+            <paragraph>
+                bullet paragraph 2
+            </paragraph>
+            <comment>
+                comment between bullet paragraphs 2 and 3
+            </comment>
+            <paragraph>
+                bullet paragraph 3
+            </paragraph>
+        </list_item>
+    </bullet_list>
+</document>
+"""],
+["""\
++ bullet paragraph 1
+
+  .. comment between bullet paragraphs 1 (leader) and 2
+
+  bullet paragraph 2
+""",
+"""\
+<document>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet paragraph 1
+            </paragraph>
+            <comment>
+                comment between bullet paragraphs 1 (leader) and 2
+            </comment>
+            <paragraph>
+                bullet paragraph 2
+            </paragraph>
+        </list_item>
+    </bullet_list>
+</document>
+"""],
+["""\
++ bullet
+
+  .. trailing comment
+""",
+"""\
+<document>
+    <bullet_list bullet="+">
+        <list_item>
+            <paragraph>
+                bullet
+            </paragraph>
+            <comment>
+                trailing comment
+            </comment>
+        </list_item>
+    </bullet_list>
 </document>
 """],
 ]
@@ -1938,6 +2157,179 @@ No blank line.
 """],
 ]
 
+    proven['auto_numbered_footnote'] = [
+["""\
+[#]_ is the first auto-numbered footnote reference.
+[#]_ is the second auto-numbered footnote reference.
+
+.. [#] Auto-numbered footnote 1.
+.. [#] Auto-numbered footnote 2.
+.. [#] Auto-numbered footnote 3.
+
+[#]_ is the third auto-numbered footnote reference.
+""",
+"""\
+<document>
+    <paragraph>
+        <footnote_reference auto="1"/>
+         is the first auto-numbered footnote reference.
+        <footnote_reference auto="1"/>
+         is the second auto-numbered footnote reference.
+    </paragraph>
+    <footnote>
+        <paragraph>
+            Auto-numbered footnote 1.
+        </paragraph>
+    </footnote>
+    <footnote>
+        <paragraph>
+            Auto-numbered footnote 2.
+        </paragraph>
+    </footnote>
+    <footnote>
+        <paragraph>
+            Auto-numbered footnote 3.
+        </paragraph>
+    </footnote>
+    <paragraph>
+        <footnote_reference auto="1"/>
+         is the third auto-numbered footnote reference.
+    </paragraph>
+</document>
+"""],
+["""\
+[#third]_ is a reference to the third auto-numbered footnote.
+
+.. [#first] First auto-numbered footnote.
+.. [#second] Second auto-numbered footnote.
+.. [#third] Third auto-numbered footnote.
+
+[#second]_ is a reference to the second auto-numbered footnote.
+[#first]_ is a reference to the first auto-numbered footnote.
+[#third]_ is another reference to the third auto-numbered footnote.
+
+Here are some internal cross-references to the implicit targets
+generated by the footnotes: first_, second_, third_.
+""",
+"""\
+<document>
+    <paragraph>
+        <footnote_reference auto="1" refname="third"/>
+         is a reference to the third auto-numbered footnote.
+    </paragraph>
+    <footnote name="first">
+        <paragraph>
+            First auto-numbered footnote.
+        </paragraph>
+    </footnote>
+    <footnote name="second">
+        <paragraph>
+            Second auto-numbered footnote.
+        </paragraph>
+    </footnote>
+    <footnote name="third">
+        <paragraph>
+            Third auto-numbered footnote.
+        </paragraph>
+    </footnote>
+    <paragraph>
+        <footnote_reference auto="1" refname="second"/>
+         is a reference to the second auto-numbered footnote.
+        <footnote_reference auto="1" refname="first"/>
+         is a reference to the first auto-numbered footnote.
+        <footnote_reference auto="1" refname="third"/>
+         is another reference to the third auto-numbered footnote.
+    </paragraph>
+    <paragraph>
+        Here are some internal cross-references to the implicit targets
+        generated by the footnotes: 
+        <link refname="first">
+            first
+        </link>
+        , 
+        <link refname="second">
+            second
+        </link>
+        , 
+        <link refname="third">
+            third
+        </link>
+        .
+    </paragraph>
+</document>
+"""],
+["""\
+Mixed anonymous and labelled auto-numbered footnotes:
+
+[#four]_ should be 4, [#]_ should be 1,
+[#]_ should be 3, [#]_ is one too many,
+[#two]_ should be 2, and [#six]_ doesn't exist.
+
+.. [#] Auto-numbered footnote 1.
+.. [#two] Auto-numbered footnote 2.
+.. [#] Auto-numbered footnote 3.
+.. [#four] Auto-numbered footnote 4.
+.. [#five] Auto-numbered footnote 5.
+.. [#five] Auto-numbered footnote 5 again (duplicate).
+""",
+"""\
+<document>
+    <paragraph>
+        Mixed anonymous and labelled auto-numbered footnotes:
+    </paragraph>
+    <paragraph>
+        <footnote_reference auto="1" refname="four"/>
+         should be 4, 
+        <footnote_reference auto="1"/>
+         should be 1,
+        <footnote_reference auto="1"/>
+         should be 3, 
+        <footnote_reference auto="1"/>
+         is one too many,
+        <footnote_reference auto="1" refname="two"/>
+         should be 2, and 
+        <footnote_reference auto="1" refname="six"/>
+         doesn't exist.
+    </paragraph>
+    <footnote>
+        <paragraph>
+            Auto-numbered footnote 1.
+        </paragraph>
+    </footnote>
+    <footnote name="two">
+        <paragraph>
+            Auto-numbered footnote 2.
+        </paragraph>
+    </footnote>
+    <footnote>
+        <paragraph>
+            Auto-numbered footnote 3.
+        </paragraph>
+    </footnote>
+    <footnote name="four">
+        <paragraph>
+            Auto-numbered footnote 4.
+        </paragraph>
+    </footnote>
+    <footnote dupname="five">
+        <paragraph>
+            Auto-numbered footnote 5.
+        </paragraph>
+    </footnote>
+    <footnote dupname="five">
+        <system_warning level="0">
+            <paragraph>
+                Duplicate implicit link name: "five"
+            </paragraph>
+        </system_warning>
+        <paragraph>
+            Auto-numbered footnote 5 again (duplicate).
+        </paragraph>
+    </footnote>
+</document>
+"""],
+]
+
     proven['target'] = [
 ["""\
 .. _target:
@@ -2032,12 +2424,12 @@ Duplicate indirect links (different URIs):
     <paragraph>
         Duplicate indirect links (different URIs):
     </paragraph>
-    <target>
+    <target dupname="target">
         first
     </target>
     <system_warning level="1">
         <paragraph>
-            duplicate indirect link name: "target"
+            Duplicate indirect link name: "target"
         </paragraph>
     </system_warning>
     <target name="target">
@@ -2057,12 +2449,12 @@ Duplicate indirect links (same URIs):
     <paragraph>
         Duplicate indirect links (same URIs):
     </paragraph>
-    <target>
+    <target dupname="target">
         first
     </target>
     <system_warning level="0">
         <paragraph>
-            duplicate indirect link name: "target"
+            Duplicate indirect link name: "target"
         </paragraph>
     </system_warning>
     <target name="target">
@@ -2088,7 +2480,7 @@ Paragraph.
     <paragraph>
         Duplicate implicit links.
     </paragraph>
-    <section>
+    <section dupname="title">
         <title>
             Title
         </title>
@@ -2096,13 +2488,13 @@ Paragraph.
             Paragraph.
         </paragraph>
     </section>
-    <section>
+    <section dupname="title">
         <title>
             Title
         </title>
         <system_warning level="0">
             <paragraph>
-                duplicate implicit link name: "title"
+                Duplicate implicit link name: "title"
             </paragraph>
         </system_warning>
         <paragraph>
@@ -2126,13 +2518,13 @@ Paragraph.
     <paragraph>
         Duplicate implicit/explicit links.
     </paragraph>
-    <section>
+    <section dupname="title">
         <title>
             Title
         </title>
         <system_warning level="0">
             <paragraph>
-                duplicate implicit link name: "title"
+                Duplicate implicit link name: "title"
             </paragraph>
         </system_warning>
         <target name="title"/>
@@ -2162,25 +2554,25 @@ Third.
     <paragraph>
         Duplicate explicit links.
     </paragraph>
-    <target/>
+    <target dupname="title"/>
     <paragraph>
         First.
     </paragraph>
     <system_warning level="1">
         <paragraph>
-            duplicate explicit link name: "title"
+            Duplicate explicit link name: "title"
         </paragraph>
     </system_warning>
-    <target/>
+    <target dupname="title"/>
     <paragraph>
         Second.
     </paragraph>
     <system_warning level="1">
         <paragraph>
-            duplicate explicit link name: "title"
+            Duplicate explicit link name: "title"
         </paragraph>
     </system_warning>
-    <target/>
+    <target dupname="title"/>
     <paragraph>
         Third.
     </paragraph>
@@ -2207,20 +2599,20 @@ Explicit internal target.
     <paragraph>
         Duplicate targets:
     </paragraph>
-    <section>
+    <section dupname="target">
         <title>
             Target
         </title>
         <paragraph>
             Implicit section header target.
         </paragraph>
-        <footnote>
+        <footnote dupname="target">
             <label>
                 target
             </label>
             <system_warning level="0">
                 <paragraph>
-                    duplicate implicit link name: "target"
+                    Duplicate implicit link name: "target"
                 </paragraph>
             </system_warning>
             <paragraph>
@@ -2229,16 +2621,16 @@ Explicit internal target.
         </footnote>
         <system_warning level="0">
             <paragraph>
-                duplicate implicit link name: "target"
+                Duplicate implicit link name: "target"
             </paragraph>
         </system_warning>
-        <target/>
+        <target dupname="target"/>
         <paragraph>
             Explicit internal target.
         </paragraph>
         <system_warning level="1">
             <paragraph>
-                duplicate indirect link name: "target"
+                Duplicate indirect link name: "target"
             </paragraph>
         </system_warning>
         <target name="target">
@@ -2820,81 +3212,6 @@ ftp://ends.with.a.period.
 """],
 ]
 
-    proven['comments_in_bullets'] = [
-["""\
-+ bullet paragraph 1
-
-  bullet paragraph 2
-
-  .. comment between bullet paragraphs 2 and 3
-
-  bullet paragraph 3
-""",
-"""\
-<document>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet paragraph 1
-            </paragraph>
-            <paragraph>
-                bullet paragraph 2
-            </paragraph>
-            <comment>
-                comment between bullet paragraphs 2 and 3
-            </comment>
-            <paragraph>
-                bullet paragraph 3
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
-"""],
-["""\
-+ bullet paragraph 1
-
-  .. comment between bullet paragraphs 1 (leader) and 2
-
-  bullet paragraph 2
-""",
-"""\
-<document>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet paragraph 1
-            </paragraph>
-            <comment>
-                comment between bullet paragraphs 1 (leader) and 2
-            </comment>
-            <paragraph>
-                bullet paragraph 2
-            </paragraph>
-        </list_item>
-    </bullet_list>
-</document>
-"""],
-["""\
-+ bullet
-
-  .. trailing comment
-""",
-"""\
-<document>
-    <bullet_list bullet="+">
-        <list_item>
-            <paragraph>
-                bullet
-            </paragraph>
-            <comment>
-                trailing comment
-            </comment>
-        </list_item>
-    </bullet_list>
-</document>
-"""],
-]
-
     proven['outdenting'] = [
 ["""\
 Anywhere a paragraph would have an effect on the current
@@ -2902,9 +3219,9 @@ indentation level, a comment or list item should also.
 
 + bullet
 
-paragraph used to end a bullet before a blockquote
+This paragraph ends the bullet list item before a block quote.
 
-  blockquote
+  Block quote.
 """,
 """\
 <document>
@@ -2920,11 +3237,11 @@ paragraph used to end a bullet before a blockquote
         </list_item>
     </bullet_list>
     <paragraph>
-        paragraph used to end a bullet before a blockquote
+        This paragraph ends the bullet list item before a block quote.
     </paragraph>
     <block_quote>
         <paragraph>
-            blockquote
+            Block quote.
         </paragraph>
     </block_quote>
 </document>
@@ -2932,12 +3249,18 @@ paragraph used to end a bullet before a blockquote
 ["""\
 + bullet
 
-.. a comment used to end a bullet before a blockquote
-   (if you can't think of what to write in the paragraph)
+.. Comments swallow up all indented text following.
 
-  blockquote
+  (Therefore this is not a) block quote.
 
-XXX Is this correct? Perhaps comments should be one-liners only.
+- bullet
+
+  If we want a block quote after this bullet list item,
+  we need to use an empty comment:
+
+..
+
+  Block quote.
 """,
 """\
 <document>
@@ -2949,17 +3272,27 @@ XXX Is this correct? Perhaps comments should be one-liners only.
         </list_item>
     </bullet_list>
     <comment>
-        a comment used to end a bullet before a blockquote
-        (if you can't think of what to write in the paragraph)
+        Comments swallow up all indented text following.
+        
+        (Therefore this is not a) block quote.
     </comment>
+    <bullet_list bullet="-">
+        <list_item>
+            <paragraph>
+                bullet
+            </paragraph>
+            <paragraph>
+                If we want a block quote after this bullet list item,
+                we need to use an empty comment:
+            </paragraph>
+        </list_item>
+    </bullet_list>
+    <comment/>
     <block_quote>
         <paragraph>
-            blockquote
+            Block quote.
         </paragraph>
     </block_quote>
-    <paragraph>
-        XXX Is this correct? Perhaps comments should be one-liners only.
-    </paragraph>
 </document>
 """],
 ]
@@ -3897,7 +4230,7 @@ Nested enumerated lists:
 """],
 ]
 
-    proven['field_lists'] = [
+    proven['field_list'] = [
 ["""\
 One-liners:
 
@@ -4470,7 +4803,7 @@ Field: marker is missing its open-colon.
 """],
 ]
 
-    proven['option_lists'] = [
+    proven['option_list'] = [
 ["""\
 Short options:
 
@@ -5131,8 +5464,154 @@ Some edge cases:
 
     totest['tables'] = [
 ["""\
-XXX Temporarily parsing tables as a literal blocks:
++-------------------------------------+
+| A table with one cell and one line. |
++-------------------------------------+
 
+XXX Temporarily parsing tables as literal blocks.
+""",
+"""\
+<document>
+    <literal_block>
+        +-------------------------------------+
+        | A table with one cell and one line. |
+        +-------------------------------------+
+    </literal_block>
+    <paragraph>
+        XXX Temporarily parsing tables as literal blocks.
+    </paragraph>
+</document>
+"""],
+["""\
++-----------------------+
+| A table with one cell |
+| and two lines.        |
++-----------------------+
+""",
+"""\
+<document>
+    <literal_block>
+        +-----------------------+
+        | A table with one cell |
+        | and two lines.        |
+        +-----------------------+
+    </literal_block>
+</document>
+"""],
+["""\
++--------------+--------------+
+| A table with | two columns. |
++--------------+--------------+
+""",
+"""\
+<document>
+    <literal_block>
+        +--------------+--------------+
+        | A table with | two columns. |
+        +--------------+--------------+
+    </literal_block>
+</document>
+"""],
+["""\
++--------------+
+| A table with |
++--------------+
+| two rows.    |
++--------------+
+""",
+"""\
+<document>
+    <literal_block>
+        +--------------+
+        | A table with |
+        +--------------+
+        | two rows.    |
+        +--------------+
+    </literal_block>
+</document>
+"""],
+["""\
++--------------+-------------+
+| A table with | two columns |
++--------------+-------------+
+| and          | two rows.   |
++--------------+-------------+
+""",
+"""\
+<document>
+    <literal_block>
+        +--------------+-------------+
+        | A table with | two columns |
+        +--------------+-------------+
+        | and          | two rows.   |
+        +--------------+-------------+
+    </literal_block>
+</document>
+"""],
+["""\
++--------------+---------------+
+| A table with | two columns,  |
++--------------+---------------+
+| two rows, and a column span. |
++------------------------------+
+""",
+"""\
+<document>
+    <literal_block>
+        +--------------+---------------+
+        | A table with | two columns,  |
+        +--------------+---------------+
+        | two rows, and a column span. |
+        +------------------------------+
+    </literal_block>
+</document>
+"""],
+["""\
++--------------+--------------+
+| A table with | two columns, |
++--------------+ and a row    |
+| two rows,    | span.        |
++--------------+--------------+
+""",
+"""\
+<document>
+    <literal_block>
+        +--------------+--------------+
+        | A table with | two columns, |
+        +--------------+ and a row    |
+        | two rows,    | span.        |
+        +--------------+--------------+
+    </literal_block>
+</document>
+"""],
+["""\
+Complex spanning pattern (no edge knows all rows/cols):
+
++-----------+-------------------------+
+| W/NW cell | N/NE cell               |
+|           +-------------+-----------+
+|           | Middle cell | E/SE cell |
++-----------+-------------+           |
+| S/SE cell               |           |
++-------------------------+-----------+
+""",
+"""\
+<document>
+    <paragraph>
+        Complex spanning pattern (no edge knows all rows/cols):
+    </paragraph>
+    <literal_block>
+        +-----------+-------------------------+
+        | W/NW cell | N/NE cell               |
+        |           +-------------+-----------+
+        |           | Middle cell | E/SE cell |
+        +-----------+-------------+           |
+        | S/SE cell               |           |
+        +-------------------------+-----------+
+    </literal_block>
+</document>
+"""],
+["""\
 +------------------------+------------+----------+----------+
 | Header row, column 1   | Header 2   | Header 3 | Header 4 |
 | (header rows optional) |            |          |          |
@@ -5148,9 +5627,6 @@ XXX Temporarily parsing tables as a literal blocks:
 """,
 """\
 <document>
-    <paragraph>
-        XXX Temporarily parsing tables as a literal blocks:
-    </paragraph>
     <literal_block>
         +------------------------+------------+----------+----------+
         | Header row, column 1   | Header 2   | Header 3 | Header 4 |
@@ -5168,8 +5644,6 @@ XXX Temporarily parsing tables as a literal blocks:
 </document>
 """],
 ["""\
-XXX Temporarily parsing tables as a literal blocks:
-
 +-----------------+--------+
 | A simple table  | cell 2 |
 +-----------------+--------+
@@ -5179,9 +5653,6 @@ No blank line after table.
 """,
 """\
 <document>
-    <paragraph>
-        XXX Temporarily parsing tables as a literal blocks:
-    </paragraph>
     <literal_block>
         +-----------------+--------+
         | A simple table  | cell 2 |
@@ -5191,7 +5662,7 @@ No blank line after table.
     </literal_block>
     <system_warning level="1">
         <paragraph>
-            Blank line required after table at line 8.
+            Blank line required after table at line 6.
         </paragraph>
     </system_warning>
     <paragraph>
@@ -5200,8 +5671,6 @@ No blank line after table.
 </document>
 """],
 ["""\
-XXX Temporarily parsing tables as a literal blocks:
-
 +-----------------+--------+
 | A simple table  | cell 2 |
 +-----------------+--------+
@@ -5211,9 +5680,6 @@ XXX Temporarily parsing tables as a literal blocks:
 """,
 """\
 <document>
-    <paragraph>
-        XXX Temporarily parsing tables as a literal blocks:
-    </paragraph>
     <literal_block>
         +-----------------+--------+
         | A simple table  | cell 2 |
@@ -5223,12 +5689,12 @@ XXX Temporarily parsing tables as a literal blocks:
     </literal_block>
     <system_warning level="2">
         <paragraph>
-            Unexpected indentation at line 8.
+            Unexpected indentation at line 6.
         </paragraph>
     </system_warning>
     <system_warning level="1">
         <paragraph>
-            Blank line required after table at line 8.
+            Blank line required after table at line 6.
         </paragraph>
     </system_warning>
     <block_quote>
