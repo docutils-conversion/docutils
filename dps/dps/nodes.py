@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/08/23 03:55:19 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/08/25 01:44:16 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -61,14 +61,46 @@ class Text(_Node, MutableString):
 
 class _Element(_Node):
 
+    """
+    `_Element` is the superclass to all specific elements.
+
+    Elements contain attributes and child nodes. Elements emulate dictionaries
+    for attributes, indexing by attribute name (a string). To set the
+    attribute 'att' to 'value', do::
+
+        element['att'] = 'value'
+
+    Elements also emulate lists for child nodes (element nodes and/or text
+    nodes), indexing by integer. To get the first child node, use::
+
+        element[0]
+
+    Elements may be constructed using the ``+=`` operator. To add one new
+    child node to element, do::
+
+        element += node
+
+    To add a list of multiple child nodes at once, use the same ``+=``
+    operator::
+
+        element += [node1, node2]
+    """
+    
     childtextsep = '\n\n'
     """Separator for child nodes, used by `astext()` method."""
 
     def __init__(self, rawsource='', *children, **attributes):
         self.rawsource = rawsource
+        """The raw text from which this element was constructed."""
+        
         self.children = list(children)
+        """List of child nodes (elements and/or text)."""
+        
         self.attributes = attributes
+        """Dictionary of attribute {name: value}."""
+
         self.tagName = self.__class__.__name__
+        """The element generic identifier, usually the class name."""
 
     def _dom_node(self):
         element = dom.Element(self.tagName)
@@ -144,9 +176,11 @@ class _Element(_Node):
         return other + self.children
 
     def __iadd__(self, other):
-        if other is not None:
-            assert isinstance(other, _Node)
+        """Append a node or a list of nodes to `self.children`."""
+        if isinstance(other, _Node):
             self.children.append(other)
+        elif other is not None:
+            self.children.extend(other)
         return self
 
     def astext(self):
@@ -358,6 +392,7 @@ class list_item(_Element): pass
 class definition_list(_Element): pass
 class definition_list_item(_Element): pass
 class term(_TextElement): pass
+class classifier(_TextElement): pass
 class definition(_Element): pass
 class field_list(_Element): pass
 class field(_Element): pass
