@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.35 $
-:Date: $Date: 2002/03/07 04:06:08 $
+:Revision: $Revision: 1.36 $
+:Date: $Date: 2002/03/11 03:43:26 $
 :Copyright: This module has been placed in the public domain.
 
 Classes in CamelCase are abstract base classes or auxiliary classes. The one
@@ -580,33 +580,34 @@ class document(Root, Element):
         self.ids[id] = node
         if node.has_key('name'):
             name = node['name']
-            if self.nameids.has_key(name) \
-                  and self.ids[self.nameids[name]].has_key('name'):
-                msg = self.reporter.info(
-                      'Multiple IDs for name "%s": "%s", "%s"'
-                      % (name, self.nameids[name], id))
-                msgnode += msg
+            #if self.nameids.has_key(name) \
+            #      and self.ids[self.nameids[name]].has_key('name'):
+            #    msg = self.reporter.info(
+            #          'Multiple IDs for name "%s": "%s", "%s"'
+            #          % (name, self.nameids[name], id))
+            #    msgnode += msg
             self.nameids[name] = id
+        return id
 
     def note_implicit_target(self, targetnode, msgnode=None):
         if msgnode == None:
             msgnode = self.messages
+        id = self.set_id(targetnode, msgnode)
         name = targetnode['name']
         if self.explicit_targets.has_key(name) \
-              or self.external_targets.has_key(name) \
               or self.implicit_targets.has_key(name):
             msg = self.reporter.info(
-                  'Duplicate implicit target name: "%s"' % name)
+                  'Duplicate implicit target name: "%s"' % name, refid=id)
             msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
             del targetnode['name']
             targetnode['dupname'] = name
         self.implicit_targets[name] = targetnode
-        self.set_id(targetnode, msgnode)
 
     def note_explicit_target(self, targetnode, msgnode=None):
         if msgnode == None:
             msgnode = self.messages
+        id = self.set_id(targetnode, msgnode)
         name = targetnode['name']
         if self.explicit_targets.has_key(name):
             level = 2
@@ -617,7 +618,8 @@ class document(Root, Element):
                       and t['refuri'] == refuri:
                     level = 1           # just inform if refuri's identical
             msg = self.reporter.system_message(
-                  level, 'Duplicate explicit target name: "%s"' % name)
+                  level, 'Duplicate explicit target name: "%s"' % name,
+                  refid=id)
             msgnode += msg
             self.clear_target_names(name, self.explicit_targets,
                                     self.implicit_targets)
@@ -626,11 +628,10 @@ class document(Root, Element):
                 targetnode['dupname'] = name
         elif self.implicit_targets.has_key(name):
             msg = self.reporter.info(
-                  'Duplicate implicit target name: "%s"' % name)
+                  'Duplicate implicit target name: "%s"' % name, refid=id)
             msgnode += msg
             self.clear_target_names(name, self.implicit_targets)
         self.explicit_targets[name] = targetnode
-        self.set_id(targetnode, msgnode)
 
     def clear_target_names(self, name, *targetdicts):
         for targetdict in targetdicts:
