@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/02/15 22:45:58 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/02/20 04:45:57 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.frontmatter.DocInfo.
@@ -296,7 +296,7 @@ totest['bibliographic_field_lists'] = ((DocInfo,), [
 .. RCS keyword extraction.
 
 :Status: $RCSfile: test_docinfo.py,v $
-:Date: $Date: 2002/02/15 22:45:58 $
+:Date: $Date: 2002/02/20 04:45:57 $
 
 RCS keyword 'RCSfile' doesn't change unless the file name changes,
 so it's safe. The 'Date' keyword changes every time the file is
@@ -317,8 +317,9 @@ derived (hacked) in parallel in order to stay in sync.
         so it's safe. The 'Date' keyword changes every time the file is
         checked in to CVS, so the test's expected output text has to be
         derived (hacked) in parallel in order to stay in sync.
-""" % ('$Date: 2002/02/15 22:45:58 $'[7:17].replace('/', '-'),)],
+""" % ('$Date: 2002/02/20 04:45:57 $'[7:17].replace('/', '-'),)],
 ])
+
 
 if __name__ == '__main__':
     import unittest
