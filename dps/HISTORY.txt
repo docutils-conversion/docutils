@@ -4,7 +4,7 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/08/14 03:54:58 $
+Date: $Date: 2001/08/17 02:32:42 $
 Website: http://docstring.sourceforge.net/
 
 
@@ -39,14 +39,17 @@ Release 0.4? (pending)
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
 
-* dps/statemachine.py:
+* dps/statemachine.py (1.3):
 
   - Fixed bug in StateMachineWS.getknownindented().
+  - Cleaned up & updated.
 
 * dps/parsers/model.py:
 
   - Added setup_parse() so unoverridden parse() could raise a
     NotImplementedError.
+
+* dps/languages/en.py: Fixed ``__all__``.
 
 * spec/pep-0256.txt:
 
@@ -67,8 +70,12 @@ Release 0.4? (pending)
 
   - Fixed typos & omissions; now validates.
   - Changed field_argument's model to PCDATA.
+  - Added option_list and doctest_block from ppdi.dtd.
+  
+* spec/pdpi.dtd:
 
-* spec/pdpi.dtd: Fixed typos; now validates.
+  - Fixed typos; now validates.
+  - Moved option_list and doctest_block from gpdi.dtd.
 
 
 Release 0.3 (2001-07-19)
