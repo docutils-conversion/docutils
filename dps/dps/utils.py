@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/09/17 03:54:29 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/09/18 04:32:12 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -57,12 +57,3 @@ class Reporter:
 
     def severe(self, comment=None, children=[]):
         return self.system_warning(3, comment, children)
-
-    def strong_system_warning(self, admonition, comment, sourcetext=None):
-        p = nodes.paragraph()
-        p += nodes.strong('', admonition)
-        p += nodes.Text(': ' + comment)
-        children = [p]
-        if sourcetext:
-            children.append(nodes.literal_block('', sourcetext))
-        return self.system_warning(3, children=children)
