@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2002/02/06 02:41:37 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2002/02/07 02:03:01 $
 :Copyright: This module has been placed in the public domain.
 
 This is the Docstring Processing System (DPS) Python package. 
@@ -16,7 +16,8 @@ Modules:
 
 - __init__.py: Contains the package docstring only (this text).
 
-- core.py: Contains the ``Publisher`` class and ``convert()`` function.
+- core.py: Contains the ``Publisher`` class and ``publish()`` convenience
+  function.
 
 - nodes.py: DPS document tree (doctree) node class library.
 
@@ -29,7 +30,8 @@ Modules:
 - urischemes.py: Contains a complete mapping of known URI addressing
   scheme names to descriptions.
 
-- utils.py: Miscellaneous utilities.
+- utils.py: Contains the ``Reporter`` system warning class and miscellaneous
+  utilities.
 
 Subpackages:
 
