@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2002/02/06 02:17:47 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/02/12 02:30:42 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -338,6 +338,73 @@ Multiple body elements:
                         <field_body>
                             <paragraph>
                                 15:07
+"""],
+["""\
+Nested field lists on one line:
+
+:field1: :field2: :field3: body
+:field4: :field5: :field6: body
+                  :field7: body
+         :field8: body
+         :field9: body line 1
+           body line 2
+""",
+"""\
+<document>
+    <paragraph>
+        Nested field lists on one line:
+    <field_list>
+        <field>
+            <field_name>
+                field1
+            <field_body>
+                <field_list>
+                    <field>
+                        <field_name>
+                            field2
+                        <field_body>
+                            <field_list>
+                                <field>
+                                    <field_name>
+                                        field3
+                                    <field_body>
+                                        <paragraph>
+                                            body
+        <field>
+            <field_name>
+                field4
+            <field_body>
+                <field_list>
+                    <field>
+                        <field_name>
+                            field5
+                        <field_body>
+                            <field_list>
+                                <field>
+                                    <field_name>
+                                        field6
+                                    <field_body>
+                                        <paragraph>
+                                            body
+                                <field>
+                                    <field_name>
+                                        field7
+                                    <field_body>
+                                        <paragraph>
+                                            body
+                    <field>
+                        <field_name>
+                            field8
+                        <field_body>
+                            <paragraph>
+                                body
+                    <field>
+                        <field_name>
+                            field9
+                        <field_body>
+                            <paragraph>
+                                body line 1
+                                body line 2
 """],
 ["""\
 :Parameter i j k: multiple arguments
