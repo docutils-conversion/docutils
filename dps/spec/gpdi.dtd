@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.31 $
-:Date: $Date: 2002/02/15 22:53:17 $
+:Revision: $Revision: 1.32 $
+:Date: $Date: 2002/02/20 04:10:29 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -46,12 +46,14 @@ Attributes shared by all elements in this DTD:
 - `name` is an identifier assigned in the markup.
 - `dupname` is the same as `name`, used when it's a duplicate.
 - `source` is the name of the source of this document or fragment.
+- `class` is used to transmit individuality information forward.
 -->
 <!ENTITY % basic.atts
   " id        ID        #IMPLIED
     name      CDATA     #IMPLIED
     dupname   CDATA     #IMPLIED
     source    CDATA     #IMPLIED
+    class     CDATA     #IMPLIED
     %additional.basic.atts; ">
 
 <!-- External reference to a URI/URL. -->
