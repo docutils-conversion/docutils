@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/11/06 00:55:43 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/11/15 03:01:41 $
 
 This document describes the directives implemented in the reference
 reStructuredText parser.
@@ -83,16 +83,25 @@ indented text block immediately following, with no intervening blank
 lines.  If there are multiple lines in the link block, they are
 stripped of leading and trailing whitespace and joined together.
 
-Optionally, the last line of the link block may contain an _`image
-attribute specification`, in square brackets, as follows::
+Optionally, the image link block may end with one or more lines in
+square brackets, the _`image attribute specifications`.  These two
+image directives are equivalent::
 
     .. image:: picture.png
-               [height=100 width=200 scale=50]
+       [height=100 width=200 scale=50 alt="alternate text"]
 
-The attribute specification must be the only text on that line.  None,
-some, or all of the 'height', 'width', and 'scale' attributes may be
-present.  The values are all integers; 'height' and 'width' values are
-in pixels, and 'scale' is a percentage.
+    .. image:: picture.png
+       [height=100]
+       [width=200 scale=50]
+       [alt="alternate text"]
+
+The attribute specifications must begin on new lines and those lines
+may not contain any other text except whitespace.  None, some, or all
+of the 'alt', 'height', 'width', and 'scale' attributes may be
+present.  The 'alt' attribute contains text and must be enclosed with
+quotation marks (either " or ').  The other attributes are all simple
+integers (no quotes); 'height' and 'width' values are in pixels, and
+'scale' is a percentage.
 
 
 Figure
@@ -100,13 +109,18 @@ Figure
 
 DTD elements: figure, image, caption, legend.
 
-A 'figure' consists of an image (optionally including the the `image
-attribute specification`_), an optional caption (a single paragraph),
-and an optional legend (arbitrary body elements)::
+A 'figure' consists of image_ data (optionally including `image attribute
+specifications`_), an optional caption (a single paragraph), and an
+optional legend (arbitrary body elements)::
 
     .. figure:: picture.png
+       [scale=50 alt="map to buried treasure"]
 
        This is the caption of the figure (a simple paragraph).
+
+       The legend consists of all elements after the caption.  In this
+       case, the legend consists of this paragraph and the following
+       table:
 
        +-----------------------+-----------------------+
        | Symbol                | Meaning               |
