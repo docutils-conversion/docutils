@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/05 02:40:26 $
+:Date: $Date: 2001/09/07 02:13:11 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -48,6 +48,11 @@ Changed contact email addresses.
   - Extended _Element.__iadd__ (``+=``) to lists of nodes.
   - Duplicate hyperlink names -> dupname attribute.
   - Allow any DOM implementation from ``asdom()`` method. (I think.)
+  - _Node's always true.
+  - Changed .pprint() to .pformat().
+  - Added slice support to elements.
+  - Added .findclass() & .findnonclass() methods.
+  - Added support for auto-numbered footnotes.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -61,12 +66,22 @@ Changed contact email addresses.
   - Fixed bug in StateMachine.getunindented().
   - Added form feed & vertical tab conversion to string2lines.
 
+* dps/utils.py:
+
+  - Added named methods (aliases to numbered system_warning calls) to
+    Errorist.
+  - Added language module support.
+
 * dps/parsers/model.py:
 
   - Added setup_parse() so unoverridden parse() could raise a
     NotImplementedError.
+  - Added language module support.
 
-* dps/languages/en.py: Fixed ``__all__``.
+* dps/languages/en.py: Now in use.
+
+  - Fixed ``__all__``.
+  - Changed node class names to node classes.
 
 * spec/pep-0256.txt:
 
@@ -94,6 +109,8 @@ Changed contact email addresses.
   - Added support for auto-numbered footnotes.
   - Added 'morecols' attribute to table entries (<entry>), for simpler
     column span indication.
+  - Made document subtitle dependent on the existence of a title.
+  - Moved 'abstract' into the bibliographic elements section.
 
 * spec/pdpi.dtd:
 
