@@ -3,15 +3,15 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/03/01 03:16:22 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/03/04 04:44:09 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
 
-The output uses the HTML 4.01 strict.dtd and contains a minimum of formatting
-information. A cascading style sheet "default.css" is required for proper
-viewing with a browser.
+The output uses the HTML 4.01 Transitional DTD (*almost* strict) and
+contains a minimum of formatting information. A cascading style sheet
+"default.css" is required for proper viewing with a browser.
 """
 
 __docformat__ = 'reStructuredText'
@@ -88,12 +88,6 @@ class HTMLTranslator(nodes.NodeVisitor):
     def depart_Text(self, node):
         pass
 
-    def visit_abstract(self, node):
-        self.visit_admonition(node, 'abstract')
-
-    def depart_abstract(self, node):
-        self.depart_admonition()
-
     def visit_admonition(self, node, name):
         self.body.append(self.starttag(node, 'div', CLASS=name))
         self.body.append('<H3>' + self.language.labels[name] + '</H3>\n')
@@ -143,6 +137,12 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def depart_caution(self, node):
         self.depart_admonition()
+
+    def visit_citation(self, node):
+        pass
+
+    def depart_citation(self, node):
+        pass
 
     def visit_classifier(self, node):
         self.body.append(' <SPAN CLASS="classifier_delimiter">:</SPAN> ')
@@ -594,7 +594,7 @@ class HTMLTranslator(nodes.NodeVisitor):
     def visit_target(self, node):
         if not (node.has_key('refuri') or node.has_key('refid')
                 or node.has_key('refname')):
-            self.body.append(self.starttag(node, 'a', ''))
+            self.body.append(self.starttag(node, 'a', '', CLASS='target'))
 
     def depart_target(self, node):
         self.body.append('</A>')
@@ -635,17 +635,28 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_title(self, node):
         """Only 6 section levels are supported by HTML."""
-        if self.sectionlevel == 0:
-            self.head.append('<TITLE>%s</TITLE>\n' % self.encode(node.astext()))
+        if isinstance(node.parent, nodes.topic):
+            self.body.append(
+                  self.starttag(node, 'H6', '', CLASS='topic_title'))
+            self.context.append('</H6>\n')
+        elif self.sectionlevel == 0:
+            self.head.append('<TITLE>%s</TITLE>\n'
+                             % self.encode(node.astext()))
             self.body.append(self.starttag(node, 'H1', '', CLASS='title'))
+            self.context.append('</H1>\n')
         else:
-            self.body.append(self.starttag(node, 'H%s' % self.sectionlevel, ''))
+            self.body.append(
+                  self.starttag(node, 'H%s' % self.sectionlevel, ''))
+            self.context.append('</H%s>\n' % self.sectionlevel)
 
     def depart_title(self, node):
-        if self.sectionlevel == 0:
-            self.body.append('</H1>\n')
-        else:
-            self.body.append('</H%s>\n' % self.sectionlevel)
+        self.body.append(self.context.pop())
+
+    def visit_topic(self, node):
+        self.body.append(self.starttag(node, 'div', CLASS='topic'))
+
+    def depart_topic(self, node):
+        self.body.append('</DIV>\n')
 
     def visit_transition(self, node):
         self.body.append(self.starttag(node, 'hr'))
