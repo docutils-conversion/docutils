@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/01 17:13:57 $
+:Date: $Date: 2001/09/05 02:53:04 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -68,7 +68,6 @@ Changed contact email addresses.
   - Factored SpecializedBody out of Body subclasses.
   - Factored SpecializedText out of Text subclass.
   - Added support for field lists, option lists.
-  - Added temporary support for tables.
   - Changed interpreted text roles to ':role:' syntax, outside of
     backquotes.
   - Simplified RSTState.inlineobj().
@@ -81,7 +80,7 @@ Changed contact email addresses.
   - Added support for classifier after term in definition list items.
   - Fixed a bug with literal blocks.
   - Changed ``element.extend(nodelist)`` to ``element += nodelist``.
-  - Began work on table support (class TableParser).
+  - Added full table support (class TableParser & Body.table() etc.).
 
 * restructuredtext/test_states.py: Refactored to test directory. This
   file removed.
@@ -101,7 +100,7 @@ Changed contact email addresses.
   - Added enumerated list tests.
   - Clarified some edge-case tests.
   - Added tests for field lists, option lists.
-  - Added temporary tests for tables.
+  - Added tests for tables.
   - Added tests for table parser.
   - New tests for literal_block edge cases.
   - Added tests for empty list items.
