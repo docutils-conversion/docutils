@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger; Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/02/22 02:01:02 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/03/16 06:04:30 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Reader modules.
@@ -95,13 +95,14 @@ class Reader:
         for xclass in (universal.first_reader_transforms
                        + tuple(self.transforms)
                        + universal.last_reader_transforms):
-            xclass().transform(self.document)
+            xclass(self.document).transform()
 
     def newdocument(self, languagecode=None):
         """Create and return a new empty document tree (root node)."""
         document = nodes.document(
               languagecode=(languagecode or self.languagecode),
               reporter=self.reporter)
+        document['source'] = self.source
         return document
 
 
