@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: dgoodger@bigfoot.com
 :Version: 1.3
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/08/17 01:57:28 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/08/22 04:08:22 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -292,7 +292,7 @@ class StateMachine:
         for line in self.inputlines[self.lineoffset + 1:]:
             if not line.strip():
                 break
-            if line[1] == ' ':
+            if line[0] == ' ':
                 self.nextline(len(block) - 1)
                 raise UnexpectedIndentationError(block, self.abslineno() + 1)
             block.append(line)
@@ -683,7 +683,7 @@ class StateMachineWS(StateMachine):
         else:
             return context, '', []      # neither blank line nor indented
 
-    def getindented(self):
+    def getindented(self, startoffset=0):
         """
         Return an indented block and info.
 
@@ -695,11 +695,12 @@ class StateMachineWS(StateMachine):
         - its first line offset from BOF, and
         - whether or not it finished with a blank line.
         """
-        offset = self.abslineoffset()
+        offset = self.abslineoffset() + startoffset
         indented, indent, blankfinish = extractindented(
-              self.inputlines[self.lineoffset:])
+              self.inputlines[self.lineoffset + startoffset:])
         if indented:
-            self.nextline(len(indented) - 1)  # advance to last indented line
+            # advance to last indented line
+            self.nextline(len(indented) - 1 + startoffset)
         while indented and not indented[-1].strip():
             indented.pop()
         while indented and not indented[0].strip():
