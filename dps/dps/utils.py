@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/09/18 04:32:12 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/11/15 02:57:22 $
 :Copyright: This module has been placed in the public domain.
 
 """
@@ -57,3 +57,115 @@ class Reporter:
 
     def severe(self, comment=None, children=[]):
         return self.system_warning(3, comment, children)
+
+
+class AttributeParsingError(Exception): pass
+class BadAttributeLineError(AttributeParsingError): pass
+class BadAttributeDataError(AttributeParsingError): pass
+class DuplicateAttributeError(AttributeParsingError): pass
+
+
+def parseattributes(lines, attributespec):
+    """
+    Return a dictionary mapping attribute names to converted values.
+
+    :Parameters:
+        - `lines`: List of one-line strings of the form::
+          
+            ['[name1=value1 name2=value2]', '[name3="value 3"]']
+
+        - `attributespec`: Dictionary mapping known attribute names to a
+          conversion function such as `int` or `float`.
+
+    :Raises:
+        - `KeyError` for unknown attribute names.
+        - `ValueError` for invalid attribute values (raised by conversion
+           function).
+        - `DuplicateAttributeError` for duplicate attributes.
+        - `BadAttributeLineError` for input lines not enclosed in brackets.
+        - `BadAttributeDataError` for invalid attribute data (missing name,
+          missing data, bad quotes, etc.).
+    """
+    attlist = extractattributes(lines)
+    attdict = assembleattributes(attlist, attributespec)
+    return attdict
+
+def extractattributes(lines):
+    """
+    Return a list of attribute (name, value) pairs.
+
+    :Parameter:
+        `lines`: List of one-line strings of the form::
+
+            ['[name1=value1 name2=value2]', '[name3="value 3"]']
+
+    :Raises:
+        - `BadAttributeLineError` for input lines not enclosed in brackets.
+        - `BadAttributeDataError` for invalid attribute data (missing name,
+          missing data, bad quotes, etc.).
+    """
+    attlist = []
+    for line in lines:
+        line = line.strip()
+        if line[:1] != '[' or line[-1:] != ']':
+            raise BadAttributeLineError(
+                  'input line not enclosed in "[" and "]"')
+        line = line[1:-1].strip()
+        while line:
+            equals = line.find('=')
+            if equals == -1:
+                raise BadAttributeDataError('missing "="')
+            elif equals == 0:
+                raise BadAttributeDataError(
+                      'missing attribute name before "="')
+            attname = line[:equals]
+            line = line[equals+1:]
+            if not line:
+                raise BadAttributeDataError(
+                      'missing value after "%s="' % attname)
+            if line[0] in '\'"':
+                endquote = line.find(line[0], 1)
+                if endquote == -1:
+                    raise BadAttributeDataError(
+                          'attribute "%s" missing end quote (%s)'
+                          % (attname, line[0]))
+                if len(line) > endquote + 1 and line[endquote + 1].strip():
+                    raise BadAttributeDataError(
+                          'attribute "%s" end quote (%s) not followed by '
+                          'whitespace' % (attname, line[0]))
+                data = line[1:endquote]
+                line = line[endquote+1:].lstrip()
+            else:
+                space = line.find(' ')
+                if space == -1:
+                    data = line
+                    line = ''
+                else:
+                    data = line[:space]
+                    line = line[space+1:].lstrip()
+            attlist.append((attname.lower(), data))
+    return attlist
+
+def assembleattributes(attlist, attributespec):
+    """
+    Return a mapping of attribute names to values.
+
+    :Parameters:
+        - `attlist`: A list of (name, value) pairs (the output of
+          `extractattributes()`).
+        - `attributespec`: Dictionary mapping known attribute names to a
+          conversion function such as `int` or `float`.
+
+    :Raises:
+        - `KeyError` for unknown attribute names.
+        - `DuplicateAttributeError` for duplicate attributes.
+        - `ValueError` for invalid attribute values (raised by conversion
+           function).
+    """
+    attributes = {}
+    for name, value in attlist:
+        convertor = attributespec[name] # raises KeyError if unknown
+        if attributes.has_key(name):
+            raise DuplicateAttributeError('duplicate attribute "%s"' % name)
+        attributes[name] = convertor(value) # raises ValueError if invalud
+    return attributes
