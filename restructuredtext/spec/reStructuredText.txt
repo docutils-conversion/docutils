@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.32 $
-:Date: $Date: 2002/01/16 06:20:40 $
+:Revision: $Revision: 1.33 $
+:Date: $Date: 2002/02/06 02:21:05 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -760,7 +760,7 @@ specific fields transformed to document bibliographic data. This
 bibliographic data corresponds to the front matter of a book, such as
 the title page and copyright page.
 
-Registered field names listed below are recognized and transformed to
+Certain field names (listed below) are recognized and transformed to
 the corresponding DTD elements, becoming child elements of the
 "docinfo" element. No ordering is required of these fields, although
 they may be rearranged to fit the document structure, as noted. Unless
@@ -804,6 +804,18 @@ field will be transformed to a "status" element::
 
 Processed, the "status" element's text will become simply "expansion
 text". The dollar signs and leading RCS keyword name are removed.
+
+The RCS keyword processing only kicks in when all of these conditions
+hold:
+
+1. The field list is in bibliographic context (first non-comment
+   contstruct in the document, after a document title if there is
+   one).
+
+2. The field name is a recognized bibliographic field name.
+
+3. The sole contents of the field is an expanded RCS keyword, of the
+   form '$Keyword: data $'.
 
 .. [#] RCS keyword processing can be turned off.
 .. [#] Revision Control System.
@@ -2121,7 +2133,7 @@ Markup errors are handled according to the specification in `PEP
 .. _DPS Document Tree Structure:
    http://docstring.sourceforge.net/spec/doctree.txt
 .. _Generic Plaintext Document Interface DTD:
-.. _gpdi.dtd: http://docstring.sourceforge.net/spec/gpdi.dtd
+   http://docstring.sourceforge.net/spec/gpdi.dtd
 .. _transforms:
    http://docstring.sourceforge.net/dps/transforms/__init__.py
 .. _DocTitle transform:
