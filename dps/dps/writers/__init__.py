@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2002/03/28 04:47:47 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2002/04/04 05:53:32 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains Docutils Writer modules.
@@ -75,6 +75,7 @@ class Writer:
         Write `output` to a single file.
 
         Parameters:
+
         - `output`: Data to write.
         - `destination`: one of:
 
