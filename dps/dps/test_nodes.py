@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/09/07 02:05:22 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/09/13 02:15:58 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for nodes.py.
@@ -54,7 +54,7 @@ class ElementTests(unittest.TestCase):
         dom = element.asdom()
         self.assertEquals(dom.toxml(), '<_Element attr="1"/>')
         dom.unlink()
-        self.assertEquals(element.pformat(), '<_Element attr="1"/>\n')
+        self.assertEquals(element.pformat(), '<_Element attr="1">\n')
 
     def test_withtext(self):
         element = nodes._Element('text\nmore', nodes.Text('text\nmore'))
@@ -76,7 +76,6 @@ class ElementTests(unittest.TestCase):
 <_Element attr="1">
     text
     more
-</_Element>
 """)
 
 

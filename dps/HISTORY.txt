@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/12 03:48:44 $
+:Date: $Date: 2001/09/13 02:16:24 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -43,14 +43,14 @@ Changed contact email addresses.
 
   - Added 'vms_option'.
   - Added 'classifier'.
-  - Added 'error'.
+  - Added 'error', 'attention'.
   - Fixed link bookkeeping.
   - Added docstrings to _Element.
   - Extended _Element.__iadd__ (``+=``) to lists of nodes.
   - Duplicate hyperlink names -> dupname attribute.
   - Allow any DOM implementation from ``asdom()`` method. (I think.)
   - _Node's always true.
-  - Changed .pprint() to .pformat().
+  - Changed .pprint() to .pformat(); removed endtags from output.
   - Added slice support to elements.
   - Added .findclass() & .findnonclass() methods.
   - Added support for auto-numbered footnotes.
@@ -73,6 +73,7 @@ Changed contact email addresses.
   - Fixed bug in StateMachine.getunindented().
   - Added form feed & vertical tab conversion to string2lines.
   - Added StateMachine.nextlineblank().
+  - Added 'nestedSM' and 'nestedSMkwargs' to State.
 
 * dps/utils.py:
 
