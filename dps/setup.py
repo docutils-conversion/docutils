@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.3 2001/08/23 03:53:54 goodger Exp $
+# $Id: setup.py,v 1.4 2002/01/16 02:43:49 goodger Exp $
 
 from distutils.core import setup
 
@@ -12,7 +12,8 @@ def do_setup():
           author = 'David Goodger',
           author_email = 'goodger@users.sourceforge.net',
           license = 'public domain',
-          packages = ['dps', 'dps.parsers', 'dps.formatters',
+          packages = ['dps', 'dps.readers', 'dps.parsers',
+                      'dps.writers', 'dps.transforms',
                       'dps.languages'])
     return dist
 

@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/11/19 04:01:39 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/01/16 02:43:13 $
 
 This document describes the internal data structure representing
 document trees in the Python Docstring Processing System. The data
@@ -121,7 +121,7 @@ Internal attributes
 - ``anonymousrefs``
 - ``autofootnotes``
 - ``autofootnoterefs``
-- ``errorhandler``
+- ``reporter``
 
 
 ---------------------
