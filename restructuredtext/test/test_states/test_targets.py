@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.9 $
-:Date: $Date: 2001/11/22 04:21:17 $
+:Revision: $Revision: 1.10 $
+:Date: $Date: 2002/01/25 23:45:44 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for states.py.
@@ -19,7 +19,6 @@ def suite():
 
 totest = {}
 
-# @@@test for multi-line target names
 totest['targets'] = [
 ["""\
 .. _target:
@@ -137,8 +136,8 @@ Duplicate external targets (different URIs):
     <target dupname="target" refuri="first">
     <system_warning level="1">
         <paragraph>
-            Duplicate external target name: "target"
-    <target name="target" refuri="second">
+            Duplicate explicit target name: "target"
+    <target dupname="target" refuri="second">
 """],
 ["""\
 Duplicate external targets (same URIs):
@@ -154,7 +153,7 @@ Duplicate external targets (same URIs):
     <target dupname="target" refuri="first">
     <system_warning level="0">
         <paragraph>
-            Duplicate external target name: "target"
+            Duplicate explicit target name: "target"
     <target name="target" refuri="first">
 """],
 ["""\
@@ -288,8 +287,8 @@ Explicit internal target.
             Explicit internal target.
         <system_warning level="1">
             <paragraph>
-                Duplicate external target name: "target"
-        <target name="target" refuri="Explicit_external_target">
+                Duplicate explicit target name: "target"
+        <target dupname="target" refuri="Explicit_external_target">
 """],
 ]
 

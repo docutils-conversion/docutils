@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/01/16 06:19:32 $
+:Date: $Date: 2002/01/25 23:48:31 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -112,6 +112,7 @@ Changed contact email addresses.
     substitution definitions.
   - Moved 'normname()' to dps/utils.py.
   - Updated for languagecode.
+  - Updated for hyperlink transforms.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.

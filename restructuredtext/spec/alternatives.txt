@@ -3,8 +3,8 @@
 ================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2001/11/19 04:19:52 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2002/01/25 23:44:41 $
 
 The following are ideas, alternatives, and justifications that were
 considered for reStructuredText syntax, which did not originate with
@@ -297,7 +297,12 @@ those up with anonymous targets. Keeping to a simple consistent
 ordering (as with auto-numbered footnotes) seems simplest.
 
 reStructuredText will use the explicit double-underscore syntax for
-anonymous hyperlinks.
+anonymous hyperlinks.  An alternative (see `Reworking Explicit
+Markup`_ below) for the somewhat awkward ".. __:" syntax is "__"::
+
+    An anonymous__ reference.
+
+    __ http://anonymous
 
 
 Reworking Explicit Markup
@@ -316,18 +321,17 @@ usability.
        .. _blah:                     internal hyperlink target
        .. _blah: http://somewhere    external hyperlink target
        .. _blah: blahblah_           indirect hyperlink target
+       .. __:                        anonymous internal target
        .. __: http://somewhere       anonymous external target
        .. __: blahblah_              anonymous indirect target
        .. [blah] http://somewhere    footnote
        .. blah:: http://somewhere    directive
        .. blah: http://somewhere     comment
 
-   Notes on the examples:
-
-   * Anonymous internal targets are also possible, but probably not
-     useful, so they're not included.
-   * The comment text was intentionally made to look like a hyperlink
-     target.
+   .. Note::
+   
+      The comment text was intentionally made to look like a hyperlink
+      target.
 
    Origins:
 
@@ -354,6 +358,7 @@ usability.
        __ _blah                      internal hyperlink target
        __ blah: http://somewhere     external hyperlink target
        __ blah: blahblah_            indirect hyperlink target
+       __                            anonymous internal target
        __ http://somewhere           anonymous external target
        __ blahblah_                  anonymous indirect target
        __ [blah] http://somewhere    footnote
@@ -383,6 +388,7 @@ usability.
        .. _blah                      internal hyperlink target
        .. blah: http://somewhere     external hyperlink target
        .. blah: blahblah_            indirect hyperlink target
+       ..                            anonymous internal target
        .. http://somewhere           anonymous external target
        .. blahblah_                  anonymous indirect target
        .. [blah] http://somewhere    footnote
@@ -427,6 +433,7 @@ usability.
        .. _blah:                     internal hyperlink target
        .. _blah: http://somewhere    external hyperlink target
        .. _blah: blahblah_           indirect hyperlink target
+       ..                            anonymous internal target
        .. http://somewhere           anonymous external target
        .. blahblah_                  anonymous indirect target
        .. [blah] http://somewhere    footnote
@@ -449,14 +456,18 @@ usability.
 
 5. David Goodger's proposed syntax: Perhaps going back to one of
    Alan's earlier suggestions might be the best solution. How about
-   simply adding "__ " as a synonym for ".. __: "? These would become
-   equivalent::
+   simply adding "__ " as a synonym for ".. __: " in the original
+   syntax? These would become equivalent::
 
-       .. __: http://somewhere
+       .. __:                        anonymous internal target
+       .. __: http://somewhere       anonymous external target
+       .. __: blahblah_              anonymous indirect target
 
-       __ http://somewhere
+       __                            anonymous internal target
+       __ http://somewhere           anonymous external target
+       __ blahblah_                  anonymous indirect target
 
-   Would that be sufficient, with no other syntax changes?
+Alternative 5 has been adopted.
 
 
 Backquotes in Phrase-Links
