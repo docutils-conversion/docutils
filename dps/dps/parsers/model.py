@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# $Id: model.py,v 1.1.1.1 2001/07/22 22:35:42 goodger Exp $
+# $Id: model.py,v 1.1 2001/07/22 22:35:42 goodger Exp $
 # by David Goodger (dgoodger@bigfoot.com)
 
 

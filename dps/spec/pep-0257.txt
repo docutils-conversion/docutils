@@ -1,6 +1,6 @@
 PEP: 257
 Title: Docstring Conventions
-Version: $Revision: 1.1.1.1 $
+Version: $Revision: 1.1 $
 Last-Modified: $Date: 2001/07/22 22:36:21 $
 Author: dgoodger@bigfoot.com (David Goodger),
         guido@digicool.com (Guido van Rossum)

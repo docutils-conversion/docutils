@@ -4,7 +4,7 @@
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
 Version: 1.2
-Revision: $Revision: 1.1.1.1 $
+Revision: $Revision: 1.1 $
 Date: $Date: 2001/07/22 22:36:03 $
 Copyright: This module has been placed in the public domain.
 

@@ -3,7 +3,7 @@
 """
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.1.1.1 $
+Revision: $Revision: 1.1 $
 Date: $Date: 2001/07/22 22:35:51 $
 Copyright: This module has been placed in the public domain.
 
