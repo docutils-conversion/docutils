@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/07 02:12:28 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/07 03:58:30 $
 :Copyright: This module has been placed in the public domain.
 
 Simple HyperText Markup Language document tree Writer.
@@ -139,10 +139,26 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.depart_admonition()
 
     def visit_citation(self, node):
-        pass
+        self.body.append(self.starttag(node, 'table', CLASS='citation',
+                                       frame="void", rules="none"))
+        self.body.append('<COL CLASS="label">\n'
+                         '<COL>\n'
+                         '<TBODY VALIGN="top">\n'
+                         '<TR><TD>\n')
 
     def depart_citation(self, node):
-        pass
+        self.body.append('</TD></TR>\n'
+                         '</TBODY>\n</TABLE>\n')
+
+    def visit_citation_reference(self, node):
+        href = ''
+        if node.has_key('refname'):
+            href = '#' + self.doctree.nameids[node['refname']]
+        self.body.append(self.starttag(node, 'a', '[', href=href,
+                                       CLASS='citation_reference'))
+
+    def depart_citation_reference(self, node):
+        self.body.append(']</A>')
 
     def visit_classifier(self, node):
         self.body.append(' <SPAN CLASS="classifier_delimiter">:</SPAN> ')
@@ -277,7 +293,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         The 'start' attribute does not conform to HTML 4.01's strict.dtd, but
         CSS1 doesn't help. CSS2 isn't widely enough supported yet to be
         usable.
-        """        
+        """
         atts = {}
         if node.has_key('start'):
             atts['start'] = node['start']
@@ -358,13 +374,15 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_footnote_reference(self, node):
         href = ''
-        if node.has_key('refname'):
+        if node.has_key('refid'):
+            href = '#' + node['refid']
+        elif node.has_key('refname'):
             href = '#' + self.doctree.nameids[node['refname']]
-        self.body.append(self.starttag(node, 'a', '[', href=href,
+        self.body.append(self.starttag(node, 'a', '', href=href,
                                        CLASS='footnote_reference'))
 
     def depart_footnote_reference(self, node):
-        self.body.append(']</A>')
+        self.body.append('</A>')
 
     def visit_hint(self, node):
         self.visit_admonition(node, 'hint')
@@ -509,6 +527,11 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def depart_problematic(self, node):
         self.body.append('</SPAN>')
+
+    def visit_raw(self, node):
+        if node.has_key('format') and node['format'] == 'html':
+            self.body.append(node.astext())
+        raise nodes.SkipNode
 
     def visit_reference(self, node):
         if node.has_key('refuri'):
