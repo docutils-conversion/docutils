@@ -3,8 +3,8 @@
 =====================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.10 $
-:Date: $Date: 2002/04/18 02:42:48 $
+:Revision: $Revision: 1.11 $
+:Date: $Date: 2002/04/18 03:11:14 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system.  It is useful for in-line
@@ -289,6 +289,8 @@ followed.
 .. _HISTORY.txt:
     http://structuredtext.sourceforge.net/HISTORY.txt
 .. _PEP 287: http://docutils.sourceforge.net/spec/pep-0287.txt
+.. _comp.lang.python: news:comp.lang.python
+.. _Python-dev: http://mail.python.org/pipermail/python-dev/
 .. _Docutils: http://docutils.sourceforge.net/
 .. _master PEP repository: http://www.python.org/peps/
 
