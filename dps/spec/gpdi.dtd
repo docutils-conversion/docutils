@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: dgoodger@bigfoot.com
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2001/08/17 01:56:09 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2001/08/22 04:03:37 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -46,6 +46,7 @@ Attributes shared by all elements in this DTD:
 <!ENTITY % basic.atts
   " id        ID        #IMPLIED
     name      CDATA     #IMPLIED
+    dupname   CDATA     #IMPLIED
     rawtext   CDATA     #IMPLIED
     %additional.basic.atts; ">
 
@@ -263,7 +264,8 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT option_list_item (option+, description)>
 <!ATTLIST option_list_item %basic.atts;>
 
-<!ELEMENT option ((short_option | long_option), option_argument?)>
+<!ELEMENT option
+    ((short_option | long_option | vms_option), option_argument?)>
 <!ATTLIST option %basic.atts;>
 
 <!ELEMENT short_option (#PCDATA)>
@@ -271,6 +273,9 @@ http://www.oasis-open.org/html/tm9901.htm).
 
 <!ELEMENT long_option (#PCDATA)>
 <!ATTLIST long_option %basic.atts;>
+
+<!ELEMENT vms_option (#PCDATA)>
+<!ATTLIST vms_option %basic.atts;>
 
 <!ELEMENT option_argument (#PCDATA)>
 <!ATTLIST option_argument %basic.atts;>
