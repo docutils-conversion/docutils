@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.38 $
-:Date: $Date: 2002/03/11 03:26:52 $
+:Revision: $Revision: 1.39 $
+:Date: $Date: 2002/03/16 05:50:44 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -182,7 +182,9 @@ http://www.oasis-open.org/html/tm9901.htm).
 -->
 
 <!ELEMENT title %text.model;>
-<!ATTLIST title %basic.atts;>
+<!ATTLIST title
+    %basic.atts;
+    %refid.att;>
 
 <!ELEMENT subtitle %text.model;>
 <!ATTLIST subtitle %basic.atts;>
@@ -235,7 +237,7 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT section (title, %structure.model;)>
 <!ATTLIST section %basic.atts;>
 
-<!ELEMENT topic (title, (%body.elements;)+)>
+<!ELEMENT topic (title?, (%body.elements;)+)>
 <!ATTLIST topic %basic.atts;>
 
 <!ELEMENT transition EMPTY>
@@ -395,10 +397,8 @@ either the string separating it from the `option` (typically either
     %basic.atts;
     %fixedspace.att;>
 
-<!ELEMENT pending (field_list)>
-<!ATTLIST pending
-    %basic.atts;
-    directive  CDATA    #REQUIRED>
+<!ELEMENT pending EMPTY>
+<!ATTLIST pending %basic.atts;>
 
 <!ELEMENT figure (image, ((caption, legend?) | legend) >
 <!ATTLIST figure %basic.atts;>
