@@ -3,10 +3,13 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2001/09/01 16:29:12 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2001/09/02 13:50:48 $
 :Copyright: This module has been placed in the public domain.
 """
+
+import time
+start = time.time()
 
 import sys, os
 
@@ -33,3 +36,5 @@ if __name__ == '__main__':
     path, script = os.path.split(sys.argv[0])
     suite = UnitTestFolder.loadModulesFromFolder(path, 'test_', subfolders=1)
     UnitTestFolder.main(suite)
+    finish = time.time()
+    print 'Elapsed time: %s seconds' % (finish - start)
