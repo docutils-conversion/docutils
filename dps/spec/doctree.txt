@@ -3,8 +3,8 @@
 =============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/10/20 03:04:37 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/10/26 04:31:06 $
 
 This document describes the internal data structure representing
 document trees in the Python Docstring Processing System. The data
@@ -38,6 +38,175 @@ further body elements, etc. ::
   | markup) |
   +---------+
 
+
+-------------------
+ Element Reference
+-------------------
+
+The elements making up DPS document trees can be categorized into the
+following groups:
+
+- _`Root element`: document_
+
+- _`Title elements`: title_, subtitle_
+
+- _`Bibliographic elements`: docinfo_, author_, authors_,
+  organization_, contact_, version_, revision_, status_, date_,
+  copyright_, abstract_
+
+- _`Structural elements`: section_
+
+- _`Body elements`:
+
+  - _`General body elements`: paragraph_, literal_block_,
+    block_quote_, doctest_block_, table_, figure_, footnote_
+
+  - _`Lists`: bullet_list_, enumerated_list_, definition_list_,
+    field_list_, option_list_
+
+  - _`Admonitions`: note_, tip_, warning_, error_, caution_, danger_,
+    important_
+
+  - _`Special body elements`: target_, directive_, comment_,
+    system_warning_
+
+- _`Inline elements`: emphasis_, strong_, interpreted_, literal_,
+  link_, footnote_reference_, image_
+
+
+``document``
+============
+description
+
+contents
+
+External attributes
+-------------------
+`Common external attributes`_.
+
+
+Internal attributes
+-------------------
+- `Common internal attributes`_.
+- ``explicittargets``
+- ``implicittargets``
+- ``externaltargets``
+- ``indirecttargets``
+- ``refnames``
+- ``anonymoustargets``
+- ``anonymousrefs``
+- ``autofootnotes``
+- ``autofootnoterefs``
+- ``errorhandler``
+
+
+---------------------
+ Attribute Reference
+---------------------
+
+External Attributes
+===================
+
+Through the `%basic.atts;`_ parameter entity, all elements share the
+following _`common external attributes`: id_, name_, dupname_,
+source_.
+
+
+``anonymous``
+-------------
+The ``anonymous`` attribute 
+
+
+``auto``
+--------
+The ``auto`` attribute 
+
+
+``dupname``
+-----------
+The ``dupname`` attribute 
+
+
+``id``
+------
+The ``id`` attribute 
+
+
+``name``
+--------
+The ``name`` attribute 
+
+
+``refid``
+---------
+The ``refid`` attribute 
+
+
+``refname``
+-----------
+The ``refname`` attribute 
+
+
+``refuri``
+----------
+The ``refuri`` attribute 
+
+
+``source``
+----------
+The ``source`` attribute 
+
+
+``xml:space``
+-------------
+The ``xml:space`` attribute 
+
+
+Internal Attributes
+===================
+
+All element objects share the following _`common internal attributes`:
+rawsource_, children_, attributes_, tagname_.
+
+
+------------------------
+ DTD Parameter Entities
+------------------------
+
+``%basic.atts;``
+================
+The ``%basic.atts;`` parameter entity lists attributes common to all
+elements. See `Common Attributes`_.
+
+
+``%body.elements;``
+===================
+The ``%body.elements;`` parameter entity 
+
+
+``%inline.elements;``
+====================
+The ``%inline.elements;`` parameter entity 
+
+
+``%link.atts;``
+===============
+The ``%link.atts;`` parameter entity 
+
+
+``%structure.model;``
+=====================
+The ``%structure.model;`` parameter entity 
+
+
+``%text.model;``
+================
+The ``%text.model;`` parameter entity 
+
+
+--------------------------------
+ Appendix: Miscellaneous Topics
+--------------------------------
 
 Representation of Horizontal Rules
 ==================================
