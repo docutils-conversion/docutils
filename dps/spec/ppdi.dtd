@@ -2,22 +2,25 @@
 ===========================================================================
     Python Plaintext Document Interface DTD
 ===========================================================================
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.4 $
-Date: $Date: 2001/07/27 04:08:11 $
-Copyright: This DTD has been placed in the public domain.
-Filename: ppdi.dtd
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/08/17 01:56:30 $
+:Copyright: This DTD has been placed in the public domain.
+:Filename: ppdi.dtd
 
-This DTD (document type definition) extends the Generic DTD (see below).
+This DTD (document type definition) extends the Generic DTD (see
+below).
 
-More information about this DTD and the Python Docstring Processing System
-project can be found at http://docstring.sf.net/. The latest version of this
-DTD is available from http://docstring.sf.net/spec/ppdi.dtd.
+More information about this DTD and the Python Docstring Processing
+System project can be found at http://docstring.sourceforge.net/. The
+latest version of this DTD is available from
+http://docstring.sourceforge.net/spec/ppdi.dtd.
 
 The proposed formal public identifier for this DTD is::
 
-    +//IDN python.org//DTD Python Plaintext Document Interface 1.0a1//EN//XML
+    +//IDN python.org//DTD Python Plaintext Document Interface
+        1.0a1//EN//XML
 -->
 
 
@@ -32,9 +35,6 @@ The proposed formal public identifier for this DTD is::
     | function_section | module_attribute_section
     | class_attribute_section | instance_attribute_section ">
 
-<!ENTITY % additional.body.elements
-  " | option_list | doctest_block ">
-
 <!ENTITY % additional.inline.elements
   " | package | module | class | method | function
     | variable | parameter | type
@@ -48,7 +48,7 @@ The proposed formal public identifier for this DTD is::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This DTD extends the Generic DTD, available from
-http://docstring.sf.net/spec/gpdi.dtd.
+http://docstring.sourceforge.net/spec/gpdi.dtd.
 -->
 
 <!ENTITY % gpdi PUBLIC
@@ -112,39 +112,6 @@ http://docstring.sf.net/spec/gpdi.dtd.
 
 <!ELEMENT initial_value (#PCDATA)>
 <!ATTLIST initial_value %basic.atts;>
-
-
-<!--
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Additonal Body Elements
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--->
-
-<!ELEMENT option_list (option_list_item+)>
-<!ATTLIST option_list %basic.atts;>
-
-<!ELEMENT option_list_item (option+, description)>
-<!ATTLIST option_list_item %basic.atts;>
-
-<!ELEMENT option ((short_option | long_option), option_argument?)>
-<!ATTLIST option %basic.atts;>
-
-<!ELEMENT short_option (#PCDATA)>
-<!ATTLIST short_option %basic.atts;>
-
-<!ELEMENT long_option (#PCDATA)>
-<!ATTLIST long_option %basic.atts;>
-
-<!ELEMENT option_argument (#PCDATA)>
-<!ATTLIST option_argument %basic.atts;>
-
-<!ELEMENT description (%body.elements;)+>
-<!ATTLIST description %basic.atts;>
-
-<!ELEMENT doctest_block (#PCDATA)>
-<!ATTLIST doctest_block
-    %basic.atts;
-    %fixedspace.att;>
 
 
 <!--

@@ -2,12 +2,12 @@
 ======================================================================
     Generic Plaintext Document Interface DTD
 ======================================================================
-Author: David Goodger
-Contact: dgoodger@bigfoot.com
-Revision: $Revision: 1.5 $
-Date: $Date: 2001/08/14 03:52:29 $
-Copyright: This DTD has been placed in the public domain.
-Filename: gpdi.dtd
+:Author: David Goodger
+:Contact: dgoodger@bigfoot.com
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/08/17 01:56:09 $
+:Copyright: This DTD has been placed in the public domain.
+:Filename: gpdi.dtd
 
 More information about this DTD (document type definition) and the
 Python Docstring Processing System project can be found at
@@ -90,7 +90,8 @@ Hyperlink attributes.
 <!ENTITY % body.elements
   " paragraph
     | bullet_list | enumerated_list | definition_list | field_list
-    | literal_block | block_quote | table | figure
+    | option_list
+    | literal_block | block_quote | doctest_block | table | figure
     | note | tip | warning | caution | danger | important
     | footnote | target | directive | comment
     | system_warning
@@ -256,6 +257,27 @@ http://www.oasis-open.org/html/tm9901.htm).
 <!ELEMENT field_body (%body.elements;)+>
 <!ATTLIST field_body %basic.atts;>
 
+<!ELEMENT option_list (option_list_item+)>
+<!ATTLIST option_list %basic.atts;>
+
+<!ELEMENT option_list_item (option+, description)>
+<!ATTLIST option_list_item %basic.atts;>
+
+<!ELEMENT option ((short_option | long_option), option_argument?)>
+<!ATTLIST option %basic.atts;>
+
+<!ELEMENT short_option (#PCDATA)>
+<!ATTLIST short_option %basic.atts;>
+
+<!ELEMENT long_option (#PCDATA)>
+<!ATTLIST long_option %basic.atts;>
+
+<!ELEMENT option_argument (#PCDATA)>
+<!ATTLIST option_argument %basic.atts;>
+
+<!ELEMENT description (%body.elements;)+>
+<!ATTLIST description %basic.atts;>
+
 <!ELEMENT literal_block (#PCDATA)>
 <!ATTLIST literal_block
     %basic.atts;
@@ -263,6 +285,11 @@ http://www.oasis-open.org/html/tm9901.htm).
 
 <!ELEMENT block_quote (%body.elements;)+>
 <!ATTLIST block_quote %basic.atts;>
+
+<!ELEMENT doctest_block (#PCDATA)>
+<!ATTLIST doctest_block
+    %basic.atts;
+    %fixedspace.att;>
 
 <!ELEMENT note (%body.elements;)+>
 <!ATTLIST note %basic.atts;>
