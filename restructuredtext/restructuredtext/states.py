@@ -1,8 +1,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.47 $
-:Date: $Date: 2002/03/11 03:20:41 $
+:Revision: $Revision: 1.48 $
+:Date: $Date: 2002/03/12 03:27:17 $
 :Copyright: This module has been placed in the public domain.
 
 This is the ``dps.parsers.restructuredtext.states`` module, the core of the
@@ -505,29 +505,38 @@ class RSTState(StateWS):
             text = unescape(endmatch.string[:endmatch.start(1)],
                             restorebackslashes)
             rawsource = unescape(string[matchstart:matchend+endmatch.end(1)], 1)
-            inlineobj = nodeclass(rawsource, text)
-            return (string[:matchstart], [inlineobj],
+            return (string[:matchstart], [nodeclass(rawsource, text)],
                     string[matchend:][endmatch.end(1):], [], endmatch.group(1))
-        sw = self.statemachine.memo.reporter.warning(
+        msg = self.statemachine.memo.reporter.warning(
               'Inline %s start-string without end-string '
               'at line %s.' % (nodeclass.__name__, lineno))
-        return string[:matchend], [], string[matchend:], [sw], ''
+        text = unescape(string[matchstart:matchend], 1)
+        rawsource = unescape(string[matchstart:matchend], 1)
+        prb = self.problematic(text, rawsource, msg)
+        return string[:matchstart], [prb], string[matchend:], [msg], ''
 
-    def emphasis(self, match, lineno, pattern=inline.patterns.emphasis):
+    def problematic(self, text, rawsource, message):
+        msgid = self.statemachine.memo.document.set_id(message,
+                                                       self.statemachine.node)
+        problematic = nodes.problematic(rawsource, text, refid=msgid)
+        prbid = self.statemachine.memo.document.set_id(problematic)
+        message['refid'] = prbid
+        return problematic
+
+    def emphasis(self, match, lineno):
         before, inlines, remaining, sysmessages, endstring = self.inlineobj(
-              match, lineno, pattern, nodes.emphasis)
+              match, lineno, self.inline.patterns.emphasis, nodes.emphasis)
         return before, inlines, remaining, sysmessages
 
-    def strong(self, match, lineno, pattern=inline.patterns.strong):
+    def strong(self, match, lineno):
         before, inlines, remaining, sysmessages, endstring = self.inlineobj(
-              match, lineno, pattern, nodes.strong)
+              match, lineno, self.inline.patterns.strong, nodes.strong)
         return before, inlines, remaining, sysmessages
 
-    def interpreted_or_phrase_ref(
-          self, match, lineno,
-          pattern=inline.patterns.interpreted_or_phrase_ref,
-          rolegroup=inline.groups.initial.role,
-          backquote=inline.groups.initial.backquote):
+    def interpreted_or_phrase_ref(self, match, lineno):
+        pattern = self.inline.patterns.interpreted_or_phrase_ref
+        rolegroup = self.inline.groups.initial.role
+        backquote = self.inline.groups.initial.backquote
         string = match.string
         matchstart = match.start(backquote)
         matchend = match.end(backquote)
@@ -547,11 +556,15 @@ class RSTState(StateWS):
                   string[match.start():matchend+endmatch.end()], 1)
             if rawsource[-1:] == '_':
                 if role:
-                    sw = self.statemachine.memo.reporter.warning(
-                          'Mismatch: inline interpreted text start-string '
-                          'and role with phrase-reference end-string at line %s.'
+                    msg = self.statemachine.memo.reporter.warning(
+                          'Mismatch: inline interpreted text start-string and '
+                          'role with phrase-reference end-string at line %s.'
                           % lineno)
-                    return (string[:matchend], [], string[matchend:], [sw])
+                    text = unescape(string[matchstart:matchend], 1)
+                    rawsource = unescape(string[matchstart:matchend], 1)
+                    prb = self.problematic(text, rawsource, msg)
+                    return (string[:matchstart], [prb], string[matchend:],
+                            [msg])
                 return self.phrase_ref(
                       string[:matchstart], string[matchend:][endmatch.end():],
                       text, rawsource)
@@ -560,10 +573,13 @@ class RSTState(StateWS):
                       string[:rolestart], string[matchend:][endmatch.end():],
                       endmatch, role, position, lineno,
                       escaped, rawsource, text)
-        sw = self.statemachine.memo.reporter.warning(
+        msg = self.statemachine.memo.reporter.warning(
               'Inline interpreted text or phrase reference start-string '
               'without end-string at line %s.' % lineno)
-        return string[:matchend], [], string[matchend:], [sw]
+        text = unescape(string[matchstart:matchend], 1)
+        rawsource = unescape(string[matchstart:matchend], 1)
+        prb = self.problematic(text, rawsource, msg)
+        return string[:matchstart], [prb], string[matchend:], [msg]
 
     def phrase_ref(self, before, after, text, rawsource):
         refname = normname(text)
@@ -577,14 +593,14 @@ class RSTState(StateWS):
         return before, [reference], after, []
 
     def interpreted(self, before, after, endmatch, role, position, lineno,
-                    escaped, rawsource, text,
-                    suffix=inline.groups.interpreted_or_phrase_ref.suffix):
+                    escaped, rawsource, text):
+        suffix = self.inline.groups.interpreted_or_phrase_ref.suffix
         if endmatch.group(suffix):
             if role:
-                sw = self.statemachine.memo.reporter.warning(
+                msg = self.statemachine.memo.reporter.warning(
                       'Multiple roles in interpreted text at line %s.'
                       % lineno)
-                return (before + rawsource, [], after, [sw])
+                return (before + rawsource, [], after, [msg])
             role = endmatch.group(suffix)[1:-1]
             position = 'suffix'
         if role:
@@ -593,28 +609,28 @@ class RSTState(StateWS):
             atts = {}
         return before, [nodes.interpreted(rawsource, text, **atts)], after, []
 
-    def literal(self, match, lineno, pattern=inline.patterns.literal):
+    def literal(self, match, lineno):
         before, inlines, remaining, sysmessages, endstring = self.inlineobj(
-              match, lineno, pattern, nodes.literal, restorebackslashes=1)
+              match, lineno, self.inline.patterns.literal, nodes.literal,
+              restorebackslashes=1)
         return before, inlines, remaining, sysmessages
 
-    def inline_target(self, match, lineno, pattern=inline.patterns.target):
+    def inline_target(self, match, lineno):
         before, inlines, remaining, sysmessages, endstring = self.inlineobj(
-              match, lineno, pattern, nodes.target)
-        if inlines:
+              match, lineno, self.inline.patterns.target, nodes.target)
+        if inlines and isinstance(inlines[0], nodes.target):
             assert len(inlines) == 1
             target = inlines[0]
             name = normname(target.astext())
-            assert isinstance(target, nodes.target)
             target['name'] = name
             self.statemachine.memo.document.note_explicit_target(
                   target, self.statemachine.node)
         return before, inlines, remaining, sysmessages
 
-    def substitution_reference(self, match, lineno,
-                               pattern=inline.patterns.substitution_ref):
+    def substitution_reference(self, match, lineno):
         before, inlines, remaining, sysmessages, endstring = self.inlineobj(
-              match, lineno, pattern, nodes.substitution_reference)
+              match, lineno, self.inline.patterns.substitution_ref,
+              nodes.substitution_reference)
         if inlines:
             assert len(inlines) == 1
             subrefnode = inlines[0]
@@ -687,11 +703,11 @@ class RSTState(StateWS):
     def anonymous_reference(self, match, lineno):
         return self.reference(match, lineno, anonymous=1)
 
-    def standalone_uri(self, text, lineno,
-                       pattern=inline.patterns.uri,
-                       whole=inline.groups.uri.whole,
-                       scheme=inline.groups.uri.scheme,
-                       email=inline.groups.uri.email):
+    def standalone_uri(self, text, lineno):
+        pattern = self.inline.patterns.uri
+        whole = self.inline.groups.uri.whole
+        scheme = self.inline.groups.uri.scheme
+        email = self.inline.groups.uri.email
         remainder = text
         textnodes = []
         start = 0
@@ -909,11 +925,11 @@ class Body(RSTState):
         """Enumerated List Item"""
         format, sequence, text, ordinal = self.parse_enumerator(match)
         if ordinal is None:
-            sw = self.statemachine.memo.reporter.error(
+            msg = self.statemachine.memo.reporter.error(
                   ('Enumerated list start value invalid at line %s: '
                    '%r (sequence %r)' % (self.statemachine.abslineno(),
                                          text, sequence)))
-            self.statemachine.node += sw
+            self.statemachine.node += msg
             indented, lineoffset, blankfinish = \
                   self.statemachine.getknownindented(match.end())
             bq = self.block_quote(indented, lineoffset)
@@ -922,11 +938,11 @@ class Body(RSTState):
                 self.statemachine.node += self.unindentwarning()
             return [], nextstate, []
         if ordinal != 1:
-            sw = self.statemachine.memo.reporter.info(
+            msg = self.statemachine.memo.reporter.info(
                   ('Enumerated list start value not ordinal-1 at line %s: '
                       '%r (ordinal %s)' % (self.statemachine.abslineno(),
                                            text, ordinal)))
-            self.statemachine.node += sw
+            self.statemachine.node += msg
         enumlist = nodes.enumerated_list()
         self.statemachine.node += enumlist
         enumlist['enumtype'] = sequence
@@ -1043,10 +1059,10 @@ class Body(RSTState):
         try:
             listitem, blankfinish = self.option_list_item(match)
         except MarkupError, detail:     # shouldn't happen; won't match pattern
-            sw = self.statemachine.memo.reporter.error(
+            msg = self.statemachine.memo.reporter.error(
                   ('Invalid option list marker at line %s: %s'
                       % (self.statemachine.abslineno(), detail)))
-            self.statemachine.node += sw
+            self.statemachine.node += msg
             indented, indent, lineoffset, blankfinish = \
                   self.statemachine.getfirstknownindented(match.end())
             blockquote = self.block_quote(indented, lineoffset)
@@ -1116,10 +1132,10 @@ class Body(RSTState):
         nodelist, blankfinish = self.table()
         self.statemachine.node += nodelist
         if not blankfinish:
-            sw = self.statemachine.memo.reporter.warning(
+            msg = self.statemachine.memo.reporter.warning(
                   'Blank line required after table at line %s.'
                   % (self.statemachine.abslineno() + 1))
-            self.statemachine.node += sw
+            self.statemachine.node += msg
         return [], nextstate, []
 
     def table(self):
@@ -1331,9 +1347,9 @@ class Body(RSTState):
             self.nestedparse(indented, inputoffset=offset, node=citation)
         return [citation], blankfinish
 
-    def hyperlink_target(self, match,
-                         pattern=explicit.patterns.target,
-                         namegroup=explicit.groups.target.name):
+    def hyperlink_target(self, match):
+        pattern = self.explicit.patterns.target
+        namegroup = self.explicit.groups.target.name
         lineno = self.statemachine.abslineno()
         block, indent, offset, blankfinish = \
               self.statemachine.getfirstknownindented(match.end(), uptoblank=1,
@@ -1369,8 +1385,8 @@ class Body(RSTState):
             warning = self.statemachine.memo.reporter.warning(
                   'Hyperlink target at line %s contains whitespace. '
                   'Perhaps a footnote was intended?'
-                  % (self.statemachine.abslineno() - len(block) + 1))
-            warning += nodes.literal_block(blocktext, blocktext)
+                  % (self.statemachine.abslineno() - len(block) + 1), '',
+                  nodes.literal_block(blocktext, blocktext))
             nodelist.append(warning)
         else:
             unescaped = unescape(reference)
@@ -1379,14 +1395,12 @@ class Body(RSTState):
             nodelist.append(target)
         return nodelist, blankfinish
 
-    def isreference(self, reference,
-                    pattern=explicit.patterns.reference,
-                    simplegroup=explicit.groups.reference.simple,
-                    phrasegroup=explicit.groups.reference.phrase):
-        match = pattern.match(normname(reference))
+    def isreference(self, reference):
+        match = self.explicit.patterns.reference.match(normname(reference))
         if not match:
             return None
-        return unescape(match.group(simplegroup) or match.group(phrasegroup))
+        return unescape(match.group(self.explicit.groups.reference.simple)
+                        or match.group(self.explicit.groups.reference.phrase))
 
     def addtarget(self, targetname, refuri, target):
         if targetname:
@@ -1403,14 +1417,13 @@ class Body(RSTState):
             target['anonymous'] = 1
             self.statemachine.memo.document.note_anonymous_target(target)
 
-    def substitutiondef(self, match,
-                        pattern=explicit.patterns.substitution,
-                        namegroup=explicit.groups.substitution.name):
+    def substitutiondef(self, match):
+        pattern = self.explicit.patterns.substitution
         lineno = self.statemachine.abslineno()
         block, indent, offset, blankfinish = \
-              self.statemachine.getfirstknownindented(match.end(), stripindent=0)
-        blocktext = (match.string[:match.end()]
-                     + '\n'.join(block))
+              self.statemachine.getfirstknownindented(match.end(),
+                                                      stripindent=0)
+        blocktext = (match.string[:match.end()] + '\n'.join(block))
         block = [escape2null(line) for line in block]
         escaped = block[0].rstrip()
         blockindex = 0
@@ -1424,13 +1437,12 @@ class Body(RSTState):
             except (IndexError, MarkupError):
                 raise MarkupError('malformed substitution definition '
                                   'at line %s.' % lineno)
-        # strip out the substitution marker
-        del block[:blockindex]
+        del block[:blockindex]          # strip out the substitution marker
         block[0] = (block[0] + ' ')[subdefmatch.end()-len(escaped)-1:].strip()
         if not block[0]:
             del block[0]
             offset += 1
-        subname = subdefmatch.group(namegroup)
+        subname = subdefmatch.group(self.explicit.groups.substitution.name)
         name = normname(subname)
         substitutionnode = nodes.substitution_definition(
               blocktext, name=name, alt=subname)
@@ -1439,7 +1451,8 @@ class Body(RSTState):
             newabsoffset, blankfinish = self.nestedlistparse(
                   block, inputoffset=offset, node=substitutionnode,
                   initialstate='SubstitutionDef', blankfinish=blankfinish)
-            self.statemachine.previousline(len(block) + offset - newabsoffset - 1)
+            self.statemachine.previousline(
+                  len(block) + offset - newabsoffset - 1)
             i = 0
             for node in substitutionnode[:]:
                 if not (isinstance(node, nodes.Inline) or
@@ -1449,20 +1462,22 @@ class Body(RSTState):
                 else:
                     i += 1
             if len(substitutionnode) == 0:
-                sw = self.statemachine.memo.reporter.warning(
-                      'Substitution definition "%s" empty or invalid at line %s.'
-                      % (subname, self.statemachine.abslineno()))
-                self.statemachine.node += sw
+                msg = self.statemachine.memo.reporter.warning(
+                      'Substitution definition "%s" empty or invalid at line '
+                      '%s.' % (subname, self.statemachine.abslineno()), '',
+                      nodes.literal_block(blocktext, blocktext))
+                self.statemachine.node += msg
             else:
                 del substitutionnode['alt']
                 self.statemachine.memo.document.note_substitution_def(
                       substitutionnode, self.statemachine.node)
                 return [substitutionnode], blankfinish
         else:
-            sw = self.statemachine.memo.reporter.warning(
+            msg = self.statemachine.memo.reporter.warning(
                   'Substitution definition "%s" missing contents at line %s.'
-                  % (subname, self.statemachine.abslineno()))
-            self.statemachine.node += sw
+                  % (subname, self.statemachine.abslineno()), '',
+                  nodes.literal_block(blocktext, blocktext))
+            self.statemachine.node += msg
         return [], blankfinish
 
     def directive(self, match, **attributes):
@@ -1482,12 +1497,9 @@ class Body(RSTState):
               self.statemachine.getfirstknownindented(0, stripindent=0)
         text = '\n'.join(indented)
         error = self.statemachine.memo.reporter.error(
-              'Unknown directive type "%s" at line %s.\n'
-              'Rendering the directive as a literal block.' % (typename,
-                                                               lineno))
-        literalblock = nodes.literal_block(text, text)
-        nodelist = [error, literalblock]
-        return nodelist, blankfinish
+              'Unknown directive type "%s" at line %s.' % (typename, lineno),
+              '', nodes.literal_block(text, text))
+        return [error], blankfinish
 
     def comment(self, match):
         if not match.string[match.end():].strip() \
@@ -1548,16 +1560,15 @@ class Body(RSTState):
         self.explicitlist(blankfinish)
         return [], nextstate, []
 
-    def explicit_construct(self, match,
-                           constructs=explicit.constructs):
+    def explicit_construct(self, match):
         """Determine which explicit construct this is, parse & return it."""
         errors = []
-        for method, pattern in constructs:
+        for method, pattern in self.explicit.constructs:
             expmatch = pattern.match(match.string)
             if expmatch:
                 try:
                     return method(self, expmatch)
-                except MarkupError, detail:
+                except MarkupError, detail: # never reached?
                     errors.append(
                           self.statemachine.memo.reporter.warning('%s: %s'
                           % (detail.__class__.__name__, detail)))
@@ -1606,8 +1617,8 @@ class Body(RSTState):
             warning = self.statemachine.memo.reporter.warning(
                   'Anonymous hyperlink target at line %s contains whitespace. '
                   'Perhaps a footnote was intended?'
-                  % (self.statemachine.abslineno() - len(block) + 1))
-            warning += nodes.literal_block(blocktext, blocktext)
+                  % (self.statemachine.abslineno() - len(block) + 1), '',
+                  nodes.literal_block(blocktext, blocktext))
             nodelist.append(warning)
         else:
             target = nodes.target(blocktext, '', anonymous=1)
@@ -1623,10 +1634,12 @@ class Body(RSTState):
         if self.statemachine.matchtitles:
             return [match.string], 'Line', []
         else:
-            sw = self.statemachine.memo.reporter.severe(
+            blocktext = self.statemachine.line
+            msg = self.statemachine.memo.reporter.severe(
                   'Unexpected section title or transition at line %s.'
-                  % self.statemachine.abslineno())
-            self.statemachine.node += sw
+                  % self.statemachine.abslineno(), '',
+                  nodes.literal_block(blocktext, blocktext))
+            self.statemachine.node += msg
             return [], nextstate, []
 
     def text(self, match, context, nextstate):
@@ -1837,17 +1850,21 @@ class Text(RSTState):
         """Section title."""
         lineno = self.statemachine.abslineno()
         if not self.statemachine.matchtitles:
-            sw = self.statemachine.memo.reporter.severe(
-                  'Unexpected section title at line %s.' % lineno)
-            self.statemachine.node += sw
+            blocktext = context[0] + '\n' + self.statemachine.line
+            msg = self.statemachine.memo.reporter.severe(
+                  'Unexpected section title at line %s.' % lineno, '',
+                  nodes.literal_block(blocktext, blocktext))
+            self.statemachine.node += msg
             return [], nextstate, []
         title = context[0].rstrip()
         underline = match.string.rstrip()
         source = title + '\n' + underline
         if len(title) > len(underline):
-            self.statemachine.node += \
-                  self.statemachine.memo.reporter.info(
-                  'Title underline too short at line %s.' % lineno)
+            blocktext = context[0] + '\n' + self.statemachine.line
+            msg = self.statemachine.memo.reporter.info(
+                  'Title underline too short at line %s.' % lineno, '',
+                  nodes.literal_block(blocktext, blocktext))
+            self.statemachine.node += msg
         style = underline[0]
         context[:] = []
         self.section(title, source, style, lineno - 1)
@@ -1856,17 +1873,17 @@ class Text(RSTState):
     def text(self, match, context, nextstate):
         """Paragraph."""
         startline = self.statemachine.abslineno() - 1
-        sw = None
+        msg = None
         try:
             block = self.statemachine.getunindented()
         except statemachine.UnexpectedIndentationError, instance:
             block, lineno = instance.args
-            sw = self.statemachine.memo.reporter.error(
+            msg = self.statemachine.memo.reporter.error(
                   'Unexpected indentation at line %s.' % lineno)
         lines = context + block
         paragraph, literalnext = self.paragraph(lines, startline)
         self.statemachine.node += paragraph
-        self.statemachine.node += sw
+        self.statemachine.node += msg
         if literalnext:
             try:
                 self.statemachine.nextline()
@@ -1976,10 +1993,12 @@ class Line(SpecializedText):
     def eof(self, context):
         """Transition marker at end of section or document."""
         if self.eofcheck:               # ignore EOFError with sections
-            sw = self.statemachine.memo.reporter.error(
+            transition = nodes.transition(context[0])
+            self.statemachine.node += transition
+            msg = self.statemachine.memo.reporter.error(
                   'Document or section may not end with a transition '
                   '(line %s).' % (self.statemachine.abslineno() - 1))
-            self.statemachine.node += sw
+            self.statemachine.node += msg
         self.eofcheck = 1
         return []
 
@@ -1987,18 +2006,17 @@ class Line(SpecializedText):
         """Transition marker."""
         transition = nodes.transition(context[0])
         if len(self.statemachine.node) == 0:
-            sw = self.statemachine.memo.reporter.error(
-              'Document or section may not begin with a transition (line %s).'
-              % (self.statemachine.abslineno() - 1))
-            self.statemachine.node += sw    # @@@ insert @0, to make tree valid?
+            msg = self.statemachine.memo.reporter.error(
+                  'Document or section may not begin with a transition '
+                  '(line %s).' % (self.statemachine.abslineno() - 1))
+            self.statemachine.node += msg
         elif isinstance(self.statemachine.node[-1], nodes.transition):
-            sw = self.statemachine.memo.reporter.error(
-              'At least one body element must separate transitions; adjacent '
-              'transitions at line %s.'
-              % (self.statemachine.abslineno() - 1))
-            self.statemachine.node[-1:-1] = [sw] # leave transition as last @@@?
-        else:
-            self.statemachine.node += transition
+            msg = self.statemachine.memo.reporter.error(
+                  'At least one body element must separate transitions; '
+                  'adjacent transitions at line %s.'
+                  % (self.statemachine.abslineno() - 1))
+            self.statemachine.node += msg
+        self.statemachine.node += transition
         return [], 'Body', []
 
     def text(self, match, context, nextstate):
@@ -2010,31 +2028,33 @@ class Line(SpecializedText):
         try:
             underline = self.statemachine.nextline()
         except IndexError:
-            sw = self.statemachine.memo.reporter.severe(
-                  'Incomplete section title at line %s.'
-                  % lineno)
-            # @@@ add a literal_block of the overline & title here?
-            self.statemachine.node += sw
+            blocktext = overline + '\n' + title
+            msg = self.statemachine.memo.reporter.severe(
+                  'Incomplete section title at line %s.' % lineno, '',
+                  nodes.literal_block(blocktext, blocktext))
+            self.statemachine.node += msg
             return [], 'Body', []
         source = '%s\n%s\n%s' % (overline, title, underline)
         overline = overline.rstrip()
         underline = underline.rstrip()
         if not self.transitions['underline'][0].match(underline):
-            sw = self.statemachine.memo.reporter.severe(
-                  'Missing underline for overline at line %s.' % lineno)
-            self.statemachine.node += sw
+            msg = self.statemachine.memo.reporter.severe(
+                  'Missing underline for overline at line %s.' % lineno, '',
+                  nodes.literal_block(source, source))
+            self.statemachine.node += msg
             return [], 'Body', []
         elif overline != underline:
-            sw = self.statemachine.memo.reporter.severe(
-                  'Title overline & underline mismatch at ' 'line %s.'
-                  % lineno)
-            self.statemachine.node += sw
+            msg = self.statemachine.memo.reporter.severe(
+                  'Title overline & underline mismatch at ' 'line %s.' % lineno,
+                  '', nodes.literal_block(source, source))
+            self.statemachine.node += msg
             return [], 'Body', []
         title = title.rstrip()
         if len(title) > len(overline):
-            self.statemachine.node += \
-                  self.statemachine.memo.reporter.info(
-                  'Title overline too short at line %s.'% lineno)
+            msg = self.statemachine.memo.reporter.info(
+                  'Title overline too short at line %s.'% lineno, '',
+                  nodes.literal_block(source, source))
+            self.statemachine.node += msg
         style = (overline[0], underline[0])
         self.eofcheck = 0               # @@@ not sure this is correct
         self.section(title.lstrip(), source, style, lineno + 1)
@@ -2044,10 +2064,12 @@ class Line(SpecializedText):
     indent = text                       # indented title
 
     def underline(self, match=None, context=None, nextstate=None):
-        sw = self.statemachine.memo.reporter.error(
+        blocktext = context[0] + '\n' + self.statemachine.line
+        msg = self.statemachine.memo.reporter.error(
               'Invalid section title or transition marker at line %s.'
-              % (self.statemachine.abslineno() - 1))
-        self.statemachine.node += sw
+              % (self.statemachine.abslineno() - 1), '',
+              nodes.literal_block(blocktext, blocktext))
+        self.statemachine.node += msg
         return [], 'Body', []
 
 
