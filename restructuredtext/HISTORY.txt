@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/09/18 21:28:32 $
+:Date: $Date: 2001/09/21 03:54:19 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -154,6 +154,11 @@ Changed contact email addresses.
   - Added tests for admonitions and image/figure directives.
 
 * tools: Subdirectory added; contains quicktest.py by Garth Kidd.
+
+* sandbox: Subdirectory added; for playing around. It's OK to make
+  a mess!
+
+* sandbox/rtxt2html: Subdirectory added, from files by Remi Bertholet.
 
 * spec/alternatives.txt: Added to project.
 
