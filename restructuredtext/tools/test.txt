@@ -1,0 +1,115 @@
+.. This is a comment. Note how any initial comments are moved by
+   transforms to after the document title, subtitle, and docinfo.
+
+================================
+ reStructuredText Test Document
+================================
+
+.. Above is the document title, and below is the subtitle.
+   They are transformed from section titles after parsing. 
+
+--------------------------------
+ Examples of Syntax Constructs
+--------------------------------
+
+.. bibliographic fields (which also require a transform):
+
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:organization: humankind
+:date: $Date: 2002/02/21 03:31:27 $
+:status: work in progress
+:version: $Revision: 1.1 $
+:copyright: This document has been placed in the public domain.
+
+:abstract:
+
+    This is a test document, containing at least one example of each
+    reStructuredText construct.
+
+.. meta::
+   :keywords: reStructuredText, test, parser
+   :description lang=en: A test document, containing at least one
+       example of each reStructuredText construct.
+
+Structural Elements
+===================
+
+Section Title
+-------------
+
+That's it, just above.
+
+Transitions
+-----------
+
+Here's a transition:
+
+---------
+
+It divides the section.
+
+Body Elements
+=============
+
+Paragraphs
+----------
+
+A paragraph.
+
+Inline Markup
+`````````````
+
+Paragraphs contain text and may contain inline markup: *emphasis*,
+**strong emphasis**, `interpreted text`, ``inline literals``,
+standalone hyperlinks (http://www.python.org), external hyperlinks
+(Python_), internal cross-references (example_), footnote references
+([1]_), substitution references (|example|), and _`inline hyperlink
+targets`. Problems are indicated by |problematic| text.
+
+.. |EXAMPLE| image:: ../docs/images/biohazard.png
+
+Bullet Lists
+------------
+
+- A bullet list
+
+  + Nested bullet list.
+  + Nested item 2.
+
+- Item 2.
+
+Enumerated Lists
+----------------
+
+1. Arabic numerals.
+
+   a) lower alpha
+
+      (i) lower roman
+
+
+Definition Lists
+----------------
+
+Term
+    Definition
+Term : classifier
+    Definition paragraph 1.
+
+    Definition paragraph 2.
+
+Targets
+-------
+
+.. _example:
+
+This paragraph is pointed to by the "example" target.
+
+Section headers are implicit targets, referred to by name. See
+Targets_, which is a subsection of `Body Elements`_.
+
+Explicit external targets are interpolated into references such as
+"Python_".
+
+.. _Python: http://www.python.org/
