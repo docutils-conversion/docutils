@@ -3,8 +3,8 @@
 """
 :Author: Garth Kidd
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/17 04:12:13 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/09/20 02:57:46 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -14,7 +14,7 @@ import sys, os, getopt, types, unittest, re
 __all__ = ( 'debug', 'verbosity', 'main' )
 
 # So that individual test modules can share a bit of state,
-# `UnitTestPackage` acts as an intermediary for the following
+# `UnitTestFolder` acts as an intermediary for the following
 # variables:
 debug = 0
 verbosity = 1
