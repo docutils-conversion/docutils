@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/07 03:50:39 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/08 04:26:07 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.references.Footnotes.
@@ -43,7 +43,7 @@ totest['footnotes'] = ((Footnotes,), [
             1
         <paragraph>
             text
-"""],                                   # @@@ remove "auto" atts?
+"""],
 ["""\
 autonumber: [#]_
 
@@ -415,7 +415,7 @@ A sequence of symbol footnote references:
 .. [*] Auto-symbol footnote 11.
 .. [*] Auto-symbol footnote 12.
 """,
-"""\
+u"""\
 <document>
     <paragraph>
         A sequence of symbol footnote references:
@@ -423,37 +423,37 @@ A sequence of symbol footnote references:
             *
          \n\
         <footnote_reference auto="*" refid="id2">
-            \\u2020
+            \u2020
          \n\
         <footnote_reference auto="*" refid="id3">
-            \\u2021
+            \u2021
          \n\
         <footnote_reference auto="*" refid="id4">
-            \\u00A7
+            \u00A7
          \n\
         <footnote_reference auto="*" refid="id5">
-            \\u00B6
+            \u00B6
          \n\
         <footnote_reference auto="*" refid="id6">
             #
          \n\
         <footnote_reference auto="*" refid="id7">
-            \\u2660
+            \u2660
          \n\
         <footnote_reference auto="*" refid="id8">
-            \\u2663
+            \u2663
          \n\
         <footnote_reference auto="*" refid="id9">
-            \\u2665
+            \u2665
          \n\
         <footnote_reference auto="*" refid="id10">
-            \\u2666
+            \u2666
          \n\
         <footnote_reference auto="*" refid="id11">
             **
          \n\
         <footnote_reference auto="*" refid="id12">
-            \\u2020\\u2020
+            \u2020\u2020
         .
     <footnote auto="*" id="id1">
         <label>
@@ -462,22 +462,22 @@ A sequence of symbol footnote references:
             Auto-symbol footnote 1.
     <footnote auto="*" id="id2">
         <label>
-            \\u2020
+            \u2020
         <paragraph>
             Auto-symbol footnote 2.
     <footnote auto="*" id="id3">
         <label>
-            \\u2021
+            \u2021
         <paragraph>
             Auto-symbol footnote 3.
     <footnote auto="*" id="id4">
         <label>
-            \\u00A7
+            \u00A7
         <paragraph>
             Auto-symbol footnote 4.
     <footnote auto="*" id="id5">
         <label>
-            \\u00B6
+            \u00B6
         <paragraph>
             Auto-symbol footnote 5.
     <footnote auto="*" id="id6">
@@ -487,22 +487,22 @@ A sequence of symbol footnote references:
             Auto-symbol footnote 6.
     <footnote auto="*" id="id7">
         <label>
-            \\u2660
+            \u2660
         <paragraph>
             Auto-symbol footnote 7.
     <footnote auto="*" id="id8">
         <label>
-            \\u2663
+            \u2663
         <paragraph>
             Auto-symbol footnote 8.
     <footnote auto="*" id="id9">
         <label>
-            \\u2665
+            \u2665
         <paragraph>
             Auto-symbol footnote 9.
     <footnote auto="*" id="id10">
         <label>
-            \\u2666
+            \u2666
         <paragraph>
             Auto-symbol footnote 10.
     <footnote auto="*" id="id11">
@@ -512,7 +512,7 @@ A sequence of symbol footnote references:
             Auto-symbol footnote 11.
     <footnote auto="*" id="id12">
         <label>
-            \\u2020\\u2020
+            \u2020\u2020
         <paragraph>
             Auto-symbol footnote 12.
 """],

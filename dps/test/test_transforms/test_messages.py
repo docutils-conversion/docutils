@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2002/02/22 01:58:02 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2002/03/08 04:26:22 $
 :Copyright: This module has been placed in the public domain.
 
 Tests for dps.transforms.universal.Messages.
@@ -55,7 +55,7 @@ doctree by the test framework.)
     <paragraph>
         (A second copy of the system message is tacked on to the end of the
         doctree by the test framework.)
-    <section class="system_messages">
+    <section class="system-messages">
         <title>
             Docutils System Messages
         <system_message level="3" type="ERROR">
