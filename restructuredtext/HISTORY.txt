@@ -4,8 +4,31 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Date: $Date: 2001/07/21 22:14:04 $
+Date: $Date: 2001/07/29 15:54:59 $
 Website: http://structuredtext.sf.net/
+
+
+Release 0.4? (pending)
+========================
+
+* install.py: Added to project.
+
+* setup.py: Modified for import by install.py.
+
+* restructuredtext/states.py:
+
+  - Loosened inline markup start-string & end-string patterns.
+  - Added warnings for bad hyperlink targets.
+
+* restructuredtext/test_states.py:
+
+  - Added unit tests from Garth Kidd.
+
+* restructuredtext/difflib.py: Added to project, replaces ndiff.py
+  (now removed). Contributed back to Python.
+  
+* restructuredtest/test: Subdirectory added by Garth Kidd for unit
+  test refactoring.
 
 
 Release 0.3 (2001-07-19)
@@ -129,11 +152,11 @@ encouragement, suggestions, criticism, bug reports, code
 contributions, and ideas borrowed from related projects:
 
     David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
-    Juergen Hermann, Tony Ibbs, Daniel Larsson, Marc-Andre Lemburg,
-    Wolfgang Lipp, Edward Loper, Ken Manheimer, Alex Martelli, Michel
-    Pelletier, Sam Penrose, Tim Peters, Tavis Rudd, Bob Tolbert,
-    Laurence Tratt, Guido van Rossum, Barry Warsaw, Edward Welbourne,
-    Ka-Ping Yee, Moshe Zadka
+    Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel Larsson, Marc-Andre
+    Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Alex
+    Martelli, Michel Pelletier, Sam Penrose, Tim Peters, Tavis Rudd,
+    Bob Tolbert, Laurence Tratt, Guido van Rossum, Barry Warsaw,
+    Edward Welbourne, Ka-Ping Yee, Moshe Zadka
 
 (I'm still waiting for contributions of yummy treats, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten

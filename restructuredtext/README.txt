@@ -4,9 +4,8 @@
 
 Author: David Goodger
 Contact: dgoodger@bigfoot.com
-Version: 0.3
-Date: $Date: 2001/07/21 22:14:04 $
-Web-site: http://structuredtext.sf.net/
+Date: $Date: 2001/07/29 15:55:11 $
+Web-site: http://structuredtext.sourceforge.net/
 
 Thank you for downloading the reStructuredText project archive. As
 this is a work in progress, please check the project web site for
@@ -19,13 +18,14 @@ Processing System`_, and is installed as
 
 To run the code, Python 2.0 or later must already be installed. You
 can get Python from http://www.python.org/. You will also need the
-latest DPS package, available from http://docstring.sf.net/.
+latest DPS package, available from http://docstring.sourceforge.net/.
 
-.. _Python Docstring Processing System: http://docstring.sf.net/
+.. _Python Docstring Processing System:
+   http://docstring.sourceforge.net/
 
 
-Archive Contents
-================
+Project Files & Directories
+===========================
 
 * README.txt: You're reading it.
 
@@ -34,17 +34,30 @@ Archive Contents
 
 * setup.py: Installation script. See "Installation" below.
 
-* spec: The project specification directory. Contains the markup
-  syntax spec and implementation notes.
+* install.py: Quick & dirty installation script.
 
 * restructuredtext: The project source directory, installed as Python
   package ``dps.parsers.restructuredtext``.
+
+* test: The unit test directory (currently experimental). Not required
+  to use the software, but very useful if you're planning to modify
+  it.
+
+* tools: Directory for standalone scripts that use reStructuredText.
+
+  - quicktest.py: Input reStructuredText, output pretty-printed
+    pseudo-XML.
+
+* spec: The project specification directory. Contains the markup
+  syntax spec and implementation notes.
+
+* doc: The project documentation directory.
 
 
 Installation
 ============
 
-The first step is to expand the rst.0.3.tar.gz archive. It contains a
+The first step is to expand the .tar.gz archive. It contains a
 distutils setup file "setup.py". OS-specific installation instructions
 follow.
 
@@ -65,6 +78,8 @@ Linux, Unix, MacOS X
    the complete path, such as /usr/local/bin/python. You may need root
    permissions to complete this step.
 
+You can also just run install.py; it does the same thing.
+
 Windows
 -------
 
@@ -79,6 +94,9 @@ Windows
 
        <path_to_python.exe>\python setup.py install
 
+If your system is set up to run Python when you double-click on .py
+files, you can run install.py to do the same as the above.
+
 MacOS
 -----
 
@@ -90,12 +108,16 @@ MacOS
    If the file isn't a "Python module", the line endings are probably
    also wrong, and you will need to set up your system to recognize
    ".py" file extensions as Python files. See
-   http://gotools.sf.net/mac/python.html for detailed instructions.
-   Once set up, it's easiest to start over by expanding the archive
-   again.
+   http://gotools.sourceforge.net/mac/python.html for detailed
+   instructions. Once set up, it's easiest to start over by expanding
+   the archive again.
 
 3. The distutils options window will appear. From the "Command" popup
    list choose "install", click "Add", then click "OK".
+
+If install.py is a "Python module" (see step 2 above if it isn't), you
+can run it instead of the above. The distutils options windown will
+not appear.
 
 
 Local Variables:
