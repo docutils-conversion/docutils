@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/08/23 03:59:30 $
+:Date: $Date: 2001/08/25 01:51:03 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -42,7 +42,10 @@ Changed contact email addresses.
 * dps/nodes.py:
 
   - Added vms_option.
+  - Added classifier.
   - Fixed link bookkeeping.
+  - Added docstrings to _Element.
+  - Extended _Element.__iadd__ (``+=``) to lists of nodes.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
   Pilgrim. From http://diveintopython.org.
@@ -52,6 +55,7 @@ Changed contact email addresses.
   - Fixed bug in StateMachineWS.getknownindented().
   - Cleaned up & updated.
   - Fixed bug in StateMachine.getunindented().
+  - Added form feed & vertical tab conversion to string2lines.
 
 * dps/parsers/model.py:
 
@@ -80,7 +84,8 @@ Changed contact email addresses.
   - Fixed typos & omissions; now validates.
   - Changed field_argument's model to PCDATA.
   - Added option_list and doctest_block from ppdi.dtd.
-  - Added vms_option.
+  - Added vms_option element to option.
+  - Added classifier element to definition_list_item.
   - Added dupname attribute to %basic.atts; for duplicate names.
 
 * spec/pdpi.dtd:
@@ -175,8 +180,9 @@ The project web site and the first project release were rolled out.
 Candidate PEPs posted to Doc-SIG 2001-06-03.
 
 
-Local Variables:
-mode: indented-text
-indent-tabs-mode: nil
-fill-column: 70
-End:
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   fill-column: 70
+   End:
