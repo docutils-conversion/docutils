@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/03/01 04:02:44 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/03/12 03:09:05 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for typically HTML-specific constructs.
@@ -23,6 +23,7 @@ except ImportError:
 
 
 def meta(match, typename, data, state, statemachine, attributes):
+    lineoffset = statemachine.lineoffset
     block, indent, offset, blankfinish = \
           statemachine.getfirstknownindented(match.end(), uptoblank=1)
     node = nodes.Element()
@@ -31,9 +32,12 @@ def meta(match, typename, data, state, statemachine, attributes):
               block, offset, node, initialstate='MetaBody',
               blankfinish=blankfinish, statemachinekwargs=metaSMkwargs)
         if (newlineoffset - offset) != len(block): # incomplete parse of block?
+            blocktext = '\n'.join(statemachine.inputlines[
+                  lineoffset : statemachine.lineoffset+1])
             msg = statemachine.memo.reporter.error(
-                  'Invalid meta directive at line %s.'
-                  % statemachine.abslineno())
+                  'Invalid meta directive at line %s.' 
+                  % statemachine.abslineno(), '',
+                  nodes.literal_block(blocktext, blocktext))
             node += msg
     else:
         msg = statemachine.memo.reporter.error(
@@ -63,6 +67,12 @@ class MetaBody(states.SpecializedBody):
               self.statemachine.getfirstknownindented(match.end())
         node = self.meta()
         node['content'] = ' '.join(indented)
+        if not indented:
+            line = self.statemachine.line
+            msg = self.statemachine.memo.reporter.info(
+                  'No content for meta tag "%s".' % name, '',
+                  nodes.literal_block(line, line))
+            self.statemachine.node += msg
         try:
             attname, val = utils.extract_name_value(name)[0]
             node[attname.lower()] = val
@@ -73,9 +83,10 @@ class MetaBody(states.SpecializedBody):
                 attname, val = utils.extract_name_value(arg)[0]
                 node[attname.lower()] = val
             except utils.AttributeParsingError, detail:
+                line = self.statemachine.line
                 msg = self.statemachine.memo.reporter.error(
                       'Error parsing meta tag attribute "%s": %s'
-                      % (arg, detail))
+                      % (arg, detail), '', nodes.literal_block(line, line))
                 self.statemachine.node += msg
         return node, blankfinish
 

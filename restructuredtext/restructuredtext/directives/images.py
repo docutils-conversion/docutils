@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/11 03:21:35 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/12 03:09:12 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for figures and simple images.
@@ -83,33 +83,24 @@ def figure(match, typename, data, state, statemachine, attributes):
           = statemachine.getfirstknownindented(sys.maxint)
     blocktext = '\n'.join(statemachine.inputlines[lineoffset:
                                                   statemachine.lineoffset+1])
-    blocktext = match.string + '\n'.join(indented[1:])
-    text = '\n'.join(indented)
-    if not isinstance(imagenode, nodes.image):
+    if isinstance(imagenode, nodes.system_message):
         if indented:
-            error = statemachine.memo.reporter.error(
-                  'Rendering the figure block as a literal block.')
-            literalblock = nodes.literal_block(text, text)
-            nodelist = [imagenode, error, literalblock]
-            return nodelist, blankfinish
-        else:
-            return [imagenode], blankfinish
+            imagenode[-1] = nodes.literal_block(blocktext, blocktext)
+        return [imagenode], blankfinish
     figurenode = nodes.figure('', imagenode)
-    if not text:
-        return [figurenode], blankfinish
-    node = nodes.Element()              # anonymous container for parsing
-    state.nestedparse(indented, lineoffset, node)
-    firstnode = node[0]
-    if isinstance(firstnode, nodes.paragraph):
-        caption = nodes.caption(firstnode.rawsource, '', *firstnode.children)
-        figurenode += caption
-    elif not (isinstance(firstnode, nodes.comment) and len(firstnode) == 0):
-        error = self.statemachine.memo.reporter.error(
-              'Figure caption must be a paragraph or empty comment. '
-              'Rendering the figure block as a literal block.')
-        literalblock = nodes.literal_block(text, text)
-        nodelist = [figurenode, error, literalblock]
-        return nodelist, blankfinish
-    if len(node) > 1:
-        figurenode += nodes.legend('', *node[1:])
+    if indented:
+        node = nodes.Element()          # anonymous container for parsing
+        state.nestedparse(indented, lineoffset, node)
+        firstnode = node[0]
+        if isinstance(firstnode, nodes.paragraph):
+            caption = nodes.caption(firstnode.rawsource, '',
+                                    *firstnode.children)
+            figurenode += caption
+        elif not (isinstance(firstnode, nodes.comment) and len(firstnode) == 0):
+            error = statemachine.memo.reporter.error(
+                  'Figure caption must be a paragraph or empty comment.', '',
+                  nodes.literal_block(blocktext, blocktext))
+            return [figurenode, error], blankfinish
+        if len(node) > 1:
+            figurenode += nodes.legend('', *node[1:])
     return [figurenode], blankfinish
