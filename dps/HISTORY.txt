@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2002/02/20 04:18:25 $
+:Date: $Date: 2002/02/22 02:13:27 $
 :Website: http://docstring.sourceforge.net/
 
 
@@ -17,11 +17,12 @@ in terms of encouragement, suggestions, criticism, bug reports, code
 contributions, and related projects:
 
     David Ascher, Fred Drake, Jim Fulton, Peter Funk, Doug Hellmann,
-    Juergen Hermann, Tony Ibbs, Garth Kidd, Daniel Larsson, Marc-Andre
-    Lemburg, Wolfgang Lipp, Edward Loper, Ken Manheimer, Paul Moore,
-    Michel Pelletier, Sam Penrose, Tim Peters, Mark Pilgrim, Tavis
-    Rudd, Ueli Schlaepfer, Bob Tolbert, Laurence Tratt, Guido van
-    Rossum, Barry Warsaw, Edward Welbourne, Ka-Ping Yee, Moshe Zadka
+    Juergen Hermann, Tony Ibbs, Richard Jones, Garth Kidd, Daniel
+    Larsson, Marc-Andre Lemburg, Wolfgang Lipp, Edward Loper, Ken
+    Manheimer, Paul Moore, Michel Pelletier, Sam Penrose, Tim Peters,
+    Mark Pilgrim, Tavis Rudd, Ueli Schlaepfer, Bob Tolbert, Laurence
+    Tratt, Guido van Rossum, Barry Warsaw, Edward Welbourne, Ka-Ping
+    Yee, Moshe Zadka
 
 (I'm still waiting for contributions of tasty snacks, computer
 equipment, and cold hard cash. :-) Hopefully I haven't forgotten
@@ -88,6 +89,7 @@ Changed contact email addresses.
   - Added ``Element.index()`` and ``Element.replace()`` methods.
   - Simplified target record keeping.
   - Changed "system_warning" to "system_message".
+  - Modified post-parse system message storage.
   - Added 'id' attribute support to ``document``.
 
 * dps/roman.py: Added to project. Written by and courtesy of Mark
@@ -193,11 +195,11 @@ Changed contact email addresses.
   - Added 'morecols' attribute to table entries (<entry>), for simpler
     column span indication.
   - Made document subtitle dependent on the existence of a title.
-  - Moved 'abstract' into the bibliographic elements section.
   - Changed 'graphic' to 'image'.
   - Moved 'caption' to after 'image' in 'figure'.
   - Added 'error' and 'hint' admonition elements.
   - Added 'docinfo' as container for bibliographic elements.
+  - Made 'abstract' a structural element, after 'docinfo'.
   - Added 'transition'.
   - Changed %link.atts to %reference.atts.
   - Separated out %reference.atts into constituent parts.
