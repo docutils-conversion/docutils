@@ -3,8 +3,8 @@
 =====================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2001/08/22 03:46:19 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2001/09/01 15:47:11 $
 
 reStructuredText_ is an easy-to-read, what-you-see-is-what-you-get
 plaintext markup syntax and parser system. It is useful for in-line
@@ -302,8 +302,10 @@ constructs:
 .. _project web site: http://structuredtest.sourceforge.net/
 
 
-Local Variables:
-mode: indented-text
-indent-tabs-mode: nil
-fill-column: 70
-End:
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:

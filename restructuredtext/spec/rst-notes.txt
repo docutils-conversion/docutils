@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/08/28 03:29:20 $
-:Revision: $Revision: 1.13 $
+:Date: $Date: 2001/09/01 15:48:40 $
+:Revision: $Revision: 1.14 $
 
 
 To Do
@@ -43,7 +43,23 @@ To Do
 - Add auto-numbered enumerated lists? Arabic numerals only, or any
   sequence if first initialized?
 
-- Tables. (Parsing can never encounter a corner inside a table.)
+- Tables.
+
+  - Parsing can never encounter a corner inside a table.
+
+  - Use state machine, or a standalone class or set of functions?
+
+    - Trace out the border and row/column separators, to determine the
+      total number and position of columns.
+
+  - Use a sparse array (dictionary) to support spans?
+
+  - Data structure:
+
+    - (column specs, header rows, body rows)
+    - colspec = column width
+    - row = [cells]
+    - cell = (morerows=0, morecols=0, block)
 
 
 Or Not To Do?

@@ -3,8 +3,8 @@
 =======================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.14 $
-:Date: $Date: 2001/08/25 02:20:27 $
+:Revision: $Revision: 1.15 $
+:Date: $Date: 2001/09/01 15:48:19 $
 
 reStructuredText_ is plain text that uses simple and intuitive
 constructs to indicate the structure of a document. These constructs
@@ -650,7 +650,7 @@ output; no empty paragraph will remain.
 
 As a convenience, the '::' is recognized at the end of any paragraph.
 If immediately preceded by whitespace, both colons will be removed
-from the output (this is the "partly minimized" form). When text
+from the output (this is the "partially minimized" form). When text
 immediately precedes the '::', *one* colon will be removed from the
 output, leaving only one (i.e., '::' will be replaced by ':'; the
 "fully minimized" form).
@@ -666,7 +666,7 @@ colons after "Paragraph"):
 
           Literal block
 
-2. Partly minimized form::
+2. Partially minimized form::
 
       Paragraph: ::
 
@@ -1424,8 +1424,10 @@ Markup errors are handled according to the specification in `PEP
 .. _PEP 258: http://docstring.sourceforge.net/spec/pep-0258.txt
 
 
-Local Variables:
-mode: indented-text
-indent-tabs-mode: nil
-fill-column: 70
-End:
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:

@@ -3,8 +3,8 @@
 ==============================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/08/22 03:47:19 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/09/01 15:47:42 $
 
 There are several problems, unresolved issues, and areas of
 controversy within StructuredText_ (Classic and Next Generation). In
@@ -740,20 +740,23 @@ cleanly readable text.
 .. _StructuredText:
    http://dev.zope.org/Members/jim/StructuredTextWiki/FrontPage
 .. _Setext: http://www.bsdi.com/setext
-.. _reStructuredText: http://structuredtext.sf.net
-.. _detailed description: http://www.tibsnjoan.demon.co.uk/STNG-format.html
+.. _reStructuredText: http://structuredtext.sourceforge.net
+.. _detailed description:
+   http://www.tibsnjoan.demon.co.uk/STNG-format.html
 .. _STMinus: http://www.cis.upenn.edu/~edloper/pydoc/stminus.html
 .. _StructuredTextNG:
    http://dev.zope.org/Members/jim/StructuredTextWiki/StructuredTextNG
-.. _README:
-   http://cvs.sf.net/cgi-bin/cvsweb.cgi/python/dist/src/README?cvsroot=python
-.. _Emacs table mode: http://table.sf.net/
+.. _README: http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/~checkout~/
+   python/python/dist/src/README
+.. _Emacs table mode: http://table.sourceforge.net/
 .. _reStructuredText Markup Specification:
-   http://structuredtext.sf.net/spec/reStructuredText.txt
+   http://structuredtext.sourceforge.net/spec/reStructuredText.txt
 
 
-Local Variables:
-mode: indented-text
-indent-tabs-mode: nil
-fill-column: 70
-End:
+..
+   Local Variables:
+   mode: indented-text
+   indent-tabs-mode: nil
+   sentence-end-double-space: t
+   fill-column: 70
+   End:
