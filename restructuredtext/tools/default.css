@@ -1,22 +1,22 @@
 /*
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:date: $Date: 2002/03/04 04:34:34 $
-:version: $Revision: 1.6 $
+:date: $Date: 2002/03/07 05:00:43 $
+:version: $Revision: 1.7 $
 :copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
 */
 
-a.footnote_reference {
+a.footnote-reference {
   font-size: smaller;
   vertical-align: super }
 
-col.docinfo_name {
+col.docinfo-name {
   font-weight: bold;
   text-align: right }
 
-col.field_name {
+col.field-name {
   font-weight: bold }
 
 div.abstract {
@@ -42,10 +42,10 @@ div.hint h3, div.important h3, div.note h3, div.tip h3 {
   font-weight: bold;
   font-family: sans-serif }
 
-div.field_body {
+div.field-body {
   margin-bottom: 1em }
 
-div.field_list {
+div.field-list {
   margin-bottom: -1em }
 
 div.figure {
@@ -55,17 +55,17 @@ div.footnote {
   border-left: solid thin black;
   padding-left: 1em }
 
-div.system_messages {
+div.system-messages {
   margin: 5em }
 
-div.system_messages h1 {
+div.system-messages h1 {
   color: red }
 
-div.system_message {
+div.system-message {
   border: medium outset;
   padding: 1em }
 
-div.system_message h3 {
+div.system-message h3 {
   color: red }
 
 dt {
@@ -98,27 +98,27 @@ ol.upperroman {
 p.caption {
   font-style: italic }
 
-p.field_name {
+p.field-name {
   margin-bottom: 1em }
 
-pre.literal_block, pre.doctest_block {
+pre.literal-block, pre.doctest-block {
   margin-left: 2em }
 
 span.classifier {
   font-family: sans-serif;
   font-style: oblique }
 
-span.classifier_delimiter {
+span.classifier-delimiter {
   font-family: sans-serif;
   font-weight: bold }
 
-span.field_argument {
+span.field-argument {
   font-style: italic }
 
 span.interpreted {
   font-family: sans-serif }
 
-span.option_argument {
+span.option-argument {
   font-style: italic }
 
 span.problematic {
