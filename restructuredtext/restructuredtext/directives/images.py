@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.1 $
-:Date: $Date: 2001/09/12 04:07:07 $
+:Revision: $Revision: 1.2 $
+:Date: $Date: 2001/09/17 04:26:56 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for figures and simple images.
@@ -15,37 +15,50 @@ __docformat__ = 'reStructuredText'
 __all__ = ['image', 'figure']
 
 
+import sys
 from restructuredtext import states
 from dps import nodes
 
 
 def image(match, typename, data, state, statemachine):
-    blankfinish = statemachine.nextlineblank()
     lineno = statemachine.abslineno()
-    if not data:
-        error = statemachine.memo.errorist.error(
+    lineoffset = statemachine.lineoffset
+    datablock, indent, offset, blankfinish = \
+          statemachine.getfirstknownindented(match.end(), uptoblank=1)
+    if not datablock:
+        error = statemachine.memo.reporter.error(
               'Missing image URI argument at line %s.' % lineno,
               [nodes.literal_block(match.string, match.string)])
         return [error], blankfinish
-    tokens = data.split()
-    attributes = {'uri': tokens[0]}
-    for token in tokens[1:]:
+    blocktext = '\n'.join(statemachine.inputlines[lineoffset:
+                                                  lineoffset+len(datablock)])
+    tokens = []
+    if datablock[-1][0] == '[' and datablock[-1][-1] == ']':
+        tokens = datablock.pop()[1:-1].split()
+    reference = ''.join([line.strip() for line in datablock])
+    if reference.find(' ') != -1:
+        warning = statemachine.memo.reporter.warning(
+              'Image URI at line %s contains whitespace.' % lineno)
+        warning += nodes.literal_block(blocktext, blocktext)
+        return [warning], blankfinish
+    attributes = {'uri': reference}
+    for token in tokens:
         parts = token.split('=')
         if parts[0].lower() not in ('height', 'width', 'scale'):
-            error = statemachine.memo.errorist.error(
+            error = statemachine.memo.reporter.error(
                   'Unknown image attribute "%s" at line %s.'
                   % (parts[0], lineno),
                   [nodes.literal_block(match.string, match.string)])
             return [error], blankfinish
         if len(parts) != 2:
-            error = statemachine.memo.errorist.error(
+            error = statemachine.memo.reporter.error(
                   'Invalid image attribute expression at line %s: "%s".'
                   % (lineno, token),
                   [nodes.literal_block(match.string, match.string)])
             return [error], blankfinish
         name = parts[0].lower()
         if attributes.has_key(name):
-            error = statemachine.memo.errorist.error(
+            error = statemachine.memo.reporter.error(
                   'Duplicate image attribute name at line %s: "%s"'
                   % (lineno, name),
                   [nodes.literal_block(match.string, match.string)])
@@ -53,9 +66,9 @@ def image(match, typename, data, state, statemachine):
         try:
             value = int(parts[1])
         except:
-            error = statemachine.memo.errorist.error(
+            error = statemachine.memo.reporter.error(
                   'Invalid image attribute value for "%s" at line %s: "%s" is '
-                  'not an integer.' % (name, lineno, value),
+                  'not an integer.' % (name, lineno, parts[1]),
                   [nodes.literal_block(match.string, match.string)])
             return [error], blankfinish
         attributes[name.lower()] = value
@@ -63,14 +76,18 @@ def image(match, typename, data, state, statemachine):
     return [imagenode], blankfinish
 
 def figure(match, typename, data, state, statemachine):
+    lineoffset = statemachine.lineoffset
     (imagenode,), blankfinish = image(match, typename, data, state,
                                       statemachine)
-    indented, indent, lineoffset, blankfinish \
-          = statemachine.getfirstknownindented(len(match.string))
+    indented, indent, offset, blankfinish \
+          = statemachine.getfirstknownindented(sys.maxint)
+    blocktext = '\n'.join(statemachine.inputlines[lineoffset:
+                                                  statemachine.lineoffset+1])
+    blocktext = match.string + '\n'.join(indented[1:])
     text = '\n'.join(indented)
     if not isinstance(imagenode, nodes.image):
         if indented:
-            error = self.statemachine.memo.errorist.error(
+            error = statemachine.memo.reporter.error(
                   'Rendering the figure block as a literal block.')
             literalblock = nodes.literal_block(text, text)
             nodelist = [imagenode, error, literalblock]
@@ -87,7 +104,7 @@ def figure(match, typename, data, state, statemachine):
         caption = nodes.caption(firstnode.rawsource, '', *firstnode.children)
         figurenode += caption
     elif not (isinstance(firstnode, nodes.comment) and len(firstnode) == 0):
-        error = self.statemachine.memo.errorist.error(
+        error = self.statemachine.memo.reporter.error(
               'Figure caption must be a paragraph or empty comment. '
               'Rendering the figure block as a literal block.')
         literalblock = nodes.literal_block(text, text)
