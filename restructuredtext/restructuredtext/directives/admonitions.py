@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.3 $
-:Date: $Date: 2001/11/06 00:53:35 $
+:Revision: $Revision: 1.4 $
+:Date: $Date: 2001/11/19 04:30:51 $
 :Copyright: This module has been placed in the public domain.
 
 Admonition directives.
@@ -20,7 +20,8 @@ from restructuredtext import states
 from dps import nodes
 
 
-def admonition(nodeclass, match, typename, data, state, statemachine):
+def admonition(nodeclass, match, typename, data, state, statemachine,
+               attributes):
     indented, indent, lineoffset, blankfinish \
           = statemachine.getfirstknownindented(match.end())
     text = '\n'.join(indented)

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/11/15 03:07:17 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2001/11/19 04:30:58 $
 :Copyright: This module has been placed in the public domain.
 
 Directives for figures and simple images.
@@ -24,7 +24,7 @@ def unchanged(arg):
 
 imageattributes = {'alt': unchanged, 'height': int, 'width': int, 'scale': int}
 
-def image(match, typename, data, state, statemachine):
+def image(match, typename, data, state, statemachine, attributes):
     lineno = statemachine.abslineno()
     lineoffset = statemachine.lineoffset
     datablock, indent, offset, blankfinish = \
@@ -50,7 +50,7 @@ def image(match, typename, data, state, statemachine):
         error += nodes.literal_block(blocktext, blocktext)
         return [error], blankfinish
     try:
-        attributes = utils.parseattributes(attlines, imageattributes)
+        attributes.update(utils.parseattributes(attlines, imageattributes))
     except KeyError, detail:
         error = statemachine.memo.reporter.error(
               'Unknown image attribute at line %s: "%s".' % (lineno, detail))
@@ -69,13 +69,13 @@ def image(match, typename, data, state, statemachine):
         error += nodes.literal_block(blocktext, blocktext)
         return [error], blankfinish
     attributes['uri'] = reference
-    imagenode = nodes.image(data, **attributes)
+    imagenode = nodes.image(blocktext, **attributes)
     return [imagenode], blankfinish
 
-def figure(match, typename, data, state, statemachine):
+def figure(match, typename, data, state, statemachine, attributes):
     lineoffset = statemachine.lineoffset
     (imagenode,), blankfinish = image(match, typename, data, state,
-                                      statemachine)
+                                      statemachine, attributes)
     indented, indent, offset, blankfinish \
           = statemachine.getfirstknownindented(sys.maxint)
     blocktext = '\n'.join(statemachine.inputlines[lineoffset:
