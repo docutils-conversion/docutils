@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger, Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.5 $
-:Date: $Date: 2002/03/28 04:42:29 $
+:Revision: $Revision: 1.6 $
+:Date: $Date: 2002/04/13 17:05:32 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms needed by most or all documents:
@@ -52,14 +52,47 @@ class TestMessages(Transform):
         self.doctree += self.doctree.messages.getchildren()
 
 
-class FinalReferences(Transform):
+class FinalChecks(Transform):
 
     """
-    Resolve any remaining references, check for dangling.
+    Perform last-minute checks.
+
+    - Check for dangling references (incl. footnote & citation).
     """
 
     def transform(self):
+        visitor = FinalCheckVisitor(self.doctree)
+        self.doctree.walk(visitor)
+
+
+class FinalCheckVisitor(nodes.NodeVisitor):
+
+    def unknown_visit(self, node):
         pass
+
+    def visit_reference(self, node):
+        if node.resolved or not node.hasattr('refname'):
+            return
+        refname = node['refname']
+        try:
+            id = self.doctree.nameids[refname]
+        except KeyError:
+            msg = self.doctree.reporter.error(
+                  'Unknown target name: "%s".' % (node['refname']))
+            self.doctree.messages += msg
+            msgid = self.doctree.set_id(msg)
+            prb = nodes.problematic(
+                  node.rawsource, node.rawsource, refid=msgid)
+            prbid = self.doctree.set_id(prb)
+            msg.add_backref(prbid)
+            node.parent.replace(node, prb)
+            return
+        del node['refname']
+        node['refid'] = id
+        self.doctree.ids[id].referenced = 1
+        node.resolved = 1
+
+    visit_footnote_reference = visit_citation_reference = visit_reference
 
 
 class Pending(Transform):
@@ -112,5 +145,5 @@ last_reader_transforms = (LastReaderPending,)
 first_writer_transforms = (FirstWriterPending,)
 """Universal transforms to apply before any other Writer transforms."""
 
-last_writer_transforms = (LastWriterPending, FinalReferences, Messages)
+last_writer_transforms = (LastWriterPending, FinalChecks, Messages)
 """Universal transforms to apply after all other Writer transforms."""
