@@ -2,8 +2,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2002/01/30 04:52:17 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/02/06 02:50:31 $
 :Copyright: This module has been placed in the public domain.
 
 Transforms for resolving references:
@@ -180,7 +180,7 @@ class Hyperlinks(Transform):
         try:
             reflist = self.doctree.refnames[name]
         except KeyError, instance:
-            sw = self.doctree.reporter.information(
+            sw = self.doctree.reporter.info(
                   'Indirect hyperlink target "%s" is not referenced.'
                   % name)
             self.doctree += sw
@@ -209,9 +209,8 @@ class Hyperlinks(Transform):
         try:
             reflist = self.doctree.refnames[name]
         except KeyError, instance:
-            sw = self.doctree.reporter.information(
-                  'External hyperlink target "%s" is not referenced.'
-                  % name)
+            sw = self.doctree.reporter.info(
+                  'External hyperlink target "%s" is not referenced.' % name)
             self.doctree += sw
             return
         for ref in self.doctree.refnames[name]:
@@ -231,7 +230,7 @@ class Hyperlinks(Transform):
                 self.one_external_reference(ref['name'], refuri)
 
 
-class ChainedTargetResolver(nodes.Visitor):
+class ChainedTargetResolver(nodes.NodeVisitor):
 
     """
     Copy reference attributes up a length of hyperlink target chain.
@@ -267,12 +266,12 @@ class ChainedTargetResolver(nodes.Visitor):
             <target name="g" refname="d">
     """
 
-    def visit_target(self, node, ancestry):
+    def visit_target(self, node):
         if node.hasattr('refuri'):
             refuri = node['refuri']
-            parent, index = ancestry[-1]
+            index = node.parent.index(node)
             for i in range(index - 1, -1, -1):
-                sibling = parent[i]
+                sibling = node.parent[i]
                 if not isinstance(sibling, nodes.target) \
                       or sibling.hasattr('refuri') \
                       or sibling.hasattr('refname'):
@@ -281,9 +280,9 @@ class ChainedTargetResolver(nodes.Visitor):
                 self.doctree.note_external_target(sibling)
         elif node.hasattr('refname'):
             refname = node['refname']
-            parent, index = ancestry[-1]
+            index = node.parent.index(node)
             for i in range(index - 1, -1, -1):
-                sibling = parent[i]
+                sibling = node.parent[i]
                 if not isinstance(sibling, nodes.target) \
                       or sibling.hasattr('refuri') \
                       or sibling.hasattr('refname'):
