@@ -4,7 +4,7 @@
 
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Date: $Date: 2001/10/20 02:55:49 $
+:Date: $Date: 2001/10/23 03:42:19 $
 :Website: http://structuredtext.sourceforge.net/
 
 
@@ -99,8 +99,10 @@ Changed contact email addresses.
     code to methods.
   - Removed debug code.
   - Updated: 'errorist' -> 'reporter'.
-  - Adding anonymous hyperlinks.
+  - Added anonymous hyperlink support.
+  - Added support for indirect hyperlink targets.
   - Adding divisions.
+  - Updated for renamed ``add*link`` -> ``add*target``.
 
 * restructuredtest/tableparser.py: Added to project. Contains the
   TableParser class.
