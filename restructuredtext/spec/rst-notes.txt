@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/08/17 01:58:17 $
-:Revision: $Revision: 1.10 $
+:Date: $Date: 2001/08/22 03:41:26 $
+:Revision: $Revision: 1.11 $
 
 
 To Do
@@ -29,9 +29,6 @@ To Do
 - Explicitly define what characters constitute whitespace, and enable
   the parser to recognize them all.
 
-- For duplicate indirect external hyperlink targets (explicit), check
-  the target URIs: same -> level-0 warning; different -> level-1.
-
 - Interpret backslash-escaped spaces as non-breaking spaces? Escaped
   newlines as forced-breaks?
 
@@ -43,40 +40,19 @@ To Do
   exposition in the spec, to make clear what is going on for people
   with head colds.
 
-- Move interpreted text roles outside of the quotes::
-
-      role:`interpreted text`
-
-- Add DOS/VMS-style "/A" option support to option lists.
-
-- Enable optional blank lines between definition list items.
-
-- Add empty comment support. "A tiny but practical wart."
-
-- Merge pyextensions.txt into reStructuredText.txt, and ppdi.dtd into
-  gpdi.dtd?
-
 - Add auto-numbered footnotes & references, with optional labels.
   What to label the ``[#]`` footnotes?
-
-- Perhaps, to make footnotes even more distinct from hyperlink
-  targets, we can drop the leading '_'? Doc-SIG 2001-08-09, "Colons
-  and footnotes".
 
 - Add auto-numbered enumerated lists? Arabic numerals only, or any
   sequence if first initialized?
 
-- Put in a check for spaces inside text in hyperlink targets. The
-  parser can generate a warning, including the entire "target" as a
-  literal block.
-
-- Document & implement the shared namespace for hyperlink names &
-  footnote labels (without brackets).
-
 - Perhaps it's better to think of "::" as pure markup, which
   disappears from the processed output as would the asterisks in
   *emphasis*. As a special case, if the "::" ends a paragraph preceded
-  by non-whitespace, we keep one ":" in place.
+  by non-whitespace, we keep one ":" in place. Reverse the order of
+  the explanation.
+
+- Tables.
 
 
 Or Not To Do?
@@ -278,52 +254,6 @@ syntax.  A line of punctuation with a blank line before and after::
 
 The problem is, HRs are purely presentational.  What structural
 significance do they have?
-
-
-Comments Revisited
-------------------
-
-Perhaps comments should be one-liners only? Would this mean that
-footnotes, hyperlink targets, and directives must also be
-one-liners?
-
-If we adopt Tony Ibbs' suggested "comment" directive, we could limit
-a comment to a single text block. A "multi-block comment" could use
-"comment-start" and "comment-end" directives. This would remove the
-indentation-incompatibility.
-
-
-Parser Notes
-============
-
-Wonky cases, marked by "XXX" in the unit tests:
-
-- What should incorrect indentation do? E.g.::
-
-      Here is a paragraph.
-
-              Indent 8 spaces.
-
-          Indent 4 spaces.
-
-  As is, this generates a <block_quote><block_quote>...</>...</>.
-  Should this trigger a warning?
-
-- Is this correct behavior? ::
-
-      -
-      Empty item, no blank line, but no space after hyphen.
-
-  Currently this generates a single paragraph.
-
-- Multi-line comments are incompatible with block quotes::
-
-      + bullet
-
-      .. a comment used to end a bullet before a blockquote
-         (if you can't think of what to write in the paragraph)
-
-        blockquote
 
 
 Local Variables:
