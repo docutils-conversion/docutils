@@ -4,8 +4,8 @@
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
 :Version: 1.3
-:Revision: $Revision: 1.8 $
-:Date: $Date: 2001/09/12 03:45:42 $
+:Revision: $Revision: 1.9 $
+:Date: $Date: 2001/09/13 02:15:35 $
 :Copyright: This module has been placed in the public domain.
 
 A finite state machine specialized for regular-expression-based text filters,
@@ -70,7 +70,10 @@ How To Use This Module
    d) You may wish to override the `State.bof()` and/or `State.eof()` implicit
       transition methods, which handle the beginning- and end-of-file.
 
-   e) If you are using `StateWS` as a base class, in order to handle nested
+   e) In order to handle nested processing, you may wish to override the
+      attributes `State.nestedSM` and/or `State.nestedSMkwargs`.
+
+      If you are using `StateWS` as a base class, in order to handle nested
       indented blocks, you may wish to:
 
       - override the attributes `StateWS.indentSM`, `StateWS.indentSMkwargs`,
@@ -455,6 +458,28 @@ class State:
     state name) pair. See `maketransitions()`. Override in subclasses.
     """
 
+    nestedSM = None
+    """
+    The `StateMachine` class for handling nested processing.
+
+    If left as ``None``, `nestedSM` defaults to the class of the state's
+    controlling state machine. Override it in subclasses to avoid the default.
+    """
+
+    nestedSMkwargs = None
+    """
+    Keyword arguments dictionary, passed to the `nestedSM` constructor.
+
+    Two keys must have entries in the dictionary:
+
+    - Key 'stateclasses' must be set to a list of `State` classes.
+    - Key 'initialstate' must be set to the name of the initial state class.
+
+    If `nestedSMkwargs` is left as ``None``, 'stateclasses' defaults to the
+    class of the current state, and 'initialstate' defaults to the name of the
+    class of the current state. Override in subclasses to avoid the defaults.
+    """
+
     def __init__(self, statemachine, debug=0):
         """
         Initialize a `State` object; make & add initial transitions.
@@ -486,6 +511,12 @@ class State:
 
         self.debug = debug
         """Debugging mode on/off."""
+
+        if self.nestedSM is None:
+            self.nestedSM = self.statemachine.__class__
+        if self.nestedSMkwargs is None:
+            self.nestedSMkwargs = {'stateclasses': [self.__class__],
+                                   'initialstate': self.__class__.__name__}
 
     def unlink(self):
         """Remove circular references to objects no longer required."""
@@ -799,22 +830,16 @@ class StateWS(State):
     """
     The `StateMachine` class handling indented text blocks.
 
-    If left as ``None``, `indentSM` defaults to the class of the state's
-    controlling state machine. Override it in subclasses to avoid the default.
+    If left as ``None``, `indentSM` defaults to the value of `State.nestedSM`.
+    Override it in subclasses to avoid the default.
     """
 
     indentSMkwargs = None
     """
     Keyword arguments dictionary, passed to the `indentSM` constructor.
 
-    Two keys must have entries in the dictionary:
-
-    - Key 'stateclasses' must be set to a list of `State` classes.
-    - Key 'initialstate' must be set to the name of the initial state class.
-
-    If `indentSMkwargs` is left as ``None``, 'stateclasses' defaults to the
-    class of the current state, and 'initialstate' defaults to the name of the
-    class of the current state. Override in subclasses to avoid the defaults.
+    If left as ``None``, `indentSMkwargs` defaults to the value of
+    `State.nestedSMkwargs`. Override it in subclasses to avoid the default.
     """
 
     knownindentSM = None
@@ -827,7 +852,7 @@ class StateWS(State):
 
     knownindentSMkwargs = None
     """
-    Keyword arguments dictionary, passed to the `indentSM` constructor.
+    Keyword arguments dictionary, passed to the `knownindentSM` constructor.
 
     If left as ``None``, `knownindentSMkwargs` defaults to the value of
     `indentSMkwargs`. Override it in subclasses to avoid the default.
@@ -841,10 +866,9 @@ class StateWS(State):
         """
         State.__init__(self, statemachine, debug)
         if self.indentSM is None:
-            self.indentSM = self.statemachine.__class__
+            self.indentSM = self.nestedSM
         if self.indentSMkwargs is None:
-            self.indentSMkwargs = {'stateclasses': [self.__class__],
-                                   'initialstate': self.__class__.__name__}
+            self.indentSMkwargs = self.nestedSMkwargs
         if self.knownindentSM is None:
             self.knownindentSM = self.indentSM
         if self.knownindentSMkwargs is None:
