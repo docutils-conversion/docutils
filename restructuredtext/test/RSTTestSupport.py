@@ -3,8 +3,8 @@
 """
 :Authors: Garth Kidd, David Goodger
 :Contact: garth@deadlybloodyserious.com
-:Revision: $Revision: 1.12 $
-:Date: $Date: 2002/02/06 02:19:04 $
+:Revision: $Revision: 1.13 $
+:Date: $Date: 2002/04/19 02:37:35 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -30,18 +30,9 @@ __docformat__ = 'reStructuredText'
 import UnitTestFolder
 import sys, os, unittest, re, difflib, types, inspect
 from pprint import pformat
-
-# try to import the current working version if possible
-try:
-    sys.path.insert(0, os.pardir)       # running in test framework dir?
-    import restructuredtext             # or restructuredtext on path?
-except ImportError:                     # try to run installed code
-    from dps.parsers import restructuredtext
-
-from restructuredtext import states
-from restructuredtext import tableparser
-from restructuredtext import directives
-from restructuredtext import languages
+from dps.parsers import restructuredtext
+from dps.parsers.restructuredtext import states, tableparser, directives, \
+      languages
 from dps.statemachine import string2lines
 import dps.utils
 

@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/03/11 03:21:44 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/04/19 02:37:21 $
 :Copyright: This module has been placed in the public domain.
 
 Miscellaneous directives.
@@ -15,7 +15,6 @@ __docformat__ = 'reStructuredText'
 __all__ = ['directive_test_function']
 
 
-from restructuredtext import states
 from dps import nodes
 
 
