@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.4 $
-:Date: $Date: 2001/11/19 04:30:51 $
+:Revision: $Revision: 1.5 $
+:Date: $Date: 2002/03/07 02:07:46 $
 :Copyright: This module has been placed in the public domain.
 
 Admonition directives.
@@ -16,7 +16,10 @@ __all__ = ['attention', 'caution', 'danger', 'error', 'important', 'note',
            'tip', 'hint', 'warning']
 
 
-from restructuredtext import states
+try:
+    from restructuredtext import states
+except ImportError:
+    from dps.parsers.restructuredtext import states
 from dps import nodes
 
 
