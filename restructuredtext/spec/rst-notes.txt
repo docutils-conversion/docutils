@@ -1,8 +1,8 @@
 =======
  Notes
 =======
-:Date: $Date: 2001/10/19 03:06:58 $
-:Revision: $Revision: 1.21 $
+:Date: $Date: 2001/10/27 05:28:51 $
+:Revision: $Revision: 1.22 $
 
 
 To Do
@@ -42,16 +42,18 @@ To Do
   exposition in the spec, to make clear what is going on for people
   with head colds.
 
-- To avoid mistakenly marking up text like ``signal:noise`` as URIs,
-  limit standalone hyperlink URI recognition to known schemes, as per
-  http://www.w3.org/Addressing/schemes.html.
-
 - Alan Jaffray suggested (and I agree) that it would be sensible to:
 
   - have a directive to specify a default role for interpreted text
   - allow the reST processor to take an argument for the default role
   - issue a warning when processing documents with no default role
     which contain interpreted text with no explicitly specified role
+
+- Add transition support.
+
+- Add "__" anonymous link support.
+
+- Add inline hyperlink target support.
 
 
 Or Not To Do?
