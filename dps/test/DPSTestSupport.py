@@ -2,8 +2,8 @@
 """
 :Authors:  David Goodger; Garth Kidd
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.6 $
-:Date: $Date: 2002/02/22 01:57:00 $
+:Revision: $Revision: 1.7 $
+:Date: $Date: 2002/03/07 03:52:11 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -144,9 +144,12 @@ class CustomTestCase(unittest.TestCase):
 
     def compareOutput(self, input, output, expected):
         """`input`, `output`, and `expected` should all be strings."""
+        output = output.encode('raw-unicode-escape')
+        expected = expected.encode('raw-unicode-escape')
         try:
             self.assertEquals('\n' + output, '\n' + expected)
         except AssertionError:
+            input = input.encode('raw-unicode-escape')
             print >>sys.stderr, '\n%s\ninput:' % (self,)
             print >>sys.stderr, input
             print >>sys.stderr, '-: expected\n+: output'
