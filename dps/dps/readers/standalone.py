@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/02/07 01:59:59 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/12 02:19:43 $
 :Copyright: This module has been placed in the public domain.
 
 Standalone file Reader for the reStructuredText markup syntax.
@@ -35,5 +35,5 @@ class Reader(readers.Reader):
                   references.Footnotes,
                   references.Substitutions,)
 
-    def scan(self, source):
-        self.scanfile(source)
+    def scan(self):
+        self.input = self.scanfile(self.source)

@@ -3,8 +3,8 @@
 """
 :Authors: David Goodger; Ueli Schlaepfer
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/02/07 01:59:51 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/02/12 02:19:27 $
 :Copyright: This module has been placed in the public domain.
 
 This package contains DPS Reader modules.
@@ -59,19 +59,18 @@ class Reader:
     def read(self, source, parser):
         self.source = source
         self.parser = parser
-        self.scan(self.source)          # may modify self.parser,
-                                        # depending on input
-        self.parse(self.parser)
+        self.scan()               # may modify self.parser, depending on input
+        self.parse()
         self.transform()
         return self.document
 
-    def scan(self, source):
-        """Override to read `self.input` from `source`."""
+    def scan(self):
+        """Override to read `self.input` from `self.source`."""
         raise NotImplementedError('subclass must override this method')
 
     def scanfile(self, source):
         """
-        Scan a single file, store data in `self.input`.
+        Scan a single file and return the raw data.
 
         Parameter `source` may be:
 
@@ -80,16 +79,15 @@ class Reader:
         (c) `None`, which implies `sys.stdin`.
         """
         if hasattr(source, 'read'):
-            self.input = source.read()
-        elif self.source:
-            self.input = open(source).read()
-        else:
-            self.input = sys.stdin.read()
+            return source.read()
+        if self.source:
+            return open(source).read()
+        return sys.stdin.read()
 
-    def parse(self, parser):
+    def parse(self):
         """Parse `self.input` into a document tree."""
         self.document = self.newdocument()
-        parser.parse(self.input, self.document)
+        self.parser.parse(self.input, self.document)
 
     def transform(self):
         """Run all of the transforms defined for this Reader."""
