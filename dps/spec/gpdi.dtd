@@ -4,8 +4,8 @@
 ======================================================================
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.30 $
-:Date: $Date: 2002/02/06 03:06:03 $
+:Revision: $Revision: 1.31 $
+:Date: $Date: 2002/02/15 22:53:17 $
 :Copyright: This DTD has been placed in the public domain.
 :Filename: gpdi.dtd
 
@@ -113,7 +113,7 @@ resolve to either an internal or external reference.
     | option_list
     | note | tip | hint | warning | error | caution | danger
     | important
-    | target | substitution_definition | comment | system_warning
+    | target | substitution_definition | comment | system_message
     %additional.body.elements; ">
 
 <!ENTITY % additional.inline.elements "">
@@ -404,9 +404,9 @@ Table elements: table, tgroup, colspec, thead, tbody, row, entry.
 -->
 %calstblx;
 
-<!-- Used by the processing system to record a warning. -->
-<!ELEMENT system_warning (%body.elements;)+>
-<!ATTLIST system_warning
+<!-- Used to record processing information. -->
+<!ELEMENT system_message (%body.elements;)+>
+<!ATTLIST system_message
     %basic.atts;
     level     NMTOKEN   #IMPLIED
     type      CDATA     #IMPLIED>

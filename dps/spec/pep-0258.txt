@@ -1,7 +1,7 @@
 PEP: 258
 Title: DPS Generic Implementation Details
-Version: $Revision: 1.5 $
-Last-Modified: $Date: 2002/02/07 01:56:41 $
+Version: $Revision: 1.6 $
+Last-Modified: $Date: 2002/02/15 22:53:17 $
 Author: dgoodger@bigfoot.com (David Goodger)
 Discussions-To: doc-sig@python.org
 Status: Draft
@@ -348,15 +348,15 @@ Specification
     ==============
 
     When the parser encounters an error in markup, it inserts a system
-    warning (DTD element 'system_warning').  There are five levels of
-    system warnings:
+    message (DTD element 'system_message).  There are five levels of
+    system messages:
 
     - Level-0, "DEBUG": an internal reporting issue.  There is no
-      effect on the processing.  Level-0 system warnings are
+      effect on the processing.  Level-0 system messages are
       handled separately from the others.
 
     - Level-1, "INFO": a minor issue that can be ignored.  There is no
-      effect on the processing.  Typically level-1 system warnings are
+      effect on the processing.  Typically level-1 system messages are
       not reported.
 
     - Level-2, "WARNING": an issue that should be addressed.  If
@@ -366,11 +366,11 @@ Specification
       ignored, the output will contain errors.
 
     - Level-4, "SEVERE": a severe error that must be addressed.
-      Typically level-4 system warnings are turned into exceptions
+      Typically level-4 system messages are turned into exceptions
       which halt processing.  If ignored, the output will contain
       severe errors.
 
-    Although the initial warning levels were devised independently,
+    Although the initial message levels were devised independently,
     they have a strong correspondence to VMS error condition severity
     levels [9]; the names in quotes for levels 1 through 4 were
     borrowed from VMS.  Error handling has since been influenced by
