@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2001/08/22 03:38:30 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2001/08/23 04:19:35 $
 :Copyright: This module has been placed in the public domain.
 
 Test module for states.py.
@@ -197,7 +197,7 @@ Line 2.
 ["""\
 Line 1.
 Line 2.
-   Unexpectedly indented.
+    Unexpectedly indented.
 """,
 """\
 <document>
@@ -336,6 +336,31 @@ A paragraph::
             </definition>
         </definition_list_item>
     </definition_list>
+</document>
+"""],
+["""\
+A paragraph
+on more than
+one line::
+    A literal block
+    with no blank line above.
+""",
+"""\
+<document>
+    <paragraph>
+        A paragraph
+        on more than
+        one line:
+    </paragraph>
+    <system_warning level="2">
+        <paragraph>
+            Unexpected indentation at line 4.
+        </paragraph>
+    </system_warning>
+    <literal_block>
+        A literal block
+        with no blank line above.
+    </literal_block>
 </document>
 """],
 ["""\
@@ -689,6 +714,31 @@ term
             </definition>
         </definition_list_item>
     </definition_list>
+</document>
+"""],
+["""\
+term
+  definition
+
+paragraph
+""",
+"""\
+<document>
+    <definition_list>
+        <definition_list_item>
+            <term>
+                term
+            </term>
+            <definition>
+                <paragraph>
+                    definition
+                </paragraph>
+            </definition>
+        </definition_list_item>
+    </definition_list>
+    <paragraph>
+        paragraph
+    </paragraph>
 </document>
 """],
 ["""\
@@ -2438,7 +2488,7 @@ Find the ```interpreted text``` in this paragraph!
 """],
 ]
 
-    totest['interpreted'] = [
+    proven['interpreted'] = [
 ["""\
 `interpreted`
 """,
@@ -4998,7 +5048,7 @@ Some edge cases:
 
     totest['tables'] = [
 ["""\
-XXX Temporarily parse a table as a literal_block:
+XXX Temporarily parsing tables as a literal blocks:
 
 +------------------------+------------+----------+----------+
 | Header row, column 1   | Header 2   | Header 3 | Header 4 |
@@ -5016,7 +5066,7 @@ XXX Temporarily parse a table as a literal_block:
 """\
 <document>
     <paragraph>
-        XXX Temporarily parse a table as a literal_block:
+        XXX Temporarily parsing tables as a literal blocks:
     </paragraph>
     <literal_block>
         +------------------------+------------+----------+----------+
@@ -5032,6 +5082,77 @@ XXX Temporarily parse a table as a literal_block:
         | body row 4             |            | - body elements.    |
         +------------------------+------------+---------------------+
     </literal_block>
+</document>
+"""],
+["""\
+XXX Temporarily parsing tables as a literal blocks:
+
++-----------------+--------+
+| A simple table  | cell 2 |
++-----------------+--------+
+| cell 3          | cell 4 |
++-----------------+--------+
+No blank line after table.
+""",
+"""\
+<document>
+    <paragraph>
+        XXX Temporarily parsing tables as a literal blocks:
+    </paragraph>
+    <literal_block>
+        +-----------------+--------+
+        | A simple table  | cell 2 |
+        +-----------------+--------+
+        | cell 3          | cell 4 |
+        +-----------------+--------+
+    </literal_block>
+    <system_warning level="1">
+        <paragraph>
+            Blank line required after table at line 8.
+        </paragraph>
+    </system_warning>
+    <paragraph>
+        No blank line after table.
+    </paragraph>
+</document>
+"""],
+["""\
+XXX Temporarily parsing tables as a literal blocks:
+
++-----------------+--------+
+| A simple table  | cell 2 |
++-----------------+--------+
+| cell 3          | cell 4 |
++-----------------+--------+
+    Unexpected indent and no blank line after table.
+""",
+"""\
+<document>
+    <paragraph>
+        XXX Temporarily parsing tables as a literal blocks:
+    </paragraph>
+    <literal_block>
+        +-----------------+--------+
+        | A simple table  | cell 2 |
+        +-----------------+--------+
+        | cell 3          | cell 4 |
+        +-----------------+--------+
+    </literal_block>
+    <system_warning level="2">
+        <paragraph>
+            Unexpected indentation at line 8.
+        </paragraph>
+    </system_warning>
+    <system_warning level="1">
+        <paragraph>
+            Blank line required after table at line 8.
+        </paragraph>
+    </system_warning>
+    <block_quote>
+        <paragraph>
+            Unexpected indent and no blank line after table.
+        </paragraph>
+    </block_quote>
 </document>
 """],
 ]
