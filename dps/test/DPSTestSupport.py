@@ -2,8 +2,8 @@
 """
 :Authors:  David Goodger; Garth Kidd
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.7 $
-:Date: $Date: 2002/03/07 03:52:11 $
+:Revision: $Revision: 1.8 $
+:Date: $Date: 2002/03/08 04:30:36 $
 :Copyright: This module has been placed in the public domain.
 
 Exports the following:
@@ -23,8 +23,7 @@ __docformat__ = 'reStructuredText'
 
 import UnitTestFolder
 import sys, os
-#, unittest, re, difflib, types, inspect
-#from pprint import pformat
+import unittest, difflib, inspect, os, sys
 
 # try to import the current working version if possible
 sys.path.insert(0, os.pardir)           # running in test framework dir?
@@ -32,8 +31,6 @@ import dps                              # or restructuredtext on path?
 
 from dps import statemachine, nodes, urischemes, utils, transforms
 from dps.transforms import universal
-
-import unittest, difflib, inspect, os, sys
 
 try:
     import mypdb as pdb
@@ -144,12 +141,9 @@ class CustomTestCase(unittest.TestCase):
 
     def compareOutput(self, input, output, expected):
         """`input`, `output`, and `expected` should all be strings."""
-        output = output.encode('raw-unicode-escape')
-        expected = expected.encode('raw-unicode-escape')
         try:
             self.assertEquals('\n' + output, '\n' + expected)
         except AssertionError:
-            input = input.encode('raw-unicode-escape')
             print >>sys.stderr, '\n%s\ninput:' % (self,)
             print >>sys.stderr, input
             print >>sys.stderr, '-: expected\n+: output'

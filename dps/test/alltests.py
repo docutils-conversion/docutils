@@ -3,8 +3,8 @@
 """
 :Author: David Goodger
 :Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1.2 $
-:Date: $Date: 2002/01/26 00:06:55 $
+:Revision: $Revision: 1.3 $
+:Date: $Date: 2002/03/08 04:30:25 $
 :Copyright: This module has been placed in the public domain.
 """
 
@@ -23,6 +23,7 @@ class Tee:
         self.stream = stream
 
     def write(self, string):
+        string = string.encode('raw-unicode-escape')
         self.stream.write(string)
         self.file.write(string)
 
