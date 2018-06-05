@@ -6,7 +6,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{graphicx}
-\usepackage{moreverb}
 \usepackage{longtable,ltcaption,array}
 \setlength{\extrarowheight}{2pt}
 \newlength{\DUtablewidth} % internal use in tables
@@ -86,13 +85,13 @@ setting. This test file exists to check the latex writer output compiles and
 looks as expected. Start with a plain literal block:
 
 \begin{quote}
-\begin{verbatimtab}
+\begin{verbatim}
 $\sin^2(x)$ and $\cos^2(x)$ equals one:
 
 \[
    \sin^2(x) + \cos^2(x) = 1 % for all x
 \]
-\end{verbatimtab}
+\end{verbatim}
 \end{quote}
 
 A latex \textquotedbl{}code-block\textquotedbl{} (set with \textquotedbl{}literal-block-env\textquotedbl{}, if syntax
@@ -101,13 +100,13 @@ highlight is \textquotedbl{}none\textquotedbl{}):
 \begin{DUclass}{code}
 \begin{DUclass}{latex}
 \begin{quote}
-\begin{verbatimtab}
+\begin{verbatim}
 $\sin^2(x)$ and $\cos^2(x)$ equals one:
 
 \[
    \sin^2(x) + \cos^2(x) = 1 % for all x
 \]
-\end{verbatimtab}
+\end{verbatim}
 \end{quote}
 \end{DUclass}
 \end{DUclass}
@@ -121,9 +120,9 @@ A literal block in a table:
 test
  & 
 \begin{minipage}{8\ttemwidth}
-\begin{verbatimtab}
+\begin{verbatim}
 \sin^2 x
-\end{verbatimtab}
+\end{verbatim}
 \end{minipage}
  & 
 test
